@@ -13,7 +13,7 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert
+*Author(s): A. Hebert and A. Naceur
 *
 *Parameters: input/output
 * NENTRY  number of LCM objects or files used by the operator.
@@ -45,7 +45,7 @@
       PARAMETER(NSTATE=40)
       CHARACTER TEXT12*12,HSIGN*12,HSMG*131
       INTEGER ISTATE(NSTATE)
-      DOUBLE PRECISION DFLOTT,ZNORM,ESUM,CSUM
+      DOUBLE PRECISION DFLOTT,ZNORM,ESUM,CSUM,DSUM
 *----
 *  ALLOCATABLE ARRAYS
 *----
@@ -195,7 +195,7 @@
 *  COMPUTE THE ENERGY AND CHARGE DEPOSITION
 *----
    60 CALL HEADRV(IPDEP,NENTRY-1,KENTRY(2),NBMIX,NGRP,ZNORM,IMPX,ESUM,
-     1 CSUM)
+     1 CSUM,DSUM)
 *----
 *  RECOVER THE TOTAL ENERGY OR CHARGE DEPOSITION AND SAVE IT IN A
 *  CLE-2000 VARIABLE

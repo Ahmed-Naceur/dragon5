@@ -1,0 +1,1079 @@
+* CLE-2000 VERS 3.0 * R.ROY, EPM COPYRIGHT 1999 *                          LINE
+*----                                                                      0001
+*  TEST                                                                    0002
+*----                                                                      0003
+*----                                                                      0004
+*  Define STRUCTURES and MODULES used                                      0005
+*----                                                                      0006
+MODULE GEO: FMAC: MAC: SNT: ASM: FLU: PSOUR: OUT: DELETE: END: UTL:        0007
+HEAT: ABORT: ;                                                             0008
+LINKED_LIST  EMACRO EMACRO2 GMACRO GMACRO2 GEOM ETRACK GTRACK SYSTEM       0009
+EFLUX GFLUX ESOUR GSOUR EEDITS GEDITS DEPOS ;                              0010
+REAL esum DELTA ;                                                          0011
+SEQ_ASCII FMAC_M :: FILE './W_6MeV_e_CSD.txt' ;                            0012
+*----                                                                      0013
+*  Set and track the geometry                                              0014
+*----                                                                      0015
+GEOM := GEO: :: CAR1D 2                                                    0016
+X- VOID  X+ VOID                                                           0017
+MIX  1 2                                                                   0018
+MESHX 0.0 0.1 1.0                                                          0019
+SPLITX 30 200                                                              0020
+;                                                                          0021
+ETRACK := SNT: GEOM ::                                                     0022
+TITLE 'TEST'                                                               0023
+EDIT 2 MAXR 1000 DIAM 1 NLIVO SN 16 SCAT 16 EPSI 1.E-5                     0024
+MAXI 300 BFPL ;                                                            0025
+GTRACK := ETRACK ;                                                         0026
+GTRACK := SNT: GTRACK GEOM :: EDIT 2 BTE ;                                 0027
+*----                                                                      0028
+*  Compute the electron flux                                               0029
+*----                                                                      0030
+EMACRO := FMAC: FMAC_M ::                                                  0031
+EDIT 2                                                                     0032
+PARTICLE B                                                                 0033
+;                                                                          0034
+UTL: EMACRO :: STEP UP GROUP STEP AT 1 DIR IMPR ESTOPW * ;                 0035
+EMACRO2 := EMACRO ;                                                        0036
+EMACRO := MAC: EMACRO EMACRO2 ::                                           0037
+MIX 2 1 OLDL                                                               0038
+;                                                                          0039
+EMACRO2 := DELETE: EMACRO2 ;                                               0040
+REAL qsour := 1.E10 2.0 / $Pi_R / ;                                        0041
+ECHO "qsour=" qsour ;                                                      0042
+EMACRO := MAC: EMACRO ::                                                   0043
+READ INPUT                                                                 0044
+MIX 1 FIXE                                                                 0045
+<<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0          0046
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                0047
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                0048
+0.0 0.0 0.0 0.0 0.0                                                        0049
+;                                                                          0050
+SYSTEM := ASM: EMACRO ETRACK :: EDIT 2 ARM ;                               0051
+EFLUX := FLU: EMACRO ETRACK SYSTEM ::                                      0052
+EDIT 1 TYPE S EXTE 100                                                     0053
+;                                                                          0054
+EEDITS := OUT: EFLUX ETRACK EMACRO GEOM ::                                 0055
+EDIT 99 COND INTG NONE                                                     0056
+;                                                                          0057
+* DEPOS  := HEAT: EEDITS :: EDIT 2 ;                                       0058
+SYSTEM := DELETE: SYSTEM ;                                                 0059
+END: ;                                                                     0060
+QUIT .                                                                  IMPLICIT
+ 
+ DDDDDD   RRRRRR     AAA     GGGGG    OOOOO   NN     NN
+ DDDDDDD  RRRRRRR   AAAAA   GGGGGGG  OOOOOOO  NNN    NN
+ DD   DD  RR   RR  AA   AA  GG       OO   OO  NNNN   NN
+ DD   DD  RRRRRR   AA   AA  GG  GGG  OO   OO  NN NN  NN
+ DD   DD  RRRR     AAAAAAA  GG  GGG  OO   OO  NN  NN NN
+ DD   DD  RR RR    AAAAAAA  GG   GG  OO   OO  NN   NNNN
+ DDDDDDD  RR  RR   AA   AA  GGGGGGG  OOOOOOO  NN    NNN
+ DDDDDD   RR   RR  AA   AA   GGGGG    OOOOO   NN     NN
+
+ VERSION dragon 5  Version 5.0.7 ($Revision: 2060 $)                   $Date: 2021-02-02 16:03:29 -0500 (Tue, 02 Feb 2021) $           
+ GROUPE D'ANALYSE NUCLEAIRE
+ ECOLE POLYTECHNIQUE DE MONTREAL
+
+
+
+ COPYRIGHT NOTICE FOR THIS VERSION OF dragon:
+ --------------------------------------------
+ Copyright (C) 2002 Ecole Polytechnique de Montreal 
+ This library is free software; you can redistribute it
+ and/or modify it under the terms of the GNU Lesser General
+ Public License as published by the Free Software Foundation;
+ either version 2.1 of the License, or (at your option) any
+ later version 
+
+
+
+
+->@BEGIN MODULE : GEO:        
+->@DESCRIPTION  : Geometry definition                                                     
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE CARTESIAN 1-D   .
+->@END MODULE   : GEO:        
+-->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : SNT:        
+->@DESCRIPTION  : Discrete ordinates tracking                                             
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+1 SSSSS  NN      NN ***********************************************************************************************
+ SSSSSSS NNN     NN ********************************************************* MULTIGROUP VERSION.  A. HEBERT (2005)
+ SS   SS NNNN    NN
+  SS     NN NN   NN
+    SS   NN  NN  NN
+ SS   SS NN   NN NN
+ SSSSSSS NN    NNNN
+  SSSSS  NN     NNN
+
+ TEST                                                                    
+
+
+
+ 1-D SLAB GEOMETRY.
++                          BASED ON GEOMETRY GEOM        .
+
+
+ NUMBER OF MESH INTERVALS ALONG THE X AXIS =  230     AVAILABLE STORAGE MAXX =   1000
+                          ALONG THE Y AXIS =    1     AVAILABLE STORAGE MAXY =   1000
+                          ALONG THE Z AXIS =    1     AVAILABLE STORAGE MAXZ =   1000
+ NUMBER OF DISTINCT MIXTURES =      2
+
+
+
+ THE QUADRATURE COSINES FOLLOW
+
+  -0.989401E+00 -0.944575E+00 -0.865631E+00 -0.755404E+00 -0.617876E+00
+  -0.458017E+00 -0.281604E+00 -0.950125E-01  0.950125E-01  0.281604E+00
+   0.458017E+00  0.617876E+00  0.755404E+00  0.865631E+00  0.944575E+00
+   0.989401E+00
+
+
+ THE CORRESPONDING QUADRATURE WEIGHTS FOLLOW
+
+   0.271525E-01  0.622535E-01  0.951585E-01  0.124629E+00  0.149596E+00
+   0.169157E+00  0.182603E+00  0.189451E+00  0.189451E+00  0.182603E+00
+   0.169157E+00  0.149596E+00  0.124629E+00  0.951585E-01  0.622535E-01
+   0.271525E-01
+
+ SNTRK: ORDER OF LINEAR SYSTEMS =   7360
+        NUMBER OF UNKNOWNS PER ENERGY GROUP =  14720
+
+ STATE VECTOR:
+ NREG       230   (NUMBER OF REGIONS)
+ NUN      14720   (NUMBER OF UNKNOWNS)
+ ILK          0   (0=LEAKAGE PRESENT/1=LEAKAGE ABSENT)
+ NBMIX        2   (MAXIMUM NUMBER OF MIXTURES USED)
+ NSURF        1   (NUMBER OF OUTER SURFACES)
+ ITYPE        2   (TYPE OF GEOMETRY)
+ NFUNL       16   (NUMBER OF SPHERICAL HARMONICS COMPONENTS)
+ IELEM        2   (ORDER OF POLYNOMIAL USED IN SPATIAL APPROX./1=DIAMOND SCHEME/2=LINEAR/3=PARABOLIC/3=CUBIC)
+ NDIM         1   (NUMBER OF GEOMETRIC DIMENSIONS)
+ ISCHM        1   (METHOD OF SPATIAL DISCRETISATION/1=HODD/2=DG)
+ LL4       7360   (ORDER OF THE MATRICES PER GROUP)
+ LX         230   (NUMBER OF MESHES ALONG THE X AXIS)
+ LY           1   (NUMBER OF MESHES ALONG THE Y AXIS)
+ LZ           1   (NUMBER OF MESHES ALONG THE Z AXIS)
+ NLF         16   (SN ORDER)
+ ISCAT       16   (1=ISOTROPIC SOURCE/2=LINEARLY ANISOTROPIC SOURCE)
+ IQUAD        2   (<4=LEVEL-SYMMETRIC OF TYPE IQUAD/4=LEGENDRE-CHEBYSHEV/5=SYMMETRIC LEGENDRE-CHEBYSHEV/6=QR/>9=PRODUCT)
+ IFIX         0   (0/1: NEGATIVE FLUX FIXUP)
+ IDSA         0   (0/1: SYNTHETIC ACCELERATION)
+ NSTART       0   (NUMBER OF RESTARTS IN GMRES)
+ NSDSA       10   (NUMBER OF ITERATIONS BEFORE ENABLING DSA)
+ MAXIT      300   (MAXIMUM NUMBER OF INNER ITERATIONS)
+ LIVO         0   (0/1: LIVOLANT ACCELERATION OFF/ON)
+ ICL1         3   (NUMBER OF FREE ITERATIONS IN LIVO.)
+ ICL2         3   (NUMBER OF ACCELERATED ITERATIONS IN LIVO.)
+ ISPLH        0   (DEGREE OF LOZENGE SPLITTING FOR HEXAGONAL GEOMETRY)
+ INSB         0   (0/1: GROUP VECTORIZATION OFF/ON)
+ IOMP         0   (0/1: DOMINO MULTITHREADING OFF/ON)
+ IGAV         0   (CONDITION AT AXIAL AXIS FOR CYL./SPH. 1D)
+ LSHOOT       1   (0/1: SHOOTING METHOD IN 1D OFF/ON)
+ IBFP         2   (0/1/2: BFP SOLUTION OFF/GALERKIN/LIGOU)
+ IBIHET       0   (0/1: DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
+ EPSI      0.1E-04  (CONVERGENCE CRITERION ON INNER ITERATIONS)
+->@END MODULE   : SNT:        
+-->>MODULE SNT:        : TIME SPENT=        0.001 MEMORY USAGE= 2.640E+02
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+->@BEGIN MODULE : SNT:        
+->@DESCRIPTION  : Discrete ordinates tracking                                             
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+1 SSSSS  NN      NN ***********************************************************************************************
+ SSSSSSS NNN     NN ********************************************************* MULTIGROUP VERSION.  A. HEBERT (2005)
+ SS   SS NNNN    NN
+  SS     NN NN   NN
+    SS   NN  NN  NN
+ SS   SS NN   NN NN
+ SSSSSSS NN    NNNN
+  SSSSS  NN     NNN
+
+ TEST                                                                    
+
+
+
+ 1-D SLAB GEOMETRY.
++                          BASED ON GEOMETRY GEOM        .
+
+
+ NUMBER OF MESH INTERVALS ALONG THE X AXIS =  230     AVAILABLE STORAGE MAXX =    230
+                          ALONG THE Y AXIS =    1     AVAILABLE STORAGE MAXY =    230
+                          ALONG THE Z AXIS =    1     AVAILABLE STORAGE MAXZ =    230
+ NUMBER OF DISTINCT MIXTURES =      2
+
+
+
+ THE QUADRATURE COSINES FOLLOW
+
+  -0.989401E+00 -0.944575E+00 -0.865631E+00 -0.755404E+00 -0.617876E+00
+  -0.458017E+00 -0.281604E+00 -0.950125E-01  0.950125E-01  0.281604E+00
+   0.458017E+00  0.617876E+00  0.755404E+00  0.865631E+00  0.944575E+00
+   0.989401E+00
+
+
+ THE CORRESPONDING QUADRATURE WEIGHTS FOLLOW
+
+   0.271525E-01  0.622535E-01  0.951585E-01  0.124629E+00  0.149596E+00
+   0.169157E+00  0.182603E+00  0.189451E+00  0.189451E+00  0.182603E+00
+   0.169157E+00  0.149596E+00  0.124629E+00  0.951585E-01  0.622535E-01
+   0.271525E-01
+
+ SNTRK: ORDER OF LINEAR SYSTEMS =   7360
+        NUMBER OF UNKNOWNS PER ENERGY GROUP =   7360
+
+ STATE VECTOR:
+ NREG       230   (NUMBER OF REGIONS)
+ NUN       7360   (NUMBER OF UNKNOWNS)
+ ILK          0   (0=LEAKAGE PRESENT/1=LEAKAGE ABSENT)
+ NBMIX        2   (MAXIMUM NUMBER OF MIXTURES USED)
+ NSURF        1   (NUMBER OF OUTER SURFACES)
+ ITYPE        2   (TYPE OF GEOMETRY)
+ NFUNL       16   (NUMBER OF SPHERICAL HARMONICS COMPONENTS)
+ IELEM        2   (ORDER OF POLYNOMIAL USED IN SPATIAL APPROX./1=DIAMOND SCHEME/2=LINEAR/3=PARABOLIC/3=CUBIC)
+ NDIM         1   (NUMBER OF GEOMETRIC DIMENSIONS)
+ ISCHM        1   (METHOD OF SPATIAL DISCRETISATION/1=HODD/2=DG)
+ LL4       7360   (ORDER OF THE MATRICES PER GROUP)
+ LX         230   (NUMBER OF MESHES ALONG THE X AXIS)
+ LY           1   (NUMBER OF MESHES ALONG THE Y AXIS)
+ LZ           1   (NUMBER OF MESHES ALONG THE Z AXIS)
+ NLF         16   (SN ORDER)
+ ISCAT       16   (1=ISOTROPIC SOURCE/2=LINEARLY ANISOTROPIC SOURCE)
+ IQUAD        2   (<4=LEVEL-SYMMETRIC OF TYPE IQUAD/4=LEGENDRE-CHEBYSHEV/5=SYMMETRIC LEGENDRE-CHEBYSHEV/6=QR/>9=PRODUCT)
+ IFIX         0   (0/1: NEGATIVE FLUX FIXUP)
+ IDSA         0   (0/1: SYNTHETIC ACCELERATION)
+ NSTART       0   (NUMBER OF RESTARTS IN GMRES)
+ NSDSA       10   (NUMBER OF ITERATIONS BEFORE ENABLING DSA)
+ MAXIT      300   (MAXIMUM NUMBER OF INNER ITERATIONS)
+ LIVO         0   (0/1: LIVOLANT ACCELERATION OFF/ON)
+ ICL1         3   (NUMBER OF FREE ITERATIONS IN LIVO.)
+ ICL2         3   (NUMBER OF ACCELERATED ITERATIONS IN LIVO.)
+ ISPLH        0   (DEGREE OF LOZENGE SPLITTING FOR HEXAGONAL GEOMETRY)
+ INSB         0   (0/1: GROUP VECTORIZATION OFF/ON)
+ IOMP         0   (0/1: DOMINO MULTITHREADING OFF/ON)
+ IGAV         0   (CONDITION AT AXIAL AXIS FOR CYL./SPH. 1D)
+ LSHOOT       1   (0/1: SHOOTING METHOD IN 1D OFF/ON)
+ IBFP         0   (0/1/2: BFP SOLUTION OFF/GALERKIN/LIGOU)
+ IBIHET       0   (0/1: DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
+ EPSI      0.1E-04  (CONVERGENCE CRITERION ON INNER ITERATIONS)
+->@END MODULE   : SNT:        
+-->>MODULE SNT:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : FMAC:       
+->@DESCRIPTION  : Recover information from a FMAC-M interface file                        
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ FMAC-M            
+ FMAC:  Format FMAC-M version = 5
+ NG    = 50   number of energy groups;
+ NPART =  1   number of particle types;
+ NGXI  =  0   number of groups with non-zero fission spectrum;
+ NGXIF =  0   number of the first group with non-zero fission spectrum;
+ NGRET =  0   number of delayed neutron groups;
+ NGXIR =  0   number of groups with non-zero fission spectrum for delayed neutrons;
+ NGXIFR=  0   number of the first group with non-zero fission spectrum for delayed neutrons;
+ NEDIT =  0   number of additional edit cross-sections;
+ MAXGS =  0   not used;
+ KLEIN =  0   not used;
+ NGHIGH=  0   total number of groups of cascade region;
+ IADJ  =  0   0/1 - regular/adjoint cross-section file;
+ NUCL  =  0   number of nuclides;
+ NUCLF =  0   number of fission nuclides;
+ MIX   =  1   number of materials (compositions);
+ NUFIS =  0   number of fission materials;
+ MAS   = 38   length of integer control array LL(MAS);
+ KIN=  1274   total number of scattering transitions (not used);
+ MX    = 16   maximal length of transition array (not used);
+ MNW   = 16   order of PL approximation used +1;
+ MPOINT=  0   order of discrete approximation of scattering indicatrix (number of angular scattering cosine points used);
+ NUMD(I)=  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 not used
+
+ FMAC01: 6 MeV electrons are normally incident on a slab of W                    
+
+ FMAC01:                         
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'EMACRO      ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'SIGNATURE   '         3    CHARACTER       ='L_MACROLIB  '
+        2  'PARTICLE    '         1    CHARACTER       
+        3  'PARTICLE-NGR'         1    INTEGER         
+        4  'PARTICLE-NAM'         1    CHARACTER       
+        5  'PARTICLE-MC2'         1    REAL            
+        6  'GROUP       '        50    LIST            
+        7  'ENERGY      '        51    REAL            
+        8  'STATE-VECTOR'        40    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =        98
+
+
+ OPTIONS
+ -------
+ IMPX       2   (0=NO PRINT/1=SHORT/2=MORE)
+ NGROUP    50   (NUMBER OF ENERGY GROUPS)
+ NBMIX      1   (NUMBER OF MIXTURES IN THE MACROLIB)
+ NANISO    16   (MAXIMUM SCATTERING ANISOTROPY)
+ NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
+ NEDMAC     0   (NUMBER OF CROSS SECTION EDITS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
+ NLG        0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ ILEAK      0   (1=DIFF AVAILABLE; 2=DIFFX AVAILABLE)
+ NSTEP      0   (NUMBER OF PERTURBATION DIRECTORIES)
+ IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
+ IADJ       0   (=0/1 DIRECT/ADJOINT MACROLIB)
+ NPART0     0   (NUMBER OF COMPANION PARTICLES)
+ HPART      B   (MACROLIB PARTICLE)
+
+       PARTICLE NAMES:       B
+ NB. OF ENERGY GROUPS:      50
+->@END MODULE   : FMAC:       
+-->>MODULE FMAC:       : TIME SPENT=        0.012 MEMORY USAGE= 5.280E+02
+->@BEGIN MODULE : UTL:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVUTL: STEP UP TO LEVEL 'GROUP       '.
+
+ DRVUTL: STEP AT COMPONENT     1.
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '            ' OF THE TABLE    'EMACRO      ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'NTOT0       '         1    REAL            
+        2  'ABS         '         1    REAL            
+        3  'ESTOPW      '         2    REAL            
+        4  'H-FACTOR    '         1    REAL            
+        5  'C-FACTOR    '         1    REAL            
+        6  'SIGW00      '         1    REAL            
+        7  'SCAT00      '         1    REAL            
+        8  'NJJS00      '         1    INTEGER         
+        9  'IJJS00      '         1    INTEGER         
+       10  'IPOS00      '         1    INTEGER         
+       11  'SIGW01      '         1    REAL            
+       12  'SCAT01      '         1    REAL            
+       13  'NJJS01      '         1    INTEGER         
+       14  'IJJS01      '         1    INTEGER         
+       15  'IPOS01      '         1    INTEGER         
+       16  'SIGW02      '         1    REAL            
+       17  'SCAT02      '         1    REAL            
+       18  'NJJS02      '         1    INTEGER         
+       19  'IJJS02      '         1    INTEGER         
+       20  'IPOS02      '         1    INTEGER         
+       21  'SIGW03      '         1    REAL            
+       22  'SCAT03      '         1    REAL            
+       23  'NJJS03      '         1    INTEGER         
+       24  'IJJS03      '         1    INTEGER         
+       25  'IPOS03      '         1    INTEGER         
+       26  'SIGW04      '         1    REAL            
+       27  'SCAT04      '         1    REAL            
+       28  'NJJS04      '         1    INTEGER         
+       29  'IJJS04      '         1    INTEGER         
+       30  'IPOS04      '         1    INTEGER         
+       31  'SIGW05      '         1    REAL            
+       32  'SCAT05      '         1    REAL            
+       33  'NJJS05      '         1    INTEGER         
+       34  'IJJS05      '         1    INTEGER         
+       35  'IPOS05      '         1    INTEGER         
+       36  'SIGW06      '         1    REAL            
+       37  'SCAT06      '         1    REAL            
+       38  'NJJS06      '         1    INTEGER         
+       39  'IJJS06      '         1    INTEGER         
+       40  'IPOS06      '         1    INTEGER         
+       41  'SIGW07      '         1    REAL            
+       42  'SCAT07      '         1    REAL            
+       43  'NJJS07      '         1    INTEGER         
+       44  'IJJS07      '         1    INTEGER         
+       45  'IPOS07      '         1    INTEGER         
+       46  'SIGW08      '         1    REAL            
+       47  'SCAT08      '         1    REAL            
+       48  'NJJS08      '         1    INTEGER         
+       49  'IJJS08      '         1    INTEGER         
+       50  'IPOS08      '         1    INTEGER         
+       51  'SIGW09      '         1    REAL            
+       52  'SCAT09      '         1    REAL            
+       53  'NJJS09      '         1    INTEGER         
+       54  'IJJS09      '         1    INTEGER         
+       55  'IPOS09      '         1    INTEGER         
+       56  'SIGW10      '         1    REAL            
+       57  'SCAT10      '         1    REAL            
+       58  'NJJS10      '         1    INTEGER         
+       59  'IJJS10      '         1    INTEGER         
+       60  'IPOS10      '         1    INTEGER         
+       61  'SIGW11      '         1    REAL            
+       62  'SCAT11      '         1    REAL            
+       63  'NJJS11      '         1    INTEGER         
+       64  'IJJS11      '         1    INTEGER         
+       65  'IPOS11      '         1    INTEGER         
+       66  'SIGW12      '         1    REAL            
+       67  'SCAT12      '         1    REAL            
+       68  'NJJS12      '         1    INTEGER         
+       69  'IJJS12      '         1    INTEGER         
+       70  'IPOS12      '         1    INTEGER         
+       71  'SIGW13      '         1    REAL            
+       72  'SCAT13      '         1    REAL            
+       73  'NJJS13      '         1    INTEGER         
+       74  'IJJS13      '         1    INTEGER         
+       75  'IPOS13      '         1    INTEGER         
+       76  'SIGW14      '         1    REAL            
+       77  'SCAT14      '         1    REAL            
+       78  'NJJS14      '         1    INTEGER         
+       79  'IJJS14      '         1    INTEGER         
+       80  'IPOS14      '         1    INTEGER         
+       81  'SIGW15      '         1    REAL            
+       82  'SCAT15      '         1    REAL            
+       83  'NJJS15      '         1    INTEGER         
+       84  'IJJS15      '         1    INTEGER         
+       85  'IPOS15      '         1    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '            ' =        86
+
+
+ DRVUTL: CONTENT OF BLOCK 'ESTOPW      '     LENGTH =         2     NUMBER OF NON ZERO TERMS =         2
+
+    2.4128E+01   2.3562E+01
+
+
+
+ DRVUTL: LEAVING WITH ACTIVE DIRECTORY '            '.
+-->>module UTL:        : time spent=        0.001 memory usage= 2.640E+02
+->@END MODULE   : UTL:        
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module EQU:        : time spent=        0.000 memory usage= 5.280E+02
+->@END MODULE   : EQU:        
+->@BEGIN MODULE : MAC:        
+->@DESCRIPTION  : Macroscopic xs processor                                                
+->@CREDITS      : G. Marleau                                                              
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'EMACRO      ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'SIGNATURE   '         3    CHARACTER       ='L_MACROLIB  '
+        2  'PARTICLE    '         1    CHARACTER       
+        3  'PARTICLE-NGR'         1    INTEGER         
+        4  'PARTICLE-NAM'         1    CHARACTER       
+        5  'PARTICLE-MC2'         1    REAL            
+        6  'GROUP       '        50    LIST            
+        7  'ENERGY      '        51    REAL            
+        8  'STATE-VECTOR'        40    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =        98
+
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'EMACRO2     ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'SIGNATURE   '         3    CHARACTER       ='L_MACROLIB  '
+        2  'PARTICLE    '         1    CHARACTER       
+        3  'PARTICLE-NGR'         1    INTEGER         
+        4  'PARTICLE-NAM'         1    CHARACTER       
+        5  'PARTICLE-MC2'         1    REAL            
+        6  'GROUP       '        50    LIST            
+        7  'ENERGY      '        51    REAL            
+        8  'STATE-VECTOR'        40    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =        98
+
+
+ OPTIONS
+ -------
+ IPRINT     1   (0=NO PRINT/1=SHORT/2=MORE)
+ NGROUP    50   (NUMBER OF ENERGY GROUPS)
+ NBMIX      2   (NUMBER OF MIXTURES IN THE MACROLIB)
+ NANISO    16   (MAXIMUM SCATTERING ANISOTROPY)
+ NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
+ NEDMAC     0   (NUMBER OF CROSS SECTION EDITS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
+ NLG        0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ ILEAK      0   (1=DIFF AVAILABLE; 2=DIFFX AVAILABLE)
+ NSTEP      0   (NUMBER OF PERTURBATION DIRECTORIES)
+ IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
+ NPART0     0   (NUMBER OF COMPANION PARTICLES)
+->@END MODULE   : MAC:        
+-->>MODULE MAC:        : TIME SPENT=        0.004 MEMORY USAGE= 2.040E+02
+>|qsour=  1.591549e+09                                                    |>0042
+->@BEGIN MODULE : MAC:        
+->@DESCRIPTION  : Macroscopic xs processor                                                
+->@CREDITS      : G. Marleau                                                              
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ CROSS SECTION TYPE     NTOT0      NUSIGF     FIXE       CHI        SCAT (NL=  1, 16)        TRANC      DIFF       H-FACTOR   NFTOT      FLUX-INTG  FLUX-INTG-P1
+ MATERIAL     1                               READ                                                                                                        
+ MATERIAL     2                                                                                                                                           
+
+ OPTIONS
+ -------
+ IPRINT     1   (0=NO PRINT/1=SHORT/2=MORE)
+ NGROUP    50   (NUMBER OF ENERGY GROUPS)
+ NBMIX      2   (NUMBER OF MIXTURES IN THE MACROLIB)
+ NANISO    16   (MAXIMUM SCATTERING ANISOTROPY)
+ NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
+ NEDMAC     0   (NUMBER OF CROSS SECTION EDITS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
+ NLG        0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ ILEAK      0   (1=DIFF AVAILABLE; 2=DIFFX AVAILABLE)
+ NSTEP      0   (NUMBER OF PERTURBATION DIRECTORIES)
+ IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
+ NPART0     0   (NUMBER OF COMPANION PARTICLES)
+->@END MODULE   : MAC:        
+-->>MODULE MAC:        : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : ASM:        
+->@DESCRIPTION  : To built system matrices (CP and IC)                                    
+->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ COMPUTATION OF DRAGON RESPONSE MATRICES BY DOOR =   SN          
+
+
+                               EDITION REGION/VOLUME/MIXTURE 
+
+     REGION     VOLUME       MIXTURE     REGION     VOLUME       MIXTURE     REGION     VOLUME       MIXTURE
+
+        1     3.33333E-03       1            2     3.33333E-03       1            3     3.33333E-03       1
+        4     3.33333E-03       1            5     3.33333E-03       1            6     3.33333E-03       1
+        7     3.33333E-03       1            8     3.33333E-03       1            9     3.33333E-03       1
+       10     3.33333E-03       1           11     3.33333E-03       1           12     3.33333E-03       1
+       13     3.33333E-03       1           14     3.33333E-03       1           15     3.33333E-03       1
+       16     3.33333E-03       1           17     3.33333E-03       1           18     3.33333E-03       1
+       19     3.33333E-03       1           20     3.33334E-03       1           21     3.33333E-03       1
+       22     3.33334E-03       1           23     3.33333E-03       1           24     3.33333E-03       1
+       25     3.33334E-03       1           26     3.33333E-03       1           27     3.33334E-03       1
+       28     3.33333E-03       1           29     3.33334E-03       1           30     3.33333E-03       1
+       31     4.50000E-03       2           32     4.50000E-03       2           33     4.49999E-03       2
+       34     4.50000E-03       2           35     4.50000E-03       2           36     4.50000E-03       2
+       37     4.50000E-03       2           38     4.50000E-03       2           39     4.49999E-03       2
+       40     4.50000E-03       2           41     4.50000E-03       2           42     4.50000E-03       2
+       43     4.50000E-03       2           44     4.50000E-03       2           45     4.50000E-03       2
+       46     4.50000E-03       2           47     4.50000E-03       2           48     4.49999E-03       2
+       49     4.50000E-03       2           50     4.50000E-03       2           51     4.50000E-03       2
+       52     4.50000E-03       2           53     4.50000E-03       2           54     4.50000E-03       2
+       55     4.50000E-03       2           56     4.50000E-03       2           57     4.49999E-03       2
+       58     4.50000E-03       2           59     4.50000E-03       2           60     4.50000E-03       2
+       61     4.50000E-03       2           62     4.50000E-03       2           63     4.50000E-03       2
+       64     4.49999E-03       2           65     4.50000E-03       2           66     4.50000E-03       2
+       67     4.50000E-03       2           68     4.50000E-03       2           69     4.50000E-03       2
+       70     4.50000E-03       2           71     4.50000E-03       2           72     4.50000E-03       2
+       73     4.50000E-03       2           74     4.50000E-03       2           75     4.50000E-03       2
+       76     4.50000E-03       2           77     4.50000E-03       2           78     4.50000E-03       2
+       79     4.49997E-03       2           80     4.50000E-03       2           81     4.50000E-03       2
+       82     4.50000E-03       2           83     4.50000E-03       2           84     4.50000E-03       2
+       85     4.50000E-03       2           86     4.50000E-03       2           87     4.50000E-03       2
+       88     4.50000E-03       2           89     4.50000E-03       2           90     4.50000E-03       2
+       91     4.50000E-03       2           92     4.50000E-03       2           93     4.50000E-03       2
+       94     4.50000E-03       2           95     4.50000E-03       2           96     4.50000E-03       2
+       97     4.49997E-03       2           98     4.50000E-03       2           99     4.50000E-03       2
+      100     4.50000E-03       2          101     4.50000E-03       2          102     4.50000E-03       2
+      103     4.50000E-03       2          104     4.50000E-03       2          105     4.50000E-03       2
+      106     4.50000E-03       2          107     4.50000E-03       2          108     4.50000E-03       2
+      109     4.50000E-03       2          110     4.50000E-03       2          111     4.50000E-03       2
+      112     4.50000E-03       2          113     4.50000E-03       2          114     4.50000E-03       2
+      115     4.49997E-03       2          116     4.50000E-03       2          117     4.50000E-03       2
+      118     4.50000E-03       2          119     4.50003E-03       2          120     4.49997E-03       2
+      121     4.50003E-03       2          122     4.49997E-03       2          123     4.50003E-03       2
+      124     4.49997E-03       2          125     4.49997E-03       2          126     4.50003E-03       2
+      127     4.49997E-03       2          128     4.50003E-03       2          129     4.49997E-03       2
+      130     4.50003E-03       2          131     4.49997E-03       2          132     4.50003E-03       2
+      133     4.49997E-03       2          134     4.50003E-03       2          135     4.49997E-03       2
+      136     4.50003E-03       2          137     4.49997E-03       2          138     4.50003E-03       2
+      139     4.49997E-03       2          140     4.50003E-03       2          141     4.49997E-03       2
+      142     4.49997E-03       2          143     4.50003E-03       2          144     4.49997E-03       2
+      145     4.50003E-03       2          146     4.49997E-03       2          147     4.50003E-03       2
+      148     4.49997E-03       2          149     4.50003E-03       2          150     4.49997E-03       2
+      151     4.50003E-03       2          152     4.49997E-03       2          153     4.50003E-03       2
+      154     4.49997E-03       2          155     4.50003E-03       2          156     4.49997E-03       2
+      157     4.50003E-03       2          158     4.49997E-03       2          159     4.49997E-03       2
+      160     4.50003E-03       2          161     4.49997E-03       2          162     4.50003E-03       2
+      163     4.49997E-03       2          164     4.50003E-03       2          165     4.49997E-03       2
+      166     4.50003E-03       2          167     4.49997E-03       2          168     4.50003E-03       2
+      169     4.49997E-03       2          170     4.50003E-03       2          171     4.49997E-03       2
+      172     4.50003E-03       2          173     4.49997E-03       2          174     4.50003E-03       2
+      175     4.49997E-03       2          176     4.50003E-03       2          177     4.49997E-03       2
+      178     4.49997E-03       2          179     4.50003E-03       2          180     4.49997E-03       2
+      181     4.50003E-03       2          182     4.49997E-03       2          183     4.50003E-03       2
+      184     4.49997E-03       2          185     4.50003E-03       2          186     4.49997E-03       2
+      187     4.50003E-03       2          188     4.49997E-03       2          189     4.50003E-03       2
+      190     4.49997E-03       2          191     4.50003E-03       2          192     4.49997E-03       2
+      193     4.50003E-03       2          194     4.49997E-03       2          195     4.49997E-03       2
+      196     4.50003E-03       2          197     4.49997E-03       2          198     4.50003E-03       2
+      199     4.49997E-03       2          200     4.50003E-03       2          201     4.49997E-03       2
+      202     4.50003E-03       2          203     4.49997E-03       2          204     4.50003E-03       2
+      205     4.49997E-03       2          206     4.50003E-03       2          207     4.49997E-03       2
+      208     4.50003E-03       2          209     4.49997E-03       2          210     4.50003E-03       2
+      211     4.49997E-03       2          212     4.50003E-03       2          213     4.49997E-03       2
+      214     4.49997E-03       2          215     4.50003E-03       2          216     4.49997E-03       2
+      217     4.50003E-03       2          218     4.49997E-03       2          219     4.50003E-03       2
+      220     4.49997E-03       2          221     4.50003E-03       2          222     4.49997E-03       2
+      223     4.50003E-03       2          224     4.49997E-03       2          225     4.50003E-03       2
+      226     4.49997E-03       2          227     4.50003E-03       2          228     4.49997E-03       2
+      229     4.50003E-03       2          230     4.49997E-03       2
+
+ OPTIONS
+ -------
+ IMPX         2   (0=NO PRINT/1=SHORT/2=MORE)
+ ITPIJ        1   (1=WIJ/2=PIJ/3=WIJK/4=PIJK)
+ LNORM        1   (0=NORMALIZE PIJ TO 1/1=DO NOT)
+ LALBS        1   (0=RECOVER AND SAVE WIS/1=DO NOT)
+ IPHASE       1   (1=GENERAL FLUX SOLUTION/2=PIJ APPROACH)
+ ISTRM        1   (1=HOMO BN OR NO LEAKAGE/2=ECCO/3=TIBERE)
+ KNORM        4   (0=NO/1=GELBARD/2=DIAGONAL/3=NON-LINEAR/4=HELIOS)
+ NGRP        50   (NUMBER OF GROUPS)
+ NUN      14720   (NUMBER OF UNKNOWNS)
+ NBMIX        2   (NUMBER OF MIXTURES)
+ NANI        16   (NUMBER OF LEGENDRE ORDERS SCATTERING XS)
+ IDIFF        0   (0/1: DIFFUSION COEFFICIENTS ABSENT/PRESENT)
+ IBFP         2   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
+ DOOR             (SN          )
+->@END MODULE   : ASM:        
+-->>MODULE ASM:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : FLU:        
+->@DESCRIPTION  : Solve the flux equations                                                
+->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+
+
+ P. I. M.    SOLUTION TO TRANSPORT EQUATION
+
+ CALCULATION TYPE            =    SOURCE
+ FORWARD/BACKWARD OPTION     =    DIRECT
+ (AN)ISOTROPY OPTION         =ANISOTROPI
+ FLUX SOLUTION DOOR          =    SN    
+ NB. OF GROUPS               =        50
+ NB. OF REGIONS              =       230
+ NB. OF UNKNOWNS PER GROUP   =     14720
+ MAX. OUTER ITERATIONS       =       100
+ MAX. THERMAL ITERATIONS     =       100
+ ACCELERATION SCHEME         =( 3 FREE, 3 ACCELERATED)
+ REBALANCING OPTION          = ON 
+ SELF-SCATTERING REDUCTION   = ON 
+ FUNDAMENTAL MODE            = OFF
+ EIGENVALUE TOLERANCE        =  1.000E-05
+ UNKNOWN OUTER TOLERANCE     =  5.000E-05
+ UNKNOWN INNER TOLERANCE     =  5.000E-05
+
+ OUT(  0) EIG: PRC= 1.00E+00 TAR= 1.00E-05 KEFF= 1.000000E+00 BUCK= 0.00000E+00
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+ SNF: MAXIMUM NUMBER OF ONE-SPEED ITERATION REACHED.
+          IN(  1) FLX: PRC= 1.00E+00 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 5.18E-03 TAR= 5.00E-05 IGDEB=           15 ACCE=     1.00000
+                  FIRST UNCONVERGED GROUP PRC= 0.11E-03
+          IN(  3) FLX: PRC= 1.96E-05 TAR= 5.00E-05 IGDEB=           51 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=       68. INTERNAL CONVERGENCE       REACHED AFTER     3 ITERATIONS.
+ OUT(  1) EIG: PRC= 0.00E+00 TAR= 1.00E-05 KEFF= 1.000000E+00 BUCK= 0.00000E+00
+ OUT(  1) FLX: PRC= 1.00E+00 TAR= 5.00E-05 FNOR= 1.000000E+00 ACCE=     1.00000
+          IN(  1) FLX: PRC= 9.22E-06 TAR= 5.00E-05 IGDEB=           51 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        1. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+ OUT(  2) EIG: PRC= 0.00E+00 TAR= 1.00E-05 KEFF= 1.000000E+00 BUCK= 0.00000E+00
+ OUT(  2) FLX: PRC= 9.22E-06 TAR= 5.00E-05 FNOR= 1.000000E+00 ACCE=     1.00000
+ FLU2DR: CPU TIME=       69. EXTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+
+ ++ TRACKING CALLED=   4 TIMES PRECISION= 0.00E+00
+ ++ TOTAL NUMBER OF FLUX CALCULATIONS=       186
+->@END MODULE   : FLU:        
+-->>MODULE FLU:        : TIME SPENT=       69.180 MEMORY USAGE= 3.200E+04
+->@BEGIN MODULE : OUT:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ EXEC: OUT:         BY A. HEBERT
+
+ OUTFLX: RECOVER THE DIRECT FLUX.
+
+ CONDENSATION INDEX:
+    50
+
+
+ LX= 230    LY=   1    LZ=   1    NMBLK=  230    NCODE(1)= 1   NCODE(2)= 1   NCODE(3)= 0   NCODE(4)= 0   NCODE(5)= 0   NCODE(6)= 0
+
+
+
+  XXX
+   0.0000E+00  3.3333E-03  6.6667E-03  1.0000E-02  1.3333E-02  1.6667E-02  2.0000E-02  2.3333E-02  2.6667E-02  3.0000E-02
+   3.3333E-02  3.6667E-02  4.0000E-02  4.3333E-02  4.6667E-02  5.0000E-02  5.3333E-02  5.6667E-02  6.0000E-02  6.3333E-02
+   6.6667E-02  7.0000E-02  7.3333E-02  7.6667E-02  8.0000E-02  8.3333E-02  8.6667E-02  9.0000E-02  9.3333E-02  9.6667E-02
+   1.0000E-01  1.0450E-01  1.0900E-01  1.1350E-01  1.1800E-01  1.2250E-01  1.2700E-01  1.3150E-01  1.3600E-01  1.4050E-01
+   1.4500E-01  1.4950E-01  1.5400E-01  1.5850E-01  1.6300E-01  1.6750E-01  1.7200E-01  1.7650E-01  1.8100E-01  1.8550E-01
+   1.9000E-01  1.9450E-01  1.9900E-01  2.0350E-01  2.0800E-01  2.1250E-01  2.1700E-01  2.2150E-01  2.2600E-01  2.3050E-01
+   2.3500E-01  2.3950E-01  2.4400E-01  2.4850E-01  2.5300E-01  2.5750E-01  2.6200E-01  2.6650E-01  2.7100E-01  2.7550E-01
+   2.8000E-01  2.8450E-01  2.8900E-01  2.9350E-01  2.9800E-01  3.0250E-01  3.0700E-01  3.1150E-01  3.1600E-01  3.2050E-01
+   3.2500E-01  3.2950E-01  3.3400E-01  3.3850E-01  3.4300E-01  3.4750E-01  3.5200E-01  3.5650E-01  3.6100E-01  3.6550E-01
+   3.7000E-01  3.7450E-01  3.7900E-01  3.8350E-01  3.8800E-01  3.9250E-01  3.9700E-01  4.0150E-01  4.0600E-01  4.1050E-01
+   4.1500E-01  4.1950E-01  4.2400E-01  4.2850E-01  4.3300E-01  4.3750E-01  4.4200E-01  4.4650E-01  4.5100E-01  4.5550E-01
+   4.6000E-01  4.6450E-01  4.6900E-01  4.7350E-01  4.7800E-01  4.8250E-01  4.8700E-01  4.9150E-01  4.9600E-01  5.0050E-01
+   5.0500E-01  5.0950E-01  5.1400E-01  5.1850E-01  5.2300E-01  5.2750E-01  5.3200E-01  5.3650E-01  5.4100E-01  5.4550E-01
+   5.5000E-01  5.5450E-01  5.5900E-01  5.6350E-01  5.6800E-01  5.7250E-01  5.7700E-01  5.8150E-01  5.8600E-01  5.9050E-01
+   5.9500E-01  5.9950E-01  6.0400E-01  6.0850E-01  6.1300E-01  6.1750E-01  6.2200E-01  6.2650E-01  6.3100E-01  6.3550E-01
+   6.4000E-01  6.4450E-01  6.4900E-01  6.5350E-01  6.5800E-01  6.6250E-01  6.6700E-01  6.7150E-01  6.7600E-01  6.8050E-01
+   6.8500E-01  6.8950E-01  6.9400E-01  6.9850E-01  7.0300E-01  7.0750E-01  7.1200E-01  7.1650E-01  7.2100E-01  7.2550E-01
+   7.3000E-01  7.3450E-01  7.3900E-01  7.4350E-01  7.4800E-01  7.5250E-01  7.5700E-01  7.6150E-01  7.6600E-01  7.7050E-01
+   7.7500E-01  7.7950E-01  7.8400E-01  7.8850E-01  7.9300E-01  7.9750E-01  8.0200E-01  8.0650E-01  8.1100E-01  8.1550E-01
+   8.2000E-01  8.2450E-01  8.2900E-01  8.3350E-01  8.3800E-01  8.4250E-01  8.4700E-01  8.5150E-01  8.5600E-01  8.6050E-01
+   8.6500E-01  8.6950E-01  8.7400E-01  8.7850E-01  8.8300E-01  8.8750E-01  8.9200E-01  8.9650E-01  9.0100E-01  9.0550E-01
+   9.1000E-01  9.1450E-01  9.1900E-01  9.2350E-01  9.2800E-01  9.3250E-01  9.3700E-01  9.4150E-01  9.4600E-01  9.5050E-01
+   9.5500E-01  9.5950E-01  9.6400E-01  9.6850E-01  9.7300E-01  9.7750E-01  9.8200E-01  9.8650E-01  9.9100E-01  9.9550E-01
+   1.0000E+00
+
+
+  YYY
+   0.0000E+00  1.0000E+00
+
+
+  ZZZ
+   0.0000E+00  1.0000E+00
+
+
+ MAT
+      1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1
+      1     1     1     1     1     1     1     1     1     1     2     2     2     2     2     2     2     2     2     2
+      2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2
+      2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2
+      2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2
+      2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2
+      2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2
+      2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2
+      2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2
+      2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2
+      2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2     2
+      2     2     2     2     2     2     2     2     2     2
+
+ 1-D SLAB GEOMETRY.
++                          BASED ON GEOMETRY GEOM        .
+
+
+ NUMBER OF MESH INTERVALS ALONG THE X AXIS =  230     AVAILABLE STORAGE MAXX =    230
+                          ALONG THE Y AXIS =    1     AVAILABLE STORAGE MAXY =    230
+                          ALONG THE Z AXIS =    1     AVAILABLE STORAGE MAXZ =    230
+ NUMBER OF DISTINCT MIXTURES =      2
+
+
+ MERGING INDEX:
+     1    2    3    4    5    6    7    8    9   10   11   12   13   14
+    15   16   17   18   19   20   21   22   23   24   25   26   27   28
+    29   30   31   32   33   34   35   36   37   38   39   40   41   42
+    43   44   45   46   47   48   49   50   51   52   53   54   55   56
+    57   58   59   60   61   62   63   64   65   66   67   68   69   70
+    71   72   73   74   75   76   77   78   79   80   81   82   83   84
+    85   86   87   88   89   90   91   92   93   94   95   96   97   98
+    99  100  101  102  103  104  105  106  107  108  109  110  111  112
+   113  114  115  116  117  118  119  120  121  122  123  124  125  126
+   127  128  129  130  131  132  133  134  135  136  137  138  139  140
+   141  142  143  144  145  146  147  148  149  150  151  152  153  154
+   155  156  157  158  159  160  161  162  163  164  165  166  167  168
+   169  170  171  172  173  174  175  176  177  178  179  180  181  182
+   183  184  185  186  187  188  189  190  191  192  193  194  195  196
+   197  198  199  200  201  202  203  204  205  206  207  208  209  210
+   211  212  213  214  215  216  217  218  219  220  221  222  223  224
+   225  226  227  228  229  230
+
+ OUTDRV: ***TEST                                                                    ***
+
+ OUTAUX: REACTION RATE CALCULATION.
+
+ G R O U P   :   1
+ IHOM  VOLUME        FLUX-INTG     NTOT0         SIGW00        NUSIGF        NFTOT         H-FACTOR      OVERV         CHI         
+    1   3.33333E-03   3.87036E+05   7.60460E+09   7.62182E+09   0.00000E+00   0.00000E+00   6.92356E+06   0.00000E+00   0.00000E+00
+    2   3.33333E-03   5.01537E+05   1.12023E+10   1.12247E+10   0.00000E+00   0.00000E+00   9.08554E+06   0.00000E+00   0.00000E+00
+    3   3.33333E-03   5.83500E+05   1.36010E+10   1.36270E+10   0.00000E+00   0.00000E+00   1.06125E+07   0.00000E+00   0.00000E+00
+    4   3.33333E-03   6.50171E+05   1.55036E+10   1.55326E+10   0.00000E+00   0.00000E+00   1.18486E+07   0.00000E+00   0.00000E+00
+    5   3.33333E-03   7.06741E+05   1.70991E+10   1.71306E+10   0.00000E+00   0.00000E+00   1.28949E+07   0.00000E+00   0.00000E+00
+    6   3.33333E-03   7.55551E+05   1.84663E+10   1.85000E+10   0.00000E+00   0.00000E+00   1.37963E+07   0.00000E+00   0.00000E+00
+    7   3.33333E-03   7.97918E+05   1.96483E+10   1.96839E+10   0.00000E+00   0.00000E+00   1.45780E+07   0.00000E+00   0.00000E+00
+    8   3.33333E-03   8.34670E+05   2.06713E+10   2.07086E+10   0.00000E+00   0.00000E+00   1.52556E+07   0.00000E+00   0.00000E+00
+    9   3.33333E-03   8.66367E+05   2.15532E+10   2.15919E+10   0.00000E+00   0.00000E+00   1.58398E+07   0.00000E+00   0.00000E+00
+   10   3.33333E-03   8.93406E+05   2.23063E+10   2.23462E+10   0.00000E+00   0.00000E+00   1.63380E+07   0.00000E+00   0.00000E+00
+   11   3.33333E-03   9.16080E+05   2.29399E+10   2.29808E+10   0.00000E+00   0.00000E+00   1.67559E+07   0.00000E+00   0.00000E+00
+   12   3.33333E-03   9.34610E+05   2.34610E+10   2.35027E+10   0.00000E+00   0.00000E+00   1.70974E+07   0.00000E+00   0.00000E+00
+   13   3.33333E-03   9.49173E+05   2.38751E+10   2.39175E+10   0.00000E+00   0.00000E+00   1.73661E+07   0.00000E+00   0.00000E+00
+   14   3.33333E-03   9.59909E+05   2.41868E+10   2.42297E+10   0.00000E+00   0.00000E+00   1.75644E+07   0.00000E+00   0.00000E+00
+   15   3.33333E-03   9.66937E+05   2.43999E+10   2.44431E+10   0.00000E+00   0.00000E+00   1.76948E+07   0.00000E+00   0.00000E+00
+   16   3.33333E-03   9.70361E+05   2.45179E+10   2.45612E+10   0.00000E+00   0.00000E+00   1.77591E+07   0.00000E+00   0.00000E+00
+   17   3.33333E-03   9.70273E+05   2.45435E+10   2.45868E+10   0.00000E+00   0.00000E+00   1.77590E+07   0.00000E+00   0.00000E+00
+   18   3.33333E-03   9.66756E+05   2.44798E+10   2.45230E+10   0.00000E+00   0.00000E+00   1.76962E+07   0.00000E+00   0.00000E+00
+   19   3.33333E-03   9.59886E+05   2.43293E+10   2.43721E+10   0.00000E+00   0.00000E+00   1.75719E+07   0.00000E+00   0.00000E+00
+   20   3.33334E-03   9.49734E+05   2.40945E+10   2.41369E+10   0.00000E+00   0.00000E+00   1.73875E+07   0.00000E+00   0.00000E+00
+   21   3.33333E-03   9.36348E+05   2.37775E+10   2.38193E+10   0.00000E+00   0.00000E+00   1.71440E+07   0.00000E+00   0.00000E+00
+   22   3.33334E-03   9.19782E+05   2.33805E+10   2.34216E+10   0.00000E+00   0.00000E+00   1.68423E+07   0.00000E+00   0.00000E+00
+   23   3.33333E-03   9.00049E+05   2.29052E+10   2.29454E+10   0.00000E+00   0.00000E+00   1.64826E+07   0.00000E+00   0.00000E+00
+   24   3.33333E-03   8.77145E+05   2.23524E+10   2.23916E+10   0.00000E+00   0.00000E+00   1.60649E+07   0.00000E+00   0.00000E+00
+   25   3.33334E-03   8.51013E+05   2.17227E+10   2.17608E+10   0.00000E+00   0.00000E+00   1.55882E+07   0.00000E+00   0.00000E+00
+   26   3.33333E-03   8.21515E+05   2.10150E+10   2.10517E+10   0.00000E+00   0.00000E+00   1.50500E+07   0.00000E+00   0.00000E+00
+   27   3.33334E-03   7.88398E+05   2.02261E+10   2.02613E+10   0.00000E+00   0.00000E+00   1.44456E+07   0.00000E+00   0.00000E+00
+   28   3.33333E-03   7.51147E+05   1.93487E+10   1.93823E+10   0.00000E+00   0.00000E+00   1.37658E+07   0.00000E+00   0.00000E+00
+   29   3.33334E-03   7.08684E+05   1.83664E+10   1.83980E+10   0.00000E+00   0.00000E+00   1.29910E+07   0.00000E+00   0.00000E+00
+   30   3.33333E-03   6.57908E+05   1.72317E+10   1.72611E+10   0.00000E+00   0.00000E+00   1.20654E+07   0.00000E+00   0.00000E+00
+   31   4.50000E-03   7.88003E+05   2.11698E+10   2.12051E+10   0.00000E+00   0.00000E+00   1.44686E+07   0.00000E+00   0.00000E+00
+   32   4.50000E-03   6.98784E+05   1.91265E+10   1.91579E+10   0.00000E+00   0.00000E+00   1.28407E+07   0.00000E+00   0.00000E+00
+   33   4.49999E-03   6.23049E+05   1.73103E+10   1.73382E+10   0.00000E+00   0.00000E+00   1.14571E+07   0.00000E+00   0.00000E+00
+   34   4.50000E-03   5.55239E+05   1.56348E+10   1.56597E+10   0.00000E+00   0.00000E+00   1.02174E+07   0.00000E+00   0.00000E+00
+   35   4.50000E-03   4.93429E+05   1.40715E+10   1.40937E+10   0.00000E+00   0.00000E+00   9.08657E+06   0.00000E+00   0.00000E+00
+   36   4.50000E-03   4.36736E+05   1.26087E+10   1.26283E+10   0.00000E+00   0.00000E+00   8.04872E+06   0.00000E+00   0.00000E+00
+   37   4.50000E-03   3.84683E+05   1.12414E+10   1.12586E+10   0.00000E+00   0.00000E+00   7.09518E+06   0.00000E+00   0.00000E+00
+   38   4.50000E-03   3.36981E+05   9.96730E+09   9.98245E+09   0.00000E+00   0.00000E+00   6.22078E+06   0.00000E+00   0.00000E+00
+   39   4.49999E-03   2.93434E+05   8.78560E+09   8.79879E+09   0.00000E+00   0.00000E+00   5.42196E+06   0.00000E+00   0.00000E+00
+   40   4.50000E-03   2.53884E+05   7.69578E+09   7.70721E+09   0.00000E+00   0.00000E+00   4.69592E+06   0.00000E+00   0.00000E+00
+   41   4.50000E-03   2.18177E+05   6.69687E+09   6.70669E+09   0.00000E+00   0.00000E+00   4.03988E+06   0.00000E+00   0.00000E+00
+   42   4.50000E-03   1.86155E+05   5.78741E+09   5.79580E+09   0.00000E+00   0.00000E+00   3.45101E+06   0.00000E+00   0.00000E+00
+   43   4.50000E-03   1.57643E+05   4.96526E+09   4.97237E+09   0.00000E+00   0.00000E+00   2.92614E+06   0.00000E+00   0.00000E+00
+   44   4.50000E-03   1.32448E+05   4.22755E+09   4.23353E+09   0.00000E+00   0.00000E+00   2.46184E+06   0.00000E+00   0.00000E+00
+   45   4.50000E-03   1.10362E+05   3.57077E+09   3.57575E+09   0.00000E+00   0.00000E+00   2.05435E+06   0.00000E+00   0.00000E+00
+   46   4.50000E-03   9.11658E+04   2.99085E+09   2.99496E+09   0.00000E+00   0.00000E+00   1.69969E+06   0.00000E+00   0.00000E+00
+   47   4.50000E-03   7.46279E+04   2.48311E+09   2.48649E+09   0.00000E+00   0.00000E+00   1.39371E+06   0.00000E+00   0.00000E+00
+   48   4.49999E-03   6.05129E+04   2.04259E+09   2.04533E+09   0.00000E+00   0.00000E+00   1.13214E+06   0.00000E+00   0.00000E+00
+   49   4.50000E-03   4.85844E+04   1.66404E+09   1.66624E+09   0.00000E+00   0.00000E+00   9.10702E+05   0.00000E+00   0.00000E+00
+   50   4.50000E-03   3.86069E+04   1.34194E+09   1.34369E+09   0.00000E+00   0.00000E+00   7.25135E+05   0.00000E+00   0.00000E+00
+   51   4.50000E-03   3.03518E+04   1.07077E+09   1.07214E+09   0.00000E+00   0.00000E+00   5.71291E+05   0.00000E+00   0.00000E+00
+   52   4.50000E-03   2.35998E+04   8.45002E+08   8.46072E+08   0.00000E+00   0.00000E+00   4.45181E+05   0.00000E+00   0.00000E+00
+   53   4.50000E-03   1.81436E+04   6.59247E+08   6.60071E+08   0.00000E+00   0.00000E+00   3.43030E+05   0.00000E+00   0.00000E+00
+   54   4.50000E-03   1.37898E+04   5.08330E+08   5.08956E+08   0.00000E+00   0.00000E+00   2.61316E+05   0.00000E+00   0.00000E+00
+   55   4.50000E-03   1.03608E+04   3.87322E+08   3.87793E+08   0.00000E+00   0.00000E+00   1.96789E+05   0.00000E+00   0.00000E+00
+   56   4.50000E-03   7.69584E+03   2.91615E+08   2.91965E+08   0.00000E+00   0.00000E+00   1.46507E+05   0.00000E+00   0.00000E+00
+   57   4.49999E-03   5.65225E+03   2.16971E+08   2.17228E+08   0.00000E+00   0.00000E+00   1.07845E+05   0.00000E+00   0.00000E+00
+   58   4.50000E-03   4.10589E+03   1.59564E+08   1.59751E+08   0.00000E+00   0.00000E+00   7.85115E+04   0.00000E+00   0.00000E+00
+   59   4.50000E-03   2.95092E+03   1.16024E+08   1.16158E+08   0.00000E+00   0.00000E+00   5.65459E+04   0.00000E+00   0.00000E+00
+   60   4.50000E-03   2.09917E+03   8.34453E+07   8.35409E+07   0.00000E+00   0.00000E+00   4.03060E+04   0.00000E+00   0.00000E+00
+   61   4.50000E-03   1.47863E+03   5.93866E+07   5.94539E+07   0.00000E+00   0.00000E+00   2.84461E+04   0.00000E+00   0.00000E+00
+   62   4.50000E-03   1.03180E+03   4.18417E+07   4.18888E+07   0.00000E+00   0.00000E+00   1.98864E+04   0.00000E+00   0.00000E+00
+   63   4.50000E-03   7.13591E+02   2.92000E+07   2.92325E+07   0.00000E+00   0.00000E+00   1.37774E+04   0.00000E+00   0.00000E+00
+   64   4.49999E-03   4.89353E+02   2.01936E+07   2.02160E+07   0.00000E+00   0.00000E+00   9.46363E+03   0.00000E+00   0.00000E+00
+   65   4.50000E-03   3.32895E+02   1.38458E+07   1.38609E+07   0.00000E+00   0.00000E+00   6.44792E+03   0.00000E+00   0.00000E+00
+   66   4.50000E-03   2.24741E+02   9.41638E+06   9.42663E+06   0.00000E+00   0.00000E+00   4.35948E+03   0.00000E+00   0.00000E+00
+   67   4.50000E-03   1.50634E+02   6.35483E+06   6.36171E+06   0.00000E+00   0.00000E+00   2.92602E+03   0.00000E+00   0.00000E+00
+   68   4.50000E-03   1.00275E+02   4.25751E+06   4.26209E+06   0.00000E+00   0.00000E+00   1.95035E+03   0.00000E+00   0.00000E+00
+   69   4.50000E-03   6.63180E+01   2.83266E+06   2.83569E+06   0.00000E+00   0.00000E+00   1.29147E+03   0.00000E+00   0.00000E+00
+   70   4.50000E-03   4.35888E+01   1.87221E+06   1.87421E+06   0.00000E+00   0.00000E+00   8.49819E+02   0.00000E+00   0.00000E+00
+   71   4.50000E-03   2.84799E+01   1.22959E+06   1.23089E+06   0.00000E+00   0.00000E+00   5.55847E+02   0.00000E+00   0.00000E+00
+   72   4.50000E-03   1.85022E+01   8.02592E+05   8.03438E+05   0.00000E+00   0.00000E+00   3.61465E+02   0.00000E+00   0.00000E+00
+   73   4.50000E-03   1.19540E+01   5.20739E+05   5.21286E+05   0.00000E+00   0.00000E+00   2.33743E+02   0.00000E+00   0.00000E+00
+   74   4.50000E-03   7.68193E+00   3.35856E+05   3.36207E+05   0.00000E+00   0.00000E+00   1.50322E+02   0.00000E+00   0.00000E+00
+   75   4.50000E-03   4.91060E+00   2.15302E+05   2.15527E+05   0.00000E+00   0.00000E+00   9.61480E+01   0.00000E+00   0.00000E+00
+   76   4.50000E-03   3.12262E+00   1.37145E+05   1.37288E+05   0.00000E+00   0.00000E+00   6.11605E+01   0.00000E+00   0.00000E+00
+   77   4.50000E-03   1.97515E+00   8.67550E+04   8.68458E+04   0.00000E+00   0.00000E+00   3.86848E+01   0.00000E+00   0.00000E+00
+   78   4.50000E-03   1.24251E+00   5.44434E+04   5.45006E+04   0.00000E+00   0.00000E+00   2.43213E+01   0.00000E+00   0.00000E+00
+   79   4.49997E-03   7.77068E-01   3.38333E+04   3.38692E+04   0.00000E+00   0.00000E+00   1.51883E+01   0.00000E+00   0.00000E+00
+   80   4.50000E-03   4.82843E-01   2.07576E+04   2.07801E+04   0.00000E+00   0.00000E+00   9.41061E+00   0.00000E+00   0.00000E+00
+   81   4.50000E-03   2.97751E-01   1.25061E+04   1.25201E+04   0.00000E+00   0.00000E+00   5.77351E+00   0.00000E+00   0.00000E+00
+   82   4.50000E-03   1.81887E-01   7.32851E+03   7.33722E+03   0.00000E+00   0.00000E+00   3.49560E+00   0.00000E+00   0.00000E+00
+   83   4.50000E-03   1.09717E-01   4.09925E+03   4.10464E+03   0.00000E+00   0.00000E+00   2.07636E+00   0.00000E+00   0.00000E+00
+   84   4.50000E-03   6.49945E-02   2.09885E+03   2.10218E+03   0.00000E+00   0.00000E+00   1.19698E+00   0.00000E+00   0.00000E+00
+   85   4.50000E-03   3.74302E-02   8.69616E+02   8.71675E+02   0.00000E+00   0.00000E+00   6.55361E-01   0.00000E+00   0.00000E+00
+   86   4.50000E-03   2.05416E-02   1.21880E+02   1.23155E+02   0.00000E+00   0.00000E+00   3.24064E-01   0.00000E+00   0.00000E+00
+   87   4.50000E-03   1.02642E-02  -3.26681E+02  -3.25887E+02   0.00000E+00   0.00000E+00   1.23105E-01   0.00000E+00   0.00000E+00
+   88   4.50000E-03   4.06145E-03  -5.90419E+02  -5.89919E+02   0.00000E+00   0.00000E+00   2.51807E-03   0.00000E+00   0.00000E+00
+   89   4.50000E-03   3.57623E-04  -7.40647E+02  -7.40326E+02   0.00000E+00   0.00000E+00  -6.87625E-02   0.00000E+00   0.00000E+00
+   90   4.50000E-03  -1.82160E-03  -8.21659E+02  -8.21447E+02   0.00000E+00   0.00000E+00  -1.09966E-01   0.00000E+00   0.00000E+00
+   91   4.50000E-03  -3.07489E-03  -8.60731E+02  -8.60586E+02   0.00000E+00   0.00000E+00  -1.32912E-01   0.00000E+00   0.00000E+00
+   92   4.50000E-03  -3.76947E-03  -8.74661E+02  -8.74555E+02   0.00000E+00   0.00000E+00  -1.44857E-01   0.00000E+00   0.00000E+00
+   93   4.50000E-03  -4.13001E-03  -8.73894E+02  -8.73813E+02   0.00000E+00   0.00000E+00  -1.50260E-01   0.00000E+00   0.00000E+00
+   94   4.50000E-03  -4.29144E-03  -8.64549E+02  -8.64482E+02   0.00000E+00   0.00000E+00  -1.51781E-01   0.00000E+00   0.00000E+00
+   95   4.50000E-03  -4.33586E-03  -8.50392E+02  -8.50334E+02   0.00000E+00   0.00000E+00  -1.51043E-01   0.00000E+00   0.00000E+00
+   96   4.50000E-03  -4.31250E-03  -8.33699E+02  -8.33647E+02   0.00000E+00   0.00000E+00  -1.49022E-01   0.00000E+00   0.00000E+00
+   97   4.49997E-03  -4.25044E-03  -8.15759E+02  -8.15711E+02   0.00000E+00   0.00000E+00  -1.46288E-01   0.00000E+00   0.00000E+00
+   98   4.50000E-03  -4.16814E-03  -7.97486E+02  -7.97441E+02   0.00000E+00   0.00000E+00  -1.43213E-01   0.00000E+00   0.00000E+00
+   99   4.50000E-03  -4.07478E-03  -7.79188E+02  -7.79143E+02   0.00000E+00   0.00000E+00  -1.39967E-01   0.00000E+00   0.00000E+00
+  100   4.50000E-03  -3.97677E-03  -7.61160E+02  -7.61117E+02   0.00000E+00   0.00000E+00  -1.36678E-01   0.00000E+00   0.00000E+00
+  101   4.50000E-03  -3.87760E-03  -7.43527E+02  -7.43485E+02   0.00000E+00   0.00000E+00  -1.33411E-01   0.00000E+00   0.00000E+00
+  102   4.50000E-03  -3.77935E-03  -7.26385E+02  -7.26344E+02   0.00000E+00   0.00000E+00  -1.30206E-01   0.00000E+00   0.00000E+00
+  103   4.50000E-03  -3.68327E-03  -7.09766E+02  -7.09726E+02   0.00000E+00   0.00000E+00  -1.27088E-01   0.00000E+00   0.00000E+00
+  104   4.50000E-03  -3.58926E-03  -6.93562E+02  -6.93522E+02   0.00000E+00   0.00000E+00  -1.24042E-01   0.00000E+00   0.00000E+00
+  105   4.50000E-03  -3.49792E-03  -6.77840E+02  -6.77801E+02   0.00000E+00   0.00000E+00  -1.21085E-01   0.00000E+00   0.00000E+00
+  106   4.50000E-03  -3.40937E-03  -6.62596E+02  -6.62557E+02   0.00000E+00   0.00000E+00  -1.18218E-01   0.00000E+00   0.00000E+00
+  107   4.50000E-03  -3.32364E-03  -6.47804E+02  -6.47766E+02   0.00000E+00   0.00000E+00  -1.15440E-01   0.00000E+00   0.00000E+00
+  108   4.50000E-03  -3.24055E-03  -6.33404E+02  -6.33367E+02   0.00000E+00   0.00000E+00  -1.12740E-01   0.00000E+00   0.00000E+00
+  109   4.50000E-03  -3.16007E-03  -6.19417E+02  -6.19380E+02   0.00000E+00   0.00000E+00  -1.10122E-01   0.00000E+00   0.00000E+00
+  110   4.50000E-03  -3.08210E-03  -6.05840E+02  -6.05803E+02   0.00000E+00   0.00000E+00  -1.07583E-01   0.00000E+00   0.00000E+00
+  111   4.50000E-03  -3.00639E-03  -5.92618E+02  -5.92582E+02   0.00000E+00   0.00000E+00  -1.05113E-01   0.00000E+00   0.00000E+00
+  112   4.50000E-03  -2.93331E-03  -5.79798E+02  -5.79762E+02   0.00000E+00   0.00000E+00  -1.02724E-01   0.00000E+00   0.00000E+00
+  113   4.50000E-03  -2.86260E-03  -5.67363E+02  -5.67327E+02   0.00000E+00   0.00000E+00  -1.00409E-01   0.00000E+00   0.00000E+00
+  114   4.50000E-03  -2.79409E-03  -5.55294E+02  -5.55259E+02   0.00000E+00   0.00000E+00  -9.81647E-02   0.00000E+00   0.00000E+00
+  115   4.49997E-03  -2.72717E-03  -5.43484E+02  -5.43449E+02   0.00000E+00   0.00000E+00  -9.59693E-02   0.00000E+00   0.00000E+00
+  116   4.50000E-03  -2.66260E-03  -5.32040E+02  -5.32005E+02   0.00000E+00   0.00000E+00  -9.38464E-02   0.00000E+00   0.00000E+00
+  117   4.50000E-03  -2.60025E-03  -5.20951E+02  -5.20916E+02   0.00000E+00   0.00000E+00  -9.17927E-02   0.00000E+00   0.00000E+00
+  118   4.50000E-03  -2.53923E-03  -5.10099E+02  -5.10064E+02   0.00000E+00   0.00000E+00  -8.97823E-02   0.00000E+00   0.00000E+00
+  119   4.50003E-03  -2.48027E-03  -4.99596E+02  -4.99562E+02   0.00000E+00   0.00000E+00  -8.78382E-02   0.00000E+00   0.00000E+00
+  120   4.49997E-03  -2.42348E-03  -4.89444E+02  -4.89410E+02   0.00000E+00   0.00000E+00  -8.59620E-02   0.00000E+00   0.00000E+00
+  121   4.50003E-03  -2.36787E-03  -4.79490E+02  -4.79457E+02   0.00000E+00   0.00000E+00  -8.41232E-02   0.00000E+00   0.00000E+00
+  122   4.49997E-03  -2.31384E-03  -4.69805E+02  -4.69771E+02   0.00000E+00   0.00000E+00  -8.23350E-02   0.00000E+00   0.00000E+00
+  123   4.50003E-03  -2.26151E-03  -4.60395E+02  -4.60362E+02   0.00000E+00   0.00000E+00  -8.06001E-02   0.00000E+00   0.00000E+00
+  124   4.49997E-03  -2.21050E-03  -4.51202E+02  -4.51169E+02   0.00000E+00   0.00000E+00  -7.89066E-02   0.00000E+00   0.00000E+00
+  125   4.49997E-03  -2.16117E-03  -4.42272E+02  -4.42239E+02   0.00000E+00   0.00000E+00  -7.72649E-02   0.00000E+00   0.00000E+00
+  126   4.50003E-03  -2.11338E-03  -4.33601E+02  -4.33569E+02   0.00000E+00   0.00000E+00  -7.56725E-02   0.00000E+00   0.00000E+00
+  127   4.49997E-03  -2.06658E-03  -4.25115E+02  -4.25083E+02   0.00000E+00   0.00000E+00  -7.41133E-02   0.00000E+00   0.00000E+00
+  128   4.50003E-03  -2.02103E-03  -4.16801E+02  -4.16769E+02   0.00000E+00   0.00000E+00  -7.25902E-02   0.00000E+00   0.00000E+00
+  129   4.49997E-03  -1.97684E-03  -4.08695E+02  -4.08663E+02   0.00000E+00   0.00000E+00  -7.11083E-02   0.00000E+00   0.00000E+00
+  130   4.50003E-03  -1.93379E-03  -4.00803E+02  -4.00771E+02   0.00000E+00   0.00000E+00  -6.96651E-02   0.00000E+00   0.00000E+00
+  131   4.49997E-03  -1.89211E-03  -3.93136E+02  -3.93105E+02   0.00000E+00   0.00000E+00  -6.82654E-02   0.00000E+00   0.00000E+00
+  132   4.50003E-03  -1.85121E-03  -3.85559E+02  -3.85528E+02   0.00000E+00   0.00000E+00  -6.68863E-02   0.00000E+00   0.00000E+00
+  133   4.49997E-03  -1.81162E-03  -3.78188E+02  -3.78157E+02   0.00000E+00   0.00000E+00  -6.55475E-02   0.00000E+00   0.00000E+00
+  134   4.50003E-03  -1.77284E-03  -3.70961E+02  -3.70930E+02   0.00000E+00   0.00000E+00  -6.42355E-02   0.00000E+00   0.00000E+00
+  135   4.49997E-03  -1.73501E-03  -3.63874E+02  -3.63843E+02   0.00000E+00   0.00000E+00  -6.29518E-02   0.00000E+00   0.00000E+00
+  136   4.50003E-03  -1.69828E-03  -3.56948E+02  -3.56917E+02   0.00000E+00   0.00000E+00  -6.17007E-02   0.00000E+00   0.00000E+00
+  137   4.49997E-03  -1.66223E-03  -3.50141E+02  -3.50111E+02   0.00000E+00   0.00000E+00  -6.04720E-02   0.00000E+00   0.00000E+00
+  138   4.50003E-03  -1.62719E-03  -3.43492E+02  -3.43462E+02   0.00000E+00   0.00000E+00  -5.92744E-02   0.00000E+00   0.00000E+00
+  139   4.49997E-03  -1.59311E-03  -3.36981E+02  -3.36951E+02   0.00000E+00   0.00000E+00  -5.81052E-02   0.00000E+00   0.00000E+00
+  140   4.50003E-03  -1.55975E-03  -3.30576E+02  -3.30547E+02   0.00000E+00   0.00000E+00  -5.69575E-02   0.00000E+00   0.00000E+00
+  141   4.49997E-03  -1.52713E-03  -3.24287E+02  -3.24258E+02   0.00000E+00   0.00000E+00  -5.58324E-02   0.00000E+00   0.00000E+00
+  142   4.49997E-03  -1.49502E-03  -3.18087E+02  -3.18059E+02   0.00000E+00   0.00000E+00  -5.47239E-02   0.00000E+00   0.00000E+00
+  143   4.50003E-03  -1.46401E-03  -3.12063E+02  -3.12035E+02   0.00000E+00   0.00000E+00  -5.36500E-02   0.00000E+00   0.00000E+00
+  144   4.49997E-03  -1.43380E-03  -3.06150E+02  -3.06122E+02   0.00000E+00   0.00000E+00  -5.25992E-02   0.00000E+00   0.00000E+00
+  145   4.50003E-03  -1.40363E-03  -3.00240E+02  -3.00212E+02   0.00000E+00   0.00000E+00  -5.15489E-02   0.00000E+00   0.00000E+00
+  146   4.49997E-03  -1.37454E-03  -2.94499E+02  -2.94472E+02   0.00000E+00   0.00000E+00  -5.05323E-02   0.00000E+00   0.00000E+00
+  147   4.50003E-03  -1.34617E-03  -2.88863E+02  -2.88835E+02   0.00000E+00   0.00000E+00  -4.95369E-02   0.00000E+00   0.00000E+00
+  148   4.49997E-03  -1.31810E-03  -2.83267E+02  -2.83240E+02   0.00000E+00   0.00000E+00  -4.85500E-02   0.00000E+00   0.00000E+00
+  149   4.50003E-03  -1.29072E-03  -2.77783E+02  -2.77756E+02   0.00000E+00   0.00000E+00  -4.75847E-02   0.00000E+00   0.00000E+00
+  150   4.49997E-03  -1.26413E-03  -2.72432E+02  -2.72405E+02   0.00000E+00   0.00000E+00  -4.66448E-02   0.00000E+00   0.00000E+00
+  151   4.50003E-03  -1.23785E-03  -2.67107E+02  -2.67081E+02   0.00000E+00   0.00000E+00  -4.57121E-02   0.00000E+00   0.00000E+00
+  152   4.49997E-03  -1.21204E-03  -2.61854E+02  -2.61828E+02   0.00000E+00   0.00000E+00  -4.47937E-02   0.00000E+00   0.00000E+00
+  153   4.50003E-03  -1.18688E-03  -2.56700E+02  -2.56675E+02   0.00000E+00   0.00000E+00  -4.38950E-02   0.00000E+00   0.00000E+00
+  154   4.49997E-03  -1.16208E-03  -2.51594E+02  -2.51569E+02   0.00000E+00   0.00000E+00  -4.30064E-02   0.00000E+00   0.00000E+00
+  155   4.50003E-03  -1.13764E-03  -2.46541E+02  -2.46516E+02   0.00000E+00   0.00000E+00  -4.21284E-02   0.00000E+00   0.00000E+00
+  156   4.49997E-03  -1.11373E-03  -2.41570E+02  -2.41545E+02   0.00000E+00   0.00000E+00  -4.12668E-02   0.00000E+00   0.00000E+00
+  157   4.50003E-03  -1.09034E-03  -2.36649E+02  -2.36626E+02   0.00000E+00   0.00000E+00  -4.04180E-02   0.00000E+00   0.00000E+00
+  158   4.49997E-03  -1.06724E-03  -2.31768E+02  -2.31745E+02   0.00000E+00   0.00000E+00  -3.95776E-02   0.00000E+00   0.00000E+00
+  159   4.49997E-03  -1.04447E-03  -2.26938E+02  -2.26915E+02   0.00000E+00   0.00000E+00  -3.87471E-02   0.00000E+00   0.00000E+00
+  160   4.50003E-03  -1.02218E-03  -2.22160E+02  -2.22137E+02   0.00000E+00   0.00000E+00  -3.79291E-02   0.00000E+00   0.00000E+00
+  161   4.49997E-03  -1.00020E-03  -2.17414E+02  -2.17392E+02   0.00000E+00   0.00000E+00  -3.71189E-02   0.00000E+00   0.00000E+00
+  162   4.50003E-03  -9.78451E-04  -2.12685E+02  -2.12663E+02   0.00000E+00   0.00000E+00  -3.63138E-02   0.00000E+00   0.00000E+00
+  163   4.49997E-03  -9.57053E-04  -2.07990E+02  -2.07968E+02   0.00000E+00   0.00000E+00  -3.55174E-02   0.00000E+00   0.00000E+00
+  164   4.50003E-03  -9.35865E-04  -2.03313E+02  -2.03293E+02   0.00000E+00   0.00000E+00  -3.47259E-02   0.00000E+00   0.00000E+00
+  165   4.49997E-03  -9.15040E-04  -1.98668E+02  -1.98648E+02   0.00000E+00   0.00000E+00  -3.39431E-02   0.00000E+00   0.00000E+00
+  166   4.50003E-03  -8.94478E-04  -1.94036E+02  -1.94016E+02   0.00000E+00   0.00000E+00  -3.31655E-02   0.00000E+00   0.00000E+00
+  167   4.49997E-03  -8.74131E-04  -1.89400E+02  -1.89381E+02   0.00000E+00   0.00000E+00  -3.23906E-02   0.00000E+00   0.00000E+00
+  168   4.50003E-03  -8.53916E-04  -1.84753E+02  -1.84734E+02   0.00000E+00   0.00000E+00  -3.16165E-02   0.00000E+00   0.00000E+00
+  169   4.49997E-03  -8.33885E-04  -1.80112E+02  -1.80094E+02   0.00000E+00   0.00000E+00  -3.08458E-02   0.00000E+00   0.00000E+00
+  170   4.50003E-03  -8.14022E-04  -1.75446E+02  -1.75429E+02   0.00000E+00   0.00000E+00  -3.00751E-02   0.00000E+00   0.00000E+00
+  171   4.49997E-03  -7.94362E-04  -1.70775E+02  -1.70758E+02   0.00000E+00   0.00000E+00  -2.93068E-02   0.00000E+00   0.00000E+00
+  172   4.50003E-03  -7.74725E-04  -1.66063E+02  -1.66047E+02   0.00000E+00   0.00000E+00  -2.85347E-02   0.00000E+00   0.00000E+00
+  173   4.49997E-03  -7.55284E-04  -1.61324E+02  -1.61308E+02   0.00000E+00   0.00000E+00  -2.77627E-02   0.00000E+00   0.00000E+00
+  174   4.50003E-03  -7.35837E-04  -1.56535E+02  -1.56521E+02   0.00000E+00   0.00000E+00  -2.69856E-02   0.00000E+00   0.00000E+00
+  175   4.49997E-03  -7.16496E-04  -1.51705E+02  -1.51691E+02   0.00000E+00   0.00000E+00  -2.62058E-02   0.00000E+00   0.00000E+00
+  176   4.50003E-03  -6.97051E-04  -1.46788E+02  -1.46775E+02   0.00000E+00   0.00000E+00  -2.54156E-02   0.00000E+00   0.00000E+00
+  177   4.49997E-03  -6.77607E-04  -1.41793E+02  -1.41781E+02   0.00000E+00   0.00000E+00  -2.46176E-02   0.00000E+00   0.00000E+00
+  178   4.49997E-03  -6.58279E-04  -1.36741E+02  -1.36731E+02   0.00000E+00   0.00000E+00  -2.38155E-02   0.00000E+00   0.00000E+00
+  179   4.50003E-03  -6.38695E-04  -1.31571E+02  -1.31561E+02   0.00000E+00   0.00000E+00  -2.29974E-02   0.00000E+00   0.00000E+00
+  180   4.49997E-03  -6.19121E-04  -1.26302E+02  -1.26293E+02   0.00000E+00   0.00000E+00  -2.21695E-02   0.00000E+00   0.00000E+00
+  181   4.50003E-03  -5.99455E-04  -1.20917E+02  -1.20910E+02   0.00000E+00   0.00000E+00  -2.13286E-02   0.00000E+00   0.00000E+00
+  182   4.49997E-03  -5.79471E-04  -1.15374E+02  -1.15368E+02   0.00000E+00   0.00000E+00  -2.04667E-02   0.00000E+00   0.00000E+00
+  183   4.50003E-03  -5.59329E-04  -1.09679E+02  -1.09674E+02   0.00000E+00   0.00000E+00  -1.95870E-02   0.00000E+00   0.00000E+00
+  184   4.49997E-03  -5.38929E-04  -1.03803E+02  -1.03800E+02   0.00000E+00   0.00000E+00  -1.86852E-02   0.00000E+00   0.00000E+00
+  185   4.50003E-03  -5.18213E-04  -9.77294E+01  -9.77274E+01   0.00000E+00   0.00000E+00  -1.77585E-02   0.00000E+00   0.00000E+00
+  186   4.49997E-03  -4.97219E-04  -9.14568E+01  -9.14565E+01   0.00000E+00   0.00000E+00  -1.68075E-02   0.00000E+00   0.00000E+00
+  187   4.50003E-03  -4.75595E-04  -8.49065E+01  -8.49080E+01   0.00000E+00   0.00000E+00  -1.58189E-02   0.00000E+00   0.00000E+00
+  188   4.49997E-03  -4.53508E-04  -7.80744E+01  -7.80778E+01   0.00000E+00   0.00000E+00  -1.47947E-02   0.00000E+00   0.00000E+00
+  189   4.50003E-03  -4.30962E-04  -7.09530E+01  -7.09585E+01   0.00000E+00   0.00000E+00  -1.37344E-02   0.00000E+00   0.00000E+00
+  190   4.49997E-03  -4.07688E-04  -6.34723E+01  -6.34801E+01   0.00000E+00   0.00000E+00  -1.26267E-02   0.00000E+00   0.00000E+00
+  191   4.50003E-03  -3.83662E-04  -5.56030E+01  -5.56131E+01   0.00000E+00   0.00000E+00  -1.14684E-02   0.00000E+00   0.00000E+00
+  192   4.49997E-03  -3.58906E-04  -4.73157E+01  -4.73286E+01   0.00000E+00   0.00000E+00  -1.02569E-02   0.00000E+00   0.00000E+00
+  193   4.50003E-03  -3.33134E-04  -3.85309E+01  -3.85466E+01   0.00000E+00   0.00000E+00  -8.97971E-03   0.00000E+00   0.00000E+00
+  194   4.49997E-03  -3.06223E-04  -2.91944E+01  -2.92133E+01   0.00000E+00   0.00000E+00  -7.62958E-03   0.00000E+00   0.00000E+00
+  195   4.49997E-03  -2.78160E-04  -1.92528E+01  -1.92752E+01   0.00000E+00   0.00000E+00  -6.20103E-03   0.00000E+00   0.00000E+00
+  196   4.50003E-03  -2.48645E-04  -8.60667E+00  -8.63278E+00   0.00000E+00   0.00000E+00  -4.67941E-03   0.00000E+00   0.00000E+00
+  197   4.49997E-03  -2.17570E-04   2.80602E+00   2.77578E+00   0.00000E+00   0.00000E+00  -3.05688E-03   0.00000E+00   0.00000E+00
+  198   4.50003E-03  -1.84749E-04   1.50861E+01   1.50513E+01   0.00000E+00   0.00000E+00  -1.32056E-03   0.00000E+00   0.00000E+00
+  199   4.49997E-03  -1.49761E-04   2.83943E+01   2.83545E+01   0.00000E+00   0.00000E+00   5.52223E-04   0.00000E+00   0.00000E+00
+  200   4.50003E-03  -1.12464E-04   4.28280E+01   4.27828E+01   0.00000E+00   0.00000E+00   2.57330E-03   0.00000E+00   0.00000E+00
+  201   4.49997E-03  -7.24994E-05   5.85501E+01   5.84988E+01   0.00000E+00   0.00000E+00   4.76442E-03   0.00000E+00   0.00000E+00
+  202   4.50003E-03  -2.96121E-05   7.57179E+01   7.56599E+01   0.00000E+00   0.00000E+00   7.14517E-03   0.00000E+00   0.00000E+00
+  203   4.49997E-03   1.68365E-05   9.45871E+01   9.45215E+01   0.00000E+00   0.00000E+00   9.75098E-03   0.00000E+00   0.00000E+00
+  204   4.50003E-03   6.74017E-05   1.15408E+02   1.15335E+02   0.00000E+00   0.00000E+00   1.26154E-02   0.00000E+00   0.00000E+00
+  205   4.49997E-03   1.22611E-04   1.38458E+02   1.38375E+02   0.00000E+00   0.00000E+00   1.57740E-02   0.00000E+00   0.00000E+00
+  206   4.50003E-03   1.83187E-04   1.64089E+02   1.63995E+02   0.00000E+00   0.00000E+00   1.92730E-02   0.00000E+00   0.00000E+00
+  207   4.49997E-03   2.50102E-04   1.92744E+02   1.92639E+02   0.00000E+00   0.00000E+00   2.31717E-02   0.00000E+00   0.00000E+00
+  208   4.50003E-03   3.24702E-04   2.24972E+02   2.24854E+02   0.00000E+00   0.00000E+00   2.75453E-02   0.00000E+00   0.00000E+00
+  209   4.49997E-03   4.08103E-04   2.61370E+02   2.61237E+02   0.00000E+00   0.00000E+00   3.24703E-02   0.00000E+00   0.00000E+00
+  210   4.50003E-03   5.01815E-04   3.02663E+02   3.02513E+02   0.00000E+00   0.00000E+00   3.80419E-02   0.00000E+00   0.00000E+00
+  211   4.49997E-03   6.08209E-04   3.49875E+02   3.49706E+02   0.00000E+00   0.00000E+00   4.43987E-02   0.00000E+00   0.00000E+00
+  212   4.50003E-03   7.29874E-04   4.04171E+02   4.03981E+02   0.00000E+00   0.00000E+00   5.16961E-02   0.00000E+00   0.00000E+00
+  213   4.49997E-03   8.70181E-04   4.67059E+02   4.66844E+02   0.00000E+00   0.00000E+00   6.01360E-02   0.00000E+00   0.00000E+00
+  214   4.49997E-03   1.03315E-03   5.40394E+02   5.40150E+02   0.00000E+00   0.00000E+00   6.99641E-02   0.00000E+00   0.00000E+00
+  215   4.50003E-03   1.22425E-03   6.26593E+02   6.26316E+02   0.00000E+00   0.00000E+00   8.15045E-02   0.00000E+00   0.00000E+00
+  216   4.49997E-03   1.45115E-03   7.28899E+02   7.28583E+02   0.00000E+00   0.00000E+00   9.51976E-02   0.00000E+00   0.00000E+00
+  217   4.50003E-03   1.72364E-03   8.51513E+02   8.51152E+02   0.00000E+00   0.00000E+00   1.11611E-01   0.00000E+00   0.00000E+00
+  218   4.49997E-03   2.05547E-03   1.00020E+03   9.99790E+02   0.00000E+00   0.00000E+00   1.31529E-01   0.00000E+00   0.00000E+00
+  219   4.50003E-03   2.46611E-03   1.18291E+03   1.18244E+03   0.00000E+00   0.00000E+00   1.56041E-01   0.00000E+00   0.00000E+00
+  220   4.49997E-03   2.98390E-03   1.41105E+03   1.41050E+03   0.00000E+00   0.00000E+00   1.86716E-01   0.00000E+00   0.00000E+00
+  221   4.50003E-03   3.65083E-03   1.70105E+03   1.70041E+03   0.00000E+00   0.00000E+00   2.25837E-01   0.00000E+00   0.00000E+00
+  222   4.49997E-03   4.53218E-03   2.07783E+03   2.07708E+03   0.00000E+00   0.00000E+00   2.76886E-01   0.00000E+00   0.00000E+00
+  223   4.50003E-03   5.73318E-03   2.58006E+03   2.57916E+03   0.00000E+00   0.00000E+00   3.45337E-01   0.00000E+00   0.00000E+00
+  224   4.49997E-03   7.43765E-03   3.27192E+03   3.27085E+03   0.00000E+00   0.00000E+00   4.40426E-01   0.00000E+00   0.00000E+00
+  225   4.50003E-03   9.99686E-03   4.26802E+03   4.26673E+03   0.00000E+00   0.00000E+00   5.79034E-01   0.00000E+00   0.00000E+00
+  226   4.49997E-03   1.41748E-02   5.79800E+03   5.79644E+03   0.00000E+00   0.00000E+00   7.95995E-01   0.00000E+00   0.00000E+00
+  227   4.50003E-03   2.19148E-02   8.39063E+03   8.38873E+03   0.00000E+00   0.00000E+00   1.17458E+00   0.00000E+00   0.00000E+00
+  228   4.49997E-03   3.94367E-02   1.35337E+04   1.35314E+04   0.00000E+00   0.00000E+00   1.96141E+00   0.00000E+00   0.00000E+00
+  229   4.50003E-03   9.45597E-02   2.68410E+04   2.68391E+04   0.00000E+00   0.00000E+00   4.15710E+00   0.00000E+00   0.00000E+00
+  230   4.49997E-03   3.71268E-01   7.96092E+04   7.96142E+04   0.00000E+00   0.00000E+00   1.37998E+01   0.00000E+00   0.00000E+00
+
+  SUM   1.00000E+00   3.08386E+07   7.96723E+11   7.98101E+11   0.00000E+00   0.00000E+00   5.64951E+08   0.00000E+00
+
+ OUTDRV: CPU TIME FOR REACTION RATE CALCULATION =  0.058
+-->>MODULE OUT:        : TIME SPENT=        0.058 MEMORY USAGE= 0.000E+00
+->@END MODULE   : OUT:        
+
+ normal end of execution for dragon 5  Version 5.0.7 ($Revision: 2060 $)               
+ check for warning in listing
+ before assuming your run was successful

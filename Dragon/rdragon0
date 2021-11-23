@@ -63,7 +63,7 @@ else
 fi
 CodeDir=$PWD
 
-if [ $Sysx = "AIX" ]; then
+if [ $Sysx = "AIX" -o $Sysx = "Linux" ]; then
   Tmpdir=/usr/tmp
 elif [ $Sysx = "SunOS" ]; then
   Tmpdir=/var/tmp

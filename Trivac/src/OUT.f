@@ -13,7 +13,7 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert
+*Author(s): A. Hebert and A. Naceur
 *
 *Parameters: input/output
 * NENTRY  number of LCM objects or files used by the operator.
@@ -22,7 +22,8 @@
 *         HENTRY(2): read-only type(L_FLUX);
 *         HENTRY(3): read-only type(L_TRACK);
 *         HENTRY(4): read-only type(L_MACROLIB);
-*         HENTRY(5): read-only type(L_GEOM).
+*         HENTRY(5): read-only type(L_GEOM);
+*         HENTRY(6): read-only type(L_LIBRARY).
 * IENTRY  type of each LCM object or file:
 *         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
 *         =4 sequential ascii file.
@@ -34,7 +35,7 @@
 *
 *Comments:
 * The OUT: calling specifications are:
-* MACRO2 := OUT: FLUX TRACK MACRO GEOM :: (out\_data) ;
+* MACRO2 := OUT: FLUX TRACK MACRO GEOM [MICRO] :: (out\_data) ;
 * where
 *   MACRO2 : name of the \emph{lcm} object (type L\_MACROLIB) containing the 
 *     extended \emph{macrolib}.
@@ -45,6 +46,8 @@
 *     reference \emph{macrolib}.
 *   GEOM   : name of the \emph{lcm} object (type L\_GEOM) containing the 
 *     reference \emph{geometry}.
+*   MICRO  : name of the \emph{lcm} object (type L\_LIBRARY) containing the 
+*     reference \emph{microlib}.
 *   out\_data}] : structure containing the data to module OUT:
 * 
 *
@@ -63,9 +66,12 @@
       PARAMETER (NSTATE=40)
       CHARACTER TEXT12*12,TITLE*72,HTRACK*12,HSIGN*12
       INTEGER IGP(NSTATE)
-      TYPE(C_PTR) IPMAC1,IPMAC2,IPFLUX,IPTRK,IPGEOM
+      TYPE(C_PTR) IPMAC1,IPMAC2,IPFLUX,IPTRK,IPGEOM,IPMIC
       INTEGER, DIMENSION(:),ALLOCATABLE :: MAT,IDL
-      REAL, DIMENSION(:),ALLOCATABLE :: VOL
+      REAL, DIMENSION(:),ALLOCATABLE :: VOL,DENMIX
+      LOGICAL :: IsMicroProvided = .FALSE. 
+
+      REAL,DIMENSION(:),ALLOCATABLE :: MESHX,MESHY,MESHZ
 *----
 *  PARAMETER VALIDATION.
 *----
@@ -88,7 +94,7 @@
       CALL LCMPTC(IPMAC2,'SIGNATURE',12,1,HSIGN)
       CALL LCMPTC(IPMAC2,'LINK.FLUX',12,1,TEXT12)
 *----
-*  RECOVER IPGEOM, IPMAC1 AND IPTRK POINTERS.
+*  RECOVER IPMICRO, IPGEOM, IPMAC1 AND IPTRK POINTERS.
 *----
       CALL LCMGTC(IPFLUX,'LINK.TRACK',12,1,TEXT12)
       DO 10 I=1,NENTRY
@@ -129,7 +135,22 @@
       ENDIF
    70 CONTINUE
       CALL XABORT('OUT: UNABLE TO FIND A POINTER TO L_GEOM.')
-   80 CALL LCMGET(IPMAC1,'STATE-VECTOR',IGP)
+! Ahmed, Naceur
+   80 DO 90  I=1,NENTRY
+      CALL LCMLEN(KENTRY(I),'SIGNATURE',ILONG,ITYLCM)
+      IF(ILONG.NE.0) THEN 
+         CALL LCMGTC(KENTRY(I),'SIGNATURE',12,1,HSIGN)
+         IF(HSIGN.EQ.'L_LIBRARY') THEN
+           IPMIC=KENTRY(I)
+           IsMicroProvided= .TRUE. 
+           GO TO 100
+         ENDIF
+      ENDIF
+   90 CONTINUE
+      PRINT *, 'NO MICROLIB PROVIDED FOR OUT: MODULE'
+      
+
+  100 CALL LCMGET(IPMAC1,'STATE-VECTOR',IGP)
       NGRP=IGP(1)
       NBMIX=IGP(2)
       NL=IGP(3)
@@ -160,6 +181,44 @@
 *  FIND TYPE OF TRACKING.
 *----
       CALL LCMGTC(IPTRK,'TRACK-TYPE',12,1,HTRACK)
+
+*----
+*  CONSTRUCT DENSITY MATRIX
+*----
+      IF (IsMicroProvided) THEN 
+         ALLOCATE (DENMIX(NBMIX-1))
+         CALL LCMGET(IPMIC,'MIXTURESDENS',DENMIX)
+
+         !-- temporary
+         !-- meshx
+         CALL LCMLEN(IPGEOM,'MESHX',ILONG,ITYLCM)
+         IF (ILONG.GT.0) THEN
+            ALLOCATE (MESHX(ILONG))
+            CALL LCMGET(IPGEOM,'MESHX',MESHX)
+         ELSE
+            PRINT *, "OUT: MESHX NOT FOUND."       
+         ENDIF
+         !-- meshy
+         CALL LCMLEN(IPGEOM,'MESHY',ILONG,ITYLCM)
+         IF (ILONG.GT.0) THEN
+            ALLOCATE (MESHY(ILONG))
+            CALL LCMGET(IPGEOM,'MESHY',MESHY)
+         ELSE
+            PRINT *, "OUT: MESHY NOT FOUND."       
+         ENDIF
+          !-- meshz
+         CALL LCMLEN(IPGEOM,'MESHZ',ILONG,ITYLCM)
+         IF (ILONG.GT.0) THEN
+            ALLOCATE (MESHZ(ILONG))
+            CALL LCMGET(IPGEOM,'MESHZ',MESHZ)
+         ELSE
+            PRINT *, "OUT: MESHZ NOT FOUND."       
+         ENDIF        
+      ELSE
+         PRINT *,"L_LIBRARY NOT PROVIDED"
+      ENDIF  
+
+!   99 FORMAT(/21H DENSITYMATRIX ,A,6H NOT FOUND.)      
 *----
 *  EDITION.
 *----

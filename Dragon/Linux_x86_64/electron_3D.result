@@ -1,0 +1,374 @@
+* CLE-2000 VERS 3.0 * R.ROY, EPM COPYRIGHT 1999 *                          LINE
+*---------------------------------------------------------------------     0001
+*  Electron Source on 1D Slab Geometry                                     0002
+*  CEPXSR library                                                          0003
+*  Author: Ahmed Naceur                                                    0004
+*---------------------------------------------------------------------     0005
+* --- Define STRUCTURES and MODULES used                                   0006
+MODULE       GEO: LIB: MAC: SNT: ASM: FLU: HEAT: OUT: DELETE:              0007
+UTL: END: ;                                                                0008
+PROCEDURE    assertS ;                                                     0009
+LINKED_LIST   MACRO DEPOS MICRO OLDMACRO GEOM TRACK SYSTEM FLUX            0010
+EEDIT ;                                                                    0011
+SEQ_ASCII edep.txt :: FILE './edep.txt' ;                                  0012
+* --- Geometry                                                             0013
+GEOM := GEO: :: CAR3D 2 1 1                                                0014
+EDIT 0                                                                     0015
+X- VOID  X+ VOID                                                           0016
+Y- VOID  Y+ VOID                                                           0017
+Z- VOID  Z+ VOID                                                           0018
+MIX  1 2                                                                   0019
+MESHX 0.0 0.1 2.0                                                          0020
+MESHY 0.0 2.0                                                              0021
+MESHZ 0.0 2.0                                                              0022
+SPLITX 10 90                                                               0023
+SPLITY 20                                                                  0024
+SPLITZ 20                                                                  0025
+;                                                                          0026
+* --- Tracking                                                             0027
+TRACK := SNT: GEOM ::                                                      0028
+TITLE 'Water-3DSlab:Cepxsr-Dragon'                                         0029
+EDIT 1 MAXR 50000 DIAM 1 NLIVO SN 12 SCAT 12 EPSI 1.E-4                    0030
+QUAD 1 MAXI 300 BFPL ;                                                     0031
+* --- Library access                                                       0032
+MICRO := LIB: ::                                                           0033
+EDIT 1                                                                     0034
+NMIX 1                                                                     0035
+ANIS 8                                                                     0036
+MIXS LIB: MATXS2 FIL: _cepxsr_80Ne_80Ng                                    0037
+MIX  1  300.0  1.0 NOGAS                                                   0038
+Hnat = h 0.111894                                                          0039
+Onat = o 0.888106                                                          0040
+;                                                                          0041
+* --- Library structuring                                                  0042
+MACRO := MICRO :: STEP UP MACROLIB ;                                       0043
+*UTL: MACRO :: STEP UP GROUP STEP AT 1 DIR IMPR ESTOPW * ;                 0044
+OLDMACRO := MACRO ;                                                        0045
+MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;                             0046
+OLDMACRO := DELETE: OLDMACRO ;                                             0047
+* --- Specify fixed particle source density                                0048
+REAL qsour := 1.E10 2.0 / $Pi_R / ; ! [cm-3 s-1]                           0049
+MACRO := MAC: MACRO ::                                                     0050
+READ INPUT                                                                 0051
+MIX 1 FIXE                                                                 0052
+<<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0          0053
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                0054
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                0055
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                0056
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                0057
+0.0 0.0 0.0 0.0 0.0                                                        0058
+;                                                                          0059
+* ---- Electron flux                                                       0060
+SYSTEM := ASM: MACRO TRACK :: EDIT 0 ARM ;                                 0061
+FLUX  := FLU: MACRO TRACK SYSTEM :: EDIT 1 TYPE S EXTE 200 ;               0062
+* --- Recover flux and reaction rates                                      0063
+EEDIT := OUT: FLUX TRACK MACRO GEOM :: EDIT 2 COND INTG NONE ;             0064
+* ---- Energy deposition                                                   0065
+*DEPOS := HEAT: EEDIT :: EDIT 99 ;                                         0066
+*edep.txt := EEDIT ;                                                       0067
+EEDIT FLUX SYSTEM MACRO TRACK GEOM := DELETE:                              0068
+EEDIT FLUX SYSTEM MACRO TRACK GEOM ;                                       0069
+END: ;                                                                     0070
+QUIT "LIST" .                                                              0071
+ 
+<|MODULE       GEO: LIB: MAC: SNT: ASM: FLU: HEAT: OUT: DELETE:           |<0007
+<|UTL: END: ;                                                             |<0008
+<|PROCEDURE    assertS ;                                                  |<0009
+<|LINKED_LIST   MACRO DEPOS MICRO OLDMACRO GEOM TRACK SYSTEM FLUX         |<0010
+<|EEDIT ;                                                                 |<0011
+<|SEQ_ASCII edep.txt :: FILE './edep.txt' ;                               |<0012
+<|GEOM := GEO: :: CAR3D 2 1 1                                             |<0014
+<|EDIT 0                                                                  |<0015
+<|X- VOID  X+ VOID                                                        |<0016
+<|Y- VOID  Y+ VOID                                                        |<0017
+<|Z- VOID  Z+ VOID                                                        |<0018
+<|MIX  1 2                                                                |<0019
+<|MESHX 0.0 0.1 2.0                                                       |<0020
+<|MESHY 0.0 2.0                                                           |<0021
+<|MESHZ 0.0 2.0                                                           |<0022
+<|SPLITX 10 90                                                            |<0023
+<|SPLITY 20                                                               |<0024
+<|SPLITZ 20                                                               |<0025
+<|;                                                                       |<0026
+ DDDDDD   RRRRRR     AAA     GGGGG    OOOOO   NN     NN
+ DDDDDDD  RRRRRRR   AAAAA   GGGGGGG  OOOOOOO  NNN    NN
+ DD   DD  RR   RR  AA   AA  GG       OO   OO  NNNN   NN
+ DD   DD  RRRRRR   AA   AA  GG  GGG  OO   OO  NN NN  NN
+ DD   DD  RRRR     AAAAAAA  GG  GGG  OO   OO  NN  NN NN
+ DD   DD  RR RR    AAAAAAA  GG   GG  OO   OO  NN   NNNN
+ DDDDDDD  RR  RR   AA   AA  GGGGGGG  OOOOOOO  NN    NNN
+ DDDDDD   RR   RR  AA   AA   GGGGG    OOOOO   NN     NN
+
+ VERSION dragon 5  Version 5.0.7 ($Revision: 2060 $)                   $Date: 2021-02-02 16:03:29 -0500 (Tue, 02 Feb 2021) $           
+ GROUPE D'ANALYSE NUCLEAIRE
+ ECOLE POLYTECHNIQUE DE MONTREAL
+
+
+
+ COPYRIGHT NOTICE FOR THIS VERSION OF dragon:
+ --------------------------------------------
+ Copyright (C) 2002 Ecole Polytechnique de Montreal 
+ This library is free software; you can redistribute it
+ and/or modify it under the terms of the GNU Lesser General
+ Public License as published by the Free Software Foundation;
+ either version 2.1 of the License, or (at your option) any
+ later version 
+
+
+
+
+->@BEGIN MODULE : GEO:        
+->@DESCRIPTION  : Geometry definition                                                     
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+->@END MODULE   : GEO:        
+-->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+<|TRACK := SNT: GEOM ::                                                   |<0028
+<|TITLE 'Water-3DSlab:Cepxsr-Dragon'                                      |<0029
+<|EDIT 1 MAXR 50000 DIAM 1 NLIVO SN 12 SCAT 12 EPSI 1.E-4                 |<0030
+<|QUAD 1 MAXI 300 BFPL ;                                                  |<0031
+->@BEGIN MODULE : SNT:        
+->@DESCRIPTION  : Discrete ordinates tracking                                             
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ 3-D CARTESIAN GEOMETRY.
++                          BASED ON GEOMETRY GEOM        .
+
+
+ NUMBER OF MESH INTERVALS ALONG THE X AXIS =  100     AVAILABLE STORAGE MAXX =  50000
+                          ALONG THE Y AXIS =   20     AVAILABLE STORAGE MAXY =  50000
+                          ALONG THE Z AXIS =   20     AVAILABLE STORAGE MAXZ =  50000
+ NUMBER OF DISTINCT MIXTURES =      2
+
+
+ SNTRK: ORDER OF LINEAR SYSTEMS =*******
+        NUMBER OF UNKNOWNS PER ENERGY GROUP =*******
+->@END MODULE   : SNT:        
+-->>MODULE SNT:        : TIME SPENT=        0.467 MEMORY USAGE= 3.642E+05
+<|MICRO := LIB: ::                                                        |<0033
+<|EDIT 1                                                                  |<0034
+<|NMIX 1                                                                  |<0035
+<|ANIS 8                                                                  |<0036
+<|MIXS LIB: MATXS2 FIL: _cepxsr_80Ne_80Ng                                 |<0037
+<|MIX  1  300.0  1.0 NOGAS                                                |<0038
+<|Hnat = h 0.111894                                                       |<0039
+<|Onat = o 0.888106                                                       |<0040
+<|;                                                                       |<0041
+->@BEGIN MODULE : LIB:        
+->@DESCRIPTION  : Microscopic xs-library processing                                       
+->@CREDITS      : A. Hebert, G. Marleau                                                   
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ PROCESSING MATXS2 LIBRARY NAMED _cepxsr_.
+
+ MATXS2 FILE ID:   matxs cepxsr-njoy      VERS  1
+ water-electron-library-P8-80Ne-80Ng                                     
+
+ OPTIONS
+ -------
+ IMPX       1   (0=NO PRINT/1=SHORT/2=MORE)
+ IPROB      0   (0=DIRECT/1=ADJOINT)
+ ITIME      1   (1=STEADY-STATE/2=PROMPT)
+ NLIB       1   (NUMBER OF SETS OF LIBRARIES)
+ NGF       81   (NUMBER OF FAST GROUP WITHOUT SELF-SHIELDING)
+ IGRMAX     0   (LAST GROUP INDEX WITH SELF-SHIELDING)
+ NBISO      2   (NUMBER OF ISOTOPES OR MATERIALS)
+ NBMIX      1   (NUMBER OF MIXTURES)
+ NRES       0   (NUMBER OF SETS OF RESONANT MIXTURES)
+ NCOMB      0   (NUMBER OF DEPLETING MIXTURES)
+ NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
+ NGRO      80   (NUMBER OF ENERGY GROUPS)
+ NL         8   (NUMBER OF LEGENDRE ORDERS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/3=WIMS-D TYPE/4=LEAKAGE CORRECTION)
+ NBESP      0   (NUMBER OF ENERGY-DEPENDENT FISSION SPECTRA)
+ IPROC      0   (-1=SKIP LIBRARY PROCESSING/0=DILUTION INTERPOLATION/1=USE PHYSICAL TABLES/2=BUILD A DRAGLIB/3=COMPUTE CALENDF TABLES/4=SLOWING-DOWN TABLES/5=ALL CALENDF)
+ IMAC       1   (0=DO NOT/1=DO BUILD AN EMBEDDED MACROLIB)
+ NDEL       0   (NUMBER OF PRECURSOR GROUPS)
+ NDEPL      0   (NUMBER OF DEPLETING ISOTOPES)
+ NFISS      0   (NUMBER OF FISSILE ISOTOPES WITH PYIELD DATA)
+ NPART      1   (NUMBER OF COMPANION PARTICLES)
+ ISOADD     0   (0=COMPLETE BURNUP CHAIN/1=DO NOT)
+ MAXISM   300   (MAX. NUMBER OF ISOTOPES PER MIXTURE)
+ IPRECI     4   (CALENDF ACCURACY FLAG:1/2/3/4)
+
+ CROSS SECTION EDIT NAME (LCM DIRECTORY NAME)
+ --------------------------------------------
+   1  NFTOT        2  NG           3  N2N   
+   4  N3N          5  N4N          6  NA    
+   7  NP           8  N2A          9  NNP   
+  10  ND          11  NT          12  TRANC 
+  13  BSTC        14  BSTR        15  CSTC  
+  16  CSTR  
+
+ AVAILABLE CROSS-SECTION LIBRARIES:
+    1 -- _cepxsr_80Ne_80Ng                                               
+
+                                                        NUMBER
+ SPEC   LOCAL NAME    ISOTOPE       FROM LIBRARY  MIX   DENSITY     TEMP(K)    SIGZERO    SELF-SHIEL  THERMAL CORRECTION
+ -----  ------------  ------------  ------------  ----  ----------  ---------  ---------  ----------  ------------------
+     1  Hnat    0001  h             MATXS2     1     1  6.6856E-02  3.000E+02  1.000E+10   0             0                         
+     2  Onat    0001  o             MATXS2     1     1  3.3428E-02  3.000E+02  1.000E+10   0             0                         
+->@END MODULE   : LIB:        
+-->>MODULE LIB:        : TIME SPENT=        0.115 MEMORY USAGE= 0.000E+00
+<|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0043
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: STEP UP TO LEVEL 'MACROLIB    '.
+-->>module EQU:        : time spent=        0.001 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|OLDMACRO := MACRO ;                                                     |<0045
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module EQU:        : time spent=        0.001 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;                          |<0046
+->@BEGIN MODULE : MAC:        
+->@DESCRIPTION  : Macroscopic xs processor                                                
+->@CREDITS      : G. Marleau                                                              
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'MACRO       ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'PARTICLE    '         1    CHARACTER       
+        2  'PARTICLE-NAM'         2    CHARACTER       
+        3  'PARTICLE-NGR'         2    INTEGER         
+        4  'PARTICLE-MC2'         2    REAL            
+        5  'GENERGY     '        81    REAL            
+        6  'GROUP       '        80    LIST            
+        7  'GROUP-G     '        80    LIST            
+        8  'ADDXSNAME-P0'        32    CHARACTER       
+        9  'SIGNATURE   '         3    CHARACTER       ='L_MACROLIB  '
+       10  'ENERGY      '        81    REAL            
+       11  'TIMESTAMP   '         3    REAL            
+       12  'STATE-VECTOR'        40    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =       247
+
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'OLDMACRO    ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'PARTICLE    '         1    CHARACTER       
+        2  'PARTICLE-NAM'         2    CHARACTER       
+        3  'PARTICLE-NGR'         2    INTEGER         
+        4  'PARTICLE-MC2'         2    REAL            
+        5  'GENERGY     '        81    REAL            
+        6  'GROUP       '        80    LIST            
+        7  'GROUP-G     '        80    LIST            
+        8  'ADDXSNAME-P0'        32    CHARACTER       
+        9  'SIGNATURE   '         3    CHARACTER       ='L_MACROLIB  '
+       10  'ENERGY      '        81    REAL            
+       11  'TIMESTAMP   '         3    REAL            
+       12  'STATE-VECTOR'        40    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =       247
+
+
+ OPTIONS
+ -------
+ IPRINT     1   (0=NO PRINT/1=SHORT/2=MORE)
+ NGROUP    80   (NUMBER OF ENERGY GROUPS)
+ NBMIX      2   (NUMBER OF MIXTURES IN THE MACROLIB)
+ NANISO     8   (MAXIMUM SCATTERING ANISOTROPY)
+ NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
+ NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
+ NLG        0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ ILEAK      0   (1=DIFF AVAILABLE; 2=DIFFX AVAILABLE)
+ NSTEP      0   (NUMBER OF PERTURBATION DIRECTORIES)
+ IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
+ NPART0     0   (NUMBER OF COMPANION PARTICLES)
+->@END MODULE   : MAC:        
+-->>MODULE MAC:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+<|OLDMACRO := DELETE: OLDMACRO ;                                          |<0047
+<|MACRO := MAC: MACRO ::                                                  |<0050
+<|READ INPUT                                                              |<0051
+<|MIX 1 FIXE                                                              |<0052
+<|<<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0       |<0053
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0054
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0055
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0056
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0057
+<|0.0 0.0 0.0 0.0 0.0                                                     |<0058
+<|;                                                                       |<0059
+->@BEGIN MODULE : MAC:        
+->@DESCRIPTION  : Macroscopic xs processor                                                
+->@CREDITS      : G. Marleau                                                              
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ CROSS SECTION TYPE     NTOT0      NUSIGF     FIXE       CHI        SCAT (NL=  1,  8)        TRANC      DIFF       H-FACTOR   NFTOT      FLUX-INTG  FLUX-INTG-P1
+ MATERIAL     1                               READ                                                                                                        
+ MATERIAL     2                                                                                                                                           
+
+ OPTIONS
+ -------
+ IPRINT     1   (0=NO PRINT/1=SHORT/2=MORE)
+ NGROUP    80   (NUMBER OF ENERGY GROUPS)
+ NBMIX      2   (NUMBER OF MIXTURES IN THE MACROLIB)
+ NANISO     8   (MAXIMUM SCATTERING ANISOTROPY)
+ NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
+ NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
+ NLG        0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ ILEAK      0   (1=DIFF AVAILABLE; 2=DIFFX AVAILABLE)
+ NSTEP      0   (NUMBER OF PERTURBATION DIRECTORIES)
+ IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
+ NPART0     0   (NUMBER OF COMPANION PARTICLES)
+->@END MODULE   : MAC:        
+-->>MODULE MAC:        : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+<|SYSTEM := ASM: MACRO TRACK :: EDIT 0 ARM ;                              |<0061
+->@BEGIN MODULE : ASM:        
+->@DESCRIPTION  : To built system matrices (CP and IC)                                    
+->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+->@END MODULE   : ASM:        
+-->>MODULE ASM:        : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+<|FLUX  := FLU: MACRO TRACK SYSTEM :: EDIT 1 TYPE S EXTE 200 ;            |<0062
+->@BEGIN MODULE : FLU:        
+->@DESCRIPTION  : Solve the flux equations                                                
+->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+
+
+ P. I. M.    SOLUTION TO TRANSPORT EQUATION
+
+ CALCULATION TYPE            =    SOURCE
+ FORWARD/BACKWARD OPTION     =    DIRECT
+ (AN)ISOTROPY OPTION         =ANISOTROPI
+ FLUX SOLUTION DOOR          =    SN    
+ NB. OF GROUPS               =        80
+ NB. OF REGIONS              =     40000
+ NB. OF UNKNOWNS PER GROUP   = 102796800
+ MAX. OUTER ITERATIONS       =       200
+ MAX. THERMAL ITERATIONS     =       160
+ ACCELERATION SCHEME         =( 3 FREE, 3 ACCELERATED)
+ REBALANCING OPTION          = ON 
+ SELF-SCATTERING REDUCTION   = ON 
+ FUNDAMENTAL MODE            = OFF
+ EIGENVALUE TOLERANCE        =  1.000E-05
+ UNKNOWN OUTER TOLERANCE     =  5.000E-05
+ UNKNOWN INNER TOLERANCE     =  5.000E-05
+

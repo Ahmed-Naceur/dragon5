@@ -1,0 +1,526 @@
+1*****************************************************************************
+ *                                         *              *                  *
+ *   $$   $$       $$   $$$$$   $$    $$   *              *  vers: 2012.138  *
+ *   $$$  $$       $$  $$$$$$$   $$  $$    *  nuclear     *  vday: 01may21   *
+ *   $$$$ $$       $$  $$   $$    $$$$     *  data        *  site: poly mtl  *
+ *   $$ $$$$  $$   $$  $$   $$     $$      *  processing  *  mach: linux     *
+ *   $$  $$$  $$$$$$$  $$$$$$$     $$      *  system      *  date: 11/17/21  *
+ *   $$   $$   $$$$$    $$$$$      $$      *              *  time: 16:34:38  *
+ *                                         *              *                  *
+ *****************************************************************************
+
+ cepxsr...produce electron interaction cross sections                       0.0s
+
+ unit for endf tape ...................         30
+ unit for input nbet tape .............          0
+ unit for output nbet tape ............         33
+ unit for cepxs stopping powers .......         40
+ mat to be processed ..................        100
+ electron group option ................         -2
+ photon group option ..................         -2
+ weight function option ...............          2
+ legendre order .......................          1
+ print option (0 min, 1 max) ..........          1
+
+ run title
+ --------------------------------------
+      water-electron-library-P1-2Ne-2Ng                                 
+ 
+
+ electron logarithmic structure......read in
+     1   1.00000E+03  -  5.47723E+04
+     2   5.47723E+04  -  3.00000E+06
+
+   photon logarithmic structure......read in
+     1   1.00000E+03  -  5.47723E+04
+     2   5.47723E+04  -  3.00000E+06
+
+ weight function......constant for all l
+
+ using endf-6 format
+
+ processing mat  100
+ ------------------------------------------------------------------
+   1-H -  0 NDS,IAEA   Eval-Dec17 D.E.Cullen                         
+
+ group constants                                                          3.3s
+ for mf23 and mt507 estc                                                        
+ stopping power(    1) =   5.65959E+02
+ stopping power(    2) =   2.23504E+01
+ stopping power(    3) =   6.58272E+00
+
+ group constants                                                          3.3s
+ for mf23 and mt508 estr                                                        
+ stopping power(    1) =   3.59398E-03
+ stopping power(    2) =   3.40470E-03
+ stopping power(    3) =   3.55685E-02
+
+ group constants                                                          3.3s
+ for mf26 and mt522 inel                                                        
+ 
+ initl  final  cross sections vs
+ group  group  legendre order   
+   1      1    0.00000+0  0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      1    3.48250+2  2.90447+1
+   2      2    0.00000+0  0.00000+0
+   2   xsec    0.00000+0
+   2   heat    4.85435+0
+
+ group constants                                                          3.3s
+ for mf26 and mt525 elas                                                        
+ 
+ initl  final  cross sections vs
+ group  group  legendre order   
+   1      1    3.89708+3  0.00000+0
+   1   xsec    3.89708+3
+   1   heat    0.00000+0
+   2      2    3.26277+0  0.00000+0
+   2   xsec    3.26277+0
+   2   heat    0.00000+0
+
+ group constants                                                          3.3s
+ for mf26 and mt527 brem                                                        
+ 
+ initl  final  cross sections vs
+ group  group  legendre order   
+   1      1    0.00000+0  0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0  0.00000+0
+   2   xsec    0.00000+0
+   2   heat    5.50779-3
+
+ gamma production group constants                                                          3.3s
+ for mf26 and mt527 brem                                                        
+ 
+ initl  final  cross sections vs
+ group  group  legendre order   
+   1      1    5.92409-1  1.13181-1
+   1   xsec    0.00000+0
+   1   heat   -4.38432-3
+   1      1    1.10170-5  2.10482-6
+   1   xsec    0.00000+0
+   1   heat   -8.15349-8
+   2      1    1.46600-1  1.18837-1
+   2      2    5.38425-2  4.75966-2
+   2   xsec    0.00000+0
+   2   heat   -2.29106-2
+   2      1    4.97756-8  4.03490-8
+   2      2    1.82813-8  1.61606-8
+   2   xsec    0.00000+0
+   2   heat   -7.77888-9
+
+ group constants                                                          3.3s
+ for mf26 and mt534 shk                                                         
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ gamma production group constants                                                          3.3s
+ for mf26 and mt534 shk                                                         
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ group constants                                                          3.3s
+ for mf26 and mt535 shl1                                                        
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ gamma production group constants                                                          3.3s
+ for mf26 and mt535 shl1                                                        
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ group constants                                                          3.3s
+ for mf26 and mt536 shl2                                                        
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ gamma production group constants                                                          3.3s
+ for mf26 and mt536 shl2                                                        
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ group constants                                                          3.3s
+ for mf26 and mt537 shl3                                                        
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ gamma production group constants                                                          3.3s
+ for mf26 and mt537 shl3                                                        
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ group constants                                                          3.3s
+ for mf26 and mt538 shm                                                         
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ gamma production group constants                                                          3.3s
+ for mf26 and mt538 shm                                                         
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ group constants                                                          3.3s
+ for mf23 and mt501 totl                                                        
+ 
+ electron sigma  
+ group   (barns)
+   1    3.89708+3
+   2    3.26277+0
+
+ group constants                                                          3.3s
+ for mf23 and mt530 heat                                                        
+ 
+ electron energy deposition
+ group   (ev-barns)
+   2    4.85986+0
+
+ group constants                                                          3.3s
+ for mf23 and mt531 char                                                        
+ 
+ electron charge deposition
+ group   (ev-barns)
+   1   -4.38432-3
+   2   -3.48273+2
+
+ processing mat  800
+ ------------------------------------------------------------------
+   8-O -  0 NDS,IAEA   Eval-Dec17 D.E.Cullen                         
+
+ group constants                                                          3.3s
+ for mf23 and mt507 estc                                                        
+ stopping power(    1) =   3.06367E+03
+ stopping power(    2) =   1.44247E+02
+ stopping power(    3) =   4.61571E+01
+
+ group constants                                                          3.3s
+ for mf23 and mt508 estr                                                        
+ stopping power(    1) =   1.56657E-01
+ stopping power(    2) =   1.34241E-01
+ stopping power(    3) =   1.23382E+00
+
+ group constants                                                          3.3s
+ for mf26 and mt522 inel                                                        
+ 
+ initl  final  cross sections vs
+ group  group  legendre order   
+   1      1    0.00000+0  0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      1    2.78600+3  2.32357+2
+   2      2    0.00000+0  0.00000+0
+   2   xsec    0.00000+0
+   2   heat    2.95948+1
+
+ group constants                                                          3.3s
+ for mf26 and mt525 elas                                                        
+ 
+ initl  final  cross sections vs
+ group  group  legendre order   
+   1      1    1.88718+5  0.00000+0
+   1   xsec    1.88718+5
+   1   heat    0.00000+0
+   2      2    1.82366+2  0.00000+0
+   2   xsec    1.82366+2
+   2   heat    0.00000+0
+
+ group constants                                                          3.3s
+ for mf26 and mt527 brem                                                        
+ 
+ initl  final  cross sections vs
+ group  group  legendre order   
+   1      1    0.00000+0  0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0  0.00000+0
+   2   xsec    0.00000+0
+   2   heat    1.99364-1
+
+ gamma production group constants                                                          3.3s
+ for mf26 and mt527 brem                                                        
+ 
+ initl  final  cross sections vs
+ group  group  legendre order   
+   1      1    2.30923+1  4.32638+0
+   1   xsec    0.00000+0
+   1   heat   -1.70902-1
+   1      1    4.29447-4  8.04575-5
+   1   xsec    0.00000+0
+   1   heat   -3.17826-6
+   2      1    4.77459+0  3.84128+0
+   2      2    1.85052+0  1.63092+0
+   2   xsec    0.00000+0
+   2   heat   -7.85461-1
+   2      1    1.62113-6  1.30424-6
+   2      2    6.28310-7  5.53751-7
+   2   xsec    0.00000+0
+   2   heat   -2.66689-7
+
+ group constants                                                          3.3s
+ for mf26 and mt534 shk                                                         
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ gamma production group constants                                                          3.3s
+ for mf26 and mt534 shk                                                         
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ group constants                                                          3.3s
+ for mf26 and mt535 shl1                                                        
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ gamma production group constants                                                          3.3s
+ for mf26 and mt535 shl1                                                        
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ group constants                                                          3.3s
+ for mf26 and mt536 shl2                                                        
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ gamma production group constants                                                          3.3s
+ for mf26 and mt536 shl2                                                        
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ group constants                                                          3.3s
+ for mf26 and mt537 shl3                                                        
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ gamma production group constants                                                          3.3s
+ for mf26 and mt537 shl3                                                        
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ group constants                                                          3.3s
+ for mf26 and mt538 shm                                                         
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ gamma production group constants                                                          3.3s
+ for mf26 and mt538 shm                                                         
+ 
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   1      1    0.00000+0
+   1   xsec    0.00000+0
+   1   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+   2      2    0.00000+0
+   2   xsec    0.00000+0
+   2   heat    0.00000+0
+
+ group constants                                                          3.3s
+ for mf23 and mt501 totl                                                        
+ 
+ electron sigma  
+ group   (barns)
+   1    1.88718+5
+   2    1.82366+2
+
+ group constants                                                          3.3s
+ for mf23 and mt530 heat                                                        
+ 
+ electron energy deposition
+ group   (ev-barns)
+   2    2.97942+1
+
+ group constants                                                          3.3s
+ for mf23 and mt531 char                                                        
+ 
+ electron charge deposition
+ group   (ev-barns)
+   1   -1.70902-1
+   2   -2.78678+3
+                                                                          3.3s
+ *****************************************************************************
+
+ matxsr...produce a matxs format output file                              3.3s
+
+ input gendf unit .....................          0
+ input gamout unit ....................          0
+ output matxs unit ....................         35
+ incident electron unit ...............         33
+ file version number ..................          1
+ user id .............................. cepxsr-njoy     
+ npart ................................          2
+ ntype ................................          2
+ nholl ................................          1
+ nmat .................................          2
+ maxw .................................       5000
+
+ set identification
+ ------------------
+      water-electron-library-P1-2Ne-2Ng                                       
+
+ names of particles ...................       b         g       
+ no. groups for each particle .........            2         2
+ names of data types ..................       bscat     bgamma  
+ input particles ......................            1         1
+ output particles .....................            1         2
+
+
+          doing h        for bscat    ...     3.3s
+          doing h        for bgamma   ...     3.3s
+          doing o        for bscat    ...     3.3s
+          doing o        for bgamma   ...     3.3s
+                                                                          3.3s
+ *****************************************************************************

@@ -1,0 +1,63 @@
+*----
+*  TEST
+*----
+*----
+*  Define STRUCTURES and MODULES used
+*----
+MODULE GEO: FMAC: MAC: SNT: ASM: FLU: PSOUR: OUT: DELETE: END: UTL:
+       HEAT: ABORT: ;
+LINKED_LIST  EMACRO EMACRO2 GMACRO GMACRO2 GEOM ETRACK GTRACK SYSTEM
+       EFLUX GFLUX ESOUR GSOUR EEDITS GEDITS DEPOS ;
+REAL esum DELTA ;
+SEQ_ASCII FMAC_M :: FILE './W_6MeV_e_CSD.txt' ;
+*----
+*  Set and track the geometry
+*----
+GEOM := GEO: :: CAR1D 2
+           X- VOID  X+ VOID
+           MIX  1 2
+           MESHX 0.0 0.1 1.0
+           SPLITX 30 200
+           ;
+ETRACK := SNT: GEOM ::
+      TITLE 'TEST'
+      EDIT 2 MAXR 1000 DIAM 1 NLIVO SN 16 SCAT 16 EPSI 1.E-5
+      MAXI 300 BFPL ;
+GTRACK := ETRACK ;
+GTRACK := SNT: GTRACK GEOM :: EDIT 2 BTE ;
+*----
+*  Compute the electron flux
+*----
+EMACRO := FMAC: FMAC_M ::
+  EDIT 2
+  PARTICLE B
+;
+UTL: EMACRO :: STEP UP GROUP STEP AT 1 DIR IMPR ESTOPW * ;
+EMACRO2 := EMACRO ;
+EMACRO := MAC: EMACRO EMACRO2 ::
+     MIX 2 1 OLDL
+     ;
+EMACRO2 := DELETE: EMACRO2 ;
+REAL qsour := 1.E10 2.0 / $Pi_R / ;
+ECHO "qsour=" qsour ;
+EMACRO := MAC: EMACRO ::
+     READ INPUT
+     MIX 1 FIXE
+     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0
+     ;
+SYSTEM := ASM: EMACRO ETRACK :: EDIT 2 ARM ;
+EFLUX := FLU: EMACRO ETRACK SYSTEM ::
+    EDIT 1 TYPE S EXTE 100
+    ;
+EEDITS := OUT: EFLUX ETRACK EMACRO GEOM ::
+    EDIT 99 COND INTG NONE
+    ;
+
+* DEPOS  := HEAT: EEDITS :: EDIT 2 ;     
+SYSTEM := DELETE: SYSTEM ;
+
+
+END: ;
