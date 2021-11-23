@@ -1,0 +1,83 @@
+\subsection{The \moc{/BIHET/} sub-directory}\label{sect:bihettrackingdir}
+
+\vskip -0.3cm
+
+\begin{DescriptionEnregistrement}{The contents of the
+\moc{/BIHET/} sub-directory}{8.0cm}
+\IntEnr
+  {PARAM\blank{7}}{$8$}
+  {Record containing the parameters related to a double-heterogeneity tracking
+   $\mathcal{P}_{i}$} 
+\IntEnr
+  {NS\blank{10}}{$\mathcal{P}_{4}$}
+  {Number of tubes or shells in each kind of micro structure}
+\IntEnr
+  {IBI\blank{9}}{$\mathcal{P}_{3}$}
+  {Type of mixture in each generating region of the macro geometry}
+\RealEnr
+  {VOLUME\blank{6}}{$\mathcal{P}_{3}$}{cm$^3$~~~}
+  {Volumes of the macro geometry}
+\RealEnr
+  {RS\blank{10}}{$\mathcal{P}_{5}+1,\mathcal{P}_{4}$}{cm}
+  {Radii of the micro regions}
+\RealEnr
+  {FRACT\blank{7}}{$\mathcal{P}_{4},\mathcal{P}_{2}$}{}
+  {Volume fraction of each type of micro region in each mixture}
+\RealEnr
+  {VOLK\blank{8}}{$\mathcal{P}_{4},\mathcal{P}_{5}$}{}
+  {Volume fractions of the tubes or shells in the micro regions}
+\IntEnr
+  {IDIL\blank{8}}{$\mathcal{P}_{2}-\mathcal{P}_{1}$}
+  {Elementary mixture indices in the diluent of the composite mixtures}
+\IntEnr
+  {MIXGR\blank{7}}{$\mathcal{P}_{5},\mathcal{P}_{4},\mathcal{P}_{2}-\mathcal{P}_{1}$}
+  {Elementary mixture indices in the micro structures}
+\end{DescriptionEnregistrement}
+
+\noindent
+with the dimension parameter $\mathcal{P}_{i}$, representing:
+
+\begin{itemize}
+
+\item The number of ordinary mixtures pointing to the macrolib. $\mathcal{P}_{1}$
+
+\item The number of mixtures, including the composite mixtures (i.e., containing micro structures)
+$\mathcal{P}_{2}$
+
+\item The number of regions in the macro geometry $\mathcal{P}_{3}$
+
+\item The number of different kinds of macro structures $\mathcal{P}_{4}=\mathcal{S}^{dh}_{1}$
+
+ A kind of macro structure is characterized by the radii of its tubes or shells. All the micro region of the same kind should own
+the same nuclear properties in a given macro region.
+
+\item The maximum number of regions (tubes or shells) in each kind of macro structure
+$\mathcal{P}_{5}=\mathcal{S}^{dh}_{2}-1$
+
+\item The type of double-heterogeneity model $\mathcal{P}_{6}$
+\noindent where
+\begin{displaymath}
+\mathcal{P}_{6} = \left\{
+\begin{array}{rl}
+ 1 & \textrm{Sanchez-Pomraning model} \\
+ 2 & \textrm{Hebert model} \\
+ 3 & \textrm{She-Liu-Shi model} \\
+\end{array} \right.
+\end{displaymath}
+
+\item The type of micro structures $\mathcal{P}_{7}=\mathcal{S}^{dh}_{5}$
+\noindent where
+\begin{displaymath}
+\mathcal{P}_{7} = \left\{
+\begin{array}{rl}
+ 3 & \textrm{Cylinder} \\
+ 4 & \textrm{Sphere} \\
+\end{array} \right.
+\end{displaymath}
+
+\item The quadrature parameter for the 1-D collision probability calculation in the micro structures
+$\mathcal{P}_{8}$
+
+\end{itemize}
+
+\eject

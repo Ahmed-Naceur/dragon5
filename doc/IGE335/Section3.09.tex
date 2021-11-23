@@ -1,0 +1,543 @@
+\subsection{The {\tt EVO:} module}\label{sect:EVOData}
+
+The \moc{EVO:} module performs the burnup calculations. The depletion equations
+for the various isotope of the {\sc microlib} are solved using the burnup chains
+also present in the {\sc microlib}. Both in-core and out-of-core calculations
+can be considered. For in-core depletion calculations, one assumes linear flux variation
+over each irradiation period (time stage). The initial (and possibly final) flux
+distributions are recovered from previous \moc{FLU:} calculations. In-core depletion can
+be performed at constant flux or constant power (expressed in MW/Tonne of initial heavy
+elements) but these values can undergo step variations from one time stage to another.
+All the information required for successive burnup calculation is stored on the PyLCM
+\dds{burnup} data structure. Thus it is possible at any point in time to return to a previous
+time step and restart the calculations.
+
+\vskip 0.2cm
+
+In each burnup mixture of the unit cell, the depletion of $K$ isotopes over a time
+stage $(t_0,t_f)$ follows the following equation:
+
+\begin{equation}
+{dN_k \over dt} + N_k(t) \ \Lambda_k(t)=S_k(t) \ \ \ ; \ {k=1,K}
+\label{eq:depletion}
+\end{equation}
+ 
+\noindent with
+ 
+\begin{equation}
+\Lambda_k(t)= \lambda_k + \langle \sigma_{{\rm a},k}(t) \phi(t) \rangle \ ,
+\end{equation}
+
+\vskip 0.2cm
+
+\begin{equation}
+S_k(t)=\sum^L_{l=1} {Y_{kl} \ \langle \sigma_{{\rm f},l}(t) \phi(t) \rangle } \ N_l(t) +
+\sum^K_{l=1} m_{kl}(t) \ {N_l(t)} \ ,
+\end{equation}
+
+\vskip 0.2cm
+
+\begin{equation}
+\langle \sigma_{{\rm x},l}(t) \phi(t) \rangle = \int_0^\infty {\sigma_{{\rm x},l}(u) \phi(t,u) du}
+\end{equation}
+
+\noindent and
+ 
+\begin{equation}
+\sigma_{{\rm x},k}(t,u)\phi(t,u)= \sigma_{{\rm x},k}(t_0,u)\phi(t_0,u)+
+{\sigma_{{\rm x},k}(t_f,u)\phi(t_f,u)-\sigma_{{\rm x},k}(t_0,u)\phi(t_0,u) \over t_f-t_0}(t-t_0)
+\end{equation}
+
+\noindent where
+\begin{eqnarray}
+\nonumber K &=& \hbox{number of depleting isotopes} 
+\\
+\nonumber L &=& \hbox{number of fissile isotopes producing fission products} 
+\\
+\nonumber N_k(t) &=& \hbox{time dependant number density for {\sl k}-th isotope} 
+\\
+\nonumber \lambda_k &=& \hbox{radioactive decay constant for {\sl k}-th isotope} 
+\\
+\nonumber \sigma_{{\rm x},k}(t,u) &=& \hbox{time and lethargy dependant microscopic cross section for
+nuclear reaction x on} 
+\\
+\nonumber &~& \hbox{{\sl k}-th isotope. x=a, x=f and x=$\gamma$ respectively stands for absorption, fission and} 
+\\
+\nonumber &~& \hbox{radiative capture cross sections} 
+\\
+\nonumber \phi(t,u) &=& \hbox{time and lethargy dependant neutron flux} 
+\\
+\nonumber Y_{kl} &=& \hbox{fission yield for production of fission product {\sl k} by fissile
+isotope {\sl l}} 
+\\
+\nonumber m_{kl}(t) &=& \hbox{radioactive decay constant or $\langle \sigma_{{\rm x},l}(t)
+\phi(t) \rangle$ term for production of isotope {\sl k} by}
+\\
+\nonumber &~& \hbox{isotope {\sl l}.} 
+\end{eqnarray}
+
+Depleting isotopes with $\Lambda_k(t_0)\left[t_f-t_0\right]\geq$\dusa{valexp} and
+$\Lambda_k(t_f)\left[t_f-t_0\right]\geq$\dusa{valexp} are considered to be at saturation. They are
+described by making ${dN_k \over dt}=0$ in \Eq{depletion} to obtain
+
+\begin{equation}
+N_k(t)={S_k(t)\over\Lambda_k(t)} \ \ \ ; \ {{\rm if} \ k \ {\rm is \ at \ saturation.}}
+\label{eq:sat1}
+\end{equation}
+
+If the keyword \moc{SAT} is set, beginning-of-stage and end-of-stage Dirac contributions are
+added to the previous equation:
+
+\begin{equation}
+N_k(t)={1\over\Lambda_k(t)}\left[a \delta(t-t_0) +S_k(t)+b \delta(t-t_f)\right] \ \ \ ; \ {{\rm
+if} \ k \ {\rm is \ at \ saturation}}
+\label{eq:sat2}
+\end{equation}
+ 
+\noindent where $a$ and $b$ are chosen in order to satisfy the time integral of \Eq{depletion}:
+
+\begin{equation}
+N_k(t_f^+)-N_k(t_0^-) + \int_{t_0^-}^{t_f^+}{N_k(t) \ \Lambda_k(t) \ dt} =
+\int_{t_0^-}^{t_f^+}{S_k(t) \ dt}
+\end{equation}
+
+It is numerically convenient to chose the following values of $a$ and $b$:
+
+\begin{equation}
+a=N_k(t_0^-)-{S_k(t_0^+) \over \Lambda_k(t_0^+)}
+\end{equation}
+
+\noindent and
+
+\begin{equation}
+b={S_k(t_0^+) \over \Lambda_k(t_0^+)}-{S_k(t_f^+) \over \Lambda_k(t_f^+)}
+\end{equation}
+
+\vskip 0.2cm
+
+The numerical solution techniques used in the \moc{EVO:} module are the following.
+Very short period isotopes are taken at saturation and are solved apart from non-saturating
+isotopes. If an isotope is taken at saturation, all its parent isotopes, other than fissiles
+isotopes, are also taken at saturation. Isotopes at saturation can procuce daughter isotopes
+using decay {\sl and/or} neutron-induced reactions.
+
+\vskip 0.2cm
+
+The lumped depletion matrix system containing the non-saturating isotopes is solved
+using either a fifth order Cash-Karp algorithm or a fourth order Kaps-Rentrop
+algorithm\cite{recipie}, taking care to perform all matrix operations in sparse matrix algebra.
+Matrices $\left[ m_{kl}(t_0) \right]$ and $\left[ m_{kl}(t_f) \right]$ are therefore
+represented in diagonal banded storage and kept apart from the yield matrix
+$\left[ Y_{kl}\right]$. Every matrix multiplication or linear system solution is obtained
+via the LU algorithm.
+
+\vskip 0.2cm
+
+The solution of burnup equations is affected by the flux normalization factors. DRAGON can
+perform out-of-core or in-core depletion with a choice between two normalization techniques:
+
+\begin{enumerate}
+
+\item Constant flux depletion. In this case, the lethargy integrated fluxes at
+beginning-of-stage and end-of-stage are set to a constant $F$:
+
+\begin{equation}
+\int_0^\infty{\phi(t_0,u) du}=\int_0^\infty{\phi(t_f,u) du}=F
+\end{equation}
+
+\item Constant power depletion. In this case, the power released per initial heavy element at
+beginning-of-stage and end-of-stage are set to a constant $W$.
+
+\vskip -0.5cm
+
+\begin{eqnarray}
+\nonumber \sum^K_{k=1} \big[ \kappa_{{\rm f},k} \ \langle \sigma_{{\rm f},k}(t_0) \phi(t_0) \rangle +\kappa_{\gamma,k} \ \langle
+\sigma_{\gamma,k}(t_0) \phi(t_0) \rangle \big]  \ N_k(t_0) &=& \\
+\sum^K_{k=1} \big[ \kappa_{{\rm f},k} \ \langle \sigma_{{\rm f},k}(t_f) \phi(t_f) \rangle +\kappa_{\gamma,k} \ \langle \sigma_{\gamma,k}
+(t_f) \phi(t_f) \rangle \big]\ N_k(t_f) &=& C_0 \ W
+\end{eqnarray}
+
+\noindent where
+\begin{eqnarray}
+\nonumber \kappa_{{\rm f},k} &=& \hbox{energy (MeV) released per fission of the fissile isotope $k$}
+\\
+\nonumber \kappa_{\gamma,k} &=& \hbox{energy (MeV) released per radiative capture of isotope $k$}
+\\
+\nonumber C_0 &=& \hbox{conversion factor (MeV/MJ) multiplied by the mass of initial heavy
+elements}
+\\
+\nonumber &~& \hbox{expressed in metric tonnes} 
+\end{eqnarray}
+
+The end-of-stage power is function of the number densities $N_k(t_f)$; a few iterations will
+therefore be required before the end-of-stage power released can be set equal to the desired
+value. Note that there is no warranties that the power released keep its desired value at every time
+during the stage; only the beginning-of-stage and end-of-stage are set.
+
+\end{enumerate}
+
+Whatever the normalisation technique used, DRAGON compute the exact burnup of the unit cell
+(in MW per tonne of initial heavy element) by adding an additional equation in the depletion
+system. This value is the local parameter that should be used to tabulate the output cross
+sections.
+
+\vskip 0.2cm
+
+The general format of the data which is used to control
+the execution of the \moc{EVO:} module is the following:
+
+\begin{DataStructure}{Structure \dstr{EVO:}}
+\dusa{BRNNAM} \dusa{MICNAM} \moc{:=} \moc{EVO:} \\
+~~~~~$[$ \dusa{BRNNAM} $]~\{$ \dusa{MICNAM} $|$ \dusa{OLDMIC} $\}~[~\{$ \dusa{FLUNAM} \dusa{TRKNAM} $|$ \dusa{POWNAM} $\}~]$\\
+~~~~~\moc{::} \dstr{descevo}
+\end{DataStructure}
+
+\noindent where
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dusa{BRNNAM}] {\tt character*12} name of the \dds{burnup} data
+structure that will contain the
+depletion history as modified by the depletion module. If \dusa{BRNNAM} appears
+on both LHS and RHS, it is updated; otherwise, it is created.
+
+\item[\dusa{MICNAM}] {\tt character*12} name of the \dds{microlib} containing
+the microscopic cross sections at save point {\sl xts}. \dusa{MICNAM} is modified
+to include an embedded \dds{macrolib} containing the updated macroscopic cross
+sections at set point {\sl xtr}. If \dusa{MICNAM} appears on both LHS and RHS,
+it is updated; otherwise, the internal library \dusa{OLDMIC} is copied in
+\dusa{MICNAM} and \dusa{MICNAM} is updated. It is possible to assign different
+\dds{microlib} to different save points of the depletion calculation. In this
+case, the microscopic reaction rates will be linearly interpolated/extrapolated
+between points {\sl xti} and {\sl xtf}.
+
+\item[\dusa{OLDMIC}] {\tt character*12} name of a read-only \dds{microlib}
+that is copied in \dusa{MICNAM}.
+
+\item[\dusa{FLUNAM}] {\tt character*12} name of a read-only \dds{fluxunk} at save point
+{\sl xts}. This information is used for in-core depletion cases. This information is not required for
+out-of-core depletion cases. Otherwise, it is mandatory
+
+\item[\dusa{TRKNAM}] {\tt character*12} name of a read-only \dds{tracking}
+constructed for the depleting geometry and consistent with object \dusa{FLUNAM}.
+
+\item[\dusa{POWNAM}] {\tt character*12} name of a read-only \dds{power} object (generated by DONJON) at save point
+{\sl xts}. This information is used for micro-depletion cases.
+
+\item[\dstr{descevo}] structure containing the input data to this module
+(see \Sect{descevo}).
+
+\end{ListeDeDescription}
+
+For the in-core depletion cases, the tracking \dds{tracking} data structure on which
+\dusa{FLUNAM} is based, is automatically recovered in read-only mode from the
+generalized driver dependencies.
+
+\subsubsection{Data input for module {\tt EVO:}}\label{sect:descevo}
+
+\begin{DataStructure}{Structure \dstr{descevo}}
+$[$ \moc{EDIT} \dusa{iprint} $]$ \\
+$[$ $\{$ \moc{SAVE} \dusa{xts} $\{$ \moc{S} $|$ \moc{DAY} $|$ \moc{YEAR} $\}~\{$
+\moc{FLUX} \dusa{flux} $|$ \moc{POWR} \dusa{fpower} $|$ \moc{W/CC} \dusa{apower} $\}~|$
+\moc{NOSA} $\}$ $]$ \\
+$[$ \moc{EPS1} \dusa{valeps1} $]~~[$ \moc{EPS2} \dusa{valeps2} $]~~[~\{$ \moc{EXPM} \dusa{valexp} $|$ \moc{SATOFF} $\}~]$ \\
+$[$ \moc{H1} \dusa{valh1} $]~[$ $\{$ \moc{RUNG} $|$ \moc{KAPS} $\}$ $]$ \\
+$[~\{$ \moc{TIXS} $|$ \moc{TDXS} $\}~]~[~\{$\moc{NOEX} $|$ \moc{EXTR}$\}~]$~~$[~\{$\moc{NOGL} $|$ \moc{GLOB}$\}~]$~~$[~\{$\moc{NSAT} $|$ \moc{SAT}$\}~]$~~
+$[~\{$\moc{NODI} $|$ \moc{DIRA}$\}~]$ \\
+$[~\{$\moc{FLUX\_FLUX} $|$ \moc{FLUX\_MAC} $|$ \moc{FLUX\_POW} $\}~]~[~\{$ \moc{CHAIN} $|$ \moc{PIFI} $\}~]$ \\
+$[$ \moc{DEPL} $\{$\dusa{xti} \dusa{xtf} $|$ \dusa{dxt} $\}~\{$ \moc{S} $|$ \moc{DAY} $|$ \moc{YEAR} $\}$ $\{$ \moc{COOL} $|$
+\moc{FLUX} \dusa{flux} $|$ \moc{POWR} \dusa{fpower} $|$ \moc{W/CC} \dusa{apower} $|$ \moc{KEEP} $\}$ $]$ \\
+$[$ \moc{SET} \dusa{xtr} $\{$ \moc{S} $|$ \moc{DAY} $|$ \moc{YEAR} $\}$ $]$ \\
+$[$ \moc{MIXB} $[[$ \dusa{mixbrn} $]] ~]~~~[$ \moc{MIXP} $[[$ \dusa{mixpwr} $]] ~]$ \\
+$[$ \moc{PICK}  {\tt >>} \dusa{burnup} {\tt <<} $]$ \\
+{\tt ;}
+\end{DataStructure}
+
+\noindent
+where
+
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\moc{EDIT}] keyword used to modify the print level \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing of the module. The
+amount of output produced by this tracking module will vary substantially
+depending on the print level specified.
+
+\item[\moc{SAVE}] keyword to specify that the current isotopic concentration
+and the microscopic reaction rates resulting from the last transport calculation
+will be normalized and stored on \dusa{BRNNAM} in a sub-directory corresponding
+to a specific time. By default this data is stored at a time corresponding to
+\dusa{xti}.
+
+\item[\moc{NOSA}] keyword to specify that the current isotopic concentration
+and the results of the last transport calculation will not be stored on
+\dusa{BRNNAM}. By default this data is stored at a time corresponding to
+\dusa{xti}.
+
+\item[\moc{SET}] keyword used to recover the isotopic concentration already
+stored on \dusa{BRNNAM} from a sub-directory corresponding to a specific time. By
+default this data is recovered from a time corresponding to \dusa{xtf}.
+
+\item[\moc{DEPL}] keyword to specify that a burnup calculation between an
+initial and a final time must be performed. In the case where the \moc{SAVE}
+keyword is absent, the initial isotopic concentration will be stored on
+\dusa{BRNNAM} on a sub-directory corresponding to the initial time. If the
+\moc{SET} keyword is absent, the isotopic concentration corresponding to the
+final burnup time will be used to update \moc{MICNAM}.
+
+\item[\dusa{xti}] initial time associated with the burnup calculation. The
+name of the sub-directory where this information is stored will be given by
+`{\tt DEPL-DAT}'//{\tt CNN} where {\tt CNN} is a  {\tt character*4} variable
+defined by  {\tt WRITE(CNN,'(I4.4)') INN} where {\tt INN} is an index associated
+with the time \dusa{xti}. The initial values  are recovered from this
+sub-directory in \dusa{BRNNAM}.
+
+\item[\dusa{xtf}] end of time for the burnup calculation. The results of the
+isotopic depletion calculations are stored in the tables associated with a
+sub-directory whose name is constructed in the same manner as the \dusa{xti}
+input.
+
+\item[\dusa{dxt}] time interval for the burnup calculation. The initial time \dusa{xti} in
+this case is taken as the final time reached at the last depletion step. If this is the first
+depletion step, \dusa{xti} $=0$.
+
+\item[\dusa{xts}] time associated with the last transport calculation. The
+name  of the sub-directory where this information is to be stored is constructed
+in the same manner as the for \dusa{xti} input. By default  (fixed default)
+\dusa{xts}=\dusa{xti}.
+
+\item[\dusa{xtr}] time associated with the next flux calculation. The name of
+the sub-directory where this information is to be stored is constructed in the
+same manner as for the \dusa{xti} input. By default (fixed default)
+\dusa{xtr}=\dusa{xtf}.
+
+\item[\moc{S}] keyword to specify that the time is given in seconds.
+
+\item[\moc{DAY}] keyword to specify that the time is given in days.
+
+\item[\moc{YEAR}] keyword to specify that the time is given in years.
+
+\item[\moc{COOL}] keyword to specify that a zero flux burnup calculation is to
+be performed. 
+
+\item[\moc{FLUX}] keyword to specify that a constant flux burnup
+calculation is to be performed.  
+
+\item[\dusa{flux}] flux expressed in $cm^{-2}s^{-1}$. 
+
+\item[\moc{POWR}] keyword to specify that a constant fuel power depletion
+calculation is to be performed. The energy released outside the fuel (e.g., by
+(n,$\gamma$) reactions) is {\sl not} taken into account in the flux normalization,
+unless the \moc{GLOB} option is set.
+
+\item[\dusa{fpower}] fuel power expressed in $KW\;Kg^{-1}=MW\;{\it tonne}^{-1}$.
+
+\item[\moc{W/CC}] keyword to specify that a constant assembly power depletion
+calculation is to be performed. The energy released outside the fuel (e.g., by
+(n,$\gamma$) reactions) is always taken into account in the flux normalization.
+
+\item[\dusa{apower}] assembly power density expressed in $W/cm^3$ (Power per
+unit assembly volume).
+
+\item[\moc{KEEP}] keyword to specify that the flux is used without been normalized.
+This option is useful in cases where the flux was already normalized before the call to
+\moc{EVO:} module.
+
+\item[\moc{EPS1}] keyword to specify the tolerance used in the algorithm for
+the solution of the depletion equations.
+
+\item[\dusa{valeps1}] the tolerance used in the algorithm for the solution of the
+depletion equations. The default value is \dusa{valeps1}=$1.0\times 10^{-5}$.
+
+\item[\moc{EPS2}] keyword to specify the tolerance used in the search
+algorithm for a final fixed power (used if the \moc{POWR} or \moc{W/CC} option is activated).
+
+\item[\dusa{valeps2}] the tolerance used in the search algorithm for a final
+fixed power. The default value is \dusa{valeps2}=$1.0\times 10^{-4}$.
+
+\item[\moc{EXPM}] keyword to specify the selection criterion for non-fissile
+isotopes that are at saturation.
+
+\item[\dusa{valexp}] the isotopes for which $\lambda \times($\dusa{xtf}$-$
+\dusa{xti})$ \ge $\dusa{valexp} will be treated by a saturation approximation. Here,
+$\lambda$ is the sum of the radioactive decay constant and microscopic neutron
+absorption rate. The default value is \dusa{valexp}=80.0. In order to remove the
+saturation approximation for all isotopes set \dusa{valexp} to a very large number
+such as $1.0\times 10^{5}$. On the other way, the saturation approximation can be set
+for a specific isotope by using the keyword \moc{SAT} in Sect.~\ref{sect:descmix}
+(module \moc{LIB:}).
+
+\item[\moc{SATOFF}] keyword to remove the saturation approximation for all isotopes
+even if \moc{SAT} keyword was set in Sect.~\ref{sect:descmix} (module \moc{LIB:}).
+
+\item[\moc{H1}] keyword to specify an estimate of the relative width of the
+time step used in the solution of burnup equations.
+
+\item[\dusa{valh1}] relative width of the time step used in the solution of
+burnup equations. An initial time step of 
+$\Delta_{t}=$\dusa{valh1}$\times ($\dusa{xtf}$-$\dusa{xti}$)$ 
+is used. This value is optimized dynamically by the program. The
+default value is \dusa{valh1}=$1.0\times 10^{-4}$.
+
+\item[\moc{RUNG}] keyword to specify that the solution will be obtained using
+the $5^{th}$ order Cash-Karp algorithm.
+
+\item[\moc{KAPS}] keyword to specify that the solution will be obtained using
+the $4^{th}$ order Kaps-Rentrop algorithm. This is the default value.
+
+\item[\moc{TIXS}] keyword that specified that time independent cross sections will be used.
+This is the default option when no time dependent cross sections are provided.
+
+\item[\moc{TDXS}] keyword that specified that time dependent cross sections will be used if available.
+This is the default option when time dependent cross sections are provided.
+
+\item[\moc{NOEX}] keyword to supress the linear extrapolation of the
+microscopic reaction rates in
+the solution of the burnup equations.
+
+\item[\moc{EXTR}] keyword to perform a linear extrapolation of the microscopic reaction rates, using
+the available information preceding the initial time \dusa{xti}. This is the
+default option.
+
+\item[\moc{NOGL}] keyword to compute the burnup using the energy released in
+fuel only. This is the default option.
+
+\item[\moc{GLOB}]  keyword to compute the burnup using the energy released in
+the complete geometry. This option has an effect only in cases where some
+energy is released outside the fuel (e.g., due to (n,$\gamma$) reactions).
+This option affects both the meaning of \dusa{fpower} (given after the
+key-word \moc{POWR}) and the value of the burnup, as computed by {\tt EVO:}.
+
+\item[\moc{NSAT}] save the non--saturated initial number densities in the {\sc burnup}
+object \dusa{BRNNAM} (default value)
+
+\item[\moc{SAT}]  save the saturated initial number densities in the {\sc burnup}
+object \dusa{BRNNAM}
+
+\item[\moc{NODI}]  select \Eq{sat1} to compute the saturated number densities
+(default value)
+
+\item[\moc{DIRA}]  select \Eq{sat2} to compute the saturated number densities
+
+\item[\moc{FLUX\_FLUX}]  recover the neutron flux from \dusa{FLUNAM} object (default option)
+
+\item[\moc{FLUX\_MAC}]  recover the neutron flux from embedded macrolib present in \dusa{MICNAM} or \dusa{OLDMIC}
+object. This option is useful to deplete in cases where the neutron flux is obtained from a Monte Carlo
+calculation.
+
+\item[\moc{FLUX\_POW}]  recover the neutron flux from the \dds{power} object named \dusa{POWNAM} generated in DONJON. This option is useful in
+micro-depletion cases. The neutron flux recovered from \dusa{POWNAM} is generally normalized to the power of the full core. It is therefore
+recommended to use the \moc{KEEP} option in \moc{DEPL} data structure.
+
+\item[\moc{CHAIN}]  recover the fission yield data from {\tt 'DEPL-CHAIN'} directory of \dusa{MICNAM} or \dusa{OLDMIC}
+object (default option). With this option, the fission yield data is the same in all material mixtures.
+
+\item[\moc{PIFI}]  recover the fission yield data from {\tt 'PIFI'} and {\tt 'PYIELD'} records present in isotopic directories
+of \dusa{MICNAM} or \dusa{OLDMIC} object. With this option, the fission yield data is mixture-dependent. This option is useful
+in micro-depletion cases.
+
+\item[\moc{MIXB}]  keyword to select depleting material mixtures. By default, all mixtures
+with depleting isotopes are set as depleting.
+
+\item[\dusa{mixbrn}] indices of depleting material mixtures.
+
+\item[\moc{MIXP}]  keyword to select material mixtures producing power. By default, 
+\begin{itemize}
+\item if \moc{MIXB} is not set, all mixtures with isotopes producing power are set as producing power
+\item if \moc{MIXB} is set, the same mixtures \dusa{mixbrn} are set as producing power.
+\end{itemize}
+
+\item[\dusa{mixpwr}] indices of material mixtures producing power.
+
+\item[\moc{PICK}]  keyword used to recover the final burnup value (in MW-day/tonne) in a CLE-2000 variable.
+
+\item[\dusa{burnup}] \texttt{character*12} CLE-2000 variable name in which the extracted burnup value will be placed.
+
+\end{ListeDeDescription}
+
+\subsubsection{Power normalization in {\tt EVO:}}\label{sect:powerevo}
+
+Flux-induced depletion is dependent of the flux or power normalization factor
+given after key-words \moc{FLUX}, \moc{POWR} or \moc{W/CC}. The depletion
+steps, given after key-words \moc{SAVE}, \moc{DEPL} or \moc{SET}, are set
+in time units. Traditionally, the power normalization factor is given in
+${\it MW}\;{\it tonne}^{-1}$ and the depletion steps are given in
+${\it MWday}\;{\it tonne}^{-1}$. However, a confusion appear in cases where
+some energy is released outside the fuel (e.g., due to (n,$\gamma$) reactions).
+
+\vskip 0.2cm
+
+The accepted rule and default option in {\tt EVO:} is to compute the burnup
+steps in units of $MWday\;{\it tonne}^{-1}$ by considering only the energy
+released in fuel (and only the initial mass of the heavy elements present
+in fuel). However, it is also recommended to provide a normalization power
+taking into account the {\sl total} energy released in the global geometry.
+The \moc{GLOB} option can be use to change this rule and to use
+the energy released in the complete geometry to compute the burnup. However,
+this is not a
+common practice, as it implies a non-usual definition of the burnup.
+A more acceptable solution consists in setting the normalization power
+in power per unit volume of the complete geometry using the key-word
+\moc{W/CC}. The value of \dusa{apower} can be computed from the linear
+power $f_{\rm lin}$ (expressed in ${\it Mev}\;{\it s}^{-1}\;{\it cm}^{-1}$)
+using:
+
+\begin{equation}
+{\it apower}={f_{\rm lin} \ 1.60207 \times 10^{-13} \over V_{\rm assmb}}
+\label{eq:eq1}
+\end{equation}
+
+\noindent where $V_{\rm assmb}$ is the 2--D lumped volume of the assembly expressed in $cm^2$.
+
+\vskip 0.2cm
+
+The corresponding normalization factor $f_{\rm burnup}$ in
+${\it MW}\;{\it tonne}^{-1}$ is given as
+
+\begin{equation}
+f_{\rm burnup}={ {\it apower} \over D_{\rm g} \ F_{\rm power}}
+\label{eq:eq2}
+\end{equation}
+
+\noindent where $D_{\rm g}$ is the mass of heavy elements per unit volume
+of the complete geometry ($g\; {\it cm}^{-3}$) and $F_{\rm power}$ is the
+ratio of the energy released in the complete geometry over the energy
+released in fuel. Numerical values of $D_{\rm g}$ and $f_{\rm power}$ are
+computed by {\tt EVO:} when the parameter \dusa{iprint} is greater or
+equal to 2. The burnup $B$ corresponding to an elapsed time $\Delta t$ is
+therefore given as
+
+\begin{equation}
+B=f_{\rm burnup} \ \Delta t
+\label{eq:eq3}
+\end{equation}
+
+\noindent where $B$ is expressed in ${\it MWday}\;{\it tonne}^{-1}$ and $\Delta t$
+is expressed in ${\it day}$.
+
+\vskip 0.2cm
+
+The unit of the reaction rates depends on the normalization applied to the flux. This normalization
+takes place after the flux calculation, using the \moc{EVO:} module. Here is an example:
+
+\begin{verbatim}
+INTEGER istep := 1 ;
+REAL Tend  := 0.0  ;
+REAL Fuelpwr := 38.4 ; ! expressed in MW/tonne
+
+BURN MICROLIB := EVO: MICROLIB FLUX TRACKN ::
+  EDIT 0
+  SAVE <<Tend>> DAY POWR <<Fuelpwr>>
+;
+\end{verbatim}
+
+\noindent where \moc{BURN} is the burnup object, \moc{MICROLIB} is the Microlib used to compute the flux, \moc{FLUX} is the flux
+object and \moc{TRACKN} is the tracking object used to compute the flux. After this call, the record
+{\tt 'FLUX-NORM'} in \moc{BURN} contains a unique real number, equal to the flux normalization factor. If \moc{MICROLIB} is
+obtained using the \moc{LIB:} module, the \moc{DEPL} keyword with following data must be set (see \Sect{desclib}).
+Unfortunately, the normalization factor is kept aside and is not applied to the flux present in object \moc{FLUX}. In
+fact, only the advanced post-processing modules \moc{COMPO:} (see \Sect{COMPOData}) and \moc{SAP:} (see \Sect{SAPHYBData})
+are making use of this normalization factor.
+
+\eject

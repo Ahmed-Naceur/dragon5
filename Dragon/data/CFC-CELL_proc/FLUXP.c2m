@@ -1,0 +1,211 @@
+* DRAGON FLUX AND COMPO PROCEDURE DECK for perturbated cases
+***********************************************************************
+* Purpose:
+* compute burnup depletion for pertubed 2-D cell of CANDU reactor.
+*
+* author:
+* Richard CHAMBON 11/02/24
+* Ecole Polytechnique
+*
+***********************************************************************
+PARAMETER EDITN COMPO COMPOR LIBR EDIREF BRNREF 
+          TRKS TRKF TLINES TLINEF :: 
+ ::: LINKED_LIST TRKS TRKF EDITN COMPO COMPOR LIBR EDIREF BRNREF ; 
+ ::: SEQ_BINARY  TLINES TLINEF ;  ;
+PROCEDURE POWER PERTRB ;
+LINKED_LIST SYST CFLUX LIBTMP EDITMP ;
+MODULE LIB: SHI: ASM: FLU: EDI: CPO: RECOVER: END: DELETE: BACKUP: ;
+INTEGER LEVEL CALCU Nburn ;
+REAL POW PowRef ISTP FSTP ;
+STRING CNAM BNAM RNAM ;
+REAL TFuel TCool TMode DCool DMode
+     PCool PMode Bor  Xe   Sm  Np  Gad XeRef SmRef NpRef ;
+
+:: >>CALCU<< >>Nburn<< ;
+
+LIBTMP := LIBR ;
+EDITMP := EDIREF ;
+
+* Get concentrations for nominal case:  XeRef SmRef NpRef
+PERTRB ::  1
+   >>TFuel<< >>TCool<< >>TMode<< >>DCool<< >>DMode<<
+   >>PCool<< >>PMode<< >>Bor<< >>XeRef<< >>SmRef<< >>NpRef<<  
+   >>Gad<< ;
+
+* Get properties for current case
+PERTRB ::  <<CALCU>>
+   >>TFuel<< >>TCool<< >>TMode<< >>DCool<< >>DMode<<
+   >>PCool<< >>PMode<< >>Bor<< >>Xe<< >>Sm<< >>Np<<  
+   >>Gad<< ;
+
+* Set name in the COMPO files
+ IF CALCU 1 = THEN 
+   EVALUATE CNAM := "REF" ;
+   EVALUATE RNAM := "MODREF" ;
+ ELSEIF CALCU 2 = THEN
+   EVALUATE CNAM := "FTEMP-UP" ;
+   EVALUATE RNAM := " " ;
+ ELSEIF CALCU 3 = THEN
+   EVALUATE CNAM := "FTEMP-D" ;
+   EVALUATE RNAM := " " ;
+ ELSEIF CALCU 4 = THEN
+   EVALUATE CNAM := "CTEMP-UP" ;
+   EVALUATE RNAM := " " ;
+ ELSEIF CALCU 5 = THEN
+   EVALUATE CNAM := "CTEMP-D" ;
+   EVALUATE RNAM := " " ;
+ ELSEIF CALCU 6 = THEN
+   EVALUATE CNAM := "MTEMP-UP" ;
+   EVALUATE RNAM := "MODTP-UP" ;
+ ELSEIF CALCU 7 = THEN
+   EVALUATE CNAM := "MTEMP-D" ;
+   EVALUATE RNAM := "MODTP-D" ;
+ ELSEIF CALCU 8 = THEN
+   EVALUATE CNAM := "CDEN-UP" ;
+   EVALUATE RNAM := " " ;
+ ELSEIF CALCU 9 = THEN
+   EVALUATE CNAM := "CDEN-D" ;
+   EVALUATE RNAM := " " ;
+ ELSEIF CALCU 10 = THEN
+   EVALUATE CNAM := "MDEN-UP" ;
+   EVALUATE RNAM := "MODDEN-U" ;
+ ELSEIF CALCU 11 = THEN
+   EVALUATE CNAM := "MDEN-D" ;
+   EVALUATE RNAM := "MODDEN-D" ;
+ ELSEIF CALCU 12 = THEN
+   EVALUATE CNAM := "BORON" ;
+   EVALUATE RNAM := "MODBOR" ;
+ ELSEIF CALCU 13 = THEN
+   EVALUATE CNAM := "PURITY" ;
+   EVALUATE RNAM := "MODPUR" ;
+ ELSEIF CALCU 14 = THEN
+   EVALUATE CNAM := "XENON" ;
+   EVALUATE RNAM := " " ;
+ ELSEIF CALCU 15 = THEN
+   EVALUATE CNAM := "SM149" ;
+   EVALUATE RNAM := " " ;
+ ELSEIF CALCU 16 = THEN
+   EVALUATE CNAM := "NP239" ;
+   EVALUATE RNAM := " " ;
+ ELSEIF CALCU 17 = THEN
+   EVALUATE CNAM := "MIXFD" ;
+   EVALUATE RNAM := " " ;
+ ELSEIF CALCU 18 = THEN
+   EVALUATE CNAM := "MIXMD" ;
+   EVALUATE RNAM := " " ;
+ ELSEIF CALCU 19 = THEN
+   EVALUATE CNAM := "POWER-UP" ;
+   EVALUATE RNAM := " " ;
+ ELSEIF CALCU 20 = THEN
+   EVALUATE CNAM := "POWER-IN" ;
+   EVALUATE RNAM := " " ;
+ ELSEIF CALCU 21 = THEN
+   EVALUATE CNAM := "POWER-D" ;
+   EVALUATE RNAM := " " ;
+ ENDIF ;
+
+ECHO "FLUX CALCULATION STARTED" ;
+
+EVALUATE LEVEL := 1 ;
+
+
+* BURNUP STEPS
+WHILE LEVEL Nburn 1 + < DO
+  
+  IF LEVEL 10 < THEN
+     EVALUATE BNAM := "REF-CASE000" LEVEL I_TO_S + ;
+  ELSEIF LEVEL 100 < THEN
+     EVALUATE BNAM := "REF-CASE00" LEVEL I_TO_S + ;
+  ELSE
+     EVALUATE BNAM := "REF-CASE0" LEVEL I_TO_S + ;
+  ENDIF ;
+
+*----
+*  Update microlib for this burnup step using BRNREF
+*----
+  LIBTMP := LIB: LIBTMP BRNREF ::
+    BURN <<LEVEL>> MIX 6 MIX 7 MIX 8 MIX 9 ;
+*----
+*  Update microlib for Xe-135
+*----
+  IF Xe XeRef <> THEN 
+    LIBTMP := LIB: LIBTMP  ::
+      MAXS MIX 6 XE5 <<Xe>>  MIX 7   XE5 <<Xe>> 
+           MIX 8 XE5 <<Xe>>  MIX 9   XE5 <<Xe>> ;
+  ENDIF ;
+*----
+*  Update microlib for Sm-149
+*----
+  IF Sm SmRef <> THEN 
+    LIBTMP := LIB: LIBTMP  ::       
+      MAXS MIX 6 SM9 <<Sm>>  MIX 7   SM9 <<Sm>> 
+           MIX 8 SM9 <<Sm>>  MIX 9   SM9 <<Sm>> ;
+  ENDIF ;
+*----
+*  Update microlib for Np-239
+*----
+  IF Np NpRef <> THEN 
+    LIBTMP := LIB: LIBTMP  ::             
+      MAXS MIX 6 NP9 <<Np>>  MIX 7   NP9 <<Np>> 
+           MIX 8 NP9 <<Np>>  MIX 9   NP9 <<Np>> ;
+  ENDIF ;
+  
+  LIBTMP := SHI: LIBTMP TRKS TLINES ;
+  SYST := ASM: LIBTMP TRKF TLINEF ;
+  CFLUX := RECOVER: EDITMP :: STEP UP <<BNAM>> STEP UP MFLUXG ;
+  CFLUX   := FLU: CFLUX SYST LIBTMP TRKF     :: 
+    TYPE B B1 PNL IDEM ;
+  SYST := DELETE: SYST ;
+  ECHO "CELL HOMOGENEIZATION" ;
+  IF LEVEL 1 = THEN 
+    EDITN := EDI: CFLUX LIBTMP TRKF ::
+          COND 0.625 MERGE COMP
+          MICR ALL
+          SAVE ON <<BNAM>> ; 
+ ELSE 
+    EDITN := EDI: EDITN CFLUX LIBTMP TRKF ::
+          COND 0.625 MERGE COMP
+          MICR ALL
+          SAVE ON <<BNAM>> ; 
+ ENDIF ;
+
+  EDITN := BACKUP: EDITN CFLUX :: STEP UP <<BNAM>> STEP UP MFLUXG ;
+
+  IF LEVEL 1 = THEN
+    IF RNAM " " <> THEN
+     ECHO "REFLECTOR HOMOGENEIZATION" ;
+     EDITN := EDI: EDITN CFLUX LIBR TRKF ::
+          COND 0.625 MERGE MIX 0 0 0 0 1 0 0 0 0 0 
+          MICR ALL
+          SAVE ON 'REFLECTR    1' ;
+     COMPOR := CPO: EDITN ::
+      STEP 'REFLECTR    1'
+      EXTRACT BMOD MB11 MB10
+      EXTRACT MWAT MO16 MD2 MH1
+      NAME <<RNAM>> ;
+    ELSE 
+      COMPOR := CPO: EDITN ;
+    ENDIF ;
+  ENDIF ;
+
+  CFLUX := DELETE: CFLUX ;
+
+  EVALUATE LEVEL := LEVEL 1 + ;
+
+ENDWHILE ;
+
+*MACROSCOPIC CROSS-SECTION COMPO CREATION
+ COMPO :=  CPO: EDITN BRNREF :: 
+   BURNUP 'REF-CASE'
+   EXTRACT BMOD   MB11 MB10 
+   EXTRACT CWAT   CO16 CD2 CH1
+   EXTRACT MWAT   MO16 MD2 MH1
+   EXTRACT XE135  XE5
+   EXTRACT SM149  SM9 
+   EXTRACT NP239  NP9
+   EXTRACT FPC    FU3 FU5 FP9 FP0 FP1
+   NAME <<CNAM>> ;
+
+ECHO "FLUX CALCULATION FINISHED" ;
+
+END: ;

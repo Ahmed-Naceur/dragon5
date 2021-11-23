@@ -1,0 +1,257 @@
+****************************************************************
+*                                                              *
+* Procedure :  BoronCrit.c2m                                   *
+* Purpose   :  critical boron computation                      *
+* Author    :  V. Salino, M. Cordiez                           *
+*                                                              *
+* Remarks   : This function does not perform micro-evolution on*
+*             xenon. Since it has not been particularised, this*
+*             isotope is part of the residual isotope described*
+*             in the Saphyb objects. Therefore, xenon tran-    *
+*             sients cannot be studied with this function. For *
+*             that Xe should be particularised on Dragon side  *
+*             and its decay chain given to SCR.                *
+* Remarques : Cette fonction n'effectue pas de micro-evolution *
+*             du xenon. Vu qu'il n'est pas particularise, cet  *
+*             isotope est integre a l'isotope residuel decrit  *
+*             dans l'objet Saphyb. Ainsi, les transitoires Xe  *
+*             ne peuvent pas etre etudies avec cette fonction. *
+*             Pour cela, le Xe devrait etre particularise cote *
+*             Dragon et sa chaine de decroissance donnee a SCR.*
+* CALL      :                                                  *
+*  Power Fmap Matex := BoronCrit Fmap Matex Track              *
+*                     :: <<CBinit>> >>CB<< >>keff<< ;          *
+*                                                              *
+****************************************************************
+PARAMETER Power Fmap Matex SapUOX SapMOX MacroRefl Track ::
+  ::: LINKED_LIST Power Fmap Matex SapUOX SapMOX MacroRefl Track ; ;
+MODULE SCR: MACINI: RESINI: TRIVAA: FLUD: FLPOW: THM: MCC:
+       GREP: DELETE: ABORT: END: ;
+LINKED_LIST Flux MacroTot MacroF System Thermo PowerIter ;
+
+*--
+* Definition of the variables
+*--
+REAL CBmax := 2000.0 ;
+REAL CBmin :=    0.0 ;
+INTEGER Iter := 1 ;
+REAL CBinterp CBp1 CBm1 keff DeltaRho Rho Rhom1 ;
+LOGICAL CONV := $False_L ;
+REAL DiffBorWorth ;
+REAL CB keffPtb ;
+REAL varTcomb := 3. ; ! 3 Celcius deg variation for the Doppler calculation
+  :: >>CB<< ;
+* Thermalhydraulics parameters
+REAL dx       := 21.5 ;
+REAL Tot_tub  := 6.6E-03 2.0 ** $Pi_R * 25.0  * ;
+REAL Tot_pin  := 4.7E-03 2.0 ** $Pi_R * 264.0 * ;
+REAL asssect  := dx dx * 1.E-04 * Tot_tub - Tot_pin - ;
+REAL coresect := 157.0 asssect * ;
+*--
+* Initialized with a THM computation using a flat power distribution
+*--
+REAL Ptot := 2750.0 ;
+REAL BundPow := Ptot 157.0 / 29.0 / 1.0E+3 * (* MW to kW *) ;
+Fmap := RESINI: Fmap ::
+  EDIT 0
+  BUNDLE-POW SAME <<BundPow>> ;
+*
+REPEAT
+*--
+* Determine CB to use for interpolation
+*--
+  IF CB CBmin < THEN
+    EVALUATE CBinterp := CBmin ;
+  ELSEIF CB CBmax > THEN
+    EVALUATE CBinterp := CBmax ;
+  ELSE
+    EVALUATE CBinterp := CB ;
+  ENDIF ;
+*--
+* Thermalhydraulics computation
+*--
+  IF Iter 1 = THEN
+    Thermo Fmap := THM: Fmap ::
+      EDIT 0
+      CRITFL 4.00E+6 (* W/m^2 *)
+      ASSMB  264 25
+      CWSECT <<coresect>> 60000.0
+      INLET  155.0E+05 550.0
+      RADIUS 4.1E-03 4.2E-03 4.7E-03 6.6E-03
+      SET-PARAM 'C-BORE' <<CBinterp>>
+      CONV 50 50 50 0.1 1.0E-3
+      MONO
+      RELAX 0.4 ;
+  ELSE
+    Thermo Fmap := THM: Thermo Fmap :: EDIT 0
+      SET-PARAM 'C-BORE' <<CBinterp>> ;
+  ENDIF ;
+*--
+* Interpolation in a lacunar Saphyb
+* Xenon and historic effects are neglected for simplicity's sake
+*--
+  MacroF := SCR: SapUOX SapMOX Fmap ::
+    EDIT 0
+    MACRO LINEAR
+    TABLE SapUOX 'BURN'
+      MIX 4 INST-BURN
+        SET TF  526.85 ! Celsius
+        SET TCA 326.85 ! Celsius
+        SET DCA 0.659 ! g/cm3
+        SET ppmB 500.0 ! ppm
+        ADD 'TF' 526.85 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'TCA' 326.85 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'DCA' 0.659 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'ppmB' 500.0 MAP
+          REF 'BURN' SAMEASREF ENDREF
+      ENDMIX
+    TABLE SapMOX 'BURN'
+      MIX 5 INST-BURN
+        SET TF  526.85 ! Celsius
+        SET TCA 326.85 ! Celsius
+        SET DCA 0.659 ! g/cm3
+        SET ppmB 500.0 ! ppm
+        ADD 'TF' 526.85 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'TCA' 326.85 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'DCA' 0.659 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'ppmB' 500.0 MAP
+          REF 'BURN' SAMEASREF ENDREF
+      ENDMIX
+  ;
+*--
+* Flux and power computation
+*--
+  MacroTot Matex := MACINI: Matex MacroRefl MacroF ;
+  MacroF := DELETE: MacroF ;
+  System := TRIVAA: MacroTot Track :: EDIT 0 ;
+  MacroTot := DELETE: MacroTot ;
+  IF Iter 1 = THEN
+    Flux := FLUD: System Track :: EDIT 0 ADI 4 ACCE 5 3 EXTE 1.0E-5 ;
+  ELSE
+    Flux := FLUD: Flux System Track :: EDIT 0 ;
+  ENDIF ;
+  System := DELETE: System ;
+  GREP: Flux :: GETVAL 'K-EFFECTIVE ' 1  >>keff<<  ;
+  ECHO "Iter=" Iter "keff=" keff ;
+  PowerIter Fmap := FLPOW: Fmap Flux Track Matex ::
+    EDIT 0 PTOT <<Ptot>> PRINT DISTR POWER ;
+*--
+* Reestimate critical CB
+*--
+  EVALUATE DiffBorWorth := -7.0 ; ! pcm/ppm
+  IF Iter 2 > THEN
+    EVALUATE Rho  := 1. 1. keff / - 1.0E5 * ;
+    EVALUATE CBp1 := CBinterp Rho DiffBorWorth / - ;
+    ECHO "---" ;
+    ECHO "Iter=" Iter "keff=" keff "CB=" CB "Rho=" Rho ;
+    ECHO "CBp1" CBp1 "CBinterp=" CBinterp ;
+    ECHO "DiffBorWorth=" DiffBorWorth ;
+    ECHO "---" ;
+  ENDIF ;
+*--
+* Check convergence on CB
+*--
+  IF Iter 3 > THEN
+    IF CB CBm1 - ABS 0.05 < Rho Rhom1 - ABS 0.5 < * THEN
+      EVALUATE CONV := $True_L ;
+    ENDIF ;
+  ENDIF ;
+*--
+* Prepare next iteration
+*--
+  IF CONV NOT THEN
+    PowerIter := DELETE: PowerIter ;
+    EVALUATE CBm1 Rhom1 := CB Rho ;
+    IF Iter 2 > THEN
+      EVALUATE CB := CBp1 ;
+    ENDIF ;
+    EVALUATE Iter := Iter 1 + ;
+    IF Iter 50 > THEN
+      ECHO "BoronCrit.c2m: maximum iteration reached (50)." ;
+      ABORT: ;
+    ENDIF ;
+  ENDIF ;
+UNTIL CONV ;
+
+Power := PowerIter ;
+Flux Thermo PowerIter := DELETE: Flux Thermo PowerIter ;
+
+*--
+* Doppler coefficient calculation
+*--
+Fmap := MCC: Fmap :: REC 'T-FUEL' ADD 3. ;
+
+! Cross-section interpolation with the new T-FUEL
+MacroF := SCR: SapUOX SapMOX Fmap ::
+  EDIT 0
+  MACRO LINEAR
+  TABLE SapUOX 'BURN'
+    MIX 4 INST-BURN
+      SET TF  526.85 ! Celsius
+      SET TCA 326.85 ! Celsius
+      SET DCA 0.659 ! g/cm3
+      SET ppmB 500.0 ! ppm
+      ADD 'TF' 526.85 MAP
+        REF 'BURN' SAMEASREF ENDREF
+      ADD 'TCA' 326.85 MAP
+        REF 'BURN' SAMEASREF ENDREF
+      ADD 'DCA' 0.659 MAP
+        REF 'BURN' SAMEASREF ENDREF
+      ADD 'ppmB' 500.0 MAP
+        REF 'BURN' SAMEASREF ENDREF
+    ENDMIX
+  TABLE SapMOX 'BURN'
+    MIX 5 INST-BURN
+      SET TF  526.85 ! Celsius
+      SET TCA 326.85 ! Celsius
+      SET DCA 0.659 ! g/cm3
+      SET ppmB 500.0 ! ppm
+      ADD 'TF' 526.85 MAP
+        REF 'BURN' SAMEASREF ENDREF
+      ADD 'TCA' 326.85 MAP
+        REF 'BURN' SAMEASREF ENDREF
+      ADD 'DCA' 0.659 MAP
+        REF 'BURN' SAMEASREF ENDREF
+      ADD 'ppmB' 500.0 MAP
+        REF 'BURN' SAMEASREF ENDREF
+    ENDMIX
+;
+
+! Calcul du nouveau flux et Keff
+MacroTot Matex := MACINI: Matex MacroRefl MacroF ;
+MacroF := DELETE: MacroF ;
+System := TRIVAA: MacroTot Track :: EDIT 0 ;
+MacroTot := DELETE: MacroTot ;
+Flux := FLUD: System Track :: EDIT 0
+  ADI 4 EXTE 1.0E-5 ACCE 5 3 ;
+GREP: Flux :: GETVAL 'K-EFFECTIVE ' 1  >>keffPtb<<  ;
+
+System Flux := DELETE: System Flux ;
+
+! Calcul des reactivites et du coefficient Doppler combustible
+REAL rho := keff 1. - keff / 100000. * ;
+REAL rhoPtb := keffPtb 1. - keffPtb / 100000. * ;
+
+REAL Doppler := rhoPtb rho - varTcomb / ;
+
+! Affichage
+
+ECHO "____________________________________________________________" ;
+ECHO "Calcul de Doppler a temperature nominale"                     ;
+ECHO "Perturbation     :" varTcomb "degC"                           ;
+ECHO "Nominal          : keff =" keff ", rho =" rho                 ;
+ECHO "Perturbe         : keff =" keffPtb ", rho =" rhoPtb           ;
+ECHO "Doppler          :" Doppler "pcm/degC"                        ;
+ECHO "____________________________________________________________" ;
+
+
+  :: <<CB>> ;
+  :: <<keff>> ;
+
+END: ;

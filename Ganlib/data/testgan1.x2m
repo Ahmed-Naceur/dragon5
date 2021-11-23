@@ -1,0 +1,12 @@
+* Regression tests for CLE-2000.
+* R. Roy
+*
+PROCEDURE badluk xbessj0 xclecst xfact xjulday xmachar ;
+*
+badluk ;
+xbessj0 ;
+xclecst ;
+xfact ;
+xjulday ;
+xmachar ;
+QUIT "LIST" .

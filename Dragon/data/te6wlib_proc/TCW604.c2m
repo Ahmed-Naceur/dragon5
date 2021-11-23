@@ -1,0 +1,149 @@
+*----
+*  TEST CASE TCW604
+*  WIMS-AECL 89 GROUPS LIBRARY FILE E6MLIB
+*  ANNULAR MOSTELLER BENCHMARK WITH BURNUP
+*
+*  REF: R. Mosteller et al. Nucl. Sci. Eng. 107, 265 (1991)
+*
+*----
+*  Define variables
+*----
+INTEGER
+  istep := 1 ;
+REAL
+  evobeg evoend ;
+REAL
+  step2 step3   step4   step5 :=
+  1.0   27.1739 67.9348 135.8696 ;
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  LIBRARY MOSTELAS MOSTELA TRACKS TRACK SYS FLUX BURNUP
+  EDITION DATABASE ISOT ;
+SEQ_ASCII
+  res ;
+MODULE
+  GEO: SYBILT: LIB: SHI: ASM: FLU: EVO: EDI: COMPO: DELETE: END: ;
+PROCEDURE assertS ;
+*----
+*  Depletion data from file E6MLIB format WIMS-AECL
+*  Microscopic cross sections from file E6MLIB format WIMS-AECL
+*----
+LIBRARY := LIB: ::
+  NMIX 3 CTRA WIMS
+  DEPL LIB: WIMSAECL FIL: E6MLIB
+  MIXS LIB: WIMSAECL FIL: E6MLIB
+  MIX 1 600.0                        O16      = O16      4.61309E-2
+    U235     = U235     1.66078E-4 1
+    U238     = U238     2.28994E-2 1
+    U236     = U236     0.0
+    Pu239    = PU239    0.0        1
+  MIX 2 600.0
+    Zr91     = ZR91     3.83243E-2
+  MIX 3 600.0                        H2O      = H1       2.21163E-2
+    H1H2O    = H1H2O    4.42326E-2   O16H2O   = O16      2.21163E-2
+    BNat10   = B10      2.03245E-6   BNat11   = B11      8.18085E-6
+  ;
+*----
+*  Geometry MOSTELAS : 3 regions annular cell for self-shielding
+*           MOSTELA  : 4 regions annular cell for transport
+*----
+MOSTELAS := GEO: ::  TUBE 3
+  R+ REFL RADIUS 0.0 0.39306 0.45802 0.71206
+  MIX 1  2  3 ;
+MOSTELA  := GEO:  MOSTELAS ::
+  SPLITR 2  1  1 ;
+*----
+*  Create the reactor database
+*----
+DATABASE := COMPO: ::
+  EDIT 5
+  COMM  'Multi-parameter reactor database' ENDC
+  PARA  'BURN' IRRA
+  PARA  'FLUB' FLUB
+  INIT
+  ;
+*----
+*  Self-Shielding calculation SYBIL
+*  Transport calculation      SYBIL
+*  Flux calculation for keff with imposed buckling
+*  using B1 homogeneous leakage model
+*----
+TRACKS := SYBILT: MOSTELAS ::
+  TITLE 'TCW604: MOSTELLER BENCHMARK WITH BURNUP'
+  EDIT 1 MAXR 3 ;
+LIBRARY := SHI: LIBRARY TRACKS :: EDIT 0 NOLJ ;
+TRACK := SYBILT: MOSTELA ::
+  TITLE 'TCW604: MOSTELLER BENCHMARK WITH BURNUP'
+  EDIT 1 MAXR 4 ;
+SYS := ASM: LIBRARY TRACK ;
+FLUX := FLU: SYS LIBRARY TRACK ::
+  TYPE K B1 PNL BUCK 0.2948E-2 ;
+EDITION := EDI: FLUX LIBRARY TRACK ::
+  EDIT 3 MICR RES MERG COMP COND 4.0 SAVE  ;
+*----
+*  Burnup loop: for first step BURNUP is created
+*  while for other steps it is modified
+*  two burnup per step:
+*  1) get a first approximation of final DATABASEsition followed
+*     by a transport calculation
+*  2) use approximation for final flux distribution to get a
+*     better approximation for final DATABASEsition
+*----
+EVALUATE evoend := 0.0 ;
+WHILE evoend step2 < DO
+  EVALUATE evobeg := evoend ;
+  EVALUATE evoend := step2 ;
+  IF istep 1 = THEN
+    BURNUP LIBRARY := EVO: LIBRARY FLUX TRACK ::
+      SAVE <<evobeg>> DAY POWR 36.8
+      DEPL <<evobeg>> <<evoend>> DAY POWR 36.8
+      SET <<evoend>> DAY ;
+  ELSE
+    BURNUP LIBRARY := EVO: BURNUP LIBRARY FLUX TRACK :: NOEX
+      SAVE <<evobeg>> DAY POWR 36.8
+      DEPL <<evobeg>> <<evoend>> DAY POWR 36.8
+      SET <<evoend>> DAY ;
+  ENDIF ;
+  LIBRARY := SHI: LIBRARY TRACKS :: EDIT 0 NOLJ ;
+  SYS := DELETE: SYS ;
+  SYS := ASM: LIBRARY TRACK ;
+  FLUX := FLU: FLUX SYS LIBRARY TRACK ::
+    TYPE K B1 PNL BUCK 0.2948E-2 ;
+  BURNUP LIBRARY := EVO: BURNUP LIBRARY FLUX TRACK :: NOEX
+    SAVE <<evoend>> DAY POWR 36.8
+    DEPL <<evobeg>> <<evoend>> DAY POWR 36.8 
+    SET <<evoend>> DAY ;
+  LIBRARY := SHI: LIBRARY TRACKS :: EDIT 0 NOLJ ;
+  SYS := DELETE: SYS ;
+  SYS := ASM: LIBRARY TRACK ;
+  FLUX := FLU: FLUX SYS LIBRARY TRACK ::
+    TYPE K B1 PNL BUCK 0.2948E-2 ;
+
+  EDITION := EDI: EDITION FLUX LIBRARY TRACK ::
+    EDIT 3 SAVE  ;
+  BURNUP LIBRARY := EVO: BURNUP LIBRARY FLUX TRACK ::
+    SAVE <<evoend>> DAY POWR 36.8 ;
+  DATABASE := COMPO: DATABASE EDITION BURNUP ::
+    EDIT 3
+    SET <<evoend>> DAY
+    ;
+  EVALUATE step2 step3 step4 step5 :=
+           step3 step4 step5 step2 ;
+  EVALUATE istep := istep 1 + ;
+ENDWHILE ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.7338028 ;
+
+res := DATABASE ;
+
+ISOT := DATABASE :: STEP UP default
+                    STEP UP MIXTURES STEP AT 1
+                    STEP UP CALCULATIONS STEP AT 2
+                    STEP UP ISOTOPESLIST STEP AT 1 ;
+assertS ISOT :: 'NWT0' 1 2.901303E+01 ;
+assertS ISOT :: 'NWT0' 2 1.720704E+01 ;
+
+ECHO "test TCW604 completed" ;
+END: ; 
+QUIT "LIST" .

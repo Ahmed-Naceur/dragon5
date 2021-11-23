@@ -1,0 +1,64 @@
+\def\bff(#1){\mbox{\boldmath $#1$}}
+\DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
+\DeclareMathSymbol{\shadowA}{\mathbin}{AMSb}{'101}
+\DeclareMathSymbol{\shadowH}{\mathbin}{AMSb}{'110}
+\documentclass{report}
+%
+%  Black and white
+%
+\usepackage{IGNrapport,GuideBW}
+\usepackage{makeidx}
+\usepackage{amsmath}
+%
+%  Multicolumn
+%
+\usepackage{multicol,supertabular}
+\makeatletter
+\newenvironment{tablehere}
+  {\def\@captype{table}}
+  {}
+\newenvironment{figurehere}
+  {\def\@captype{figure}}
+  {}
+\makeatother
+\setlength{\textheight}{22.5cm}
+\topmargin -0.5cm
+
+\makeindex
+\begin{document}
+
+\title{A USER GUIDE FOR DONJON VERSION5}
+
+\author{A.~H\'ebert, D.~Sekki, and R.~Chambon}
+
+\date{\today}
+
+\RapportIGN{IGE--344}
+
+\GuideVersion{5.00}
+
+\clearpage
+\phantomsection
+\tableofcontents
+\clearpage
+\phantomsection
+\listoftables
+\clearpage
+\phantomsection
+\listoffigures
+
+\Debutdutexte
+
+\input{Intro}
+\input{General}
+\input{Modules}
+\input{Structure}
+\input{Exampl}
+\clearpage
+\phantomsection
+\input{Bibliography}
+\clearpage
+\phantomsection
+\printindex
+
+\end{document}

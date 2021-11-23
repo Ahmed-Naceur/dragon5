@@ -1,0 +1,159 @@
+***********************************************************
+*                                                         *
+* Input file :  Candu6.c2m                                *
+* Purpose    :  Test-case for Candu-6 reactor             *
+*                using DONJON4                            *
+* Author(s)  :  M. Guyot (2010)                           *
+*                                                         *
+* To run     : rdonjon4 Candu_6.x2m Candu6_procs          *
+*                       Candu6_CPOs assertS.c2m           *
+*                                                         *
+***********************************************************
+
+PROCEDURE assertS SetModel SetReflPro SetDevPro 
+          SetFuelMap SetBurnup SetDevice SetDetect ;
+
+LINKED_LIST GEOM MATEX TRACK DEVICE MACRO FMAP NEWFLUX
+            MACROFUEL MACROFUEL2 MACRO3 SYSTEM FLUX POWER 
+            DETECT ;
+
+MODULE DSET: CRE: MACINI: TRIVAT: TRIVAA: NEWMAC: DETECT:
+       FLUD: FLPOW: TINST: DELETE: GREP: END:   ;
+
+REAL Keff ;
+INTEGER MaxR := 30000 ;
+
+*--
+* Set geometry
+*--
+
+GEOM MATEX := SetModel :: <<MaxR>> ;
+TRACK := TRIVAT: GEOM :: MAXR <<MaxR>> MCFD 1 ;
+
+*--
+* Set device properties
+*--
+
+DEVICE MATEX := SetDevice MATEX ;
+
+DEVICE := DSET: DEVICE ::
+  EDIT 0
+  LZC 1 LEVEL .5026 TIME 60. END
+  LZC 2 LEVEL .5400 TIME 36. END
+  LZC 3 LEVEL .3853 TIME 36. END
+  LZC 4 LEVEL .3442 TIME 36. END
+  LZC 5 LEVEL .4485 TIME 36. END
+  LZC 6 LEVEL .5590 TIME 60. END
+  LZC 7 LEVEL .3803 TIME 36. END
+  LZC 8 LEVEL .4354 TIME 60. END
+  LZC 9 LEVEL .5313 TIME 36. END
+  LZC 10 LEVEL .5642 TIME 36. END
+  LZC 11 LEVEL .4256 TIME 36. END
+  LZC 12 LEVEL .4427 TIME 36. END
+  LZC 13 LEVEL .5752 TIME 60. END
+  LZC 14 LEVEL .5126 TIME 36. END
+ ;
+
+*--
+* Set Detectors properties
+*--
+
+DETECT := SetDetect ;
+
+*--
+* Set fuel-map and burnups
+*--
+
+FMAP MATEX := SetFuelMap MATEX ;
+
+FMAP := SetBurnup FMAP ;
+
+*--
+* Set a refuelling scheme
+*--
+
+FMAP := TINST: FMAP  ::
+          EDIT 0
+          TIME  .2  DAY REFUEL CHAN Q12  8
+          TIME  .2  DAY REFUEL CHAN O01  8
+                        REFUEL CHAN D15  8
+          TIME  .1  DAY REFUEL CHAN M02  8   
+          TIME 2.4  DAY  ;
+
+*--
+* Recover the reflector properties from the databases
+*--
+
+LINKED_LIST CPOREFL ;
+SEQ_ASCII CELNAT REFL ;
+
+CPOREFL := REFL ;
+
+MACRO := SetReflPro CPOREFL ;
+
+*--
+* Recover the device properties from the databases
+*--
+
+LINKED_LIST GT ADJ ZCR STRUC ;
+SEQ_ASCII GTUBEB RODB ZCPOB MATSTRB ;
+
+GT := GTUBEB  ;
+STRUC := MATSTRB ;
+ZCR := ZCPOB   ;
+ADJ := RODB   ;
+
+MACRO := SetDevPro MACRO GT ADJ ZCR STRUC ;
+
+*--
+* Recover the fuel properties from the databases
+*--
+
+LINKED_LIST CPOFUEL ;
+SEQ_ASCII CELNAT ;
+
+CPOFUEL := CELNAT ;
+
+MACROFUEL := CRE: CPOFUEL FMAP :: EDIT 0 READ
+            TABLE CPOFUEL 
+            MIX 1 'MIXTRXE    1'
+            INST-BURN
+            MICRO ALL
+            ENDMIX ;
+
+*--
+* Create a new macrolib including fuel, devices and reflector properties
+*--
+
+MACROFUEL2 MATEX := MACINI: MATEX MACRO MACROFUEL ::
+                 EDIT 0 ;
+
+MACRO3 MATEX := NEWMAC: MATEX MACROFUEL2 DEVICE :: EDIT 0 ;
+
+*--
+* Time-instantaneous model
+*--
+
+SYSTEM := TRIVAA: MACRO3 TRACK :: EDIT 0 ;
+
+FLUX := FLUD: SYSTEM TRACK ::  EDIT 0 EXTE 100 1.E-6 ;
+
+POWER NEWFLUX := FLPOW: FMAP FLUX TRACK MATEX ::
+          EDIT 2 PTOT 2061.4 ;
+
+DETECT := DETECT: DETECT NEWFLUX TRACK GEOM ::  
+       EDIT 5 REF 0 TIME 0.25 SIMEX ;
+
+*--
+* destroy files
+*--
+
+SYSTEM MATEX TRACK MACRO MACROFUEL MACROFUEL2 GEOM DETECT
+FMAP := DELETE: SYSTEM MATEX TRACK MACRO MACROFUEL MACROFUEL2
+DETECT GEOM FMAP ;
+
+GREP: FLUX :: GETVAL "K-EFFECTIVE" 1 >>Keff<< ;
+assertS FLUX :: "K-EFFECTIVE" 1 9.962499E-01 ;
+
+END: ;
+QUIT .

@@ -1,0 +1,29 @@
+\subsection{The {\tt G2MC:} module}\label{sect:G2MCData}
+
+The module {\tt G2MC:} is used to compute the SERPENT--, TRIPOLI4--, or MCNP--formatted surfacic elements corresponding
+to a SALOME--formatted or gigogne geometry. The general format of the input data for the
+{\tt G2MC:} module is the following:
+\begin{DataStructure}{Structure \dstr{G2MC:}}
+\dusa{MCFIL} $[$ \dusa{PSFIL} $]$ \moc{:=} \moc{G2MC:} $\{$ \dusa{SURFIL} $|$ \dusa{GEONAM} $\}$ \moc{;}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmm}
+
+\item[\dusa{MCFIL}] \texttt{character*12} name of the SERPENT--, TRIPOLI4-- or MCNP--formatted sequential {\sc ascii}
+file used to store the surfacic elements of the geometry. A SERPENT file is
+produced if the file name has extension {\tt ".sp"}. A TRIPOLI4 file is
+produced if the file name has extension {\tt ".tp"}. Otherwise, a MCNP file is
+produced. This file is to be included in the complete dataset of a Monte Carlo code.
+
+\item[\dusa{PSFIL}] \texttt{character*12} name of the sequential {\sc ascii}
+file used to store a postscript representation of the geometry corresponding to \dusa{GEONAM}.
+
+\item[\dusa{SURFIL}] \texttt{character*12} name of the {\sl read-only} SALOME--formatted sequential {\sc ascii}
+file used to store the surfacic elements of the geometry.
+
+\item[\dusa{GEONAM}] {\tt character*12} name of the {\sl read-only} \dds{geometry} data
+structure. This structure may be build using the operator {\tt GEO:} (see \Sect{GEOData}).
+\end{ListeDeDescription}
+
+\clearpage

@@ -1,0 +1,54 @@
+#!/usr/bin/python
+"""
+Subversion post-commit hook which copy (append) the issue-tracking information
+to a new (or existing) card-index in the /issues/ directory. A commit of this
+information is performed.
+"""
+#Author: Alain Hebert, Ecole Polytechnique, 2006.
+
+import os, sys, pysvn, time
+
+def main(repos, rev):
+  # Recover the revision data:
+  client = pysvn.Client()
+  log_message=client.log('file://' + repos + '', discover_changed_paths=True, \
+  revision_end=pysvn.Revision(pysvn.opt_revision_kind.number, rev))
+  message = str(log_message[0]['message'])
+  if message[11:] != ': Issue-tracking commit' and message[11:] != ':':
+    # Recover the existing card-index
+    fileName = str(log_message[0]['message'])[:11]
+    if os.path.isdir('/tmp/post-issues'):
+      os.system("chmod -R 777 /tmp/post-issues/")
+      os.system("rm -r /tmp/post-issues/")
+    myls = client.ls('file://'+repos+'/'+'/issues/')
+    myls2 = []
+    for k in range(len(myls)):
+      myls2.append(str(myls[k]['name']).split('/')[-1])
+    client.checkout('file://'+repos+'/'+'/issues/','/tmp/post-issues/',recurse=False)
+    if fileName in myls2:
+      # Recover the existing card-index and open it
+      f = open('/tmp/post-issues/'+fileName, 'a')
+    else:
+      # Create a new card-index
+      f = open('/tmp/post-issues/'+fileName, 'w')
+      f.write('Card-index: '+fileName+'\n')
+      f.write('---------------------------------------------------------\n')
+      client.add('/tmp/post-issues/'+fileName)
+    f.write(str(log_message[0]['author'])+'\n')
+    f.write(time.ctime(log_message[0]['date'])+'\n')
+    f.write('subversion revision=%d\n'%log_message[0]['revision'].number)
+    f.write(message+'\n')
+    for cpath in log_message[0]['changed_paths']:
+      f.write(cpath['action']+' '+cpath['path']+'\n')
+    f.write('---------------------------------------------------------\n')
+    f.close()
+    #committing the issue-tracking card-index to the repository
+    client.cleanup('/tmp/post-issues/')
+    client.checkin(['/tmp/post-issues/'], fileName+': Issue-tracking commit')
+    os.system("rm -r -f /tmp/post-issues/")
+
+if __name__ == '__main__':
+  if len(sys.argv) < 3:
+    sys.stderr.write("Usage: %s repos rev\n" % (sys.argv[0]))
+  else:
+    main(sys.argv[1], sys.argv[2])

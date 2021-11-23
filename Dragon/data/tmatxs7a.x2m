@@ -1,0 +1,7 @@
+* Regression tests for MATXS7A capabilities in Dragon.
+* Running time = ~ 30s
+* A. Hebert
+*
+PROCEDURE TCXA01 ;
+TCXA01  ;
+QUIT "LIST" .

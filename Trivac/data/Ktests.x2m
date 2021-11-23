@@ -1,0 +1,351 @@
+*********************************************
+*    NON REGRESSION TESTS FOR KINETICS      *
+*        Author: D.Sekki (04/2008)          *
+*********************************************
+PROCEDURE assertS ptrack1 pbivac1 pdrive1
+ pdrive2 pdrive3 pdrive4 pdrive5 pdrive6
+ pdrive7 pdrive8 pdrive9 pdrive10 pdrive11
+ pdrive12 pdrive13 pdrive14 pdrive15 pdrive16
+ pdrive17 pdrive18 pdrive19 pdrive20 pdrive21
+ pdrive22 pdrive23 pdrive24 pdrive25 pdrive26
+ pdrive27 pdrive28 pdrive29 pdrive30 pdrive31
+ pspn_bivac pspn_trivac mcfd1 dual12_biv dual12_tri
+ prim12_biv prim12_tri spn12_biv spn12_tri dual13_biv
+ prim13_biv lmw2D ;
+
+MODULE DELETE: END: ;
+LINKED_LIST MACRO TRACK SYSTEM FLUX ;
+INTEGER maxItr MaxReg := 10 1000 ;
+INTEGER degre quadr nadi ;
+REAL precf := 1.0E-6 ;
+STRING method ;
+*
+ECHO " *****  Ktest01 *****" ;
+EVALUATE method := "MCFD" ;
+EVALUATE degre quadr nadi := 1 1 1 ;
+MACRO TRACK SYSTEM FLUX := ptrack1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.997770 ;
+pdrive1 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest01 completed" ;
+*
+ECHO " *****  Ktest02 *****" ;
+EVALUATE degre := 2 ;
+MACRO TRACK SYSTEM FLUX := ptrack1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977043 ;
+pdrive2 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest02 completed" ;
+*
+ECHO " *****  Ktest03 *****" ;
+EVALUATE method := "PRIM" ;
+EVALUATE degre := 1 ;
+MACRO TRACK SYSTEM FLUX := ptrack1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9979774 ;
+pdrive3 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest03 completed" ;
+*
+ECHO " *****  Ktest04 *****" ;
+EVALUATE degre := 2 ;
+MACRO TRACK SYSTEM FLUX := ptrack1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977074 ;
+pdrive4 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest04 completed" ;
+*
+ECHO " *****  Ktest05 *****" ;
+EVALUATE method := "DUAL" ;
+EVALUATE degre quadr := 1 1 ;
+MACRO TRACK SYSTEM FLUX := ptrack1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9976563 ;
+pdrive5 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest05 completed" ;
+*
+ECHO " *****  Ktest06 *****" ;
+EVALUATE degre quadr := 1 2 ;
+MACRO TRACK SYSTEM FLUX := ptrack1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.99777007 ;
+pdrive6 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest06 completed" ;
+*
+ECHO " *****  Ktest07 *****" ;
+EVALUATE degre quadr := 1 3 ;
+MACRO TRACK SYSTEM FLUX := ptrack1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9976792 ;
+pdrive7 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest07 completed" ;
+*
+ECHO " *****  Ktest08 *****" ;
+EVALUATE degre quadr := 2 1 ;
+MACRO TRACK SYSTEM FLUX := ptrack1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977172 ;
+pdrive8 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest08 completed" ;
+*
+ECHO " *****  Ktest09 *****" ;
+EVALUATE degre quadr := 2 2 ;
+MACRO TRACK SYSTEM FLUX := ptrack1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977043 ;
+pdrive9 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest09 completed" ;
+*
+ECHO " *****  Ktest10 *****" ;
+EVALUATE degre quadr := 2 3 ;
+MACRO TRACK SYSTEM FLUX := ptrack1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977345 ;
+pdrive10 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest10 completed" ;
+*
+ECHO " *****  Ktest11 *****" ;
+EVALUATE degre quadr := 3 1 ;
+MACRO TRACK SYSTEM FLUX := ptrack1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977306 ;
+pdrive11 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest11 completed" ;
+*
+ECHO " *****  Ktest12 *****" ;
+EVALUATE degre quadr := 3 2 ;
+MACRO TRACK SYSTEM FLUX := ptrack1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977283 ;
+pdrive12 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest12 completed" ;
+*
+ECHO " *****  Ktest13 *****" ;
+EVALUATE degre quadr := 3 3 ;
+MACRO TRACK SYSTEM FLUX := ptrack1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977332 ;
+pdrive13 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest13 completed" ;
+*
+ECHO " *****  Ktest14 *****" ;
+EVALUATE method := "PRIM" ;
+EVALUATE degre quadr := 1 1 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977993 ;
+pdrive14 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest14 completed" ;
+*
+ECHO " *****  Ktest15 *****" ;
+EVALUATE degre quadr := 1 2 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9979696 ;
+pdrive15 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest15 completed" ;
+*
+ECHO " *****  Ktest16 *****" ;
+EVALUATE degre quadr := 1 3 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9976777 ;
+pdrive16 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest16 completed" ;
+*
+ECHO " *****  Ktest17 *****" ;
+EVALUATE degre quadr := 2 1 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977984 ;
+pdrive17 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest17 completed" ;
+*
+ECHO " *****  Ktest18 *****" ;
+EVALUATE degre quadr := 2 2 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977235 ;
+pdrive18 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest18 completed" ;
+*
+ECHO " *****  Ktest19 *****" ;
+EVALUATE degre quadr := 2 3 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977491 ;
+pdrive19 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest19 completed" ;
+*
+ECHO " *****  Ktest20 *****" ;
+EVALUATE degre quadr := 3 1 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+*assertS FLUX :: 'K-EFFECTIVE' 1 0.9978661 ;
+pdrive20 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest20 completed" ;
+*
+ECHO " *****  Ktest21 *****" ;
+EVALUATE degre quadr := 3 2 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> 1.0E-5 ;
+*assertS FLUX :: 'K-EFFECTIVE' 1 0.99770 ;
+pdrive21 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest21 completed" ;
+*
+ECHO " *****  Ktest22 *****" ;
+EVALUATE degre quadr := 3 3 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+*assertS FLUX :: 'K-EFFECTIVE' 1 0.99765 ;
+pdrive22 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest22 completed" ;
+*
+ECHO " *****  Ktest23 *****" ;
+EVALUATE method := "DUAL" ;
+EVALUATE degre quadr := 1 1 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9976563 ;
+pdrive23 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest23 completed" ;
+*
+ECHO " *****  Ktest24 *****" ;
+EVALUATE degre quadr := 1 2 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977701 ;
+pdrive24 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest24 completed" ;
+*
+ECHO " *****  Ktest25 *****" ;
+EVALUATE degre quadr := 1 3 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9976793 ;
+pdrive25 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest25 completed" ;
+*
+ECHO " *****  Ktest26 *****" ;
+EVALUATE degre quadr := 2 1 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977170 ;
+pdrive26 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest26 completed" ;
+*
+ECHO " *****  Ktest27 *****" ;
+EVALUATE degre quadr := 2 2 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977043 ;
+pdrive27 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest27 completed" ;
+*
+ECHO " *****  Ktest28 *****" ;
+EVALUATE degre quadr := 2 3 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977344 ;
+pdrive28 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest28 completed" ;
+*
+ECHO " *****  Ktest29 *****" ;
+EVALUATE degre quadr := 3 1 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977307 ;
+pdrive29 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest29 completed" ;
+*
+ECHO " *****  Ktest30 *****" ;
+EVALUATE degre quadr := 3 2 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977284 ;
+pdrive30 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest30 completed" ;
+*
+ECHO " *****  Ktest31 *****" ;
+EVALUATE degre quadr := 3 3 ;
+MACRO TRACK SYSTEM FLUX := pbivac1 :: <<MaxReg>>
+ <<method>> <<degre>> <<quadr>> <<precf>> ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9977333 ;
+pdrive31 MACRO TRACK SYSTEM FLUX ::
+ <<maxItr>> <<precf>> <<nadi>> ;
+MACRO TRACK SYSTEM FLUX := DELETE: MACRO TRACK SYSTEM FLUX ;
+ECHO "Ktest31 completed" ;
+*
+pspn_bivac ;
+pspn_trivac ;
+mcfd1 ;
+dual12_biv ;
+dual12_tri ;
+prim12_biv ;
+prim12_tri ;
+spn12_biv ;
+spn12_tri ;
+dual13_biv ;
+prim13_biv ;
+lmw2D ;
+END: ;
+QUIT .

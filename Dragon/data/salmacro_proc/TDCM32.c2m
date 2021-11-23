@@ -1,0 +1,95 @@
+*----
+*  TEST CASE TDCM32
+*  MACROSCOPIC CROSS SECTIONS
+*  SIMPLE BWR WITH PIJ (SPECULAR BC)
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST MACRO GEOM TRACK PIJ FLUX ;
+MODULE MAC: GEO: G2S: SALT: ASM: FLU: END: ;
+SEQ_BINARY TRACK_FIL ;
+SEQ_ASCII Fic_SAL Fic_SAL.eps ;
+PROCEDURE assertS ;
+*
+MACRO := MAC: ::
+     EDIT 2 NGRO 1 NMIX 5 NIFI 1
+     READ INPUT
+     MIX 1 (*COMBUSTIBLE*)
+        TOTAL 0.3652    SCAT 1 1 0.3234
+        NUSIGF 0.05564      CHI 1.0
+     MIX 2 (*GAINE*)
+        TOTAL 0.4029        SCAT 1 1 0.4000
+     MIX 3 (*EAU*)
+        TOTAL 0.3683        SCAT 1 1 0.3661
+;
+GEOM := GEO: ::
+     CAR2D 2 2
+     X- REFL  X+ SYME
+     Y- REFL  Y+ SYME
+     MIX  C1 C2
+          C2 C3
+     TURN  A  A
+           F  A          
+     ::: C1 := GEO: CAR2D 4 4
+          MIX  SC1 SC2 SC2 SC2
+               SC2 SC3 SC3 SC3
+               SC2 SC3 SC3 SC3
+               SC2 SC3 SC3 SC3
+          TURN   A   A   A   A
+                 F   A   A   A
+                 F   A   A   A
+                 F   A   A   A
+          ::: SC1 := GEO: CARCEL 1
+               MESHX  0.0 2.25
+               MESHY  0.0 2.25
+               RADIUS 0.0 1.75
+               OFFCENTER -1.125 -1.125
+               MIX 2 3
+          ;
+          ::: SC2 := GEO: CAR2D 1 2
+               MIX SSC1 SC3
+               ::: SSC1 := GEO: CARCEL 2
+                    MESHX  0.0 1.5
+                    MESHY  0.0 0.75
+                    RADIUS 0.0 0.4 0.6
+                    OFFCENTER 0.0 -0.375
+                    MIX 1 2 3
+               ;
+          ;
+          ::: SC3 := GEO: CARCEL 2
+               MESHX  0.0 1.5
+               MESHY  0.0 1.5
+               RADIUS 0.0 0.4 0.6
+               MIX 1 2 3
+          ;
+     ;
+     ::: C2 := GEO: CAR2D 1 6
+          MIX  SC4 C3 C3 C3 C3 C3
+          ::: SC4 := GEO: CAR2D 1 1
+               MESHX  0.0 1.0
+               MESHY  0.0 1.75
+               MIX 3
+          ;
+     ;
+     ::: C3 := GEO: CARCEL 1
+          MESHX  0.0 1.0
+          MESHY  0.0 1.0
+          RADIUS 0.0 0.3
+          MIX 2   3
+     ;
+;
+Fic_SAL Fic_SAL.eps := G2S: GEOM ;
+
+TRACK TRACK_FIL := SALT: Fic_SAL ::
+     EDIT 1
+     TSPC 4 10.0
+     ;
+
+PIJ := ASM: MACRO TRACK TRACK_FIL :: PIJ ;
+
+FLUX := FLU: MACRO PIJ TRACK TRACK_FIL :: TYPE K ;
+
+assertS FLUX :: 'K-EFFECTIVE' 1 1.040070 ;
+
+ECHO "test TDCM32 completed" ;
+END: ;

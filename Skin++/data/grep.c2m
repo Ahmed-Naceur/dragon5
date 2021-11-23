@@ -1,0 +1,15 @@
+ !
+ ! Grep a value in the state-vector of a LCM object
+ !
+ !  input  to  "grep": *lcm object*
+ ! output from "grep": *nb_mix*
+ !
+ PARAMETER GEOM ::
+    ::: LINKED_LIST GEOM ; ;
+ MODULE GREP: END: ;
+ INTEGER   nb_mix ;
+ 
+ GREP: GEOM :: GETVAL 'STATE-VECTOR' 7 >>nb_mix<< ;
+  :: <<nb_mix>>  ;
+ END: ;
+ QUIT .

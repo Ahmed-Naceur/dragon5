@@ -1,0 +1,174 @@
+*----
+*  TEST CASE TDCM49
+*  MACROSCOPIC CROSS SECTIONS
+*  4-group eighth UOX assembly with AIC in DRAGON
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST GEON2 MACRO4G TRACKN2 SYS FLUX2 EDIT ;
+MODULE GEO: G2S: SALT: MCCGT: ASM: FLU: MAC: OUT: ERROR: ABORT: END: ;
+SEQ_ASCII UOX_AIC FIG_AIC ;
+SEQ_BINARY TF_EXC ;
+SEQ_ASCII RCOND2 :: FILE './AIC_SN_CCOND2.ref' ;
+INTEGER an2d := 12 ;
+REAL densur := 25.0 ;
+REAL erra DELTA ;
+PROCEDURE assertS ;
+
+*----
+*  Input geometry data
+*----
+REAL mesh1 := 0.37 ;
+REAL mesh2 := mesh1 0.52 + ;
+REAL mesh3 := mesh2 0.74 + ;
+REAL mesh4 := mesh3 0.52 + ;
+REAL mesh5 := mesh4 0.74 + ;
+REAL mesh6 := mesh5 0.52 + ;
+REAL mesh7 := mesh6 0.74 + ;
+REAL mesh8 := mesh7 0.52 + ;
+REAL mesh9 := mesh8 0.74 + ;
+REAL mesh10 := mesh9 0.52 + ;
+REAL mesh11 := mesh10 0.74 + ;
+REAL mesh12 := mesh11 0.52 + ;
+REAL mesh13 := mesh12 0.74 + ;
+REAL mesh14 := mesh13 0.52 + ;
+REAL mesh15 := mesh14 0.74 + ;
+REAL mesh16 := mesh15 0.52 + ;
+REAL mesh17 := mesh16 0.74 + ;
+REAL mesh18 := mesh17 0.26 + ;
+*
+GEON2 := GEO: :: CAR2D 18 18
+  EDIT 0
+  X- DIAG X+ REFL
+  Y- REFL Y+ DIAG
+  MESHX 0.0 <<mesh1>> <<mesh2>> <<mesh3>> <<mesh4>> <<mesh5>> <<mesh6>>
+        <<mesh7>> <<mesh8>> <<mesh9>> <<mesh10>> <<mesh11>> <<mesh12>>
+        <<mesh13>> <<mesh14>> <<mesh15>> <<mesh16>> <<mesh17>>
+        <<mesh18>>
+  MESHY 0.0 <<mesh1>> <<mesh2>> <<mesh3>> <<mesh4>> <<mesh5>> <<mesh6>>
+        <<mesh7>> <<mesh8>> <<mesh9>> <<mesh10>> <<mesh11>> <<mesh12>>
+        <<mesh13>> <<mesh14>> <<mesh15>> <<mesh16>> <<mesh17>>
+        <<mesh18>>
+  SPLITX 2 2 4 2 4 2 4 2 4 2 4 2 4 2 4 2 4 1
+  SPLITY 2 2 4 2 4 2 4 2 4 2 4 2 4 2 4 2 4 1
+  MIX
+  1 1 2 1 2 1 4 1 2 1 2 1 4 1 2 1 3 1
+    1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+      3 1 3 1 2 1 3 1 3 1 2 1 3 1 3 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+          3 1 2 1 3 1 3 1 2 1 3 1 3 1
+            1 1 1 1 1 1 1 1 1 1 1 1 1
+              4 1 2 1 2 1 4 1 2 1 3 1
+                1 1 1 1 1 1 1 1 1 1 1
+                  3 1 2 1 2 1 3 1 3 1
+                    1 1 1 1 1 1 1 1 1
+                      4 1 2 1 3 1 3 1
+                        1 1 1 1 1 1 1
+                          3 1 3 1 3 1
+                            1 1 1 1 1
+                              3 1 3 1
+                                1 1 1
+                                  3 1
+                                    1
+;
+*----
+*  Input Macrolib
+*----
+MACRO4G := MAC: ::
+ EDIT 1 NGRO 4 NMIX 4 NIFI 1 ANIS 2
+ READ INPUT
+ MIX     1 (* WATER *)
+    TOTAL  5.316E-01 9.352E-01 9.931E-01 1.5931E+00
+    TRANC  2.880E-01 5.529E-01 4.936E-01 4.4340E-01
+     SCAT 1 1 (*1->1*) 4.973E-01
+          2 2 (*2->2*) 6.570E-01 (*1->2*) 3.134E-02
+          4 4 (*4->3*) 1.163E-02 (*3->3*) 7.176E-01 (*2->3*) 2.528E-01
+                                                    (*1->3*) 2.304E-03
+          4 4 (*4->4*) 1.565E+00 (*3->4*) 2.707E-01 (*2->4*) 2.412E-02
+                                                    (*1->4*) 2.228E-04
+          1 1 (*1->1*) 2.735E-01
+          2 2 (*2->2*) 4.253E-01 (*1->2*) 1.410E-02
+          4 4 (*4->3*) 5.064E-03 (*3->3*) 4.286E-01 (*2->3*) 1.203E-01
+                                                    (*1->3*) 3.050E-04
+          4 4 (*4->4*) 4.384E-01 (*3->4*) 6.426E-02 (*2->4*) 3.373E-03
+                                                    (*1->4*) 1.245E-05
+ MIX     2 (* FUEL 1 *)
+    TOTAL  4.097E-01 6.286E-01 4.594E-01 7.508E-01
+    TRANC  4.841E-02 7.939E-03 8.080E-03 8.038E-03
+    NUSIGF 1.632E-02 9.259E-02 1.129E-01 6.508E-01
+    CHI    1.000E+00 0.000E+00 0.000E+00 0.000E+00
+     SCAT 1 1 (*1->1*) 3.908E-01
+          2 2 (*2->2*) 4.407E-01 (*1->2*) 8.546E-04
+          3 4 (*4->3*) 5.318E-03 (*3->3*) 3.785E-01 (*2->3*) 8.057E-03
+          2 4 (*4->4*) 3.983E-01 (*3->4*) 1.203E-02
+          1 1 (*1->1*) 4.793E-02
+          2 2 (*2->2*) 5.419E-03  (*1->2*) -2.640E-04
+          3 4 (*4->3*) -7.338E-04 (*3->3*) 9.014E-03 (*2->3*) -2.453E-03
+          2 4 (*4->4*) 8.769E-03  (*3->4*) -2.572E-03
+ MIX     3 (* FUEL 2 *)
+    TOTAL  4.072E-01 6.223E-01 4.599E-01 7.504E-01
+    TRANC  4.927E-02 7.872E-03 8.166E-03 8.040E-03
+    NUSIGF 1.652E-02 9.136E-02 1.143E-01 6.500E-01
+    CHI    1.000E+00 0.000E+00 0.000E+00 0.000E+00
+     SCAT 1 1 (*1->1*) 3.885E-01
+          2 2 (*2->2*) 4.387E-01 (*1->2*) 8.562E-04
+          3 4 (*4->3*) 5.236E-03 (*3->3*) 3.780E-01 (*2->3*) 8.591E-03
+          2 4 (*4->4*) 3.984E-01 (*3->4*) 1.229E-02
+          1 1 (*1->1*) 4.981E-02
+          2 2 (*2->2*) 3.100E-03  (*1->2*) -2.624E-04
+          3 4 (*4->3*) -7.231E-04 (*3->3*) 1.142E-02 (*2->3*) -2.610E-03
+          2 4 (*4->4*) 8.764E-03  (*3->4*) -2.604E-03
+ MIX     4 (* AIC *)
+    TOTAL  4.240E-01 1.0476E+00 2.7503E+00 1.1194E+01
+    TRANC  0.000E+00 0.000E+00  0.000E+00  0.000E+00
+     SCAT 1 1 (*1->1*) 3.738E-01
+          2 2 (*2->2*) 4.102E-01 (*1->2*) 2.439E-04
+          3 4 (*4->3*) 4.985E-03 (*3->3*) 4.956E-01 (*2->3*) 7.370E-04
+          2 4 (*4->4*) 2.996E-01 (*3->4*) 3.248E-03
+          1 1 (*1->1*) 0.000E+00
+          1 2 (*2->2*) -6.161E-02
+          1 3 (*3->3*) -2.326E-01
+          1 4 (*4->4*) 0.000E+00
+;
+
+UOX_AIC FIG_AIC := G2S: GEON2 :: DRAWMIX ;
+
+TRACKN2 TF_EXC := SALT: UOX_AIC ::
+  EDIT 3
+  ALLG
+  ANIS 2 TSPC EQW2 <<an2d>> <<densur>> REND
+;
+*
+TRACKN2 := MCCGT: TRACKN2 TF_EXC ::
+  EDIT 2
+  LCMD 3 AAC 150 TMT SCR 0 EPSI 1E-5
+  MAXI 1 KRYL 0 HDD 0.0 LDC ;
+
+SYS := ASM: MACRO4G TRACKN2 TF_EXC :: ARM EDIT 1 ;    
+
+FLUX2 := FLU: MACRO4G SYS TRACKN2 TF_EXC :: 
+     EDIT 1 TYPE K EXTE 100 1E-5 ;
+assertS FLUX2 :: 'K-EFFECTIVE' 1 0.9144034 ;
+
+EDIT := OUT: FLUX2 TRACKN2 MACRO4G GEON2 ::
+       EDIT 2 INTG IN
+       ;
+ERROR: RCOND2 EDIT :: PICK ERASUM >>erra<< ;
+
+*----
+*  Assert statistic on erra
+*----
+REAL REFVALUE := 0.07815 ;
+EVALUATE DELTA := erra REFVALUE - REFVALUE / ABS ;
+IF DELTA 1.0E-2 < THEN
+  ECHO "TEST SUCCESSFUL; DELTA=" DELTA ;
+ELSE
+  ECHO "------------" ;
+  ECHO "TEST FAILURE" ;
+  ECHO "------------" ;
+  ECHO "REFERENCE=" REFVALUE " CALCULATED=" erra ;
+  ABORT: ;
+ENDIF ;
+
+ECHO "test TDCM49 completed" ;
+END: ;

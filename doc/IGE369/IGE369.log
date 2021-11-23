@@ -1,0 +1,1647 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.9.14)  10 NOV 2021 21:43
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**IGE369.tex
+(./IGE369.tex
+LaTeX2e <2020-10-01> patch level 4
+L3 programming layer <2021-02-18>
+\symAMSb=\mathgroup4
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/base/report.cls
+Document Class: report 2020/04/10 v1.4m Standard LaTeX document class
+(/usr/local/texlive/2021/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2020/04/10 v1.4m Standard LaTeX file (size option)
+)
+\c@part=\count179
+\c@chapter=\count180
+\c@section=\count181
+\c@subsection=\count182
+\c@subsubsection=\count183
+\c@paragraph=\count184
+\c@subparagraph=\count185
+\c@figure=\count186
+\c@table=\count187
+\abovecaptionskip=\skip47
+\belowcaptionskip=\skip48
+\bibindent=\dimen138
+)
+(./IGNrapport.sty
+Package: IGNrapport 1998/09/18
+ (/usr/local/texlive/2021/texmf-dist/tex/latex/tools/array.sty
+Package: array 2020/10/01 v2.5c Tabular extension package (FMi)
+\col@sep=\dimen139
+\ar@mcellbox=\box47
+\extrarowheight=\dimen140
+\NC@list=\toks15
+\extratabsurround=\skip49
+\backup@length=\skip50
+\ar@cellbox=\box48
+) (/usr/local/texlive/2021/texmf-dist/tex/latex/cite/cite.sty
+LaTeX Info: Redefining \cite on input line 302.
+LaTeX Info: Redefining \nocite on input line 332.
+Package: cite 2015/02/27  v 5.5
+)
+(/usr/local/texlive/2021/texmf-dist/tex/latex/tools/indentfirst.sty
+Package: indentfirst 1995/11/23 v1.03 Indent first paragraph (DPC)
+)
+(/usr/local/texlive/2021/texmf-dist/tex/latex/graphics/epsfig.sty
+Package: epsfig 2017/06/25 v1.7b (e)psfig emulation (SPQR)
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2020/09/09 v1.2b Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks16
+)
+(/usr/local/texlive/2021/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2020/08/30 v1.4c Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(/usr/local/texlive/2021/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 105.
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/graphics-def/pdftex.def
+File: pdftex.def 2020/10/05 v1.2a Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen141
+\Gin@req@width=\dimen142
+)
+\epsfxsize=\dimen143
+\epsfysize=\dimen144
+)
+(/usr/local/texlive/2021/texmf-dist/tex/latex/base/fleqn.sty
+
+LaTeX Warning: inputting `fleqn.clo' instead of obsolete `fleqn.sty'.
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/base/fleqn.clo
+File: fleqn.clo 2016/12/29 v1.2b Standard LaTeX option (flush left equations)
+\mathindent=\skip51
+Applying: [2015/01/01] Make \[ robust on input line 50.
+LaTeX Info: Redefining \[ on input line 51.
+Already applied: [0000/00/00] Make \[ robust on input line 62.
+Applying: [2015/01/01] Make \] robust on input line 74.
+LaTeX Info: Redefining \] on input line 75.
+Already applied: [0000/00/00] Make \] robust on input line 83.
+))
+(/usr/local/texlive/2021/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2021-02-27 v7.00k Hypertext links for LaTeX
+
+(/usr/local/texlive/2021/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+Package: ltxcmds 2020-05-10 v1.25 LaTeX kernel commands for general use (HO)
+)
+(/usr/local/texlive/2021/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2020/03/06 v1.0d TeX engine tests
+)
+(/usr/local/texlive/2021/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(/usr/local/texlive/2021/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+(/usr/local/texlive/2021/texmf-dist/tex/generic/kvsetkeys/kvsetkeys.sty
+Package: kvsetkeys 2019/12/15 v1.18 Key value parser (HO)
+)
+(/usr/local/texlive/2021/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+)
+(/usr/local/texlive/2021/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
+)
+(/usr/local/texlive/2021/texmf-dist/tex/latex/hycolor/hycolor.sty
+Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
+)
+(/usr/local/texlive/2021/texmf-dist/tex/latex/letltxmacro/letltxmacro.sty
+Package: letltxmacro 2019/12/03 v1.6 Let assignment for LaTeX macros (HO)
+)
+(/usr/local/texlive/2021/texmf-dist/tex/latex/auxhook/auxhook.sty
+Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
+)
+(/usr/local/texlive/2021/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+Package: kvoptions 2020-10-07 v3.14 Key value format for package options (HO)
+)
+\@linkdim=\dimen145
+\Hy@linkcounter=\count188
+\Hy@pagecounter=\count189
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2021-02-27 v7.00k Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+)
+(/usr/local/texlive/2021/texmf-dist/tex/latex/hyperref/hyperref-langpatches.def
+File: hyperref-langpatches.def 2021-02-27 v7.00k Hyperref: patches for babel la
+nguages
+) (/usr/local/texlive/2021/texmf-dist/tex/generic/intcalc/intcalc.sty
+Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
+)
+(/usr/local/texlive/2021/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
+)
+\Hy@SavedSpaceFactor=\count190
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/hyperref/puenc.def
+File: puenc.def 2021-02-27 v7.00k Hyperref: PDF Unicode definition (HO)
+Now handling font encoding PU ...
+... no UTF-8 mapping file for font encoding PU
+)
+Package hyperref Info: Hyper figures OFF on input line 4192.
+Package hyperref Info: Link nesting OFF on input line 4197.
+Package hyperref Info: Hyper index ON on input line 4200.
+Package hyperref Info: Plain pages OFF on input line 4207.
+Package hyperref Info: Backreferencing OFF on input line 4212.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4445.
+\c@Hy@tempcnt=\count191
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip16
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 4804.
+\XeTeXLinkMargin=\dimen146
+
+(/usr/local/texlive/2021/texmf-dist/tex/generic/bitset/bitset.sty
+Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
+
+(/usr/local/texlive/2021/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
+)
+))
+\Fld@menulength=\count192
+\Field@Width=\dimen147
+\Fld@charsize=\dimen148
+Package hyperref Info: Hyper figures OFF on input line 6075.
+Package hyperref Info: Link nesting OFF on input line 6080.
+Package hyperref Info: Hyper index ON on input line 6083.
+Package hyperref Info: backreferencing OFF on input line 6090.
+Package hyperref Info: Link coloring OFF on input line 6095.
+Package hyperref Info: Link coloring with OCG OFF on input line 6100.
+Package hyperref Info: PDF/A mode OFF on input line 6105.
+LaTeX Info: Redefining \ref on input line 6145.
+LaTeX Info: Redefining \pageref on input line 6149.
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/base/atbegshi-ltx.sty
+Package: atbegshi-ltx 2020/08/17 v1.0a Emulation of the original atbegshi packa
+ge
+with kernel methods
+)
+\Hy@abspage=\count193
+\c@Item=\count194
+\c@Hfootnote=\count195
+)
+Package hyperref Info: Driver (autodetected): hpdftex.
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/hyperref/hpdftex.def
+File: hpdftex.def 2021-02-27 v7.00k Hyperref driver for pdfTeX
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/base/atveryend-ltx.sty
+Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atvery packag
+e
+with kernel methods
+)
+\Fld@listcount=\count196
+\c@bookmark@seq@number=\count197
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+Package: rerunfilecheck 2019/12/05 v1.9 Rerun checks for auxiliary files (HO)
+
+(/usr/local/texlive/2021/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
+)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+86.
+)
+\Hy@SectionHShift=\skip52
+)
+Package hyperref Info: Option `colorlinks' set `true' on input line 9.
+\@indexfile=\write3
+\openout3 = `IGE369.idx'.
+
+
+Writing index file IGE369.idx
+\c@nblank=\count198
+) (./GuideBW.sty
+Package: GuideBW 1999/09/07
+ (/usr/local/texlive/2021/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+) (/usr/local/texlive/2021/texmf-dist/tex/latex/tools/longtable.sty
+Package: longtable 2020/01/07 v4.13 Multi-page Table package (DPC)
+\LTleft=\skip53
+\LTright=\skip54
+\LTpre=\skip55
+\LTpost=\skip56
+\LTchunksize=\count199
+\LTcapwidth=\dimen149
+\LT@head=\box49
+\LT@firsthead=\box50
+\LT@foot=\box51
+\LT@lastfoot=\box52
+\LT@cols=\count266
+\LT@rows=\count267
+\c@LT@tables=\count268
+\c@LT@chunks=\count269
+\LT@p@ftn=\toks17
+)
+\NotationLength=\skip57
+\DescriptionLength=\skip58
+)
+(/usr/local/texlive/2021/texmf-dist/tex/latex/base/makeidx.sty
+Package: makeidx 2014/09/29 v1.0m Standard LaTeX package
+)
+(/usr/local/texlive/2021/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+File: l3backend-pdftex.def 2021-03-18 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count270
+\l__pdf_internal_box=\box53
+)
+(./IGE369.aux
+
+LaTeX Warning: Label `sect:gptflu_data' multiply defined.
+
+
+LaTeX Warning: Label `sect:out_data' multiply defined.
+
+)
+\openout1 = `IGE369.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+ (/usr/local/texlive/2021/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count271
+\scratchdimen=\dimen150
+\scratchbox=\box54
+\nofMPsegments=\count272
+\nofMParguments=\count273
+\everyMPshowfont=\toks18
+\MPscratchCnt=\count274
+\MPscratchDim=\dimen151
+\MPnumerator=\count275
+\makeMPintoPDFobject=\count276
+\everyMPtoPDFconversion=\toks19
+) (/usr/local/texlive/2021/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+(/usr/local/texlive/2021/texmf-dist/tex/latex/graphics/color.sty
+Package: color 2020/02/24 v1.2b Standard LaTeX Color (DPC)
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package color Info: Driver file: pdftex.def on input line 147.
+)
+Package hyperref Info: Link coloring ON on input line 18.
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/refcount/refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+)
+(/usr/local/texlive/2021/texmf-dist/tex/generic/gettitlestring/gettitlestring.s
+ty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+)
+\c@section@level=\count277
+)
+LaTeX Info: Redefining \ref on input line 18.
+LaTeX Info: Redefining \pageref on input line 18.
+LaTeX Info: Redefining \nameref on input line 18.
+ (./IGE369.out) (./IGE369.out)
+\@outlinefile=\write4
+\openout4 = `IGE369.out'.
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 26.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 26.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 26.
+
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+Underfull \hbox (badness 10000) in paragraph at lines 26--26
+
+ []
+
+Package epstopdf Info: Source file: <64_bit.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 174986 bytes
+(epstopdf)             Output file: <64_bit-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:23
+(epstopdf)                    size: 13963 bytes
+(epstopdf)             Command: <repstopdf --outfile=64_bit-eps-converted-to.pd
+f 64_bit.eps>
+(epstopdf)             \includegraphics on input line 26.
+Package epstopdf Info: Output file is already uptodate.
+<64_bit-eps-converted-to.pdf, id=191, 150.5625pt x 177.66376pt>
+File: 64_bit-eps-converted-to.pdf Graphic file (type pdf)
+<use 64_bit-eps-converted-to.pdf>
+Package pdftex.def Info: 64_bit-eps-converted-to.pdf  used on input line 26.
+(pdftex.def)             Requested size: 48.22462pt x 56.9055pt.
+[1
+
+{/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./64_bi
+t-eps-converted-to.pdf>] (./Copyright.tex) (./Acknowledgments.tex [2
+
+
+])
+(./Summary.tex [3
+
+]) [4
+
+] (./IGE369.toc)
+\tf@toc=\write5
+\openout5 = `IGE369.toc'.
+
+ [5
+
+
+] (./IGE369.lof)
+\tf@lof=\write6
+\openout6 = `IGE369.lof'.
+
+ [6
+
+
+] (./IGE369.lot)
+\tf@lot=\write7
+\openout7 = `IGE369.lot'.
+
+
+[7
+
+
+] (./Section1.tex
+Section  1.
+
+Underfull \hbox (badness 10000) in alignment at lines 30--30
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 30--30
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 30--30
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 30--30
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 30--38
+[]
+ []
+
+[1
+
+
+]
+Package epstopdf Info: Source file: <trivac3.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 1023138 bytes
+(epstopdf)             Output file: <trivac3-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:26
+(epstopdf)                    size: 18713 bytes
+(epstopdf)             Command: <repstopdf --outfile=trivac3-eps-converted-to.p
+df trivac3.eps>
+(epstopdf)             \includegraphics on input line 68.
+Package epstopdf Info: Output file is already uptodate.
+<trivac3-eps-converted-to.pdf, id=391, 760.8425pt x 343.2825pt>
+File: trivac3-eps-converted-to.pdf Graphic file (type pdf)
+<use trivac3-eps-converted-to.pdf>
+Package pdftex.def Info: trivac3-eps-converted-to.pdf  used on input line 68.
+(pdftex.def)             Requested size: 455.24408pt x 205.40536pt.
+
+Underfull \hbox (badness 10000) in alignment at lines 78--78
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 78--78
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 78--78
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 78--78
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 78--81
+[]
+ []
+
+
+Overfull \hbox (5.95868pt too wide) in paragraph at lines 94--95
+[]\OT1/cmr/m/n/10 structure de-scrib-ing the change to the char-ac-ter-is-tics 
+of an ex-ist-ing ge-om-e-try (see Sect. [][]1.3.1[][]). 
+ []
+
+[2 <./trivac3-eps-converted-to.pdf>]
+Underfull \hbox (badness 10000) in alignment at lines 106--106
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 106--106
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 106--106
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 106--106
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 106--115
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 117--117
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 117--117
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 117--117
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 117--117
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 117--123
+[]
+ []
+
+[3]
+Underfull \hbox (badness 10000) in alignment at lines 173--173
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 173--173
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 173--173
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 173--173
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 173--191
+[]
+ []
+
+[4]
+Package epstopdf Info: Source file: <Fig1.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 104116 bytes
+(epstopdf)             Output file: <Fig1-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:28
+(epstopdf)                    size: 12736 bytes
+(epstopdf)             Command: <repstopdf --outfile=Fig1-eps-converted-to.pdf 
+Fig1.eps>
+(epstopdf)             \includegraphics on input line 242.
+Package epstopdf Info: Output file is already uptodate.
+<Fig1-eps-converted-to.pdf, id=414, 469.00218pt x 228.855pt>
+File: Fig1-eps-converted-to.pdf Graphic file (type pdf)
+<use Fig1-eps-converted-to.pdf>
+Package pdftex.def Info: Fig1-eps-converted-to.pdf  used on input line 242.
+(pdftex.def)             Requested size: 284.52756pt x 138.83658pt.
+Package epstopdf Info: Source file: <Fig2.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 41104 bytes
+(epstopdf)             Output file: <Fig2-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:29
+(epstopdf)                    size: 13425 bytes
+(epstopdf)             Command: <repstopdf --outfile=Fig2-eps-converted-to.pdf 
+Fig2.eps>
+(epstopdf)             \includegraphics on input line 255.
+Package epstopdf Info: Output file is already uptodate.
+<Fig2-eps-converted-to.pdf, id=417, 483.8075pt x 248.93pt>
+File: Fig2-eps-converted-to.pdf Graphic file (type pdf)
+<use Fig2-eps-converted-to.pdf>
+Package pdftex.def Info: Fig2-eps-converted-to.pdf  used on input line 255.
+(pdftex.def)             Requested size: 341.43306pt x 175.68178pt.
+Package epstopdf Info: Source file: <Fig3.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 234182 bytes
+(epstopdf)             Output file: <Fig3-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:30
+(epstopdf)                    size: 21006 bytes
+(epstopdf)             Command: <repstopdf --outfile=Fig3-eps-converted-to.pdf 
+Fig3.eps>
+(epstopdf)             \includegraphics on input line 267.
+Package epstopdf Info: Output file is already uptodate.
+<Fig3-eps-converted-to.pdf, id=420, 463.7325pt x 337.13956pt>
+File: Fig3-eps-converted-to.pdf Graphic file (type pdf)
+<use Fig3-eps-converted-to.pdf>
+Package pdftex.def Info: Fig3-eps-converted-to.pdf  used on input line 267.
+(pdftex.def)             Requested size: 284.52756pt x 206.85858pt.
+Package epstopdf Info: Source file: <Fig4a.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 130222 bytes
+(epstopdf)             Output file: <Fig4a-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:32
+(epstopdf)                    size: 13319 bytes
+(epstopdf)             Command: <repstopdf --outfile=Fig4a-eps-converted-to.pdf
+ Fig4a.eps>
+(epstopdf)             \includegraphics on input line 280.
+Package epstopdf Info: Output file is already uptodate.
+<Fig4a-eps-converted-to.pdf, id=423, 193.47281pt x 389.60556pt>
+File: Fig4a-eps-converted-to.pdf Graphic file (type pdf)
+<use Fig4a-eps-converted-to.pdf>
+Package pdftex.def Info: Fig4a-eps-converted-to.pdf  used on input line 280.
+(pdftex.def)             Requested size: 142.26378pt x 286.48445pt.
+Package epstopdf Info: Source file: <Fig4b.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 42350 bytes
+(epstopdf)             Output file: <Fig4b-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:34
+(epstopdf)                    size: 13554 bytes
+(epstopdf)             Command: <repstopdf --outfile=Fig4b-eps-converted-to.pdf
+ Fig4b.eps>
+(epstopdf)             \includegraphics on input line 290.
+Package epstopdf Info: Output file is already uptodate.
+<Fig4b-eps-converted-to.pdf, id=425, 374.39874pt x 203.76125pt>
+File: Fig4b-eps-converted-to.pdf Graphic file (type pdf)
+<use Fig4b-eps-converted-to.pdf>
+Package pdftex.def Info: Fig4b-eps-converted-to.pdf  used on input line 290.
+(pdftex.def)             Requested size: 284.52756pt x 154.85704pt.
+Package epstopdf Info: Source file: <Fig5.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 195915 bytes
+(epstopdf)             Output file: <Fig5-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:36
+(epstopdf)                    size: 17232 bytes
+(epstopdf)             Command: <repstopdf --outfile=Fig5-eps-converted-to.pdf 
+Fig5.eps>
+(epstopdf)             \includegraphics on input line 300.
+Package epstopdf Info: Output file is already uptodate.
+<Fig5-eps-converted-to.pdf, id=427, 332.62268pt x 336.00531pt>
+File: Fig5-eps-converted-to.pdf Graphic file (type pdf)
+<use Fig5-eps-converted-to.pdf>
+Package pdftex.def Info: Fig5-eps-converted-to.pdf  used on input line 300.
+(pdftex.def)             Requested size: 256.0748pt x 258.69923pt.
+ [5 <./Fig1-eps-converted-to.pdf>] [6 <./Fig2-eps-converted-to.pdf> <./Fig3-eps
+-converted-to.pdf>] [7 <./Fig4a-eps-converted-to.pdf> <./Fig4b-eps-converted-to
+.pdf>]
+Package epstopdf Info: Source file: <Fig6.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 22085 bytes
+(epstopdf)             Output file: <Fig6-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:37
+(epstopdf)                    size: 9241 bytes
+(epstopdf)             Command: <repstopdf --outfile=Fig6-eps-converted-to.pdf 
+Fig6.eps>
+(epstopdf)             \includegraphics on input line 321.
+Package epstopdf Info: Output file is already uptodate.
+<Fig6-eps-converted-to.pdf, id=489, 192.72pt x 164.615pt>
+File: Fig6-eps-converted-to.pdf Graphic file (type pdf)
+<use Fig6-eps-converted-to.pdf>
+Package pdftex.def Info: Fig6-eps-converted-to.pdf  used on input line 321.
+(pdftex.def)             Requested size: 142.26378pt x 121.51678pt.
+ [8 <./Fig5-eps-converted-to.pdf> <./Fig6-eps-converted-to.pdf>]
+Underfull \hbox (badness 10000) in alignment at lines 336--336
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 336--336
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 336--336
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 336--336
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 336--342
+[]
+ []
+
+[9]
+Underfull \hbox (badness 10000) in alignment at lines 411--411
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 411--411
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 411--411
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 411--411
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 411--422
+[]
+ []
+
+[10] [11]
+Package epstopdf Info: Source file: <Fig9.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 31400 bytes
+(epstopdf)             Output file: <Fig9-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:39
+(epstopdf)                    size: 5918 bytes
+(epstopdf)             Command: <repstopdf --outfile=Fig9-eps-converted-to.pdf 
+Fig9.eps>
+(epstopdf)             \includegraphics on input line 531.
+Package epstopdf Info: Output file is already uptodate.
+<Fig9-eps-converted-to.pdf, id=523, 460.72125pt x 60.72687pt>
+File: Fig9-eps-converted-to.pdf Graphic file (type pdf)
+<use Fig9-eps-converted-to.pdf>
+Package pdftex.def Info: Fig9-eps-converted-to.pdf  used on input line 531.
+(pdftex.def)             Requested size: 256.0748pt x 33.75198pt.
+Package epstopdf Info: Source file: <Fig12.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 50979 bytes
+(epstopdf)             Output file: <Fig12-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:41
+(epstopdf)                    size: 8594 bytes
+(epstopdf)             Command: <repstopdf --outfile=Fig12-eps-converted-to.pdf
+ Fig12.eps>
+(epstopdf)             \includegraphics on input line 550.
+Package epstopdf Info: Output file is already uptodate.
+<Fig12-eps-converted-to.pdf, id=525, 236.13219pt x 143.53625pt>
+File: Fig12-eps-converted-to.pdf Graphic file (type pdf)
+<use Fig12-eps-converted-to.pdf>
+Package pdftex.def Info: Fig12-eps-converted-to.pdf  used on input line 550.
+(pdftex.def)             Requested size: 199.16928pt x 121.07117pt.
+ [12 <./Fig9-eps-converted-to.pdf> <./Fig12-eps-converted-to.pdf>]
+Underfull \hbox (badness 10000) in alignment at lines 563--563
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 563--563
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 563--563
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 563--563
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 563--565
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 589--589
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 589--589
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 589--589
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 589--589
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 589--602
+[]
+ []
+
+[13
+
+] [14]
+Underfull \hbox (badness 10000) in alignment at lines 695--695
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 695--695
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 695--695
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 695--695
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 695--712
+[]
+ []
+
+[15] [16] [17]
+Underfull \hbox (badness 10000) in alignment at lines 869--869
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 869--869
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 869--869
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 869--869
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 869--871
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 889--889
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 889--889
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 889--889
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 889--889
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 889--898
+[]
+ []
+
+[18
+
+] [19]
+Overfull \hbox (4.20016pt too wide) in paragraph at lines 984--985
+[]\OT1/cmtt/m/n/10 DUAL 1 3 : \OT1/cmr/m/n/10 Mixed-dual lin-ear su-per-con-ver
+-gent fi-nite el-e-ments (nu-mer-i-cally equiv-a-lent to \OT1/cmtt/m/n/10 PRIM 
+1 3\OT1/cmr/m/n/10 ); 
+ []
+
+
+Overfull \hbox (21.14465pt too wide) in paragraph at lines 987--988
+[]\OT1/cmtt/m/n/10 DUAL 2 3 : \OT1/cmr/m/n/10 Mixed-dual quadratic su-per-con-v
+er-gent fi-nite el-e-ments (nu-mer-i-cally equiv-a-lent to \OT1/cmtt/m/n/10 PRI
+M 2 3\OT1/cmr/m/n/10 ); 
+ []
+
+
+Overfull \hbox (2.5057pt too wide) in paragraph at lines 990--991
+[]\OT1/cmtt/m/n/10 DUAL 3 3 : \OT1/cmr/m/n/10 Mixed-dual cu-bic su-per-con-ver-
+gent fi-nite el-e-ments (nu-mer-i-cally equiv-a-lent to \OT1/cmtt/m/n/10 PRIM 3
+ 3\OT1/cmr/m/n/10 ); 
+ []
+
+[20]
+Underfull \hbox (badness 10000) in alignment at lines 1013--1013
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1013--1013
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1013--1013
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1013--1013
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1013--1015
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1036--1036
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1036--1036
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1036--1036
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1036--1036
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1036--1045
+[]
+ []
+
+[21
+
+] [22] [23]
+Underfull \hbox (badness 10000) in alignment at lines 1145--1145
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1145--1145
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1145--1145
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1145--1145
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1145--1147
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1166--1166
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1166--1166
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1166--1166
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1166--1166
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1166--1169
+[]
+ []
+
+[24
+
+]
+Underfull \hbox (badness 10000) in alignment at lines 1191--1191
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1191--1191
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1191--1191
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1191--1191
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1191--1193
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1217--1217
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1217--1217
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1217--1217
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1217--1217
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1217--1221
+[]
+ []
+
+[25
+
+] [26]
+Underfull \hbox (badness 10000) in alignment at lines 1257--1257
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1257--1257
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1257--1257
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1257--1257
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1257--1259
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1282--1282
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1282--1282
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1282--1282
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1282--1282
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1282--1293
+[]
+ []
+
+[27
+
+] [28] [29]
+Underfull \hbox (badness 10000) in alignment at lines 1406--1406
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1406--1406
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1406--1406
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1406--1406
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1406--1408
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1434--1434
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1434--1434
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1434--1434
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1434--1434
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1434--1438
+[]
+ []
+
+[30
+
+] [31]
+Underfull \hbox (badness 10000) in alignment at lines 1473--1473
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1473--1473
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1473--1473
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1473--1473
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1473--1475
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1500--1500
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1500--1500
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1500--1500
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1500--1500
+[]
+ []
+
+LaTeX Font Info:    Trying to load font information for OMS+cmr on input line 1
+506.
+(/usr/local/texlive/2021/texmf-dist/tex/latex/base/omscmr.fd
+File: omscmr.fd 2019/12/16 v2.5j Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 1506.
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1500--1509
+[]
+ []
+
+
+Overfull \vbox (15.21294pt too high) has occurred while \output is active []
+
+
+[32
+
+] [33] [34]
+Underfull \hbox (badness 10000) in alignment at lines 1587--1587
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1587--1587
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1587--1587
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1587--1587
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1587--1589
+[]
+ []
+
+
+Overfull \hbox (9.91689pt too wide) in paragraph at lines 1594--1595
+[]\OT1/cmtt/m/n/10 character*12 \OT1/cmr/m/n/10 name of the \OT1/cmr/m/sc/10 lc
+m \OT1/cmr/m/n/10 ob-ject (type \OT1/cmtt/m/n/10 L[]MACROLIB\OT1/cmr/m/n/10 ) c
+on-tain-ing the ex-tended \OT1/cmr/m/sc/10 macrolib\OT1/cmr/m/n/10 . 
+ []
+
+
+Overfull \hbox (9.41684pt too wide) in paragraph at lines 1600--1601
+[]\OT1/cmtt/m/n/10 character*12 \OT1/cmr/m/n/10 name of the \OT1/cmr/m/sc/10 lc
+m \OT1/cmr/m/n/10 ob-ject (type \OT1/cmtt/m/n/10 L[]MACROLIB\OT1/cmr/m/n/10 ) c
+on-tain-ing the ref-er-ence \OT1/cmr/m/sc/10 macrolib\OT1/cmr/m/n/10 . 
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1612--1612
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1612--1612
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1612--1612
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1612--1612
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1612--1620
+[]
+ []
+
+[35
+
+] [36]
+Underfull \hbox (badness 10000) in alignment at lines 1713--1713
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1713--1713
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1713--1713
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1713--1713
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1713--1715
+[]
+ []
+
+
+Overfull \hbox (7.1391pt too wide) in paragraph at lines 1720--1721
+[]\OT1/cmtt/m/n/10 character*12 \OT1/cmr/m/n/10 name of the \OT1/cmr/m/sc/10 lc
+m \OT1/cmr/m/n/10 ob-ject (type \OT1/cmtt/m/n/10 L[]MACROLIB\OT1/cmr/m/n/10 ) c
+on-tain-ing the ex-tended \OT1/cmr/m/sc/10 macrolib
+ []
+
+[37
+
+]
+Overfull \hbox (7.1391pt too wide) in paragraph at lines 1722--1723
+[]\OT1/cmtt/m/n/10 character*12 \OT1/cmr/m/n/10 name of the \OT1/cmr/m/sc/10 lc
+m \OT1/cmr/m/n/10 ob-ject (type \OT1/cmtt/m/n/10 L[]MACROLIB\OT1/cmr/m/n/10 ) c
+on-tain-ing the ex-tended \OT1/cmr/m/sc/10 macrolib
+ []
+
+[38]
+Underfull \hbox (badness 10000) in alignment at lines 1753--1753
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1753--1753
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1753--1753
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1753--1753
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1753--1755
+[]
+ []
+
+
+Overfull \hbox (7.13086pt too wide) in paragraph at lines 1766--1768
+[]\OT1/cmtt/m/n/10 character*12 \OT1/cmr/m/n/10 name of the \OT1/cmr/m/sc/10 lc
+m \OT1/cmr/m/n/10 ob-ject (type \OT1/cmtt/m/n/10 L[]SYSTEM\OT1/cmr/m/n/10 ) cor
+-re-spond-ing to \OT1/cmr/m/sc/10 macrolib \OT1/cmr/m/sl/10 MACRO[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1779--1779
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1779--1779
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1779--1779
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1779--1779
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1779--1788
+[]
+ []
+
+[39
+
+] [40] [41
+
+] [42]
+Underfull \hbox (badness 10000) in alignment at lines 1962--1962
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1962--1962
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1962--1962
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1962--1962
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1962--1965
+[]
+ []
+
+
+Overfull \hbox (7.13086pt too wide) in paragraph at lines 1977--1979
+[]\OT1/cmtt/m/n/10 character*12 \OT1/cmr/m/n/10 name of the \OT1/cmr/m/sc/10 lc
+m \OT1/cmr/m/n/10 ob-ject (type \OT1/cmtt/m/n/10 L[]SYSTEM\OT1/cmr/m/n/10 ) cor
+-re-spond-ing to \OT1/cmr/m/sc/10 macrolib \OT1/cmr/m/sl/10 MACRO[]
+ []
+
+[43]
+Overfull \hbox (16.00775pt too wide) in paragraph at lines 1985--1987
+[]\OT1/cmtt/m/n/10 character*12 \OT1/cmr/m/n/10 name of the \OT1/cmr/m/sc/10 lc
+m \OT1/cmr/m/n/10 ob-ject (type \OT1/cmtt/m/n/10 L[]SYSTEM\OT1/cmr/m/n/10 ) cor
+-re-spond-ing to \OT1/cmr/m/sc/10 macrolib \OT1/cmr/m/sl/10 MACRO[]0[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1996--1996
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1996--1996
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1996--1996
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1996--1996
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 1996--2009
+[]
+ []
+
+
+Overfull \hbox (4.74713pt too wide) in paragraph at lines 2026--2028
+[]\OT1/cmr/m/n/10 keyword used to en-able the ex-po-nen-tial trans-for-ma-tion 
+pro-ce-dure on tran-sient flux. Mixture-
+ []
+
+[44] [45]
+Underfull \hbox (badness 10000) in alignment at lines 2116--2116
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 2116--2116
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 2116--2116
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 2116--2116
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 2116--2118
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 2140--2140
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 2140--2140
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 2140--2140
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 2140--2140
+[]
+ []
+
+
+Underfull \hbox (badness 10000) in alignment at lines 2140--2145
+[]
+ []
+
+[46
+
+]) (./Section2.tex [47]
+Section  2.
+Package epstopdf Info: Source file: <iaea2d.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 22431 bytes
+(epstopdf)             Output file: <iaea2d-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:43
+(epstopdf)                    size: 10486 bytes
+(epstopdf)             Command: <repstopdf --outfile=iaea2d-eps-converted-to.pd
+f iaea2d.eps>
+(epstopdf)             \includegraphics on input line 10.
+Package epstopdf Info: Output file is already uptodate.
+<iaea2d-eps-converted-to.pdf, id=779, 361.35pt x 293.095pt>
+File: iaea2d-eps-converted-to.pdf Graphic file (type pdf)
+<use iaea2d-eps-converted-to.pdf>
+Package pdftex.def Info: iaea2d-eps-converted-to.pdf  used on input line 10.
+(pdftex.def)             Requested size: 227.62204pt x 184.62845pt.
+[48
+
+ <./iaea2d-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <biblis.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 23400 bytes
+(epstopdf)             Output file: <biblis-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:44
+(epstopdf)                    size: 10884 bytes
+(epstopdf)             Command: <repstopdf --outfile=biblis-eps-converted-to.pd
+f biblis.eps>
+(epstopdf)             \includegraphics on input line 87.
+Package epstopdf Info: Output file is already uptodate.
+<biblis-eps-converted-to.pdf, id=794, 361.35pt x 293.095pt>
+File: biblis-eps-converted-to.pdf Graphic file (type pdf)
+<use biblis-eps-converted-to.pdf>
+Package pdftex.def Info: biblis-eps-converted-to.pdf  used on input line 87.
+(pdftex.def)             Requested size: 227.62204pt x 184.62845pt.
+ [49] [50 <./biblis-eps-converted-to.pdf>]
+[51]
+Package epstopdf Info: Source file: <iaea3d.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 35498 bytes
+(epstopdf)             Output file: <iaea3d-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:45
+(epstopdf)                    size: 11623 bytes
+(epstopdf)             Command: <repstopdf --outfile=iaea3d-eps-converted-to.pd
+f iaea3d.eps>
+(epstopdf)             \includegraphics on input line 191.
+Package epstopdf Info: Output file is already uptodate.
+<iaea3d-eps-converted-to.pdf, id=816, 740.7675pt x 582.175pt>
+File: iaea3d-eps-converted-to.pdf Graphic file (type pdf)
+<use iaea3d-eps-converted-to.pdf>
+Package pdftex.def Info: iaea3d-eps-converted-to.pdf  used on input line 191.
+(pdftex.def)             Requested size: 426.79134pt x 335.42316pt.
+ [52 <./iaea3d-eps-converted-to.pdf>] [53] [54]
+Package epstopdf Info: Source file: <hexS30.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 22601 bytes
+(epstopdf)             Output file: <hexS30-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:46
+(epstopdf)                    size: 11235 bytes
+(epstopdf)             Command: <repstopdf --outfile=hexS30-eps-converted-to.pd
+f hexS30.eps>
+(epstopdf)             \includegraphics on input line 338.
+Package epstopdf Info: Output file is already uptodate.
+<hexS30-eps-converted-to.pdf, id=838, 198.7425pt x 124.465pt>
+File: hexS30-eps-converted-to.pdf Graphic file (type pdf)
+<use hexS30-eps-converted-to.pdf>
+Package pdftex.def Info: hexS30-eps-converted-to.pdf  used on input line 338.
+(pdftex.def)             Requested size: 170.71652pt x 106.91626pt.
+ [55 <./hexS30-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <lmw.eps>
+(epstopdf)                    date: 2021-11-10 20:42:58
+(epstopdf)                    size: 18789 bytes
+(epstopdf)             Output file: <lmw-eps-converted-to.pdf>
+(epstopdf)                    date: 2021-11-10 21:43:49
+(epstopdf)                    size: 10290 bytes
+(epstopdf)             Command: <repstopdf --outfile=lmw-eps-converted-to.pdf l
+mw.eps>
+(epstopdf)             \includegraphics on input line 399.
+Package epstopdf Info: Output file is already uptodate.
+<lmw-eps-converted-to.pdf, id=855, 253.94875pt x 272.01625pt>
+File: lmw-eps-converted-to.pdf Graphic file (type pdf)
+<use lmw-eps-converted-to.pdf>
+Package pdftex.def Info: lmw-eps-converted-to.pdf  used on input line 399.
+(pdftex.def)             Requested size: 199.16928pt x 213.34644pt.
+ [56 <./lmw-eps-converted-to.pdf>] [57] [58]) [59] (./Bibliography.tex) [60
+
+
+]
+No file IGE369.ind.
+(./IGE369.aux)
+
+LaTeX Warning: There were multiply-defined labels.
+
+Package rerunfilecheck Info: File `IGE369.out' has not changed.
+(rerunfilecheck)             Checksum: 4989F2DB3D8646F85C4201369773A58E;8690.
+ ) 
+Here is how much of TeX's memory you used:
+ 8854 strings out of 478994
+ 130727 string characters out of 5858184
+ 445908 words of memory out of 5000000
+ 25967 multiletter control sequences out of 15000+600000
+ 410395 words of font info for 51 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 98i,11n,102p,717b,468s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
+}</usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb
+></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb>
+</usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><
+/usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><
+/usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></
+usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></u
+sr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr
+/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/l
+ocal/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/l
+ocal/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loc
+al/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/
+texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/tex
+live/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmsl10.pfb></usr/local/texl
+ive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmsltt10.pfb></usr/local/tex
+live/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texl
+ive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texliv
+e/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/
+2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2
+021/texmf-dist/fonts/type1/public/amsfonts/cm/cmti7.pfb></usr/local/texlive/202
+1/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2021
+/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/
+2021/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
+Output written on IGE369.pdf (67 pages, 561013 bytes).
+PDF statistics:
+ 1007 PDF objects out of 1200 (max. 8388607)
+ 853 compressed objects within 9 object streams
+ 202 named destinations out of 1000 (max. 500000)
+ 457 words of extra memory for PDF output out of 10000 (max. 10000000)
+

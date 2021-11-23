@@ -1,0 +1,247 @@
+*DECK CHAB
+      SUBROUTINE CHAB(NENTRY,HENTRY,IENTRY,JENTRY,KENTRY)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+*  Modify data contained in the microlib and renormalize the fission
+*  and scattering information.
+*
+*Copyright:
+* Copyright (C) 2007 Ecole Polytechnique de Montreal
+*
+*Author(s): A. Hebert
+*
+*Parameters: input/output
+* NENTRY  number of LCM objects or files used by the operator.
+* HENTRY  name of each LCM object or file:
+*         HENTRY(1): create or modification type(L_MICROLIB);
+*         HENTRY(2): optional read-only type(L_MICROLIB or L_DRAGLIB).
+* IENTRY  type of each LCM object or file:
+*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
+*         =4 sequential ascii file.
+* JENTRY  access of each LCM object or file:
+*         =0 the LCM object or file is created;
+*         =1 the LCM object or file is open for modifications;
+*         =2 the LCM object or file is open in read-only mode.
+* KENTRY  LCM object address or file unit number.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      INTEGER      NENTRY,IENTRY(NENTRY),JENTRY(NENTRY)
+      TYPE(C_PTR)  KENTRY(NENTRY)
+      CHARACTER    HENTRY(NENTRY)*12
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER (NSTATE=40,IOUT=6)
+      TYPE(C_PTR) IPLIB,KPLIB
+      CHARACTER TEXT4*4,TYPSEC*8,HISOT*12,HSIGN*12,NAM1*12,CD*4,HSMG*131
+      DOUBLE PRECISION DFLOTT
+      INTEGER ISTATE(NSTATE),IMOD
+*----
+*  ALLOCATABLE ARRAYS
+*----
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: NFS
+      REAL, ALLOCATABLE, DIMENSION(:) :: VAL
+      CHARACTER(LEN=12), ALLOCATABLE, DIMENSION(:) :: HNAMIS
+      TYPE(C_PTR), ALLOCATABLE, DIMENSION(:) :: IPISO
+*----
+*  PARAMETER VALIDATION
+*----
+      IF(NENTRY.LT.1) CALL XABORT('CHAB: MIN OF 1 OBJECT EXPECTED.')
+      IF(NENTRY.GT.2) CALL XABORT('CHAB: MAX OF 2 OBJECTS EXPECTED.')
+      IPLIB=KENTRY(1)
+      IF(NENTRY.EQ.1) THEN
+         IF(JENTRY(1).NE.1) CALL XABORT('CHAB: OBJECT IN MODIFICATION '
+     1   //'MODE EXPECTED NAME=.'//HENTRY(1))
+         CALL LCMGTC(IPLIB,'SIGNATURE',12,1,HSIGN)
+         IF(HSIGN.EQ.'L_LIBRARY') THEN
+            IRHS=1
+         ELSE IF(HSIGN.EQ.'L_DRAGLIB') THEN
+            CALL XABORT('CHAB: WE DO NOT ALLOW THE IN-PLACE MODIFICATI'
+     1      //'ON OF A DRAGLIB. USE A DIFFERENT LHS.')
+         ELSE
+            CALL XABORT('CHAB: MICROLIB OBJECT EXPECTED AT RHS.')
+         ENDIF
+      ELSE IF(NENTRY.EQ.2) THEN
+         IF(JENTRY(1).NE.0) CALL XABORT('CHAB: OBJECT IN CREATE MODE E'
+     1   //'XPECTED.')
+         IF((IENTRY(2).NE.1).AND.(IENTRY(2).NE.2)) CALL XABORT('CHAB: '
+     1   //'LCM OBJECT EXPECTED AT RHS.')
+         IF(JENTRY(2).NE.2) CALL XABORT('CHAB: LCM OBJECT IN READ-ONLY'
+     1   //'MODE EXPECTED AT RHS.')
+         CALL LCMGTC(KENTRY(2),'SIGNATURE',12,1,HSIGN)
+         IF(HSIGN.EQ.'L_LIBRARY') THEN
+            IRHS=1
+         ELSE IF(HSIGN.EQ.'L_DRAGLIB') THEN
+            IRHS=2
+         ELSE
+            CALL XABORT('CHAB: MICROLIB OR DRAGLIB OBJECT EXPECTED AT '
+     1      //'RHS.')
+         ENDIF
+         CALL LCMEQU(KENTRY(2),IPLIB)
+      ENDIF
+      IF(IRHS.EQ.1) THEN
+         CALL LCMGET(IPLIB,'STATE-VECTOR',ISTATE)
+         NBISO=ISTATE(2)
+         NGRP=ISTATE(3)
+         NLEG=ISTATE(4)
+      ELSE IF(IRHS.EQ.2) THEN
+         CALL LCMLEN(IPLIB,'ENERGY',NGRP,ITYLCM)
+         NGRP=NGRP-1
+         NLEG=100
+      ENDIF
+      ALLOCATE(VAL(NGRP))
+*----
+*  READ THE INPUT DATA
+*----
+      CALL XDRSET(VAL,NGRP,0.0)
+      IMPX=1
+   10 CALL REDGET(INDIC,NITMA,FLOTT,TEXT4,DFLOTT)
+      IF(INDIC.NE.3) CALL XABORT('CHAB: CHARACTER DATA EXPECTED(1).')
+      IF(TEXT4.EQ.'EDIT') THEN
+*        READ THE PRINT INDEX.
+         CALL REDGET(INDIC,IMPX,FLOTT,TEXT4,DFLOTT)
+         IF(INDIC.NE.1) CALL XABORT('CHAB: INTEGER DATA EXPECTED(1).')
+      ELSE IF(TEXT4.EQ.'MODI') THEN
+*        MODIFY/ADD AN ENTRY (CROSS SECTION, SPECTRA, ETC).
+         CALL REDGET(INDIC,NITMA,FLOTT,TYPSEC,DFLOTT)
+         IF(INDIC.NE.3) CALL XABORT('CHAB: CHARACTER DATA EXPECTED(2).')
+         CALL REDGET(INDIC,IGM,FLOTT,TEXT4,DFLOTT)
+         IF(INDIC.NE.1) CALL XABORT('CHAB: INTEGER DATA EXPECTED(2).')
+         IF((IGM.LT.1).OR.(IGM.GT.NGRP)) CALL XABORT('CHAB: WRONG IGM.')
+         CALL REDGET(INDIC,NITMA,FLOTT,TEXT4,DFLOTT)
+         IF(INDIC.NE.3) CALL XABORT('CHAB: CHARACTER DATA EXPECTED(3).')
+         IF(TEXT4.NE.'TO') CALL XABORT('CHAB: TO KEYWORD EXPECTED.')
+         CALL REDGET(INDIC,IGP,FLOTT,TEXT4,DFLOTT)
+         IF(INDIC.NE.1) CALL XABORT('CHAB: INTEGER DATA EXPECTED(3).')
+         IF((IGP.LT.1).OR.(IGP.GT.NGRP)) CALL XABORT('CHAB: WRONG IGP.')
+         CALL REDGET(INDIC,NITMA,FLOTT,TEXT4,DFLOTT)
+         IF(INDIC.NE.3) CALL XABORT('CHAB: CHARACTER DATA EXPECTED(4).')
+         IF(TEXT4.EQ.'VALE') THEN
+            DO 20 IGR=IGM,IGP
+            CALL REDGET(INDIC,NITMA,VAL(IGR),TEXT4,DFLOTT)
+            IF(INDIC.NE.2) CALL XABORT('CHAB: REAL DATA EXPECTED(1).')
+   20       CONTINUE
+            IMOD=1
+         ELSE IF(TEXT4.EQ.'CONS') THEN
+            CALL REDGET(INDIC,NITMA,VALUE,TEXT4,DFLOTT)
+            IF(INDIC.NE.2) CALL XABORT('CHAB: REAL DATA EXPECTED(2).')
+            IMOD=2
+         ELSE IF(TEXT4.EQ.'PLUS') THEN
+            CALL REDGET(INDIC,NITMA,VALUE,TEXT4,DFLOTT)
+            IF(INDIC.NE.2) CALL XABORT('CHAB: REAL DATA EXPECTED(3).')
+            IMOD=3
+         ELSE IF(TEXT4.EQ.'MULT') THEN
+            CALL REDGET(INDIC,NITMA,VALUE,TEXT4,DFLOTT)
+            IF(INDIC.NE.2) CALL XABORT('CHAB: REAL DATA EXPECTED(4).')
+            IMOD=4
+         ELSE
+            CALL XABORT('CHAB: VALE/CONS/PLUS/MULT KEYWORD EXPECTED.')
+         ENDIF
+         CALL REDGET(INDIC,NITMA,FLOTT,HISOT,DFLOTT)
+         IF(INDIC.NE.3) CALL XABORT('CHAB: CHARACTER DATA EXPECTED(5).')
+         IF((IRHS.EQ.1).AND.(HISOT(9:).EQ.' ')) THEN
+*           MODIFY MANY INSTANCES OF AN ISOTOPE IN A MICROLIB
+            ALLOCATE(HNAMIS(NBISO),IPISO(NBISO))
+            CALL LCMGTC(IPLIB,'ISOTOPESUSED',12,NBISO,HNAMIS)
+            CALL LIBIPS(IPLIB,NBISO,IPISO)
+            DO 30 ISO=1,NBISO
+              NAM1=HNAMIS(ISO)
+              IF(NAM1(:8).EQ.HISOT) THEN
+                KPLIB=IPISO(ISO) ! set ISO-th isotope
+                IF(.NOT.C_ASSOCIATED(KPLIB)) THEN
+                  WRITE(HSMG,'(15HCHAB: ISOTOPE '',A12,7H'' (ISO=,I8,
+     1            34H IS NOT AVAILABLE IN THE MICROLIB.)') NAM1,ISO
+                  CALL XABORT(HSMG)
+                ENDIF
+                CALL CHAB01(KPLIB,IMPX,IRHS,NGRP,NLEG,IMOD,TYPSEC,NAM1,
+     1          VALUE,IGM,IGP,VAL)
+              ENDIF
+   30       CONTINUE
+            DEALLOCATE(IPISO,HNAMIS)
+         ELSE IF(IRHS.EQ.1) THEN
+*           MODIFY A UNIQUE INSTANCE OF AN ISOTOPE IN A MICROLIB
+            ALLOCATE(HNAMIS(NBISO),IPISO(NBISO))
+            CALL LCMGTC(IPLIB,'ISOTOPESUSED',12,NBISO,HNAMIS)
+            CALL LIBIPS(IPLIB,NBISO,IPISO)
+            DO 35 ISO=1,NBISO
+              IF(HNAMIS(ISO).EQ.HISOT) THEN
+                KPLIB=IPISO(ISO) ! set ISO-th isotope
+                IF(.NOT.C_ASSOCIATED(KPLIB)) THEN
+                  WRITE(HSMG,'(15HCHAB: ISOTOPE '',A12,7H'' (ISO=,I8,
+     1            34H IS NOT AVAILABLE IN THE MICROLIB.)') HISOT,ISO
+                  CALL XABORT(HSMG)
+                ENDIF
+                CALL CHAB01(KPLIB,IMPX,IRHS,NGRP,NLEG,IMOD,TYPSEC,HISOT,
+     1          VALUE,IGM,IGP,VAL)
+              ENDIF
+   35       CONTINUE
+            DEALLOCATE(IPISO,HNAMIS)
+         ELSE IF(IRHS.EQ.2) THEN
+*           MODIFY AN ISOTOPE IN A DRAGLIB
+            CALL LCMLEN(IPLIB,HISOT,ILONG,ITYLCM)
+            IF(ILONG.EQ.0) CALL XABORT('CHAB: MISSING ISOTOPE '//
+     1      HISOT//'.')
+            ALLOCATE(NFS(NGRP))
+            CALL LCMSIX(IPLIB,HISOT,1)
+            CALL LCMLEN(IPLIB,'TEMPERATURE',NTMP,ITYLCM)
+            CALL LCMLEN(IPLIB,'BIN-NFS',ILONG,ITYLCM)
+            NBIN=0
+            IF(ILONG.EQ.NGRP) THEN
+               CALL LCMGET(IPLIB,'BIN-NFS',NFS)
+               DO 40 IG=1,NGRP
+               NBIN=NBIN+NFS(IG)
+   40          CONTINUE
+               IF(NBIN.EQ.0) CALL XABORT('CHAB: INVALID NBIN')
+            ENDIF
+            DO 60 ITMP=1,NTMP
+            WRITE (CD,'(I4.4)') ITMP
+            IF(IMPX.GT.0) WRITE(IOUT,'(/23H CHAB: PROCESS ISOTOPE ,A,
+     1      22H AT TEMPERATURE SUBTMP,A4,1H.)') HISOT,CD
+            CALL LCMSIX (IPLIB,'SUBTMP'//CD,1)
+            CALL CHAB01(IPLIB,IMPX,IRHS,NGRP,NLEG,IMOD,TYPSEC,
+     1      HISOT,VALUE,IGM,IGP,VAL)
+            IF(NBIN.GT.0) THEN
+               CALL CHAB03(IPLIB,IMPX,NGRP,NBIN,IMOD,TYPSEC,HISOT,
+     1         VALUE,IGM,IGP,NFS,VAL)
+            ENDIF
+            IF(TYPSEC.NE.'CHI') THEN
+              CALL LCMLEN(IPLIB,'DILUTION',NDIL,ITYLCM)
+              DO 50 IDIL=1,NDIL
+              WRITE (CD,'(I4.4)') IDIL
+              IF(IMPX.GT.0) WRITE(IOUT,'(/23H CHAB: PROCESS ISOTOPE ,A,
+     1        19H AT DILUTION SUBMAT,A4,1H.)') HISOT,CD
+              CALL LCMSIX(IPLIB,'SUBMAT'//CD,1)
+              IF(IMOD.LE.2) THEN
+                CALL CHAB01(IPLIB,IMPX,IRHS,NGRP,NLEG,1,TYPSEC,HISOT,
+     1          0.0,IGM,IGP,VAL)
+              ELSE IF(IMOD.EQ.4) THEN
+                CALL CHAB01(IPLIB,IMPX,IRHS,NGRP,NLEG,IMOD,TYPSEC,
+     1          HISOT,VALUE,IGM,IGP,VAL)
+              ENDIF
+              CALL LCMSIX (IPLIB,' ',2)
+   50         CONTINUE
+            ENDIF
+            CALL LCMSIX (IPLIB,' ',2)
+   60       CONTINUE
+            IF(NBIN.GT.0) DEALLOCATE(NFS)
+            CALL LCMSIX(IPLIB,' ',2)
+         ENDIF
+      ELSE IF(TEXT4.EQ.';') THEN
+         GO TO 70
+      ELSE
+         CALL XABORT('CHAB: '//TEXT4//' IS AN INVALID KEYWORD.')
+      ENDIF
+      GO TO 10
+*----
+*  RECOVER INFORMATION
+*----
+   70 DEALLOCATE(VAL)
+      RETURN
+      END

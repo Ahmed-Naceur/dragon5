@@ -1,0 +1,38 @@
+*----
+* Windmill geometry constructed with G2S:
+* UOX or MOX assembly with control rods out
+* 1 CAR ; 1 CARCEL
+*----
+SEQ_ASCII CAR_FIG ;
+SEQ_ASCII CAR_PIN ;
+SEQ_ASCII CARCEL_FIG :: FILE './CARCELS130_FIG.ps' ;
+SEQ_ASCII CARCEL_PIN :: FILE './CARCELS130_PIN.dat' ;
+LINKED_LIST GEOM GEOM2 ;
+MODULE GEO: G2S: END: ;
+* 1 CAR
+GEOM := GEO: :: CAR2D 1 1
+    X- REFL  Y- REFL
+    X+ REFL  Y+ REFL
+*    SECT 1 0 
+    MESHX 0. 1.
+    MESHY 0. 1.
+    MIX   1 ;
+
+CAR_PIN CAR_FIG := G2S: GEOM :: DRAWNOD ;
+
+* 1 CARCEL
+GEOM2 := GEO: :: CARCEL 3
+    X- REFL  Y- REFL
+    X+ REFL  Y+ REFL
+    SECT  3 0
+    MESHX  0. 1.
+    MESHY  0. 1.
+    RADIUS 0. 0.25 0.35 0.5412
+    MIX    1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 
+    25 26 27 28 29 30 31 32 ;
+
+CARCEL_PIN CARCEL_FIG := G2S: GEOM2 :: DRAWNOD ;
+
+ECHO "test cS1_JST0_IS3 completed" ;
+
+END: ;

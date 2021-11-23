@@ -1,0 +1,10 @@
+#!/bin/sh
+if [ $# = 0 ]
+   then
+   echo "usage: Test_PMAXS_Macro.access directory" 1>&2
+   exit 1
+fi
+ln -s "$1"/data/Test_PMAXS_Macro_proc/Gen_UOX_37.PMAX .
+ln -s "$1"/data/Test_PMAXS_Macro_proc/Refl_xs .
+ls -l
+echo "Test_PMAXS_Macro access script terminated"

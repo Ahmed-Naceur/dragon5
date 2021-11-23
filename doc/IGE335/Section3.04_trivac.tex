@@ -1,0 +1,136 @@
+\subsubsection{The {\tt TRIVAT:} tracking module}\label{sect:TRIVACData}
+
+The {\tt TRIVAT:} module is used to perform a TRIVAC-type ``tracking"  on a
+1D/2D/3D regular Cartesian or hexagonal geometry.\cite{BIVAC,TRIVAC} The
+geometry is analyzed and a LCM object with signature {\tt L\_TRIVAC} is
+created with the following information:
+
+\begin{itemize}
+\item Diagonal and hexagonal symmetries are unfolded and the mesh-splitting 
+operations are performed. Volumes, material mixture and averaged flux recovery
+indices are computed on the resulting geometry. \item A finite element
+discretization is performed and the corresponding numbering is saved. \item The
+unit finite element matrices (mass, stiffness, etc.) are recovered. \item
+Indices related to an ADI preconditioning with or without supervectorization
+are saved. \end{itemize}
+
+The calling specification for this module is:
+
+\begin{DataStructure}{Structure \dstr{TRIVAT:}}
+\dusa{TRKNAM}
+\moc{:=} \moc{TRIVAT:} $[$ \dusa{TRKNAM} $]$ 
+\dusa{GEONAM} \moc{::}  \dstr{desctrack} \dstr{descTRIVAC}
+\end{DataStructure}
+
+\noindent  where
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\dusa{TRKNAM}] {\tt character*12} name of the \dds{tracking} data
+structure that will contain region volume and surface area vectors in
+addition to region identification pointers and other tracking information.
+If \dusa{TRKNAM} also appears on the RHS, the previous tracking 
+parameters will be applied by default on the current geometry.
+
+\item[\dusa{GEONAM}] {\tt character*12} name of the \dds{geometry} data
+structure.
+
+\item[\dstr{desctrack}] structure describing the general tracking data (see
+\Sect{TRKData})
+
+\item[\dstr{descTRIVAC}] structure describing the transport tracking data
+specific to \moc{TRIVAT:}.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+
+The \moc{TRIVAT:} specific tracking data in \dstr{descTRIVAC} is defined as
+
+\begin{DataStructure}{Structure \dstr{descTRIVAC}}
+$[~\{$ \moc{PRIM} $[$ \dusa{ielem} $]~|$ \moc{DUAL} $[$ \dusa{ielem} \dusa{icol} $]~|$ \moc{MCFD} $[$ \dusa{ielem} $]~|$ \moc{LUMP} $[$ \dusa{ielem} $]~\}~]$ \\
+$[$ \moc{SPN} \dusa{n} $[$ \moc{SCAT} $[$ \moc{DIFF} $]$ \dusa{iscat} $]~[$ \moc{VOID} \dusa{nvd} $]~]$ \\
+$[$ \moc{ADI} \dusa{nadi} $]$ \\
+$[$ \moc{VECT} $[$ \dusa{iseg} $]~[$ \moc{PRTV} \dusa{impv} $]~]$ \\
+{\tt ;}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmm}
+
+\item[\dstr{desctrack}] structure describing the general tracking data (see
+\Sect{TRKData})
+
+\item[\moc{PRIM}] key word to set a discretization based on the variational collocation method.
+
+\item[\moc{DUAL}] key word to set a mixed-dual finite element discretization. If the
+geometry is hexagonal, a Thomas-Raviart-Schneider method is used.
+
+\item[\moc{MCFD}] key word to set a discretization based  on the nodal
+collocation method. The mesh centered finite difference approximation is the
+default option and is generally set using {\tt MCFD~1}. The {\tt MCFD}
+approximations are numerically equivalent to the {\tt DUAL} approximations
+with \dusa{icol}=2; however, the {\tt MCFD} approximations are less
+expensive. 
+
+\item[\moc{LUMP}] key word to set a discretization  based on the nodal
+collocation method with serendipity approximation. The serendipity
+approximation is different from the \moc{MCFD} option in cases with \dusa{ielem}$\ge$2. This option is not available for hexagonal geometries.
+
+\item[\dusa{ielem}] order of the finite element representation.  The values
+permitted are: 1 (linear polynomials), 2 (parabolic polynomials), 3 (cubic
+polynomials) or 4 (quartic polynomials). By default \dusa{ielem}=1.
+
+\item[\dusa{icol}] type of quadrature used to  integrate the mass matrices.
+The values permitted are: 1 (analytical integration), 2  (Gauss-Lobatto
+quadrature) or 3 (Gauss-Legendre quadrature). By default \dusa{icol}=2. The
+analytical integration corresponds to classical finite elements; the
+Gauss-Lobatto quadrature corresponds to a variational or nodal type
+collocation and the Gauss-Legendre quadrature corresponds to superconvergent
+finite elements.
+
+\item[\moc{SPN}] keyword to set a simplified spherical harmonics ($SP_n$) expansion
+of the flux.\cite{nse2005,ane10a} This option is available with 1D, 2D and 3D Cartesian geometries and with 2D and 3D
+hexagonal geometries.
+
+\item[\dusa{n}] order of the $P_n$ or $SP_n$ expansion (odd number). Set to zero for diffusion theory (default value).
+
+\item[\moc{SCAT}] keyword to limit the anisotropy of scattering sources.
+
+\item[\moc{DIFF}] keyword to force using $1/3D^{g}$ as $\Sigma_1^{g}$ cross sections. A $P_1$ or $SP_1$ method
+will therefore behave as diffusion theory.
+
+\item[\dusa{iscat}] number of terms in the scattering sources. \dusa{iscat} $=1$ is used for
+isotropic scattering in the laboratory system. \dusa{iscat} $=2$ is used for
+linearly anisotropic scattering in the laboratory system. The default value is set to $n+1$
+in $P_n$ or $SP_n$ case.
+
+\item[\moc{VOID}] key word to set the number of base points in the Gauss-Legendre quadrature used to integrate
+void boundary conditions if \dusa{icol} $=3$ and \dusa{n} $\ne 0$.
+
+\item[\dusa{nvd}] type of quadrature. The values
+permitted are: 0 (use a (\dusa{n}$+2$)--point quadrature consistent with $P_{\rm n}$ theory),
+1 (use a (\dusa{n}$+1$)--point quadrature consistent with $S_{{\rm n}+1}$ theory),
+2 (use an analytical integration of the void boundary conditions). By default \dusa{nvd}=0.
+
+\item[\moc{ADI}] keyword to set the number of ADI iterations at the inner
+iterative level.
+
+\item[\dusa{nadi}] number of ADI iterations (default: \dusa{nadi} $=2$).
+
+\item[\moc{VECT}] key word to set an ADI preconditionning with
+supervectorization. By default, TRIVAC uses an ADI preconditionning without
+supervectorization.
+
+\item[\dusa{iseg}] width of a vectorial register. \dusa{iseg} is generally a multiple of 64. By default, \dusa{iseg}=64.
+
+\item[\moc{PRTV}] key word used to set \dusa{impv}.
+
+\item[\dusa{impv}] index used to control the  printing in supervectorization
+subroutines. =0 for no print; =1 for minimum printing (default value); Larger
+values produce increasing amounts of output.
+
+\end{ListeDeDescription}
+
+Various finite element approximations can be obtained with different values of \dusa{ielem}.
+
+\eject

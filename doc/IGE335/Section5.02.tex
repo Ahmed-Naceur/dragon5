@@ -1,0 +1,233 @@
+\subsection{Geometries}\label{sect:ExGEOData}
+
+In order to illustrate the use of the various geometries presented in
+\Sect{GEOData}, lets us consider a few examples that can be treated
+by DRAGON.
+
+\begin{itemize}
+
+\item 1--D Slab geometry (see \Fig{plaque}):
+
+\begin{figure}[h!] 
+\begin{center} 
+\epsfxsize=11cm \centerline{ \epsffile{Gplaque.eps}}
+\parbox{14cm}{\caption{Slab geometry with mesh-splitting}
+\label{fig:plaque}}    
+\end{center}  
+\end{figure}
+
+This geometry can be analyzed using a \moc{SYBILT:} tracking
+modules:
+
+\begin{verbatim}
+PLATE := GEO: :: CAR1D 6
+    X- VOID X+ ALBE 1.2
+    MESHX  0.0 0.1 0.3 0.5 0.6 0.8 1.0
+    SPLITX     2   2   2   1   2   1
+    MIX        1   2   3   4   5   6 ;
+\end{verbatim}
+                                                                
+\item 2--D Cartesian geometry containing micro-structures (see
+figure \Fig{grains}):
+
+\begin{figure}[h!] 
+\begin{center} 
+\epsfxsize=10cm \centerline{ \epsffile{Ggrains.eps}}
+\parbox{14cm}{\caption{Two-dimensional Cartesian assembly containing
+micro-structures} \label{fig:grains}}    
+\end{center}  
+\end{figure}
+
+This geometry can be analyzed only using \moc{SYBILT:}
+tracking modules:
+
+\begin{verbatim}
+CARNSG := GEO: :: CAR2D 3 3 
+  X- DIAG X+ REFL Y- SYME Y+ DIAG
+  MIX   C1  C1  C2
+            C3  C2
+                C3 
+  BIHET SPHE (*NG=*) 2 (* NMILG= *) 2 (* SPHERICAL MICRO-STRUCTURE *)
+  (* NS= *) 3 3
+  (* M-S-1 *) 0.0 0.1 0.2 0.3 (* M-S 2 *) 0.0 0.2 0.4 0.5
+  (* COMPOSITE MIXTURES *)  4 5
+  (* MIXTURES SURROUNDING M-S *) 1 1
+  (* COMPOSITE MIXTURE 4 FRACT *) 0.4 0.0
+  (* REAL MIXTURE CONTENT M-S-1 *) 3 1 3
+  (* COMPOSITE MIXTURE 5 FRACT *) 0.2 0.1
+  (* REAL MIXTURE CONTENT M-S-1 *) 1 2 1
+  (* REAL MIXTURE CONTENT M-S-2 *) 2 3 1
+  ::: C1 := GEO: CAR2D 1 1 (* HOMOGENEOUS CELL WITH M-S *)
+    MESHX 0.0 1.45 MESHY 0.0 1.45 MIX 4 ;
+  ::: C2 := GEO: C1 (* HOMOGENEOUS CELL WITHOUT M-S *)
+    MIX 1 ;
+  ::: C3 := GEO: CARCEL 2 (* CELL WITH M-S TUBE *)
+    MESHX 0.0 1.45 MESHY 0.0 1.45
+    RADIUS 0.0 0.6 0.7
+    MIX 5 2 1 ;
+;
+\end{verbatim}
+
+
+\item Cylindrical and Cartesian cluster geometry (see \Fig{grappe}):
+
+\begin{figure}[h!] 
+\begin{center} 
+\epsfxsize=10cm \centerline{ \epsffile{Ggrappe.eps}}
+\parbox{14cm}{\caption{Cylindrical cluster geometry}\label{fig:grappe}}    
+\end{center}  
+\end{figure}
+
+The first two geometry, namely {\tt ANNPIN} and {\tt CARPIN} can be analyzed
+using a \moc{EXCELT:} tracking modules since the pins in
+the clusters are all located between annular region. For the last two geometries,
+{\tt ANNSPIN} and {\tt CARSPIN}, which are based on {\tt ANNPIN} and {\tt
+CARPIN} respectively, they only be treated by the
+\moc{EXCELT:} tracking modules since the pins in the clusters intersect the
+annular regions defined by the \moc{SPLITR} option. This later option which was
+selected to ensure a uniform thickness of 0.25 cm for each the annular region in
+the final geometries.
+
+\begin{verbatim}
+ANNPIN := GEO: :: TUBE 3
+  R+ REFL  RADIUS 0.0 0.75 2.75 4.75
+  MIX 2 1 3 
+  CLUSTER C1 C2 
+  ::: C1 := GEO: TUBE 2
+    MIX 2 4 RADIUS 0.0 0.3 0.6
+    NPIN 4  RPIN 1.75  APIN 0.523599 ;
+  ::: C2 := GEO: C1
+    NPIN 2  RPIN 3.75  APIN 1.570796 ;
+;
+CARPIN := GEO: :: CARCEL 3
+  X- REFL X+ REFL Y- REFL  Y+ REFL
+  MESHX 0.0 10.0 MESHY -5.0 5.0
+  RADIUS 0.0 0.75 2.75 4.75
+  MIX 2 1 3 3
+  CLUSTER C1 C2 
+  ::: C1 := GEO: TUBE 2
+    MIX 2 4 RADIUS 0.0 0.3 0.6
+    NPIN 4  RPIN 1.75  APIN 0.523599 ;
+  ::: C2 := GEO: C1
+    NPIN 2  RPIN 3.75  APIN 1.570796 ;
+;
+ANNSPIN := GEO: ANNPIN :: 
+  SPLITR   3 8 8 ;
+CARSPIN := GEO: CARPIN :: 
+  SPLITR   3 8 8 ;
+\end{verbatim}
+
+Note that even if \moc{MESHX} and \moc{MESHY} differ in {\tt CARPIN}, the
+annular regions and pins will still be localized with respect to the center of
+the cell located at $(x,y)=(5.0,0.0)$ cm.
+
+
+\item 2--D hexagonal geometry (see \Fig{hexcel}):
+
+\begin{figure}[h!] 
+\begin{center} 
+\epsfxsize=10cm \centerline{ \epsffile{Ghexcel.eps}}
+\parbox{14cm}{\caption{Two-dimensional hexagonal geometry}
+\label{fig:hexcel}}    
+\end{center}  
+\end{figure}
+
+This geometry can be analyzed using the \moc{SYBILT:} and
+\moc{EXCELT:} tracking modules:
+
+\begin{verbatim}
+HEXAGON := GEO: :: HEX 12
+  HBC S30 ALBE 1.6
+  SIDE 1.3
+  MIX 1 1 1 2 2 2 3 3 3 4 5 6 
+;
+\end{verbatim}
+
+\item 3--D Cartesian supercell (see \Fig{supercel}):
+
+\begin{figure}[h!] 
+\begin{center} 
+\epsfxsize=10cm \centerline{ \epsffile{Gsupercel.eps}}
+\parbox{14cm}{\caption{Three-dimensional Cartesian
+super-cell}\label{fig:supercel}}     \end{center}  
+\end{figure}
+
+This geometry can only be analyzed using the 
+\moc{EXCELT:} tracking modules:
+
+\begin{verbatim}
+SUPERCELL := GEO: :: CAR3D 4 4 3
+  X- REFL   X+ REFL
+  Y- REFL   Y+ REFL
+  Z- REFL   Z+ REFL
+  MIX  A1 C1 D1 A3   A2 C2 D2 D2   A2 C2 C2 C2   A2 C2 C2 C2
+       C3 C3 D3 A4   C4 C4 D4 D4   C4 C4 C4 C4   C4 C4 C4 C4
+       C3 C3 D3 A4   C4 C4 D4 D4   C4 C4 C4 C4   C4 C4 C4 C4 
+  ::: C1 := GEO: CAR3D 1 1 1
+    MESHX 0.0 1.0 MESHY 0.0 1.5 MESHZ 0.0 2.0
+    MIX   1 ;
+  ::: C2 := GEO: C1 MESHY 0.0 1.0 ;
+  ::: C3 := GEO: C1 MESHZ 0.0 1.0 ;
+  ::: C4 := GEO: C2 MESHZ 0.0 1.0 ;
+  ::: D1 := GEO: C1 MIX 2  ;
+  ::: D2 := GEO: C2 MIX 2  ;
+  ::: D3 := GEO: C3 MIX 2  ;
+  ::: D4 := GEO: C4 MIX 2  ;
+  ::: A1 := GEO: CARCELY 2 1
+    MESHX 0.0 1.0 MESHY 0.0 1.5 MESHZ 0.0 2.0
+    RADIUS 0.0 0.4 0.45
+    MIX        3   4   1 ;
+  ::: A2 := GEO: A1 MESHY 0.0 1.0 ;
+  ::: A3 := GEO: CARCELZ 2 1
+    MESHX 0.0 1.0 MESHY 0.0 1.5 MESHZ 0.0 2.0
+    RADIUS 0.0 0.3 0.35
+    MIX        5   6   1 ;
+  ::: A4 := GEO: A3 MESHZ 0.0 1.0 ;
+;
+\end{verbatim}
+
+
+\item Multicell geometry in a 2--D hexagonal lattice (see \Fig{multihex}).
+
+\begin{figure}[h!] 
+\begin{center} 
+\epsfxsize=14cm \centerline{ \epsffile{Gmultihex.eps}}
+\parbox{14cm}{\caption{Hexagonal multicell lattice geometry}
+\label{fig:multihex}}    
+\end{center}  
+\end{figure}
+
+Here we are considering an infinite lattice having two types of cells such
+that
+
+\begin{align*}
+\begin{pmatrix}\text{pource}(1) \\ \text{pource}(2) \end{pmatrix}&=
+\begin{pmatrix}1/3 \\ 2/3 \\ \end{pmatrix}\ \ \ \ \text{ and} \ \ \ \ 
+\begin{pmatrix} \text{procel}(1,1) & \text{procel}(1,2) \\ \text{procel}(2,1) & \text{procel}(2,2) \\ \end{pmatrix}=
+\begin{pmatrix}0 & 1 \\ 1/2 & 1/2 \\ \end{pmatrix}
+\end{align*}
+
+This lattice, can be represented either in a {\sl do-it-yourself} type geometry
+({\tt HEXDIY}) or directly ({\tt HEXDIR}):
+
+\begin{verbatim}
+HEXDIY := GEO: :: GROUP 2
+  POURCE 0.3333333 0.66666667
+  PROCEL 0.0       1.0
+         0.5       0.5
+  MIX    C1 C2
+  ::: C1 := GEO: TUBE 1
+    RADIUS 0.0 1.1822093 MIX 1 ;
+  ::: C2 := GEO: C1 MIX 2 ;
+;
+HEXDIR := GEO: :: HEX 2
+  HBC S30 SYME SIDE 1.3 MIX 1 2 ;
+\end{verbatim}
+
+The first lattice can only be analyzed using the \moc{SYBILT:} tracking module,
+while the second lattice can be analyzed using all the tracking
+modules of DRAGON. 
+
+\end{itemize}
+
+\eject

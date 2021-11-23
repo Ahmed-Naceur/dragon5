@@ -1,0 +1,103 @@
+\contentsline {table}{\numberline {1}{Main records and sub-directories in \dir {macrolib}}}{2}{table.0.1}%
+\contentsline {table}{\numberline {2}{Vectorial cross section records and directories in \moc {GROUP}}}{4}{table.0.2}%
+\contentsline {table}{\numberline {3}{Example of delayed--neutron records in \moc {GROUP}}}{6}{table.0.3}%
+\contentsline {table}{\numberline {4}{Additional cross section records}}{6}{table.0.4}%
+\contentsline {table}{\numberline {5}{Scattering cross section records in \moc {GROUP}}}{8}{table.0.5}%
+\contentsline {table}{\numberline {6}{Records in the \moc {/ADF/} sub-directory}}{9}{table.0.6}%
+\contentsline {table}{\numberline {7}{Records in the \moc {/GFF/} sub-directory}}{10}{table.0.7}%
+\contentsline {table}{\numberline {8}{Records in the \moc {/SPH/} sub-directory}}{10}{table.0.8}%
+\contentsline {table}{\numberline {9}{Main records and sub-directories in \dir {microlib}}}{19}{table.0.9}%
+\contentsline {table}{\numberline {10}{Examples of isotopes directory in a \dir {microlib}}}{22}{table.0.10}%
+\contentsline {table}{\numberline {11}{Main records and sub-directories in \dir {depletion}}}{23}{table.0.11}%
+\contentsline {table}{\numberline {12}{Main records and sub-directories in \dir {selfshield}}}{27}{table.0.12}%
+\contentsline {table}{\numberline {13}{Main records and sub-directories in \dir {selfshield}}}{27}{table.0.13}%
+\contentsline {table}{\numberline {14}{Isotopic cross section identifier records}}{27}{table.0.14}%
+\contentsline {table}{\numberline {15}{Delayed neutron reaction records}}{28}{table.0.15}%
+\contentsline {table}{\numberline {16}{Example of delayed--neutron records in \dir {isotope}}}{29}{table.0.16}%
+\contentsline {table}{\numberline {17}{Depletion-related information}}{29}{table.0.17}%
+\contentsline {table}{\numberline {18}{Example of isotopic vector reaction records}}{30}{table.0.18}%
+\contentsline {table}{\numberline {19}{Additional total cross section records for $I=2$}}{32}{table.0.19}%
+\contentsline {table}{\numberline {20}{Optional scattering records}}{33}{table.0.20}%
+\contentsline {table}{\numberline {21}{Example of cross section records}}{35}{table.0.21}%
+\contentsline {table}{\numberline {22}{Physical probability tables}}{36}{table.0.22}%
+\contentsline {table}{\numberline {23}{Group-dependent probability table directories}}{36}{table.0.23}%
+\contentsline {table}{\numberline {24}{Main records and sub-directories in \dir {geometry}}}{40}{table.0.24}%
+\contentsline {table}{\numberline {25}{Cylindrical correction related records in \dir {geometry}}}{43}{table.0.25}%
+\contentsline {table}{\numberline {26}{Cell sub-geometry directory}}{46}{table.0.26}%
+\contentsline {table}{\numberline {27}{Cluster sub-geometry directory}}{46}{table.0.27}%
+\contentsline {table}{\numberline {28}{Records in the \moc {/BIHET/} sub-directory}}{47}{table.0.28}%
+\contentsline {table}{\numberline {29}{Main records and sub-directories in \dir {tracking}}}{48}{table.0.29}%
+\contentsline {table}{\numberline {30}{The \moc {sybilt} records and sub-directories in \dir {tracking}}}{49}{table.0.30}%
+\contentsline {table}{\numberline {31}{The contents of the \moc {sybilt} \moc {/PURE-GEOM/} sub-directory}}{50}{table.0.31}%
+\contentsline {table}{\numberline {32}{The contents of the \moc {sybilt} \moc {/DOITYOURSELF/} sub-directory}}{51}{table.0.32}%
+\contentsline {table}{\numberline {33}{The contents of the \moc {sybilt} \moc {/EURYDICE/} sub-directory}}{52}{table.0.33}%
+\contentsline {table}{\numberline {34}{The \moc {EXCELT:} records in \dir {tracking}}}{56}{table.0.34}%
+\contentsline {table}{\numberline {35}{Global geometry records in \namedir {NXTRecords}}}{57}{table.0.35}%
+\contentsline {table}{\numberline {36}{Cell $i=1$ records in \namedir {NXTRecords}}}{61}{table.0.36}%
+\contentsline {table}{\numberline {37}{Pin $i=1$ records in \namedir {NXTRecords}}}{64}{table.0.37}%
+\contentsline {table}{\numberline {38}{Global geometry records in \namedir {NXTRecords}}}{66}{table.0.38}%
+\contentsline {table}{\numberline {39}{The \moc {MCCGT:} records in \dir {tracking}}}{69}{table.0.39}%
+\contentsline {table}{\numberline {40}{The \moc {MCCGT:} records in \namedir {PROJECTION}}}{70}{table.0.40}%
+\contentsline {table}{\numberline {41}{The \moc {snt} records in \dir {tracking}}}{73}{table.0.41}%
+\contentsline {table}{\numberline {42}{The \moc {snt} records in \dir {tracking} (Cartesian 1-D geometry)}}{73}{table.0.42}%
+\contentsline {table}{\numberline {43}{The \moc {snt} records in \dir {tracking} (tube 1-D geometry)}}{74}{table.0.43}%
+\contentsline {table}{\numberline {44}{The \moc {snt} records in \dir {tracking} (spherical 1-D geometry)}}{74}{table.0.44}%
+\contentsline {table}{\numberline {45}{The \moc {snt} records in \dir {tracking} (Cartesian 2-D and R-Z geometries)}}{75}{table.0.45}%
+\contentsline {table}{\numberline {46}{The \moc {snt} records in \dir {tracking} (Cartesian 3-D geometry)}}{76}{table.0.46}%
+\contentsline {table}{\numberline {47}{The \moc {bivact} records in \dir {tracking}}}{78}{table.0.47}%
+\contentsline {table}{\numberline {48}{Description of the \moc {/BIVCOL/} sub-directory}}{79}{table.0.48}%
+\contentsline {table}{\numberline {49}{The \moc {trivat} records in \dir {tracking}}}{83}{table.0.49}%
+\contentsline {table}{\numberline {50}{The \moc {trivat} records in \dir {tracking} (contd.)}}{84}{table.0.50}%
+\contentsline {table}{\numberline {51}{The \moc {trivat} records in \dir {tracking} (contd.)}}{84}{table.0.51}%
+\contentsline {table}{\numberline {52}{The \moc {trivat} records in \dir {tracking} (contd.)}}{85}{table.0.52}%
+\contentsline {table}{\numberline {53}{The contents of the \moc {/BIHET/} sub-directory}}{86}{table.0.53}%
+\contentsline {table}{\numberline {54}{Main records and sub-directories in \dir {asminfo}}}{88}{table.0.54}%
+\contentsline {table}{\numberline {55}{Records and sub-directories in \moc {GROUP}}}{89}{table.0.55}%
+\contentsline {table}{\numberline {56}{Records and sub-directories in \moc {GROUP}}}{90}{table.0.56}%
+\contentsline {table}{\numberline {57}{Collision probability records in \moc {GROUP}}}{91}{table.0.57}%
+\contentsline {table}{\numberline {58}{SYBIL groupwise assembly information in \moc {GROUP}}}{93}{table.0.58}%
+\contentsline {table}{\numberline {59}{MCCG groupwise directories}}{94}{table.0.59}%
+\contentsline {table}{\numberline {60}{Main records and sub-directories in \dir {system}}}{96}{table.0.60}%
+\contentsline {table}{\numberline {61}{Main records and sub-directories in \dir {kinet}}}{100}{table.0.61}%
+\contentsline {table}{\numberline {62}{Main records and sub-directories in \dir {fluxunk}}}{104}{table.0.62}%
+\contentsline {table}{\numberline {63}{Component of the harmonic mode directory}}{106}{table.0.63}%
+\contentsline {table}{\numberline {64}{Main records and sub-directories in \dir {source}}}{107}{table.0.64}%
+\contentsline {table}{\numberline {65}{Main records and sub-directories in \dir {deposition}}}{108}{table.0.65}%
+\contentsline {table}{\numberline {66}{Main records and sub-directories in \dir {edition}}}{110}{table.0.66}%
+\contentsline {table}{\numberline {67}{Example of an editing directory}}{112}{table.0.67}%
+\contentsline {table}{\numberline {68}{Records in the \moc {/REF:ADF/} sub-directory}}{112}{table.0.68}%
+\contentsline {table}{\numberline {69}{Main records and sub-directories in \dir {burnup}}}{114}{table.0.69}%
+\contentsline {table}{\numberline {70}{Example of depletion directories}}{115}{table.0.70}%
+\contentsline {table}{\numberline {71}{Contents of a depletion sub-directory in \dir {burnup}}}{116}{table.0.71}%
+\contentsline {table}{\numberline {72}{Main records in \dir {multicompo}}}{119}{table.0.72}%
+\contentsline {table}{\numberline {73}{Main records and sub-directories in \listedir {namdir}}}{119}{table.0.73}%
+\contentsline {table}{\numberline {74}{Contents of sub-directory {\tt GLOBAL} in \dir {multicompo}}}{120}{table.0.74}%
+\contentsline {table}{\numberline {75}{Contents of sub-directory {\tt LOCAL} in \dir {multicompo}}}{121}{table.0.75}%
+\contentsline {table}{\numberline {76}{Component of the homogenized mixture directory}}{121}{table.0.76}%
+\contentsline {table}{\numberline {77}{Contents of sub-directory {\tt TREE} in {\tt MIXTURES}}}{121}{table.0.77}%
+\contentsline {table}{\numberline {78}{Main records and sub-directories in \dir {CPO}}}{125}{table.0.78}%
+\contentsline {table}{\numberline {79}{Example of homogeneous mixture directories}}{126}{table.0.79}%
+\contentsline {table}{\numberline {80}{Contents of a mixture sub-directory in \dir {CPO}}}{126}{table.0.80}%
+\contentsline {table}{\numberline {81}{Example of homogeneous mixture directories}}{127}{table.0.81}%
+\contentsline {table}{\numberline {82}{Contents of a burnup sub-directory in \dir {CPO}}}{127}{table.0.82}%
+\contentsline {table}{\numberline {83}{Main records and sub-directories in \dir {saphyb}}}{129}{table.0.83}%
+\contentsline {table}{\numberline {84}{Contents of sub-directory {\tt constphysiq} in \dir {saphyb}}}{131}{table.0.84}%
+\contentsline {table}{\numberline {85}{Contents of sub-directory {\tt contenu} in \dir {saphyb}}}{131}{table.0.85}%
+\contentsline {table}{\numberline {86}{Contents of sub-directory {\tt adresses} in \dir {saphyb}}}{132}{table.0.86}%
+\contentsline {table}{\numberline {87}{Contents of sub-directory {\tt geom} in \dir {saphyb}}}{133}{table.0.87}%
+\contentsline {table}{\numberline {88}{Contents of sub-directory {\tt outgeom} in \dir {geom}}}{133}{table.0.88}%
+\contentsline {table}{\numberline {89}{Contents of sub-directory {\tt paramdescrip} in \dir {saphyb}}}{133}{table.0.89}%
+\contentsline {table}{\numberline {90}{Contents of sub-directory {\tt paramvaleurs} in \dir {saphyb}}}{134}{table.0.90}%
+\contentsline {table}{\numberline {91}{Contents of sub-directory {\tt paramarbre} in \dir {saphyb}}}{135}{table.0.91}%
+\contentsline {table}{\numberline {92}{Contents of sub-directory {\tt varlocdescri} in \dir {saphyb}}}{137}{table.0.92}%
+\contentsline {table}{\numberline {93}{Contents of sub-directory \dir {caldir} in \dir {saphyb}}}{137}{table.0.93}%
+\contentsline {table}{\numberline {94}{Contents of sub-directory {\tt info} in \dir {caldir}}}{138}{table.0.94}%
+\contentsline {table}{\numberline {95}{Contents of sub-directory {\tt divers} in \dir {caldir}}}{139}{table.0.95}%
+\contentsline {table}{\numberline {96}{Contents of sub-directory {\tt outflx} in \dir {caldir}}}{140}{table.0.96}%
+\contentsline {table}{\numberline {97}{Contents of mixture sub-directory \dir {mixdir} in \dir {caldir}}}{140}{table.0.97}%
+\contentsline {table}{\numberline {98}{Contents of sub-directory {\tt cinetique} in \dir {mixdir}}}{142}{table.0.98}%
+\contentsline {table}{\numberline {99}{Main records and sub-directories in \dir {mc}}}{143}{table.0.99}%
+\contentsline {table}{\numberline {100}{Main records and sub-directories in \dir {draglib}}}{145}{table.0.100}%
+\contentsline {table}{\numberline {101}{Temperature-dependent isotopic records}}{146}{table.0.101}%
+\contentsline {table}{\numberline {102}{Temperature-dependent isotopic records}}{147}{table.0.102}%
+\contentsline {table}{\numberline {103}{Records and sub-directories in \dir {fview} data structure}}{149}{table.0.103}%

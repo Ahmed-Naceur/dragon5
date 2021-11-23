@@ -1,0 +1,305 @@
+*DECK Mix_Assb_DRA
+*----
+*  Name          : Mix_UOX_32.c2m
+*  Type          : DRAGON procedure
+*  Use           : Microlib generation with Draglibs for
+*                  UOX calculation with 32 fuel regions
+*  Author        : R. Vallerent
+*
+*  Procedure called as: 
+*
+*  LIBRARY := Mix_Assb_DRA ::
+*    <<dens_mod>> <<pbore>> <<N_U5_UOX>> <<densU_UOX>>
+*    <<temp_comb>> <<temp_mode>> <<temp_clad>> ;
+*
+*  Input data   :
+*    dens_mod   : Theoretical moderator density
+*    pbore      : Natural boron concentration (ppm)
+*    N_U5_UOX   : U235 enrichment in UOX-Fuel
+*    densU_UOX  : Theoretical density of Uranium in UOX-Fuel
+*    temp_comb  : Theoretical Fuel temperature (K)
+*    temp_mode  : Theoretical moderator temperature (K)
+*    temp_clad  : Theoretical clad temperature (K)
+*
+*  Output data  :
+*    LIBRARY    : Microlib with table of probabilities
+
+
+PARAMETER  LIBRARY  ::  
+       EDIT 0 
+           ::: LINKED_LIST LIBRARY  ; 
+   ;
+
+*----
+*  Input data recovery
+*----
+STRING Library ;
+:: >>Library<< ;
+
+REAL dens_mod     pbore     N_U5_UOX     densU_UOX   ;
+:: >>dens_mod<< >>pbore<< >>N_U5_UOX<< >>densU_UOX<< ;
+REAL temp_comb     temp_mode     temp_clad   ;
+:: >>temp_comb<< >>temp_mode<< >>temp_clad<< ;
+
+*----
+*  Modules used in this procedure
+*----
+MODULE  LIB: UTL: DELETE: END: ;
+
+REAL TfuelK := temp_comb ;
+REAL TmodeK := temp_mode ;
+REAL TgainK := temp_clad ;
+
+* Calculation of moderator data
+* Avogadro number
+REAL A := 6.022094E-1 ; ! Normalisation des concentrations par 10E-24
+
+REAL M_H2O := 15.9994 2.0 1.00794 * + ;
+REAL N_H2O := dens_mod A * M_H2O / ;
+REAL b10 b11 := 0.199 0.801 ; ! Bore naturel
+REAL coeff := 0.199 A 1.0E-06 * * 10.8110164 * ;
+REAL N_B10 := coeff 0.659 pbore * * ; ! densite nominale
+REAL N_2H2O N_B11 := 2.0 N_H2O * N_B10 b11 * b10 / ;
+
+* Calculation of fuel data
+REAL den_uo2 := densU_UOX ;
+REAL M_U4          M_U5          M_U8          M_U6          := 
+     234.040952088 235.043929918 238.050788247 236.045568006 ;
+REAL M_Pu8         M_Pu9         M_Pu0         M_Pu1         :=
+     238.049559894 239.052163381 240.053813545 241.056851456 ;
+REAL M_Pu2         M_Am1         M_O16          :=
+     242.058742611 241.056829144 15.99491461956 ;
+
+REAL N_U5 := N_U5_UOX ;
+*REAL N_U4 := N_U5 54.0E-04 * 0.72 / ;
+REAL N_U4 := 0.0 ;
+REAL N_U6    N_Pu8   N_Pu9   N_Pu0   N_Pu1   N_Pu2   N_Am1 :=
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0  ;
+REAL N_U8 := 1.0 N_U5 - N_U4 - N_Pu8 7.0 * - ;
+REAL N_O16F := N_U4 M_U4 / N_U5 M_U5 / + N_U8 M_U8 / + N_Pu8 M_Pu8 / + ;
+EVALUATE N_O16F := N_O16F N_U6 M_U6 / + ;
+EVALUATE N_O16F := N_O16F N_Pu9 M_Pu9 / + N_Pu0 M_Pu0 / + ;
+EVALUATE N_O16F := N_O16F N_Pu1 M_Pu1 / + N_Pu2 M_Pu2 / + ;
+EVALUATE N_O16F := N_O16F N_Am1 M_Am1 / + 2.0 * M_O16 * ;
+
+REAL N_TOTF := N_U4 N_U5 + N_U6 + N_U8 + N_Pu8 + N_Pu9 + N_Pu0 +   ;
+EVALUATE N_TOTF := N_TOTF N_Pu1 + N_Pu2 + N_Am1 + N_O16F + ;
+EVALUATE N_U4 := N_U4 N_TOTF / ;
+EVALUATE N_U5 := N_U5 N_TOTF / ;
+EVALUATE N_U6 := N_U6 N_TOTF / ;
+EVALUATE N_U8 := N_U8 N_TOTF / ;
+EVALUATE N_Pu8 := N_Pu8 N_TOTF / ;
+EVALUATE N_Pu9 := N_Pu9 N_TOTF / ;
+EVALUATE N_Pu0 := N_Pu0 N_TOTF / ;
+EVALUATE N_Pu1 := N_Pu1 N_TOTF / ;
+EVALUATE N_Pu2 := N_Pu2 N_TOTF / ;
+EVALUATE N_Am1 := N_Am1 N_TOTF / ;
+EVALUATE N_O16F := N_O16F N_TOTF / ;
+
+* --------------------------------
+* Cladding calculation
+* --------------------------------
+* Official clad
+*REAL P_Zr       P_Fe       P_Cr      P_O16     P_Sn      := 
+*     98.115E-02 0.210E-02  0.100E-02 0.125E-02 1.450E-02 ;
+* Benchmark clad
+REAL P_Zr       P_Fe       P_Cr      P_O16     P_Sn      := 
+     1.0 0.0 0.0 0.0 0.0 ;
+
+REAL P_Zr90     P_Zr91     P_Zr92    P_Zr94    P_Zr96    :=
+     51.45E-02  11.22E-02  17.15E-02 17.38E-02 2.80E-02  ;
+REAL P_Fe54     P_Fe56     P_Fe57    P_Fe58    :=
+     5.602E-02  91.865E-02 2.243E-02 0.290E-02 ;
+*isot 5.8 %     91.72%     2.20%     0.28%
+REAL P_Cr50     P_Cr52     P_Cr53    P_Cr54    :=
+     4.178E-02  83.701E-02 9.673E-02 2.448E-02 ;
+*isot 4.35%     83.79%     9.50%     2.36%
+REAL P_Sn112    P_Sn114    P_Sn115   P_Sn116   P_Sn117
+     P_Sn118    P_Sn119    P_Sn120   P_Sn122   P_Sn124   :=
+     0.92E-02   0.62E-02   0.33E-02  14.21E-02 7.56E-02
+     24.06E-02  8.59E-02   32.92E-02 4.75E-02  6.04E-02  ;
+
+REAL M_Zr := P_Zr90 89.904711 * P_Zr91 90.905643 * P_Zr92 91.905039 *
+             P_Zr94 93.906320 * P_Zr96 95.90829 * + + + + ;
+REAL M_Fe := P_Fe54 53.9396148 * P_Fe56 55.9349421 * 
+             P_Fe57 56.9353987 * P_Fe58 57.9332805 * + + + ;
+REAL M_Cr := P_Cr50 49.9460496 * P_Cr52 51.9405119 * 
+             P_Cr53 52.9406538 * P_Cr54 53.9388849 * + + + ;
+REAL M_Sn := P_Sn112 111.90483 * P_Sn114 113.90278 * P_Sn115 114.90335 *
+             P_Sn116 115.901748 * P_Sn117 116.902961 *
+             P_Sn118 117.901613 * P_Sn119 118.903316 *
+             P_Sn120 119.902207 * P_Sn122 121.903451 *
+             P_Sn124 123.905283 * + + + + + + + + + ;
+
+REAL rho_clad := 6.55022 ;
+REAL N_Zr_clad := P_Zr rho_clad A * M_Zr / * ;
+REAL N_Zr90       N_Zr91       N_Zr92       N_Zr94       N_Zr96    :=
+     N_Zr_clad P_Zr90 *  N_Zr_clad P_Zr91 *  N_Zr_clad P_Zr92 *
+     N_Zr_clad P_Zr94 *  N_Zr_clad P_Zr96 *  ;
+
+REAL N_Fe_clad := P_Fe rho_clad A * M_Fe / * ;
+REAL N_Fe54         N_Fe56         N_Fe57         N_Fe58        :=
+     N_Fe_clad P_Fe54 *  N_Fe_clad P_Fe56 *  N_Fe_clad P_Fe57 *
+     N_Fe_clad P_Fe58 * ;
+
+REAL N_Cr_clad := P_Cr rho_clad A * M_Cr / * ;
+REAL N_Cr50         N_Cr52         N_Cr53         N_Cr54        :=
+     N_Cr_clad P_Cr50 *  N_Cr_clad P_Cr52 *  N_Cr_clad P_Cr53 *
+     N_Cr_clad P_Cr54 * ;
+
+REAL N_O16G := P_O16 rho_clad A * 15.9949150 / * ;
+
+REAL N_Sn_clad := P_Sn rho_clad A * M_Sn / * ;
+REAL N_Sn112        N_Sn114        N_Sn115        N_Sn116
+     N_Sn117        N_Sn118        N_Sn119        N_Sn120
+     N_Sn122        N_Sn124        :=
+     N_Sn_clad P_Sn112 * N_Sn_clad P_Sn114 * N_Sn_clad P_Sn115 *
+     N_Sn_clad P_Sn116 * N_Sn_clad P_Sn117 * N_Sn_clad P_Sn118 *
+     N_Sn_clad P_Sn119 * N_Sn_clad P_Sn120 * N_Sn_clad P_Sn122 *
+     N_Sn_clad P_Sn124 * ;
+
+*                                                                      ;
+LIBRARY := LIB: ::
+  EDIT 0
+  DEPL LIB: DRAGON FIL: <<Library>>
+
+  NMIX 161 CTRA APOL
+  PT
+  MIXS LIB: DRAGON FIL: <<Library>>
+
+*----
+*    Moderator
+*----
+  MIX 1 <<TmodeK>> NOEV
+    H1_H2O   = H1_H2O <<N_2H2O>>
+    O16_H2O  = O16    <<N_H2O>> 
+    B10      = B10    <<N_B10>> 
+    B11      = B11    <<N_B11>> 
+
+*----
+*    Cladding TI
+*----
+  MIX 2 <<TgainK>> NOEV
+    Zr90g    = Zr90   <<N_Zr90>> 2 IRSET PT 1
+    Zr91g    = Zr91   <<N_Zr91>> 2 IRSET PT 1
+    Zr92g    = Zr92   <<N_Zr92>>
+    Zr94g    = Zr94   <<N_Zr94>>
+    Zr96g    = Zr96   <<N_Zr96>>
+    Fe54g    = Fe54   <<N_Fe54>>
+    Fe56g    = Fe56   <<N_Fe56>>
+    Fe57g    = Fe57   <<N_Fe57>>
+    Fe58g    = Fe58   <<N_Fe58>>
+    Cr50g    = Cr50   <<N_Cr50>>
+    Cr52g    = Cr52   <<N_Cr52>>
+    Cr53g    = Cr53   <<N_Cr53>>
+    Cr54g    = Cr54   <<N_Cr54>>
+    O16Gg    = O16    <<N_O16G>>
+    Sn112g   = Sn112  <<N_Sn112>>
+    Sn114g   = Sn114  <<N_Sn114>>
+    Sn115g   = Sn115  <<N_Sn115>>
+    Sn116g   = Sn116  <<N_Sn116>>
+    Sn117g   = Sn117  <<N_Sn117>>
+    Sn118g   = Sn118  <<N_Sn118>>
+    Sn119g   = Sn119  <<N_Sn119>>
+    Sn120g   = Sn120  <<N_Sn120>>
+    Sn122g   = Sn122  <<N_Sn122>>
+    Sn124g   = Sn124  <<N_Sn124>>
+
+*----
+*    Fuel -> 8 * 4 evolving mixes
+*----
+* C1 Cell
+  MIX 3 <<TfuelK>> <<den_uo2>>
+    U234    = U234    <<N_U4>>     
+    U235    = U235    <<N_U5>>   1  IRSET PT 1
+    U236    = U236    <<N_U6>>   1  IRSET PT 1
+    U238    = U238    <<N_U8>>   1  IRSET PT 1
+    Pu238   = Pu238   <<N_Pu8>>    
+    Pu239   = Pu239   <<N_Pu9>>  1  IRSET PT 1
+    Pu240   = Pu240   <<N_Pu0>>  1  IRSET PT 1
+    Pu241   = Pu241   <<N_Pu1>>  1  IRSET PT 1
+    Pu242   = Pu242   <<N_Pu2>>  1  IRSET PT 1
+    Am241   = Am241   <<N_Am1>>    
+    O16F    = O16     <<N_O16F>>
+  MIX 4 
+    COMB 3 1.0
+  MIX 5 
+    COMB 3 1.0
+  MIX 6 
+    COMB 3 1.0
+
+*----
+*    Gap
+*----
+  MIX 7 <<TgainK>> NOEV
+    Al27     = Al27    1.00E-08
+
+*----
+*    Cladding fuel
+*----
+  MIX 8 <<TgainK>> NOEV
+    Zr90f    = Zr90   <<N_Zr90>> 3 IRSET PT 1
+    Zr91f    = Zr91   <<N_Zr91>> 3 IRSET PT 1
+    Zr92f    = Zr92   <<N_Zr92>>
+    Zr94f    = Zr94   <<N_Zr94>>
+    Zr96f    = Zr96   <<N_Zr96>>
+    Fe54f    = Fe54   <<N_Fe54>>
+    Fe56f    = Fe56   <<N_Fe56>>
+    Fe57f    = Fe57   <<N_Fe57>>
+    Fe58f    = Fe58   <<N_Fe58>>
+    Cr50f    = Cr50   <<N_Cr50>>
+    Cr52f    = Cr52   <<N_Cr52>>
+    Cr53f    = Cr53   <<N_Cr53>>
+    Cr54f    = Cr54   <<N_Cr54>>
+    O16Gf    = O16    <<N_O16G>>
+    Sn112f   = Sn112  <<N_Sn112>>
+    Sn114f   = Sn114  <<N_Sn114>>
+    Sn115f   = Sn115  <<N_Sn115>>
+    Sn116f   = Sn116  <<N_Sn116>>
+    Sn117f   = Sn117  <<N_Sn117>>
+    Sn118f   = Sn118  <<N_Sn118>>
+    Sn119f   = Sn119  <<N_Sn119>>
+    Sn120f   = Sn120  <<N_Sn120>>
+    Sn122f   = Sn122  <<N_Sn122>>
+    Sn124f   = Sn124  <<N_Sn124>>
+
+ MIX 9 COMB 3 1.0
+ MIX 10 COMB 3 1.0
+ MIX 11 COMB 3 1.0
+ MIX 12 COMB 3 1.0
+
+ MIX 114 COMB 3 1.0
+ MIX 115 COMB 3 1.0
+ MIX 116 COMB 3 1.0
+ MIX 117 COMB 3 1.0
+
+ MIX 94 COMB 3 1.0
+ MIX 95 COMB 3 1.0
+ MIX 96 COMB 3 1.0
+ MIX 97 COMB 3 1.0
+
+ MIX 122 COMB 3 1.0
+ MIX 123 COMB 3 1.0
+ MIX 124 COMB 3 1.0
+ MIX 125 COMB 3 1.0
+
+ MIX 25 COMB 2 1.0 (*GAINE_TG*)
+
+ MIX 126 COMB 3 1.0
+ MIX 127 COMB 3 1.0
+ MIX 128 COMB 3 1.0
+ MIX 129 COMB 3 1.0
+
+ MIX 154 COMB 3 1.0
+ MIX 155 COMB 3 1.0
+ MIX 156 COMB 3 1.0
+ MIX 157 COMB 3 1.0
+
+ MIX 158 COMB 3 1.0
+ MIX 159 COMB 3 1.0
+ MIX 160 COMB 3 1.0
+ MIX 161 COMB 3 1.0
+;
+
+END: ;
+QUIT .

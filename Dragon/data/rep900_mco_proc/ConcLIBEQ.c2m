@@ -1,0 +1,60 @@
+*DECK ConcLIBEQ
+*----
+*  Name          : ConcLIBEQ.c2m
+*  Type          : DRAGON procedure
+*  Use           : Update of the LIBEQ concentrations
+*                  with the ones of BURN164
+*  Author        : R. Vallerent
+*
+*  Procedure called as: 
+*
+*  LIBEQ := ConcLIBEQ LIBEQ BURN164 :: <<istep>> ;
+*
+*  Input data   :
+*    LIBEQ      : Library which concentrations are to be updated
+*    BURN164    : Burnup object which contains the 156-fuel mixes
+*                 concentrations
+*    istep      : step of the calculation (where the concentrations
+*                 will be read in BURN164)
+*  Output data  :
+*    LIBEQ      : Library which concentrations are updated
+
+
+PARAMETER LIBEQ BURN164 ::  
+       EDIT 1 
+           ::: LINKED_LIST LIBEQ BURN164 ; 
+   ;
+*                                                                      ;
+MODULE LIB: END: ;
+
+INTEGER istep   ;
+   :: >>istep<< ;
+
+LIBEQ := LIB: LIBEQ BURN164 ::
+  EDIT 0
+  BURN <<istep>>
+
+ MIX   9 MIX  10 MIX  11 MIX  12 MIX  13 MIX  14 MIX  15 MIX  16
+ MIX  17 MIX  18 MIX  19 MIX  20 MIX  21 MIX  22 MIX  23 MIX  24
+ MIX  25 MIX  26 MIX  27 MIX  28 MIX  29 MIX  30 MIX  31 MIX  32
+ MIX  33 MIX  34 MIX  35 MIX  36 MIX  37 MIX  38 MIX  39 MIX  40
+ MIX  41 MIX  42 MIX  43 MIX  44 MIX  45 MIX  46 MIX  47 MIX  48
+ MIX  49 MIX  50 MIX  51 MIX  52 MIX  53 MIX  54 MIX  55 MIX  56
+ MIX  57 MIX  58 MIX  59 MIX  60 MIX  61 MIX  62 MIX  63 MIX  64
+ MIX  65 MIX  66 MIX  67 MIX  68 MIX  69 MIX  70 MIX  71 MIX  72
+ MIX  73 MIX  74 MIX  75 MIX  76 MIX  77 MIX  78 MIX  79 MIX  80
+ MIX  81 MIX  82 MIX  83 MIX  84 MIX  85 MIX  86 MIX  87 MIX  88
+ MIX  89 MIX  90 MIX  91 MIX  92 MIX  93 MIX  94 MIX  95 MIX  96
+ MIX  97 MIX  98 MIX  99 MIX 100 MIX 101 MIX 102 MIX 103 MIX 104
+ MIX 105 MIX 106 MIX 107 MIX 108 MIX 109 MIX 110 MIX 111 MIX 112
+ MIX 113 MIX 114 MIX 115 MIX 116 MIX 117 MIX 118 MIX 119 MIX 120
+ MIX 121 MIX 122 MIX 123 MIX 124 MIX 125 MIX 126 MIX 127 MIX 128
+ MIX 129 MIX 130 MIX 131 MIX 132 MIX 133 MIX 134 MIX 135 MIX 136
+ MIX 137 MIX 138 MIX 139 MIX 140 MIX 141 MIX 142 MIX 143 MIX 144
+ MIX 145 MIX 146 MIX 147 MIX 148 MIX 149 MIX 150 MIX 151 MIX 152
+ MIX 153 MIX 154 MIX 155 MIX 156 MIX 157 MIX 158 MIX 159 MIX 160
+ MIX 161 MIX 162 MIX 163 MIX 164
+;
+
+END: ;
+QUIT .

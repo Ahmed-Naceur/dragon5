@@ -1,0 +1,252 @@
+\subsection{Contents of \dir{device} data structure}\label{sect:device}
+
+\vskip 0.2cm
+A \dir{device} data structure is used to store several information related
+to the reactor devices. This object has a signature {\tt L\_DEVICE};
+it is created using the \moc{DEVINI:} module. The information contained in
+this data structure can be used and updated in other DONJON modules
+which are related to the devices, namely: \moc{LZC:}, \moc{DSET:},
+\moc{MOVDEV:} and \moc{NEWMAC:} modules.
+
+\subsubsection{The state-vector content}\label{sect:devicestate}
+\noindent
+The dimensioning parameters $\mathcal{S}_i$, which are stored in the state
+vector for this data structure, represent:
+
+\begin{itemize}
+
+\item The type of reactor geometry $I_g = \mathcal{S}_1$
+(only $I_g=7$ for \dusa{3D}-Cartesian geometry allowed)
+
+\item The total number of rod-type devices $N_{rod} = \mathcal{S}_2$
+
+\item The total number of the rod-type groups $N_{rgrp} = \mathcal{S}_3$
+
+\item The total number of lzc-type devices $N_{lzc} = \mathcal{S}_4$
+
+\item The total number of the lzc-type groups $N_{lgrp} = \mathcal{S}_5$
+
+\item Type of control rod movement $I_{mov} = \mathcal{S}_6$ where
+\begin{displaymath}
+I_{\rm mov} = \left\{
+\begin{array}{rl}
+ 1 & \textrm{Fading. A fraction of the fully inserted rod vanishes} \\
+ 2 & \textrm{Moving. The complete rod is moving (DONJON3-type movement).}
+\end{array} \right.
+\end{displaymath}
+
+\end{itemize}
+
+\subsubsection{The main \dir{device} directory}\label{sect:devicedir}
+\noindent
+The following records and sub-directories will be found on the first level
+of \dir{device} directory:
+
+\begin{DescriptionEnregistrement}{Records and sub-directories in \dir{device}
+data structure}{7cm} 
+
+\CharEnr
+{SIGNATURE\blank{3}}{$*12$}
+{Signature of the \dir{device} data structure ($\mathsf{SIGNA}=${\tt L\_DEVICE\blank{4}}).}
+
+\IntEnr
+{STATE-VECTOR}{$40$}
+{Vector describing the various parameters associated with this data structure $\mathcal{S}_i$}
+
+\DirlEnr
+{DEV\_ROD\blank{5}}{$N_{rod}$}
+{Sub-directories for each controller rod. A sub-directory is created for each
+ controller rod according to the rod identification number.}
+
+\DirlEnr
+{ROD\_GROUP\blank{3}}{$N_{rgrp}$}
+{Sub-directories for each group of rod-type devices. A sub-directory is created for
+ each group of rod-type devices according to the rod-group identification number.}
+
+\DirlEnr
+{DEV\_LZC\blank{5}}{$N_{lzc}$}
+{Sub-directories for each liquid zone controller. A sub-directory is created for
+ each liquid controller according to the liquid controller identification number.}
+
+\DirlEnr
+{LZC\_GROUP\blank{3}}{$N_{lgrp}$}
+{Sub-directories for each group of lzc-type devices. A sub-directory is created for
+ each group of lzc-type devices according to the lzc-group identification number.}
+
+\end{DescriptionEnregistrement}
+
+\subsubsection{The \moc{DEV-ROD} sub-directories}\label{sect:devicerod}
+
+\noindent
+Inside each \moc{DEV-ROD} sub-directory, the following records will be found:
+
+\begin{DescriptionEnregistrement}{Records in \moc{DEV-ROD} sub-directories}
+{7.0cm} \label{tabl:tabrod}
+
+\IntEnr
+{ROD-ID\blank{6}}{$1$}
+{The identification number of the rod.}
+
+\CharEnr
+{ROD-NAME\blank{4}}{$*12$}
+{The identification name of the rod.}
+
+\IntEnr
+{ROD-PARTS\blank{3}}{$1$}
+{The number of parts in the rod ($N_{\rm part}\ge 1$).}
+
+\IntEnr
+{AXIS\blank{8}}{$1$}
+{The number used to identify the rod mouvement direction:
+ = 1 along x-axis; = 2 along y-axis; =3 along z-axis.}
+
+\IntEnr
+{FROM\blank{8}}{$1$}
+{The number used to identify the side of geometry, from which
+ the controller rod is inserted into the reactor core along its direction
+ of mouvement: = 1 if a rod is inserted from the highest position
+ (e.g. from the top); = -1 if a rod is inserted from the lowest
+ position (e.g. from the bottom).}
+
+\RealEnr
+{LENGTH\blank{6}}{$2$}{cm}
+{The initial and final position coordinates of the full-inserted rod along its direction of movement. The
+rod length is the distance between these two coordinates.}
+
+\RealEnr
+{CORE-LIMITS\blank{1}}{$6$}{cm}
+{The initial and final position coordinates of the full core along each Cartesian direction.}
+
+\RealEnr
+{MAX-POS\blank{5}}{$6\times N_{\rm part}$}{cm}
+{The limiting \dusa{3D}-Cartesian coordinates of the full-inserted rod. This
+ data is given for each part of the rod.}
+
+\IntEnr
+{ROD-MIX\blank{5}}{$2\times N_{\rm part}$}
+{The rod-type mixture indices. The first number corresponds to the
+ inserted rod position and the second to the withdrawn rod position. This
+ data is given for each part of the rod.}
+
+\OptRealEnr
+{LEVEL\blank{7}}{$1$}{*}{}
+{The actual insertion level of the controller rod. This value must be
+ between 0.0 for the full-withdrawn rod and 1.0 for the full-inserted rod.}
+
+\OptRealEnr
+{SPEED\blank{7}}{$1$}{*}{cm~s$^{-1}$}
+{The speed of rod movement (insertion or extraction).}
+
+\OptRealEnr
+{TIME\blank{8}}{$1$}{*}{s}
+{The time for the full rod insertion or extraction.}
+
+\OptRealEnr
+{ROD-POS\blank{5}}{$6\times N_{\rm part}$}{*}{cm}
+{The actual \dusa{3D}-Cartesian coordinates of the rod. This
+ data is given for each part of the rod.}
+
+\end{DescriptionEnregistrement}
+
+\subsubsection{The \moc{ROD-GROUP} sub-directories}\label{sect:rodgroup}
+
+\noindent
+Inside each \moc{ROD-GROUP} sub-directory, the following records will be found:
+
+\begin{DescriptionEnregistrement}{Records in \moc{ROD-GROUP} sub-directories}
+{7.0cm} \label{tabl:tabrodgroup}
+ 
+\IntEnr
+{GROUP-ID\blank{4}}{$1$}
+{The identification number of the rod-group.}
+
+\IntEnr
+{NUM-ROD\blank{5}}{$1$}
+{The total number $N_{rd}$ of rod-devices in the group.}
+
+\IntEnr
+{ROD-ID\blank{6}}{$N_{rd}$}
+{An array of identification numbers of rods which belong to the same group.}
+
+\end{DescriptionEnregistrement}
+
+\subsubsection{The \moc{DEV-LZC} sub-directories}\label{sect:devicelzc}
+
+\noindent
+Inside each \moc{DEV-LZC} sub-directory, the following records will be found:
+
+\begin{DescriptionEnregistrement}{Records in \moc{DEV-LZC} sub-directories}
+{7.0cm} \label{tabl:tablzc}
+
+\IntEnr
+{LZC-ID\blank{6}}{$1$}
+{The identification number of the liquid zone controller.}
+
+\RealEnr
+{MAX-POS\blank{5}}{$6$}{cm}
+{The limiting \dusa{3D}-Cartesian coordinates of the whole liquid
+ controller, including its empty and full parts.}
+
+\IntEnr
+{AXIS\blank{8}}{$1$}
+{The number used to identify the water filling direction:
+ = 1 along x-axis; = 2 along y-axis; =3 along z-axis.}
+
+\RealEnr
+{HEIGHT\blank{6}}{$1$}{cm}
+{The water height of the full-filled controller along its direction of filling.}
+
+\RealEnr
+{LEVEL\blank{7}}{$1$}{}
+{The actual water level of the liquid controller device. This value must
+ be between 0.0 for the empty state and 1.0 for the full-filled state.}
+
+\RealEnr
+{EMPTY-POS\blank{3}}{$6$}{cm}
+{The actual \dusa{3D}-Cartesian coordinates of the empty-part
+ of liquid contoller.}
+
+\RealEnr
+{FULL-POS\blank{4}}{$6$}{cm}
+{The actual \dusa{3D}-Cartesian coordinates of the full-part
+ of liquid contoller.}
+
+\IntEnr
+{EMPTY-MIX\blank{3}}{$2$}
+{The empty-part mixture number and the reference mixture number.}
+
+\IntEnr
+{FULL-MIX\blank{4}}{$2$}
+{The full-part mixture number and the reference mixture number.}
+
+\RealEnr
+{RATE\blank{8}}{$1$}{$m^3 s^{-1}$}
+{The water filling rate.}
+
+\RealEnr
+{TIME\blank{8}}{$1$}{s}
+{The water filling time.}
+
+\end{DescriptionEnregistrement}
+
+\subsubsection{The \moc{LZC-GROUP} sub-directories}\label{sect:lzcgroup}
+
+\noindent
+Inside each \moc{LZC-GROUP} sub-directory, the following records will be found:
+
+\begin{DescriptionEnregistrement}{Records in \moc{LZC-GROUP} sub-directories}
+{7.0cm} \label{tabl:tablzcgroup}
+ 
+\IntEnr
+{GROUP-ID\blank{4}}{$1$}
+{The identification number of the lzc-group.}
+
+\IntEnr
+{NUM-LZC\blank{5}}{$1$}
+{The total number $N_{ld}$ of lzc-devices in the group.}
+
+\IntEnr
+{LZC-ID\blank{6}}{$N_{ld}$}
+{An array of identification numbers of liquid controllers which belong to the same group.}
+
+\end{DescriptionEnregistrement}

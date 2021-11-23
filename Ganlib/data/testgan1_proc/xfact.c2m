@@ -1,0 +1,14 @@
+*
+* Calling the recursive "fact" procedure:
+*
+*  input  to  "fact": *n*
+* output from "fact": *n_fact*
+*
+*    use to compute n!
+*
+ PROCEDURE fact      ;
+ INTEGER   n := 8    ;
+ INTEGER   n_fact    ;
+ fact ::    <<n>> >>n_fact<< ;
+ ECHO "FACTORIAL:" n $Bang_S "=" + n_fact ;
+ QUIT " Program *xfact* XREF " .

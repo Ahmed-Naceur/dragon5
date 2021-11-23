@@ -1,0 +1,574 @@
+% IGNrapport.sty
+% G. Marleau
+% 1998/09/18
+%
+
+\ProvidesPackage{IGNrapport}[1998/09/18]
+\RequirePackage{array,cite,indentfirst,epsfig,fleqn} 
+\RequirePackage{hyperref}
+\hypersetup{colorlinks}
+
+%
+%  Definition
+%
+\newcommand{\warningStyle}{\itshape}
+\newcommand{\warningRestore}{\normalfont}
+\newcommand{\ColorComments}[1]{\renewcommand{\warningStyle}{\color{#1}\itshape}
+                               \renewcommand{\warningRestore}{\color{Black}\normalfont}}
+\newcommand{\warning}[1]{\warningStyle This option is not supported in #1.\warningRestore}
+
+\newcommand{\sectionformat}[1]{\ifnum \@typerapport=0 {#1} \else {#1} \fi}
+\newcommand{\sectionstyle}[1]{\ifnum \@typerapport=0 {#1} \else {#1} \fi}
+\newcommand{\subsectionstyle}[1]{\ifnum \@typerapport=0 {#1} \else {#1} \fi}
+\gdef\@typerapport{0}
+\gdef\@typesections{0}
+\def\RapportCourt{\gdef\@typerapport{1}}
+\def\refname{References}
+\def\Indexname{Index}
+\gdef\@tableofcontents{Contents}
+\gdef\@listoffigures{List of Figures}
+\gdef\@listoftables{List of Tables}
+\gdef\@listofinput{List of Input Files}
+\gdef\@listoftation{List of Notations and Symbols}
+\gdef\@listofappendix{List of Appendices}
+\def\appendixname{Appendix}
+\def\indexname{{\Indexname}}
+
+\renewcommand\tableofcontents{%
+    \if@twocolumn
+      \@restonecoltrue\onecolumn
+    \else
+      \@restonecolfalse
+    \fi
+    \section*{\@tableofcontents}%
+    \@starttoc{toc}%
+    \if@restonecol\twocolumn\fi
+    }
+\newcommand\listofappendices{%
+    \if@twocolumn
+      \@restonecoltrue\onecolumn
+    \else
+      \@restonecolfalse
+    \fi
+    \section*{\@listofappendix}%
+    \@starttoc{loa}%
+    \if@restonecol\twocolumn\fi
+    }
+\renewcommand\listoffigures{%
+    \if@twocolumn
+      \@restonecoltrue\onecolumn
+    \else
+      \@restonecolfalse
+    \fi
+    \section*{\@listoffigures}%
+    \@starttoc{lof}%
+    \if@restonecol\twocolumn\fi
+    }
+\renewcommand\listoftables{%
+    \if@twocolumn
+      \@restonecoltrue\onecolumn
+    \else
+      \@restonecolfalse
+    \fi
+    \section*{\@listoftables}%
+    \@starttoc{lot}%
+    \if@restonecol\twocolumn\fi
+    }
+\newcommand\listofinputdecks{%
+    \if@twocolumn
+      \@restonecoltrue\onecolumn
+    \else
+      \@restonecolfalse
+    \fi
+    \section*{\@listofinput}%
+    \@starttoc{loi}%
+    \if@restonecol\twocolumn\fi
+    }
+
+%
+%  References
+%
+\renewenvironment{thebibliography}[1]
+     {\ifnum \@typerapport=0
+        \section*{\refname}
+      \else
+        \section{\refname}
+      \fi
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\newenvironment{ListeDesRapports}[1]
+     {\section*{Liste des Rapports}%
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\renewenvironment{theindex}
+               {\addcontentsline{toc}{section}{\indexname}%
+                \if@twocolumn
+                  \@restonecolfalse
+                \else
+                  \@restonecoltrue
+                \fi
+                \columnseprule \z@
+                \columnsep 35\p@
+                \twocolumn[\@makesnewsectionhead{\indexname}]%
+                \parindent\z@
+                \parskip\z@ \@plus .3\p@\relax
+                \let\item\@idxitem}
+               {\if@restonecol\onecolumn\else\clearpage\fi}
+
+%
+%  Commande de mise en page
+%
+%  TitreRapportIGN{Nom du rapport}{auteurs}
+%                 {numero du rapport IGN}{date}
+%
+
+\setlength{\textheight}{22.0cm}
+\setlength{\textwidth}{16.0cm}
+\setlength{\oddsidemargin}{0.5cm}
+\setlength{\evensidemargin}{0.5cm}
+\setlength{\topmargin}{0cm}
+\setlength{\headheight}{0.5cm}
+\setlength{\headsep}{0.5cm}
+\makeindex
+
+\newcommand{\RapportIGN}[1]{
+    \markright{\normalfont \slshape #1}
+    \pagestyle{myheadings} 
+    \pagetitreRapportIGN{#1}
+    \pagenumbering{roman}
+    \setcounter{page}{1}\clearpage}
+
+\newcommand{\TitreRapportIGN}[4]{
+    \markright{\normalfont \slshape #3}
+    \pagestyle{myheadings} 
+    \pagetitreIGN{#1}{#2}{#3}{#4}
+    \pagenumbering{roman}
+    \setcounter{page}{1}\clearpage}
+
+\newcommand{\SectionFigures}[0]{\clearpage
+\vspace*{5.0in}
+\begin{center}
+{\bfseries \Large FIGURES}
+\end{center}}
+
+\newcommand{\pagetitreRapportIGN}[1]{%
+\noindent\parbox{\textwidth}{\hfill \bfseries \large TECHNICAL REPORT}
+\parbox{\textwidth}{\hfill \bfseries \large {#1}}
+\thispagestyle{empty}
+\vskip 5.0cm
+\begin{center}
+{\bfseries \Large \@title}
+\vskip 3.0cm
+{\scshape \Large \@author}
+\end{center}
+\vfill
+\noindent
+\parbox{\textwidth}{\hfill Institut de g\'enie nucl\'eaire}
+\parbox{\textwidth}{\hfill D\'epartement de g\'enie m\'ecanique}
+\parbox{\textwidth}{\hfill \'Ecole Polytechnique de Montr\'eal}
+\parbox{\textwidth}{\hfill \@date}
+\begin{picture}(10,0)(0,50)
+  \put(0.5,50){\includegraphics[height=2cm]{64_bit.eps}}
+\end{picture}
+}
+\newcommand{\pagetitreIGN}[4]{%
+\noindent\parbox{\textwidth}{\hfill \bfseries \large TECHNICAL REPORT}
+\parbox{\textwidth}{\hfill \bfseries \large {#3}}
+\thispagestyle{empty}
+\vskip 5.0cm
+\begin{center}
+{\bfseries \large \MakeUppercase{#1}}
+\vskip 3.0cm
+{\scshape #2}
+\end{center}
+\vfill
+\noindent
+\parbox{\textwidth}{\hfill Institut de g\'enie nucl\'eaire}
+\parbox{\textwidth}{\hfill D\'epartement de g\'enie m\'ecanique}
+\parbox{\textwidth}{\hfill \'Ecole Polytechnique de Montr\'eal}
+\parbox{\textwidth}{\hfill #4}}
+
+\newcommand{\Debutdutexte}{\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}}
+
+\setcounter{tocdepth}{3}
+\renewcommand{\thesection}{\@arabic\c@section}
+\renewcommand{\thesubsection}{\thesection.\@arabic\c@subsection}
+\renewcommand{\thesubsubsection}{\thesubsection.\@arabic\c@subsubsection}
+\@addtoreset {equation}{section}
+\renewcommand{\theequation}{\thesection.\@arabic\c@equation}
+
+
+\renewcommand\section{\if@openright
+                       \cleardoublepage
+                     \else
+                       \ifnum\@typerapport=0
+                         \clearpage
+                       \else
+                         \vspace{0.5cm}
+                       \fi
+                     \fi
+                    \global\@topnum\z@
+                    \@afterindentfalse
+                    \secdef\@newsection\@snewsection}
+\def\@newsection[#1]#2{\refstepcounter{section}%
+                       \typeout{Section \space\thesection.}%
+                       \addcontentsline{toc}{section}%
+                                   {\protect\numberline{\thesection}\sectionformat{#1}}%
+                       \if@twocolumn
+                         \@topnewpage[\@makenewsectionhead{#2}]%
+                       \else
+                         \@makenewsectionhead{#2}\@afterheading
+                       \fi}
+\def\@makenewsectionhead#1{%
+  {\parindent \z@ \raggedright \normalfont
+    \interlinepenalty\@M
+    \large\bfseries \thesection  \space \sectionformat{#1} \par\nobreak
+    \vskip 20\p@
+  }}
+\def\@snewsection#1{\addcontentsline{toc}{section}{\sectionformat{#1}}%
+                    \if@twocolumn
+                      \@topnewpage[\@makesnewsectionhead{#1}]%
+                   \else
+                      \@makesnewsectionhead{#1}\@afterheading
+                   \fi}
+\def\@makesnewsectionhead#1{%
+  {\parindent \z@ \raggedright \normalfont
+    \interlinepenalty\@M
+    \centerline{\large\bfseries  \sectionformat{#1}}\par\nobreak
+    \vskip 20\p@
+  }}
+
+\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\normalsize\bfseries}}
+
+\renewcommand{\subsubsection}{\global\@topnum\z@
+                    \@afterindentfalse
+                    \secdef\@newsssection\@snewsssection}
+
+\def\@newsssection[#1]#2{\refstepcounter{subsubsection}%
+                       \addcontentsline{toc}{subsubsection}%
+                                   {\protect\numberline{\thesubsubsection}#1}%
+                       \if@twocolumn
+                         \@topnewpage[\@makenewsssectionhead{#2}]%
+                       \else
+                         \@makenewsssectionhead{#2}\@afterheading
+                       \fi}
+\def\@makenewsssectionhead#1{%
+  {\vskip 20\p@
+    \parindent \z@ \raggedright
+    \interlinepenalty\@M
+    \normalfont\normalsize\slshape \thesubsubsection  \space #1\par\nobreak
+    \vskip 20\p@
+  }}
+\def\@snewsssection#1{\addcontentsline{toc}{subsubsection}{#1}%
+                    \if@twocolumn
+                      \@topnewpage[\@makesnewsssectionhead{#1}]%
+                   \else
+                      \@makesnewsssectionhead{#1}\@afterheading
+                   \fi}
+\def\@makesnewsssectionhead#1{%
+  {\vskip 20\p@ \parindent \z@ \raggedright 
+    \interlinepenalty\@M
+    \vskip 20\p@
+    \normalfont\normalsize\slshape  #1\par\nobreak
+    \vskip 20\p@
+  }}
+\renewcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\normalsize\sffamily\bfseries}}
+
+\newcommand\appendices{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \renewcommand{\thesection}{\@Alph\c@section}
+  \renewcommand{\thesubsection}{\thesection.\@arabic\c@subsection}
+  \renewcommand{\thesubsubsection}{\thesection.\@arabic\c@subsubsection}}
+
+
+\renewcommand\appendix{\if@openright\cleardoublepage\else\ifnum\@typerapport=0\clearpage\fi\fi
+                    \global\@topnum\z@
+                    \@afterindentfalse
+                    \secdef\@newappendix\@snewappendix}
+\newcommand{\subappendix}{\@startappendices{subsection}{2}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\normalsize\bfseries}}
+\newcommand{\subsubappendix}{\@startappendices{subsubsection}{3}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\normalsize\slshape}}
+\def\@newappendix[#1]#2{\refstepcounter{section}%
+                       \typeout{Appendix \space\thesection.}%
+                       \addcontentsline{loa}{section}%
+                                   {\protect\numberline{\thesection}#1}%
+                       \if@twocolumn
+                         \@topnewpage[\@makenewappendixhead{#2}]%
+                       \else
+                         \@makenewappendixhead{#2}\@afterheading
+                       \fi}
+\def\@makenewappendixhead#1{%
+  {\parindent \z@ \raggedright \normalfont
+    \interlinepenalty\@M
+    \centerline{\large\bfseries Appendix \thesection}\par\nobreak
+    \vskip 20\p@
+    \centerline{ #1}\par\nobreak
+    \vskip 20\p@
+  }}
+\def\@snewappendix#1{\addcontentsline{loa}{section}{#1}%
+                    \if@twocolumn
+                      \@topnewpage[\@makesnewappendixhead{#1}]%
+                    \else
+                      \@makesnewappendixhead{#1}\@afterheading
+                    \fi}
+\def\@makesnewappendixhead#1{%
+  {\parindent \z@ \raggedright \normalfont
+    \interlinepenalty\@M
+    \centerline{\large\bfseries  #1}\par\nobreak
+    \vskip 20\p@
+  }}
+
+\newcommand\InputDecks{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \renewcommand{\thesection}{\@Roman\c@section}
+  \renewcommand{\thesubsection}{\thesection.\@arabic\c@subsection}
+  \renewcommand{\thesubsubsection}{\thesection.\@arabic\c@subsubsection}}
+
+
+\newcommand\inputdeck{\if@openright\cleardoublepage\else\ifnum\@typerapport=0\clearpage\fi\fi
+                    \global\@topnum\z@
+                    \@afterindentfalse
+                    \secdef\@newinputdeck\@snewinputdeck}
+\newcommand{\subinputdeck}{\@startinputdeck{subsection}{2}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\normalsize\bfseries}}
+\newcommand{\subsubinputdeck}{\@startinputdeck{subsubsection}{3}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\normalsize\slshape}}
+\def\@newinputdeck[#1]#2{\refstepcounter{section}%
+                       \typeout{Input deck \space\thesection.}%
+                       \addcontentsline{loi}{section}%
+                                   {\protect\numberline{\thesection}#1}%
+                       \if@twocolumn
+                         \@topnewpage[\@makenewinputdeckhead{#2}]%
+                       \else
+                         \@makenewinputdeckhead{#2}\@afterheading
+                       \fi}
+\def\@makenewinputdeckhead#1{%
+  {\parindent \z@ \raggedright \normalfont
+    \interlinepenalty\@M
+    \large\bfseries \thesection  \space #1\par\nobreak
+    \vskip 20\p@
+  }}
+\def\@snewinputdeck#1{\addcontentsline{loa}{section}{#1}%
+                    \if@twocolumn
+                      \@topnewpage[\@makesnewinputdeckhead{#1}]%
+                   \else
+                      \@makesnewinputdeckhead{#1}\@afterheading
+                   \fi}
+\def\@makesnewinputdeckhead#1{%
+  {\parindent \z@ \raggedright \normalfont
+    \interlinepenalty\@M
+    \large\bfseries #1\par\nobreak
+    \vskip 20\p@
+  }}
+
+\def\@startappendices#1#2#3#4#5#6{%
+  \if@noskipsec \leavevmode \fi
+  \par
+  \@tempskipa #4\relax
+  \@afterindenttrue
+  \ifdim \@tempskipa <\z@
+    \@tempskipa -\@tempskipa \@afterindentfalse
+  \fi
+  \if@nobreak
+    \everypar{}%
+  \else
+    \addpenalty\@secpenalty\addvspace\@tempskipa
+  \fi
+  \@ifstar
+    {\@sappend{#3}{#4}{#5}{#6}}%
+    {\@dblarg{\@append{#1}{#2}{#3}{#4}{#5}{#6}}}}
+\def\@append#1#2#3#4#5#6[#7]#8{%
+  \ifnum #2>\c@secnumdepth
+    \let\@svsec\@empty
+  \else
+    \refstepcounter{#1}%
+    \protected@edef\@svsec{\@seccntformat{#1}\relax}%
+  \fi
+  \@tempskipa #5\relax
+  \ifdim \@tempskipa>\z@
+    \begingroup
+      #6{%
+        \@hangfrom{\hskip #3\relax\@svsec}%
+          \interlinepenalty \@M #8\@@par}%
+    \endgroup
+    \csname #1mark\endcsname{#7}%
+    \addcontentsline{loa}{#1}{%
+      \ifnum #2>\c@secnumdepth \else
+        \protect\numberline{\csname the#1\endcsname}%
+      \fi
+      #7}%
+  \else
+    \def\@svsechd{%
+      #6{\hskip #3\relax
+      \@svsec #8}%
+      \csname #1mark\endcsname{#7}%
+      \addcontentsline{loa}{#1}{%
+        \ifnum #2>\c@secnumdepth \else
+          \protect\numberline{\csname the#1\endcsname}%
+        \fi
+        #7}}%
+  \fi
+  \@xsect{#5}}
+\def\@sappend#1#2#3#4#5{%
+  \@tempskipa #3\relax
+  \ifdim \@tempskipa>\z@
+    \begingroup
+      #4{%
+        \@hangfrom{\hskip #1}%
+          \interlinepenalty \@M #5\@@par}%
+    \endgroup
+  \else
+    \def\@svsechd{#4{\hskip #1\relax #5}}%
+  \fi
+  \@xsect{#3}}
+
+\def\@startinputdeck#1#2#3#4#5#6{%
+  \if@noskipsec \leavevmode \fi
+  \par
+  \@tempskipa #4\relax
+  \@afterindenttrue
+  \ifdim \@tempskipa <\z@
+    \@tempskipa -\@tempskipa \@afterindentfalse
+  \fi
+  \if@nobreak
+    \everypar{}%
+  \else
+    \addpenalty\@secpenalty\addvspace\@tempskipa
+  \fi
+  \@ifstar
+    {\@sinpd{#3}{#4}{#5}{#6}}%
+    {\@dblarg{\@inpd{#1}{#2}{#3}{#4}{#5}{#6}}}}
+\def\@inpd#1#2#3#4#5#6[#7]#8{%
+  \ifnum #2>\c@secnumdepth
+    \let\@svsec\@empty
+  \else
+    \refstepcounter{#1}%
+    \protected@edef\@svsec{\@seccntformat{#1}\relax}%
+  \fi
+  \@tempskipa #5\relax
+  \ifdim \@tempskipa>\z@
+    \begingroup
+      #6{%
+        \@hangfrom{\hskip #3\relax\@svsec}%
+          \interlinepenalty \@M #8\@@par}%
+    \endgroup
+    \csname #1mark\endcsname{#7}%
+    \addcontentsline{loi}{#1}{%
+      \ifnum #2>\c@secnumdepth \else
+        \protect\numberline{\csname the#1\endcsname}%
+      \fi
+      #7}%
+  \else
+    \def\@svsechd{%
+      #6{\hskip #3\relax
+      \@svsec #8}%
+      \csname #1mark\endcsname{#7}%
+      \addcontentsline{loi}{#1}{%
+        \ifnum #2>\c@secnumdepth \else
+          \protect\numberline{\csname the#1\endcsname}%
+        \fi
+        #7}}%
+  \fi
+  \@xsect{#5}}
+\def\@sinpd#1#2#3#4#5{%
+  \@tempskipa #3\relax
+  \ifdim \@tempskipa>\z@
+    \begingroup
+      #4{%
+        \@hangfrom{\hskip #1}%
+          \interlinepenalty \@M #5\@@par}%
+    \endgroup
+  \else
+    \def\@svsechd{#4{\hskip #1\relax #5}}%
+  \fi
+  \@xsect{#3}}
+
+%  
+%  Commande pour inserer in fichier de texte en
+%  format verbatim
+%
+\def\listfile#1{\goodbreak\vskip 0.5cm\noindent {File: {\tt #1}}
+ \vskip 0.2cm\begingroup\setupverbatim\input #1 \endgroup}
+\def\listing#1{\goodbreak\vskip 0.5cm\noindent {Input data for test case: {\bf #1}}
+ \vskip 0.2cm\begingroup\setupverbatim\input #1 \endgroup}
+\def\setupverbatim{\tt
+    \def\par{\leavevmode\endgraf}\catcode`\`=\active
+    \obeylines\uncatdospecials \obeyspaces}
+{\obeyspaces\global\let =\ }
+\def\uncatdospecials{\def\do##1{\catcode`##1=12 }\dospecials}
+
+\newcommand{\Eq}[1]{Eq.~(\ref{eq:#1})}
+\newcommand{\Eqto}[2]{Eqs.~(\ref{eq:#1}) to~(\ref{eq:#2})}
+\newcommand{\Eqand}[2]{Eqs.~(\ref{eq:#1}) and~(\ref{eq:#2})}
+\newcommand{\Eqor}[2]{Eqs.~(\ref{eq:#1}) or~(\ref{eq:#2})}
+
+\newcommand{\Appen}[1]{Appendix~\ref{appen:#1}}
+\newcommand{\Appento}[2]{Appendices~\ref{appen:#1} to~\ref{appen:#2}}
+\newcommand{\Appenand}[2]{Appendices~\ref{appen:#1} and~\ref{appen:#2}}
+\newcommand{\Appenor}[2]{Appendices~\ref{appen:#1} or~\ref{appen:#2}}
+
+\newcommand{\Sect}[1]{Section~\ref{sect:#1}}
+\newcommand{\Sectto}[2]{Sections~\ref{sect:#1} to~\ref{sect:#2}}
+\newcommand{\Sectand}[2]{Sections~\ref{sect:#1} and~\ref{sect:#2}}
+\newcommand{\Sector}[2]{Sections~\ref{sect:#1} or~\ref{sect:#2}}
+
+\newcommand{\Fig}[1]{Figure~\ref{fig:#1}}
+\newcommand{\Figto}[2]{Figure~\ref{fig:#1} to~\ref{fig:#2}}
+\newcommand{\Figand}[2]{Figure~\ref{fig:#1} and~\ref{fig:#2}}
+\newcommand{\Figor}[2]{Figure~\ref{fig:#1} or~\ref{fig:#2}}
+
+\newcommand{\Tab}[1]{Table~\ref{tab:#1}}
+\newcommand{\Tabto}[2]{Table~\ref{tab:#1} to~\ref{tab:#2}}
+\newcommand{\Taband}[2]{Table~\ref{tab:#1} and~\ref{tab:#2}}
+\newcommand{\Tabor}[2]{Table~\ref{tab:#1} or~\ref{tab:#2}}
+
+\newcounter{nblank}
+\newcommand{\blank}[1]{\setcounter{nblank}{#1}\symbol{32}\whiledo{\value{nblank}>1}{\symbol{32}\addtocounter{nblank}{-1}}}
+\renewcommand{\@cite}[2]{{\textsuperscript{[#1]}\ifthenelse{\boolean{@tempswa}}{,#2}{}}}

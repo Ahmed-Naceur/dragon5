@@ -1,0 +1,58 @@
+\section{THE DRAGON MODULES}\label{sect:DragonModuleInput}
+
+The input to DRAGON is set up in the form of a structure containing commands
+which call successively each of the calculation modules required in a given
+transport calculation.
+
+\input{Section3.01.tex} % structure (dragonM)
+\input{Section3.02.tex} % structure (dragonL)
+\input{Section3.03.tex} % structure (dragonG)
+\input{Section3.04.tex} % structures (sybilT) ,(excelT), (mccgT), (snT) and (bivacT)
+\input{Section3.05_shi.tex} % structure (dragonS)
+\input{Section3.05_tone.tex} % structure (dragonT)
+\input{Section3.05_uss.tex} % structure (dragonUSS)
+\input{Section3.06_asm.tex} % structure (dragonA)
+\input{Section3.07.tex} % structure (dragonF)
+\input{Section3.08.tex} % structure (dragonE)
+\input{Section3.09.tex} % structure (dragonD)
+\input{Section3.10.tex} % structure (dragonSPH)
+\input{Section3.13CFC.tex} % structure (dragonCFC)
+\input{Section3.14.tex} % structure (dragonI)
+\input{Sect3.14MRG.tex} % structure (dragonMRG)
+\input{Section3.16.tex} % structure (dragonCOMPO)
+\input{Section3.18.tex} % structure (dragonTLM)
+\input{Section3.19.tex} % structure (dragonM2T)
+\input{Section3.20.tex} % structure (dragonCHAB)
+\input{Section3.21.tex} % structure (dragonCPO)
+\input{Section3.22.tex} % structure (dragonSAP)
+\input{Section3.23.tex} % structure (dragonMC)
+\input{Section3.24.tex} % structure (dragonT)
+\input{Section3.25.tex} % structure (dragonDMAC)
+\input{Section3.27.tex} % structure (dragonSENS)
+\input{Section3.28.tex} % structure (dragonDUO)
+\input{Section3.29.tex} % structure (dragonS2M)
+\input{Section3.30.tex} % structure (dragonFMT)
+\input{Section3.31.tex} % structure (dragonFMAC)
+\input{Section3.32.tex} % structure (dragonPSOUR)
+\input{Section3.33.tex} % structure (dragonHEAT)
+\input{Section3.50.tex} % structure (dragonPSP)
+
+\section{THE SALOME-RELATED MODULES}\label{sect:SalomeModuleInput}
+
+A few modules have been introduced in DRAGON Version5 in order to facilitate the
+processing of geometries originating from the Geometry module of SALOME.\cite{salome}
+The methods presented in this section have been initially developed at CEA SERMA and
+integrated in the TDT code.\cite{tdt,lyioussi} In the course of year 2001, a subset of
+these methods have been integrated into a development version of DRAGON under the terms
+of its LGPL license as a prototyping exercise of the DESCARTES operation.\cite{salt}
+
+\vskip 0.08cm
+
+The track generator {\tt SALT:} is a direct descendent of this prototyping exercise.
+Later, we have extracted the 5000 lines of Fortran-90 code responsible for the track
+calculation and have rewritten them in a way consistent with the {\tt NXT:} tracking
+methodology and with the DRAGON architecture.
+
+\input{Section3.90_g2s.tex} % structure (dragonG2S)
+\input{Section3.90_g2mc.tex} % structure (dragonG2MC)
+\input{Section3.90_salt.tex} % structure (dragonSALT)

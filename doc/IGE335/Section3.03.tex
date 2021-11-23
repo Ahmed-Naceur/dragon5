@@ -1,0 +1,1508 @@
+\subsection{The {\tt GEO:} module}\label{sect:GEOData}
+
+The \moc{GEO:} module is used to create or modify a geometry. The geometry
+definition module in DRAGON permits all the characteristics (coordinates,
+region mixture and boundary conditions) of a simple or complex
+geometry to be specified. The method used to specify the geometry is independent
+of the discretization module to be used subsequently. Each geometry is stored in
+the form of a \dds{geometry} data structure under its given name. It is
+always possible to modify an existing geometry or copy it under a new name. 
+The calling specifications are:
+
+\begin{DataStructure}{Structure \dstr{GEO:}}
+$\{$ \\
+\hskip 0.3cm \dusa{GEONAM} \moc{:=} \moc{GEO:} $\{$ \dusa{GEONAM} $|$ \dusa{OLDGEO} $\}$
+\moc{::} \dstr{descgcnt}  \\
+ $|$ \\
+\hskip 0.3cm  \dusa{GEONAM} \moc{:=} \moc{GEO:} \moc{::} \dstr{descgtyp} \dstr{descgcnt}  \\
+ $\}$ 
+\end{DataStructure}
+
+\noindent
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dusa{GEONAM}] {\tt character*12} name of the \dds{geometry} created or
+modified.
+
+\item[\dusa{OLDGEO}] {\tt character*12} name of a read-only \dds{geometry}.
+The type and all the characteristics of \dusa{OLDGEO} will be copied onto \dusa{GEONAM}
+before this later geometry is modified.
+
+\item[\dstr{descgtyp}] structure describing the geometry type of
+\dusa{GEONAM} (see \Sect{descgeo}).
+
+\item[\dstr{descgcnt}] structure describing the characteristics of a geometry
+(see \Sect{descgeo}).
+
+\end{ListeDeDescription}
+
+\subsubsection{Data input for module {\tt GEO:}}\label{sect:descgeo}
+
+Structures \dstr{descgtyp} and \dstr{descgcnt} are used to define respectively
+the type of geometry that will be define and the contents of this geometry
+(dimensions, materials, boundary conditions). The module \moc{GEO:} can be
+recursively called from 
+\dstr{descgcnt} as an embedded module, in order to define sub-geometries:
+
+\begin{DataStructure}{Structure \dstr{descgtyp}}
+$\{$ \moc{VIRTUAL} $|$ \\
+\moc{HOMOGE} $|$\\
+\moc{SPHERE} \dusa{lr} $|$ \\
+\moc{CAR1D} \dusa{lx} $|$ \\
+\moc{CAR2D} \dusa{lx} \dusa{ly} $|$\\ 
+\moc{CAR3D} \dusa{lx} \dusa{ly} \dusa{lz} $|$  \\
+\moc{TUBE} \dusa{lr} $[$ \dusa{lx} \dusa{ly} $]$  $|$\\
+\moc{TUBEX} \dusa{lr} $\{$ \dusa{lx} $|$ \dusa{lx} \dusa{ly} \dusa{lz} $\}$ $|$\\ 
+\moc{TUBEY} \dusa{lr} $\{$ \dusa{ly} $|$ \dusa{lx} \dusa{ly} \dusa{lz} $\}$ $|$\\
+\moc{TUBEZ} \dusa{lr} $\{$ \dusa{lz} $|$ \dusa{lx} \dusa{ly} \dusa{lz} $\}$ $|$ \\
+\moc{RTHETA} \dusa{lr} \dusa{lz} $|$ \\
+\moc{HEX} \dusa{lh} $|$ \\
+\moc{HEXZ} \dusa{lh} \dusa{lz} $|$ \\
+\moc{HEXT} \dusa{nhr} $|$ \\
+\moc{HEXTZ} \dusa{nhr} \dusa{lz} $|$ \\
+\moc{CARCEL} \dusa{lr} $[$ \dusa{lx} \dusa{ly} $]$ $|$\\
+\moc{CARCELX} \dusa{lr} $\{$ \dusa{lx} $|$ \dusa{lx} \dusa{ly} \dusa{lz} $\}$ $|$ \\
+\moc{CARCELY} \dusa{lr} $\{$ \dusa{ly} $|$ \dusa{lx} \dusa{ly} \dusa{lz} $\}$ $|$ \\ 
+\moc{CARCELZ} \dusa{lr} $\{$ \dusa{lz} $|$ \dusa{lx} \dusa{ly} \dusa{lz} $\}$ $|$ \\
+\moc{HEXCEL} \dusa{lr} $|$ \\
+\moc{HEXCELZ} \dusa{lr} \dusa{lz} $|$ \\
+\moc{HEXTCEL} \dusa{lr} \dusa{nhr}$|$ \\
+\moc{HEXTCELZ} \dusa{lr} \dusa{nhr} \dusa{lz} $|$ \\
+\moc{GROUP} \dusa{lp} $\}$
+\end{DataStructure}
+
+\begin{DataStructure}{Structure \dstr{descgcnt}}
+$[$ \moc{EDIT} \dusa{iprint} $]$ \\
+\dstr{descBC} \\
+\dstr{descSP} \\
+\dstr{descPP} \\
+\dstr{descDH} \\
+\dstr{descSIJ} \\
+$[[$ \moc{:::} \dusa{SUBGEO} \moc{:=} \moc{GEO:} $\{$ \dstr{descgtyp} $|$
+\dusa{SUBGEO} $|$
+\dusa{OLDGEO} $\}$ \dstr{descgcnt}$]]$ \\
+\moc{;} 
+\end{DataStructure}
+
+\noindent
+where
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{VIRTUAL}] keyword to specify that a virtual geometry description
+follows. This type of geometry is used to complete an assembly that has
+irregular boundaries.
+
+\item[\moc{HOMOGE}] keyword to specify that a infinite homogeneous geometry
+description follows.
+
+\item[\moc{SPHERE}] keyword to specify that a spherical geometry  (concentric
+spheres) description follows.
+
+\item[\moc{CAR1D}] keyword to specify that a one dimensional plane geometry
+(infinite slab) description follows.
+
+\item[\moc{CAR2D}] keyword to specify that a two-dimensional Cartesian
+geometry description follows.
+
+\item[\moc{CAR3D}] keyword to specify that a three-dimensional Cartesian
+geometry description follows.
+
+\item[\moc{TUBE}] keyword to specify that a cylindrical geometry (infinite
+tubes or cylinders) description follows. This geometry can contain an imbedded $X-Y$ Cartesian mesh.
+
+\item[\moc{TUBEX}] keyword to specify that a polar $R-X$ cylindrical geometry
+description follows. This geometry can contain an imbedded $Y-Z$ Cartesian mesh.
+
+\item[\moc{TUBEY}] keyword to specify that a polar $R-Y$ cylindrical geometry
+description follows. This geometry can contain an imbedded $Z-X$ Cartesian mesh.
+
+\item[\moc{TUBEZ}] keyword to specify that a polar $R-Z$ cylindrical geometry
+description follows. This geometry can contain an imbedded $X-Y$ Cartesian mesh.
+
+\item[\moc{RTHETA}] keyword to specify that a polar geometry ($R-\theta$)
+description follows.
+
+\item[\moc{HEX}] keyword to specify that a two-dimensional hexagonal geometry
+description follows.
+
+\item[\moc{HEXZ}] keyword to specify that a three-dimensional hexagonal
+geometry description follows.
+
+\item[\moc{HEXT}] keyword to specify a single 2-D hexagonal cell geometry having a triangular mesh. This option is only supported by the \moc{NXT:} tracking module (see \Sect{TRKData}).
+
+\item[\moc{HEXTZ}] keyword to specify a single $Z$ directed 3-D hexagonal cell geometry having a triangular mesh (plane $X-Y$). This option is only supported by the \moc{NXT:} tracking module (see \Sect{TRKData}).
+
+\item[\moc{CARCEL}] keyword to specify that a two-dimensional mixed Cartesian
+cell (concentric tubes surrounded by a rectangle) description follows. The rectangle can now be
+subdivided into a fine mesh when the \moc{EXCELT:} modules is used.
+
+\item[\moc{CARCELX}] keyword to specify that a three-dimensional mixed
+Cartesian cell with tubes oriented along the $X-$axis description follows. The three-dimensional 
+Cartesian cell can now be subdivided into a fine mesh when the \moc{EXCELT:}
+module is used.
+
+\item[\moc{CARCELY}] keyword to specify that a three-dimensional mixed
+Cartesian cell with tubes oriented along the $Y-$axis description follows. The three-dimensional 
+Cartesian cell can now be subdivided into a fine mesh when the \moc{EXCELT:}
+module is used.
+
+\item[\moc{CARCELZ}] keyword to specify that a three-dimensional mixed
+Cartesian cell with tubes oriented along the $Z-$axis description follows. The three-dimensional 
+Cartesian cell can now be subdivided into a fine mesh when the \moc{EXCELT:}
+module is used.
+
+\item[\moc{HEXCEL}] keyword to specify that a two-dimensional mixed hexagonal cell (concentric tubes surrounded by a hexagon) description follows.
+
+\item[\moc{HEXCELZ}] keyword to specify that a three-dimensional mixed hexagonal cell with tubes oriented along the $Z-$axis description follows.
+
+\item[\moc{HEXTCEL}] keyword to specify a single 2-D hexagonal cell geometry having a triangular mesh and containing concentric annular regions.
+
+\item[\moc{HEXTCELZ}] keyword to specify a single $Z$ directed 3-D hexagonal cell geometry a triangular mesh and containing concentric $Z$ directed cylinders. 
+
+\item[\moc{GROUP}] keyword to specify that a {\sl do-it-yourself} type geometry
+description follows.
+
+\item[\dusa{lx}] number of subdivisions along the $X-$axis (before
+mesh-splitting).
+
+\item[\dusa{ly}] number of subdivisions along the $Y-$axis (before
+mesh-splitting).
+
+\item[\dusa{lz}] number of subdivisions along the $Z-$axis (before
+mesh-splitting).
+
+\item[\dusa{lr}] number of cylinders or spherical shells (before
+mesh-splitting).
+
+\item[\dusa{lh}] number of hexagons in an axial plane (including the virtual
+hexagon).
+
+\item[\dusa{nhr}] number of concentric hexagons in a \moc{HEXT}, \moc{HEXTZ}, \moc{HEXTCEL} or \moc{HEXTCELZ}  cell (see \Fig{GeoHEXT4}). This will lead to an hexagon subdivided into $6N^{2}$ identical trangles.
+
+\begin{figure}[h!]  
+\begin{center} 
+\parbox{9.0cm}{\epsfxsize=9cm \epsffile{GeoHEXT4.eps}}
+\parbox{14cm}{\caption{Hexagonal geometry with triangular mesh containing 4 concentric hexagon}\label{fig:GeoHEXT4}}   
+\end{center}  
+\end{figure}
+
+\item[\dusa{lp}] number of types of cells (number of cells inside which a distinct flux will be calculated) for a \textsl{do-it-yourself} type geometry.
+
+\item[\moc{EDIT}] keyword used to modify the print level \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing in this module.
+It must be set to 0 if no printing on the output file is required, to 1 for
+minimum printing (fixed default value) and to 2 for printing the geometry state
+vector.
+
+\item[\dstr{descBC}] structure allowing the boundary conditions surrounding
+the geometry to be treated (see \Sect{descBC}).
+
+\item[\dstr{descSP}] structure allowing the coordinates of a geometry to be
+described (see \Sect{descSP}).
+
+\item[\dstr{descPP}] structure allowing material mixtures to be associated
+with a geometry (see \Sect{descPP}).
+
+\item[\dstr{descDH}] structure used to specify double-heterogeneity data (see \Sect{descDH}).
+
+\item[\dstr{descSIJ}] structure used to specify the properties of {\sl do-it-yourself}
+geometries (see \Sect{descSIJ}).
+
+\item[\dusa{SUBGEO}] {\tt character*12} name of the directory  that will
+contain the sub-geometry.
+
+\item[\dusa{OLDGEO}] {\tt character*12} name of a parallel directory
+containing an existing sub-geometry. The type and all the characteristics of
+\dusa{OLDGEO} will be copied onto \dusa{SUBGEO}.
+
+\end{ListeDeDescription}
+
+Note that all the geometry described above are called {\sl pure geometry} when
+they do not contain sub-geometry. When they do contain sub-geometry they will be
+called {\sl composite geometry}. 
+
+\goodbreak
+\subsubsection{Boundary conditions}\label{sect:descBC}
+
+The inputs corresponding to the \dstr{descBC} structure are the following:
+
+\begin{DataStructure}{Structure \dstr{descBC}}
+$[$ \moc{X-} $\{$ \moc{VOID} $|$ \moc{REFL} $|$ \moc{SSYM} $|$ \moc{DIAG} $|$ \moc{TRAN} $|$
+\moc{SYME} $|$ \moc{ALBE} $\{$ \dusa{albedo} $|$ \dusa{icode} $\}$ $|$ \moc{ZERO}
+$|$ \moc{PI/2} $|$ \moc{PI} \\
+~~~~~~~~ $|$ \moc{CYLI} $|$ \moc{ACYL} $\{$ \dusa{albedo} $|$ \dusa{icode} $\}$ $\}$ $]$ \\
+$[$ \moc{X+}   $\{$ \moc{VOID} $|$ \moc{REFL} $|$ \moc{SSYM} $|$ \moc{DIAG} $|$ \moc{TRAN} $|$
+\moc{SYME} $|$ \moc{ALBE} $\{$ \dusa{albedo} $|$ \dusa{icode} $\}$ $|$ \moc{ZERO}
+$|$ \moc{PI} \\
+~~~~~~~~ $|$ \moc{CYLI} $|$ \moc{ACYL} $\{$ \dusa{albedo} $|$ \dusa{icode} $\}$ $\}$ $]$ \\
+$[$ \moc{Y-}   $\{$ \moc{VOID} $|$ \moc{REFL} $|$ \moc{SSYM} $|$ \moc{DIAG} $|$ \moc{TRAN} $|$
+\moc{SYME} $|$ \moc{ALBE} $\{$ \dusa{albedo} $|$ \dusa{icode} $\}$ $|$ \moc{ZERO}
+$|$ \moc{PI/2} $|$ \moc{PI} \\
+~~~~~~~~ $|$ \moc{CYLI} $|$ \moc{ACYL} $\{$ \dusa{albedo} $|$ \dusa{icode} $\}$ $\}$ $]$ \\
+$[$ \moc{Y+}   $\{$ \moc{VOID} $|$ \moc{REFL} $|$ \moc{SSYM} $|$ \moc{DIAG} $|$ \moc{TRAN} $|$ 
+\moc{SYME} $|$ \moc{ALBE} $\{$ \dusa{albedo} $|$ \dusa{icode} $\}$ $|$ \moc{ZERO}
+$|$ \moc{PI} \\
+~~~~~~~~ $|$ \moc{CYLI} $|$ \moc{ACYL} $\{$ \dusa{albedo} $|$ \dusa{icode} $\}$ $\}$ $]$ \\
+$[$ \moc{Z-}   $\{$ \moc{VOID} $|$ \moc{REFL} $|$ \moc{SSYM} $|$ \moc{TRAN} $|$ \moc{SYME} $|$ 
+\moc{ALBE} $\{$ \dusa{albedo} $|$ \dusa{icode} $\}$  $|$ \moc{ZERO} $\}$ $]$ \\
+$[$ \moc{Z+}   $\{$ \moc{VOID} $|$ \moc{REFL} $|$ \moc{SSYM} $|$ \moc{TRAN} $|$ \moc{SYME} $|$
+\moc{ALBE} $\{$ \dusa{albedo} $|$ \dusa{icode} $\}$  $|$ \moc{ZERO} $\}$ $]$ \\
+$[$ \moc{R+}   $\{$ \moc{VOID} $|$ \moc{REFL} $|$
+\moc{ALBE} $\{$ \dusa{albedo} $|$ \dusa{icode} $\}$  $|$ \moc{ZERO} $\}$ $]$ \\
+$[$ \moc{HBC}  $\{$ \moc{S30} $|$ \moc{SA60} $|$ \moc{SB60} $|$ \moc{S90} $|$
+\moc{R120} $|$ \moc{R180} $|$ \moc{SA180} $|$ \moc{SB180} $|$ 
+\moc{COMPLETE} $\}$ \\ $\{$ \moc{VOID} $|$ \moc{REFL} $|$ \moc{SYME} $|$
+\moc{ALBE} $\{$ \dusa{albedo} $|$ \dusa{icode} $\}$ $|$ \moc{ZERO} $\}$ $]$ \\
+$[$ \moc{RADS} $[$ \moc{ANG} $]$ \dusa{nrads} (\dusa{xrad}(ir), \dusa{rrad}(ir) $[$, \dusa{ang}(ir) $]$, ir=1,nrads ) $]$
+\end{DataStructure}
+
+\noindent
+where: 
+
+\begin{ListeDeDescription}{mmmmm}
+
+\item[\moc{X-}/\moc{X+}] keyword to specify the boundary conditions associated with the
+negative or positive $X$ surface of a Cartesian geometry.
+
+\item[\moc{Y-}/\moc{Y+}] keyword to specify the boundary conditions associated with the
+negative or positive $Y$ surface of a Cartesian geometry.
+
+\item[\moc{Z-}/\moc{Z+}] keyword to specify the boundary conditions associated with the
+negative or positive $Z$ surface of a Cartesian geometry.          
+
+\item[\moc{R+}] keyword to specify the boundary conditions associated with the
+outer surface of a cylindrical or spherical geometry.
+
+\item[\moc{HBC}] keyword to specify the boundary conditions associated with
+the outer surface of an hexagonal geometry.
+
+\item[\moc{VOID}] keyword to specify that the surface under consideration has
+zero re-entrant angular flux. This side is an external surface of the domain.
+
+\item[\moc{REFL}] keyword to specify that the surface under consideration has a reflective boundary condition. In 
+most DRAGON calculations, this implies white boundary conditions. The main exception to this 
+rule is when cyclic tracking in 2-D is considered and mirror like reflections are considered. A geometry is never
+unfolded to take into account a \moc{REFL} boundary condition.
+
+\item[\moc{SSYM}] keyword to specify that the surface under consideration has a specular (or mirror) reflective boundary condition. The 
+main difference between \moc{REFL} and \moc{SSYM} is that for \moc{SSYM} the cell may be unfolded to take 
+into account the reflection at the boundary.
+
+\item[\moc{DIAG}] keyword to specify that the Cartesian surface under
+consideration has the same properties as that associated with a diagonal through
+the geometry (see \Fig{cartebc}). Note that two and only two \moc{DIAG} surfaces must be specified.
+The diagonal symmetry is only permitted for square geometry and in the following
+combinations:  
+
+\begin{verbatim}
+X+ DIAG Y- DIAG 
+\end{verbatim}
+
+\noindent
+or
+
+\begin{verbatim}
+X- DIAG Y+ DIAG 
+\end{verbatim}
+
+\item[\moc{TRAN}] keyword to specify that the surface under consideration is
+connected to the opposite surface of a Cartesian domain (see \Fig{cartebcr}).
+This option  provides
+the facility to treat an infinite geometry with translation symmetry. The only
+combinations of translational symmetry permitted are:
+
+\begin{itemize}
+\item Translation along the $X-$axis
+
+\begin{verbatim}
+X- TRAN X+ TRAN 
+\end{verbatim}
+
+\item Translation along the $Y-$axis
+
+\begin{verbatim}
+Y- TRAN Y+ TRAN 
+\end{verbatim}
+
+\item Translation along the $Z-$axis
+
+\begin{verbatim}
+Z- TRAN Z+ TRAN 
+\end{verbatim}
+
+\end{itemize}
+
+\item[\moc{SYME}] keyword to specify that the Cartesian surface under
+consideration is virtual and that a reflection symmetry is associated with the
+adequately directed axis running through the center of the cells closest to this
+surface (see \Fig{cartebcr}). Only the hexagonal geometries \moc{S30} and \moc{SA60} can be
+surrounded by a \moc{SYME} boundary condition if a specular condition
+is to be applied on this boundary.
+
+\item[\moc{ALBE}] keyword to specify that the surface under consideration has
+an arbitrary albedo. This side is an external surface of the domain.
+
+\item[\dusa{albedo}] geometric albedo corresponding to the boundary condition
+\moc{ALBE} (\dusa{albedo}$>$0.0). 
+
+\item[\dusa{icode}] index of a physical albedo corresponding to the boundary
+condition \moc{ALBE}. The numerical values of the physical albedo are supplied
+by the operator \moc{MAC:} (see \Sect{MACData}).
+
+\item[\moc{ZERO}] keyword to specify that the surface under consideration has a
+zero-flux boundary condition. This side is an external surface of the domain.
+
+\item[\moc{PI/2}] keyword to specify that the surface under consideration has a
+$\pi$/2 rotational symmetry (see \Fig{cartebcr}). The only $\pi$/2 symmetry permitted is related to
+sides ({\tt X-} and {\tt Y-}). This condition can be combined with a translation
+boundary condition:({\tt PI/2 X- TRAN X+}) and/or ({\tt PI/2 Y- TRAN Y+}) (see \Fig{cartebct}).
+
+\item[\moc{PI}] keyword to specify that the surface under consideration has a
+$\pi$ rotational symmetry (see \Fig{cartebcr}). This keyword is useful for representing a
+Cartesian checkerboard pattern as shown in Fig.~\ref{fig:cartebcdam}.
+
+\item[\moc{CYLI}] the side under consideration has a zero incoming current boundary condition
+with a circular correction applied on the Cartesian boundary. This option is only available in
+the $X$--$Y$ plane for \moc{CAR2D} and \moc{CAR3D} geometries defined for TRIVAC full--core calculations.
+
+\item[\moc{ACYL}] the side under consideration has an arbitrary albedo with a circular correction
+applied on the Cartesian boundary. This option is only available in
+the $X$--$Y$ plane for \moc{CAR2D} and \moc{CAR3D} geometries defined for TRIVAC full--core calculations.
+
+\item[\moc{S30}] keyword to specify an hexagonal symmetry of one twelfth of an
+assembly (see \Fig{s30}).
+
+\item[\moc{SA60}] keyword to specify an hexagonal symmetry of one sixth of an
+assembly of type A (see \Fig{s30}).
+
+\item[\moc{SB60}] keyword to specify an hexagonal symmetry of one sixth of an
+assembly of type B (see \Fig{sb60}).
+
+\item[\moc{S90}] keyword to specify an hexagonal symmetry of one quarter of an
+assembly (see \Fig{sb60}).
+
+\item[\moc{R120}] keyword to specify a rotation symmetry of one third of an
+assembly (see \Fig{r120}).
+
+\item[\moc{R180}] keyword to specify a rotation symmetry of a half assembly
+(see \Fig{r120}).
+
+\item[\moc{SA180}] keyword to specify an hexagonal symmetry of half a type A
+assembly (see \Fig{sa180}).
+
+\item[\moc{SB180}] keyword to specify an hexagonal symmetry of half a type B
+assembly (see \Fig{sb180}).
+
+\item[\moc{COMPLETE}] keyword to specify a complete hexagonal assembly (see
+\Fig{compl}).
+
+\item[\moc{RADS}] This key word is used to specify the cylindrical correction applied in the $X-Y$ plane for \moc{CAR2D} and \moc{CAR3D} geometries.\cite{roy}
+
+\item[\moc{ANG}] This key word allows  the angle (see \Fig{corr})
+of the cylindrical notch to be set. By default, no notch is present.
+
+\item[\dusa{nrads}] Number of different corrections along the cylinder main axis (i.e. the $Z$ axis).
+
+\item[\dusa{xrad}(ir)] Coordinate of the $Z$ axis from which the correction is applied.
+
+\item[\dusa{rrad}(ir)] Radius of the real cylindrical boundary.
+
+\item[\dusa{ang}(ir)] Angle of the cylindrical notch. This data is given if and only if the key word \moc{ANG} is present. \dusa{ang}(ir) $= {\pi \over 2}$ by default (i.e. the correction is applied at every angle).
+
+\end{ListeDeDescription}
+\goodbreak
+
+\begin{figure}[!]  
+\begin{center} 
+\epsfxsize=13cm
+\centerline{ \epsffile{ebc.eps}}
+\parbox{14cm}{\caption{Diagonal boundary conditions in Cartesian geometry}\label{fig:cartebc}}   
+\end{center}  
+\end{figure}
+
+\begin{figure}[!]  
+\begin{center} 
+\epsfxsize=15cm
+\centerline{ \epsffile{ebcr.eps}}
+\parbox{14cm}{\caption{Various boundary conditions in Cartesian geometry}\label{fig:cartebcr}}   
+\end{center}  
+\end{figure}
+
+\begin{figure}[!]  
+\begin{center} 
+\epsfxsize=10cm
+\centerline{ \epsffile{ebct.eps}}
+\parbox{14cm}{\caption{Translation/rotation boundary conditions in Cartesian geometry}\label{fig:cartebct}}   
+\end{center}  
+\end{figure}
+
+\begin{figure}[!]  
+\begin{center} 
+\epsfxsize=13cm
+\centerline{ \epsffile{ebcdam.eps}}
+\parbox{14cm}{\caption{Representing a checkerboard in Cartesian geometry}\label{fig:cartebcdam}}   
+\end{center}  
+\end{figure}
+
+\begin{figure}[!]  
+\begin{center}
+\epsfxsize=15cm
+\centerline{ \epsffile{Gs30.eps}}
+\parbox{14cm}{\caption{Hexagonal geometries of type S30 and SA60}\label{fig:s30}}   
+\end{center}  
+\end{figure}
+
+\begin{figure}[!]  
+\begin{center} 
+\epsfxsize=15cm
+\centerline{ \epsffile{Gsb60.eps}}
+\parbox{14cm}{\caption{Hexagonal geometries of type SB60 and S90}\label{fig:sb60}}   
+\end{center}  
+\end{figure}
+
+\begin{figure}[!]  
+\begin{center} 
+\epsfxsize=12cm
+\centerline{ \epsffile{Gr120.eps}}
+\parbox{14cm}{\caption{Hexagonal geometries of type R120 and R180}\label{fig:r120}}   
+\end{center}  
+\end{figure}
+
+\begin{figure}[!]  
+\begin{center} 
+\epsfxsize=5cm
+\centerline{ \epsffile{Gsa180.eps}}
+\parbox{14cm}{\caption{Hexagonal geometry of type SA180}\label{fig:sa180}}   
+\end{center}  
+\end{figure}
+
+\begin{figure}[!]  
+\begin{center} 
+\epsfxsize=11cm
+\centerline{ \epsffile{Gsb180.eps}}
+\parbox{14cm}{\caption{Hexagonal geometry of type SB180}\label{fig:sb180}}   
+\end{center}  
+\end{figure}
+
+\begin{figure}[!]  
+\begin{center} 
+\epsfxsize=10cm
+\centerline{ \epsffile{Gcomplete.eps}}
+\parbox{14cm}{\caption{Hexagonal geometry of type
+COMPLETE}\label{fig:compl}}    
+\end{center}  
+\end{figure}
+
+\begin{figure}[!]
+\begin{center} 
+\epsfxsize=6cm
+\centerline{ \epsffile{Fig6.eps}}
+\parbox{14cm}{\caption{Cylindrical correction in Cartesian geometry}
+\label{fig:corr}} 
+\end{center} 
+\end{figure}
+
+\clearpage
+\subsubsection{Spatial properties of geometry}\label{sect:descSP}
+                                                  
+The \dstr{descSP} structure has the following contents:
+\begin{DataStructure}{Structure \dstr{descSP}}
+$[$ \moc{MESHX} (\dusa{xxx}($i$), $i$=1,\dusa{lx}+1) $]$\\
+$[$ \moc{SPLITX} (\dusa{ispltx}($i$), $i$=1,\dusa{lx}) $]$\\
+$[$ \moc{MESHY}  (\dusa{yyy}($i$), $i$=1,\dusa{ly}+1) $]$\\
+$[$ \moc{SPLITY} (\dusa{isplty}($i$), $i$=1,\dusa{ly}) $]$\\
+$[$ \moc{MESHZ}  (\dusa{zzz}($i$), $i$=1,\dusa{lz}+1) $]$\\
+$[$ \moc{SPLITZ} (\dusa{ispltz}($i$), $i$=1,\dusa{lz}) $]$\\
+$[$ \moc{RADIUS} (\dusa{rrr}($i$), $i$=1,\dusa{lr}+1) $]$\\
+$[$ \moc{OFFCENTER} (\dusa{disxyz}($i$), $i$=1,3) $]$\\
+$[$ \moc{SPLITR} (\dusa{ispltr}($i$), $i$=1,\dusa{lr}) $]$\\
+$[$ \moc{SECT} \dusa{isect} $[$ \dusa{jsect} $]~]$\\
+$[$ \moc{SIDE} \dusa{sideh} $[$ \dusa{hexmsh} $]$ $]$\\
+$[~\{$ \moc{SPLITH} \dusa{isplth} $|$ \moc{SPLITL} \dusa{ispltl} $\}~]$\\
+$[$ $\{$ \moc{NPIN}  \dusa{npins} \\
+\hspace{0.75cm} $\{$  $[$ \moc{RPIN} $\{$ \dusa{rpins} $|$ (\dusa{rpins}($i$), $i$=1, \dusa{npins}) $\}$ $]$ \\
+\hspace{1.0cm} $[$ \moc{APIN}  $\{$ \dusa{apins} $|$ (\dusa{apins}($i$), $i$=1, \dusa{npins}) $\}$ $]$  $|$ \\
+\hspace{1.0cm} $[$ \moc{CPINX} (\dusa{xpins}($i$), $i$=1, \dusa{npins})  $]$ \\
+\hspace{1.0cm} $[$ \moc{CPINY} (\dusa{ypins}($i$), $i$=1, \dusa{npins})  $]$   \\
+\hspace{1.0cm} $[$ \moc{CPINZ} (\dusa{zpins}($i$), $i$=1, \dusa{npins})  $]$   $\}$\\
+\hspace{0.3cm}$|$ \moc{DPIN}  \dusa{dpins} $\}$ $]$
+\end{DataStructure}
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{MESHX}] keyword to specify the spatial mesh defining the regions along the $X-$axis. 
+
+\item[\dusa{xxx}] array giving the $X$ limits (cm) of the regions making up the geometry. These values
+must be given in order, from \moc{X-} to \moc{X+}. If the geometry presents a diagonal symmetry the same
+data is also used along the $Y-$axis.
+
+\item[\moc{SPLITX}] keyword to specify that a mesh splitting of the geometry along the $X-$axis is to be
+performed.
+
+\item[\dusa{ispltx}] array giving the number of zones that will be considered for each region along the
+$X-$axis. If the geometry presents a diagonal symmetry this information is also used for the splitting
+along the $Y-$axis. By default,
+\dusa{ispltx}=1.
+
+\item[\moc{MESHY}] keyword to specify the spatial mesh defining the regions along the $Y-$axis.
+
+\item[\dusa{yyy}] array giving the $Y$ limits (cm) of the regions making up the geometry. These values
+must be given in order, from \moc{Y-} to \moc{Y+}.
+
+\item[\moc{SPLITY}] keyword to specify that a mesh splitting of the geometry along the $Y-$axis is to be
+performed.
+
+\item[\dusa{isplty}] array giving the number of zones that will be considered for each region along the
+$Y-$axis. By default,
+\dusa{isplty}=1 unless a diagonal symmetry is used in which case \dusa{isplty}$=$\dusa{ispltx}.
+
+\item[\moc{MESHZ}] keyword to specify the spatial mesh defining the regions along the $Z-$axis.
+
+\item[\dusa{zzz}] array giving the $Z$ limits (cm) of the regions making up the geometry. These values
+must be given in order, from  \moc{Z-} to \moc{Z+}.
+
+\item[\moc{SPLITZ}] keyword to specify that a mesh splitting of the geometry along the $Z-$axis is to be
+performed.
+
+\item[\dusa{ispltz}] array giving the number of zones that will be considered for each region along the
+$Z-$axis. By default,
+\dusa{ispltz}=1.
+
+\item[\moc{RADIUS}] keyword to specify the spatial mesh along the radial direction.
+
+\item[\dusa{rrr}] array giving the radial limits (cm) of the annular
+regions (cylindrical or spherical) making up the geometry. It is used for the
+following geometries: \moc{TUBE}, \moc{TUBEZ}, \moc{SPHERE}), \moc{CARCEL},
+\moc{CARCELX}, \moc{CARCELY}, \moc{CARCELZ}, \moc{HEXCEL} and \moc{HEXCELZ}. It
+is important to note that we must have \dusa{rrr}(1)=0.0. The other values
+of \dusa{rrr}($i$) in a \moc{CARCEL}-- or \moc{HEXCEL}--type geometry are
+defined as shown in \Fig{radius}.
+
+\item[\moc{OFFCENTER}] keyword to specify that the concentric annular regions in a \moc{CARCEL},
+\moc{CARCELX}, \moc{CARCELY},
+\moc{CARCELZ}, \moc{TUBE}, \moc{TUBEX}, \moc{TUBEY} and \moc{TUBEZ} geometry can now be displaced with
+respect to the center of the Cartesian mesh. This option will only be treated when the \moc{EXCELT:},
+\moc{NXT:} and \moc{EXCELL:} modules are used.
+
+\item[\dusa{disxyz}] array giving the $x$ (\dusa{disxyz}(1)), $y$ (\dusa{disxyz}(2)) and $z$
+(\dusa{disxyz}(3)) displacement (cm) of the concentric annular regions with respect to the center of the
+Cartesian mesh. 
+
+\item[\moc{SPLITR}] keyword to specify that a mesh splitting of the geometry along the radial direction is
+to be performed.
+
+\item[\dusa{ispltr}] array giving the number of zones that will be considered for each region along the
+radial axis.  A negative value results in a splitting of the regions into zones of equal volumes; a
+positive value results in a uniform splitting along the radial direction. By default, \dusa{ispltr}=1.
+
+\item[\moc{SECT}] keyword to specify the type of sectorization for a Cartesian
+or hexagonal cell. In hexagonal geometry, this keyword is expected to be defined near the
+\moc{SIDE} keyword. By default, no sectorization is performed.
+
+\item[\dusa{isect}] sectorization index, defined as
+\begin{displaymath}
+\negthinspace\negthinspace\negthinspace isect = \left\{
+\begin{array}{rl}
+-999: & \textrm{non-sectorized cell processed as a sectorized cell} \\
+-1: & \textrm{$\times$--type sectorization} \\
+ 0: & \textrm{non-sectorized cell} \\
+ 1: & \textrm{$+$--type sectorization} \\
+ 2: & \textrm{simultaneous $\times$-- and $+$--type sectorization} \\
+ 3: & \textrm{simultaneous $\times$-- and $+$--type sectorization shifted by 22.5$^\circ$} \\
+ 4: & \textrm{windmill sectorization.} 
+\end{array} \right.
+\end{displaymath}
+
+\item[\dusa{jsect}] number of embedded tubes that are {\sl not} sectorized, with 0 $\le$ \dusa{jsect} $\le$ \dusa{lr}. By default, \dusa{jsect} $=0$. Examples of sectorization options are depicted in Figs.~\ref{fig:rect3} and~\ref{fig:hexa3}.
+
+\item[\moc{SIDE}] keyword to specify the length of a side of a hexagon.
+
+\item[\dusa{sideh}] length of one side of a hexagon (cm).
+
+\item[\dusa{hexmsh}] triangular mesh for \moc{HEXT}, \moc{HEXTCEL}, \moc{HEXTZ} and \moc{HEXTCELZ} hexagonal geometries. By default, \dusa{hexmsh}=\dusa{sideh}/\dusa{nhr}. When \dusa{hexmsh} is provided, it is used instead of the default value with the following constraints 
+$$
+\textit{sideh} \le \textit{nhr}\times \textit{hexmsh}<\textit{sideh}+\textit{hexmsh}
+$$
+The triangles in the last hexagonal ring are truncated at \dusa{sideh} (see \Fig{GeoHEXT4C}).
+
+\item[\moc{SPLITH}] keyword to specify that a triangular mesh splitting of the hexagonal geometry is to be performed -- for \moc{HEX}, \moc{HEXZ}, \moc{HEXT}, \moc{HEXTCEL}, \moc{HEXTZ} and \moc{HEXTCELZ} type geometries. This is valid only if \dusa{nhr}=1. 
+
+\item[\dusa{isplth}] value of the triangular mesh splitting. Its use is similar to \dusa{nhr} except that each sector of the hexagonal cell will be filled by a unique mixture. The number of triangles per hexagon is given by $6 \times$\dusa{isplth}$^2$.
+\dusa{isplth} $=0$ is used for full hexagon discretization.
+
+\item[\moc{SPLITL}] keyword to specify that a lozenge mesh splitting of the hexagonal geometry is to be performed -- for \moc{HEX} and \moc{HEXZ} type geometries.
+
+\item[\dusa{ispltl}] value of the lozenge splitting. The number of lozenges per hexagon is given by $3 \times$\dusa{ispltl}$^2$.
+
+\item[\moc{NPIN}] keyword to specify the number of pins located in a cluster geometry. It can only be used for \moc{SPHERE}, \moc{TUBE}, \moc{TUBEX}, \moc{TUBEY} and \moc{TUBEZ} sub-geometry.
+
+\item[\dusa{npins}] the number of pins associated with this sub-geometry in the primary geometry. 
+
+\item[\moc{DPIN}] keyword to specify the pin density in a geometry that contains clusters. A number $N_{p,r}$ of pins that will be placed randomly in the geometry with
+$$
+N_{p,r}=\textrm{NINT}\left(\frac{d_{p,r}V_{c}}{V_{p}}\right)
+$$
+where $d_{p,r}$ is the pin density, $V_{g}$ the volume of the cell containing these pins and$V_{p}$ the volume of this pin type. The function $\textrm{NINT}()$ provides the nearest integer associated with its real argument. It can only be used for \moc{SPHERE}, \moc{TUBE}, \moc{TUBEX}, \moc{TUBEY} and \moc{TUBEZ} sub-geometry.
+
+\item[\dusa{dpins}] the pin density $d_{p,r}$. 
+
+\item[\moc{RPIN}] keyword to specify the radius of an imaginary cylinder where the centers of the pins are to be placed in a cluster geometry.
+
+\item[\dusa{rpins}] the radius (cm) of an imaginary cylinder where the centers of the pins are to be placed. In the case where a single value is provided for \dusa{rpins}, all the pins are located at the same distance from the center of the cell (taking account the offset provided by the keyword \moc{OFFCENTER}). 
+
+\item[\moc{APIN}] keyword to specify the angle of the first pin or each pin centered on an imaginary cylinder in a cluster geometry. 
+
+\item[\dusa{apins}] the angle (radian) of the first pin in the ring (only one value provided for \dusa{apins}, the angular spacing of the pins being $2\pi/$\dusa{npins}) or the angle of each pins in the ring.
+
+\item[\moc{CPINX}] keyword to specify the $x$ position where the centers of the pins are
+to be placed in a cluster geometry. 
+
+\item[\dusa{xpins}] the $x$ position (cm) where the centers of the pins are to be
+placed.
+
+\item[\moc{CPINY}] keyword to specify the $y$ position where the centers of the pins are
+to be placed in a cluster geometry. 
+
+\item[\dusa{ypins}] the $y$ position (cm) where the centers of the pins are to be
+placed.
+
+\item[\moc{CPINZ}] keyword to specify the $z$ position where the centers of the pins are
+to be placed in a cluster geometry. 
+
+\item[\dusa{zpins}] the $z$ position (cm) where the centers of the pins are to be
+placed.
+
+\end{ListeDeDescription}
+
+\begin{figure}[!]  
+\begin{center} 
+\epsfxsize=6cm
+\centerline{ \epsffile{radius.eps}}
+\parbox{16cm}{\caption{Definition of the radii in a \moc{CARCEL}-- or
+\moc{HEXCEL}--type geometry}\label{fig:radius}}    
+\end{center}  
+\end{figure}
+
+The user should be warned that the maximum number of zones resulting from the above description of a geometry $L_{\rm{zones}}$ should not exceed the limits imposed by
+\dusa{maxreg} and defined in the tracking module \moc{JPMT:}, \moc{SYBILT:} or
+\moc{EXCELT:} (see \Sect{TRKData}). For pure geometry with splitting we can define the variables $L_x$, $L_y$, $L_z$, $L_r$, $L_h$ and $L_{t}$ as:
+  \begin{align*}
+  L_x=&\sum_{i=1}^{\textit{lx}} \textit{ispltx}(i) \\ 
+  L_y=&\sum_{i=1}^{\textit{ly}} \textit{isplty}(i) \\ 
+  L_z=&\sum_{i=1}^{\textit{lz}} \textit{ispltz}(i) \\ 
+  L_r=&\sum_{i=1}^{\textit{lr}} |\textit{ispltr}(i)| \\
+  L_h=&\textit{lh} \\
+  L_t=&\begin{cases}
+  6\times\textit{nhr}^{2} &if $\textit{nhr}> 1$\\
+  6\times\textit{isplith}^{2} &otherwise  \\ \end{cases}
+  \end{align*}
+and $L_{\rm{zones}}$ will be given by:
+
+\begin{itemize}
+
+\item \moc{SPHERE} geometry.
+
+$$L_{\rm{zones}}=L_r$$
+
+\item \moc{TUBE} geometry.
+
+$$L_{\rm{zones}}= L_x L_y L_r $$
+
+\item \moc{TUBEX} geometry.
+
+$$L_{\rm{zones}}= L_x L_y L_z L_r$$
+
+\item \moc{TUBEY} geometry.
+
+$$L_{\rm{zones}}= L_x L_y L_z L_r$$
+
+\item \moc{TUBEZ} geometry.
+
+$$L_{\rm{zones}}= L_x L_y L_z L_r$$
+
+\item \moc{CAR1D} geometry.
+
+$$L_{\rm{zones}}=L_x$$
+
+\item \moc{CAR2D} geometry 
+\begin{itemize}
+\item without diagonal symmetry. 
+
+$$L_{\rm{zones}}=L_x L_y$$
+
+\item with diagonal symmetry. 
+
+$$L_{\rm{zones}}=\frac{L_x (L_y+1)}{2}=\frac{(L_x+1) L_y}{2}$$
+\end{itemize}
+
+\item \moc{CARCEL} geometries.
+
+$$L_{\rm{zones}}=L_x L_y (L_r+1) $$
+
+\item \moc{CAR3D} geometry 
+\begin{itemize}
+\item without diagonal symmetry. 
+
+$$L_{\rm{zones}}=L_x L_y L_z$$
+
+\item with diagonal symmetry. 
+
+$$L_{\rm{zones}}=\frac{L_x (L_y+1) L_z}{2}=\frac{(L_x+1) L_y L_z}{2}$$
+\end{itemize}
+
+\item \moc{CARCELX} geometry.
+
+$$L_{\rm{zones}}=L_x L_y L_z (L_r+1) $$
+
+\item \moc{CARCELY} geometry.
+
+$$L_{\rm{zones}}=L_x L_y L_z (L_r+1) $$
+
+\item \moc{CARCELZ} geometries.
+
+$$L_{\rm{zones}}=L_x L_y L_z (L_r+1) $$
+
+\item \moc{HEX} geometry.
+
+\begin{align*}L_{\text{zones}}&=L_h\end{align*}
+
+\item \moc{HEXT} geometry.
+
+\begin{align*}L_{\text{zones}}&=L_{t}\end{align*}
+
+\item \moc{HEXCEL} geometries.
+
+\begin{align*}L_{\text{zones}}&=(L_r+1) \end{align*}
+
+\item \moc{HEXTCEL} geometries.
+
+$$L_{\rm{zones}}=L_{t}$$
+
+\item \moc{HEXZ} geometry.
+
+\begin{align*}L_{\text{zones}}&=L_z L_h\end{align*}
+
+\item \moc{HEXTZ} geometry.
+
+\begin{align*}L_{\text{zones}}&=L_z L_{t}\end{align*}
+
+\item \moc{HEXCELZ} geometries.
+
+\begin{align*}L_{\text{zones}}&=L_z (L_r+1) \end{align*}
+
+\item \moc{HEXTCELZ} geometries.
+
+\begin{align*}L_{\text{zones}}&=L_z L_{t} (L_r+1) \end{align*}
+
+\end{itemize}
+
+For cluster geometries, only one region is associated with each zone in a pin even if this pin is repeated \dusa{npins} times.
+
+\vskip 0.08cm
+
+For mixed geometries, it is important to ensure that $L_{\rm{zones}}$ which represents the
+sum over all the sub-geometries of the total number of regions $L^i_t$
+associated with each pure sub-geometry $i$ computed using the technique
+described above. For cluster geometries, only one region is associated with each
+zone in a pin even if this pin is repeated \dusa{npins} times.
+
+\begin{figure}[h!]
+\begin{center} 
+\epsfxsize=16cm
+\centerline{ \epsffile{rect3c.eps}}
+\parbox{14cm}{\caption{Numerotation of the sectors in a Cartesian cell}\label{fig:rect3}}   
+\end{center}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center} 
+\epsfxsize=13cm
+\centerline{ \epsffile{hexa3c.eps}}
+\parbox{14cm}{\caption{Numerotation of the sectors in an hexagonal cell}\label{fig:hexa3}}   
+\end{center}
+\end{figure}
+
+\begin{figure}[h!]  
+\begin{center} 
+\parbox{11.0cm}{\epsfxsize=11cm \epsffile{GeoHEXT4C.eps}}
+\parbox{14cm}{\caption{Hexagonal geometry with triangular mesh that extends past the hexagonal boundary}\label{fig:GeoHEXT4C}}   
+\end{center}  
+\end{figure}
+
+\subsubsection{Physical properties of geometry}\label{sect:descPP}
+
+In addition to specifying the mixture associated with each region in the
+geometry, the \dstr{descPP} structure is also used to provide information on the
+sub-geometry required in this geometry. For example, an optional procedure in
+DRAGON groups together regions so as to reduce the number of unknowns
+\dusa{maxreg} in the flux calculation. In this way, only the merged regions
+contribute to the cost of the calculation. However, the following points must be
+considered:
+
+\begin{enumerate}
+
+\item All the cells belonging to the same merged region must have the same
+nuclear properties and dimensions. 
+
+\item The grouping procedure is based on the approximation that all the regions
+belonging to the same merged region share the same flux. 
+
+\item The merging can also take into account region orientation  (by a rotation
+and/or transposition) before they are merged. This procedure facilitates the
+merging of regions when a \moc{DIAG} or \moc{SYME} boundary condition is used. 
+
+\end{enumerate}
+The \dstr{descPP} structure has the following contents: 
+
+\begin{DataStructure}{Structure \dstr{descPP}}
+$[$ \moc{MIX} $\{$  (\dusa{imix}(i),i=1,$n_t$) $[$ \moc{REPEAT} $]~|$\\
+$~~~~[[$ \moc{PLANE} \dusa{iplan} $\{$ (\dusa{imix}(i),i=1,\dusa{lp}) $|$ \moc{SAME} \dusa{iplan1}\\
+$~~~~|~[[$ \moc{CROWN} $\{$ (\dusa{imix}(i),i=1,\dusa{lc}) $|$ \moc{ALL} \dusa{jmix} $|$ \moc{SAME} \dusa{iplan1} $\}~]]$\\
+$~~~~|~[[$ \moc{UPTO} \dusa{ic} \moc{ALL} \dusa{jmix} $|$ \moc{SAME} \dusa{iplan1} $\}~]]~]]~\}$\\
+$]$\\
+$[$ \moc{HMIX}  (\dusa{ihmix}(i), i=1,$N_t$) $[$ \moc{REPEAT} $]$ $]$\\
+$[$ \moc{CELL}  (\dusa{HCELL}(i),i=1,$N_t$) $]$\\
+$[$ \moc{MERGE} (\dusa{imerge}(i),i=1,$N_t$) $]$\\
+$[$ \moc{TURN}  (\dusa{HTURN}(i),i=1,$N_t$) $]$\\
+$[$ \moc{CLUSTER} (\dusa{NAMPIN}(i),i=1,$N_p$) $]$\\
+$[$ \moc{MIX-NAMES} (\dusa{NAMMIX}(i),i=1,\dusa{maxmix}) $]$
+\end{DataStructure}
+
+\noindent
+
+Here $N_p$ is the number of pin types in the cluster. In addition to the real (physical) mixture \dusa{imix} present in a given region of space and specified by the keyword \moc{MIX}, a virtual mixture \dusa{ihmix} can also be provided using the keyword \moc{HMIX}. This mixture can be used to identify the regions that will be combined in the \moc{EDI:} module to create homogenized region \dusa{ihmix} (see \Sect{EDIData}). Here $N_{t}$
+is computed in a way similar to $L_{\rm zones}$ namely
+\begin{itemize}
+
+\item \moc{SPHERE} geometry.
+
+$$N_{t}=\textit{lr}$$
+
+The mixtures are then given in the following order
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}$).
+\end{enumerate}
+
+\item \moc{TUBE} geometry.
+
+$$N_{t}=\textit{lr}\times\textit{lx}\times \textit{ly}  $$
+
+The mixtures are then given in the following order
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}$) and such that  \dusa{imix} is arbitrary (not used) if radial region $l$ does not intersect Cartesian region $(i,j)$;
+\item from surface \moc{X-} to surface \moc{X+} ($i=1,\textit{lx}$ for each $j$);
+\item from surface \moc{Y-} to surface \moc{Y+} ($j=1,\textit{ly}$).
+\end{enumerate}
+
+\item \moc{TUBEX} geometry.
+
+$$N_{t}=\textit{lr}\times\textit{ly}\times \textit{lz}\times \textit{lx}$$
+The mixtures are then given in the following order
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}$) and such that \dusa{imix} is arbitrary (not used) if radial region $l$ does not intersect Cartesian region $(j,k,i)$;
+\item from surface \moc{Y-} to surface \moc{Y+} ($j=1,\textit{ly}$ for each $k$ and $i$);
+\item from surface \moc{Z-} to surface \moc{Z+} ($k=1,\textit{lz}$ for each $i$);
+\item from surface \moc{X-} to surface \moc{X+} ($i=1,\textit{lx}$).
+\end{enumerate}
+
+\item \moc{TUBEY} geometry.
+
+$$N_{t}=\textit{lr}\times\textit{lz}\times \textit{lx}\times \textit{ly}$$
+The mixtures are then given in the following order
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}$) and such that  \dusa{imix} is arbitrary (not used) if radial region $l$ does not intersect Cartesian region $(k,i,j)$;
+\item from surface \moc{Z-} to surface \moc{Z+} ($k=1,\textit{lz}$ for each $i$ and $j$);
+\item from surface \moc{X-} to surface \moc{X+} ($i=1,\textit{lx}$ for each $j$);
+\item from surface \moc{Y-} to surface \moc{Y+} ($j=1,\textit{ly}$).
+\end{enumerate}
+
+\item \moc{TUBEZ} geometry.
+
+$$N_{t}= \textit{lr}\times\textit{lx}\times \textit{ly}\times \textit{lz}$$
+
+The mixtures are then given in the following order
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}$) and such that \dusa{imix} is arbitrary (not used) if radial region $l$ does not intersect Cartesian region $(i,j,k)$;
+\item from surface \moc{X-} to surface \moc{X+} ($i=1,\textit{lx}$ for each $j$ and $k$);
+\item from surface \moc{Y-} to surface \moc{Y+} ($j=1,\textit{ly}$ for each $k$);
+\item from surface \moc{Z-} to surface \moc{Z+} ($k=1,\textit{lz}$).
+\end{enumerate}
+
+\item \moc{CAR1D} geometry.
+
+$$N_{t}=\textit{lx}$$
+
+The mixtures are then given in the following order
+\begin{enumerate}
+\item from surface \moc{X-} to surface \moc{X+} ($i=1,\textit{lx}$).
+\end{enumerate}
+
+\item \moc{CAR2D} geometry 
+\begin{itemize}
+\item without diagonal symmetry. 
+
+$$N_{t}=\textit{lx}\times \textit{ly}$$
+
+The mixtures or cells are then given in the following order
+\begin{enumerate}
+\item from surface \moc{X-} to surface \moc{X+} ($i=1,\textit{lx}$ for each $j$);
+\item from surface \moc{Y-} to surface \moc{Y+} ($j=1,\textit{ly}$).
+\end{enumerate}
+
+\item with diagonal symmetry (\moc{X-} and \moc{Y+}). 
+
+$$N_{t}=\frac{\textit{lx}\times (\textit{lx}+1)}{2}$$
+
+The mixtures or cells are then given in the following order
+\begin{enumerate}
+\item from surface \moc{X-} to surface \moc{X+} ($i=j,\textit{lx}$ for each $j$);
+\item from surface \moc{Y-} to surface \moc{Y+} ($j=1,\textit{ly}$).
+\end{enumerate}
+
+\item with diagonal symmetry (\moc{X+} and \moc{Y-}). 
+
+$$N_{t}=\frac{\textit{lx}\times (\textit{lx}+1)}{2}$$
+
+The mixtures or cells are then given in the following order
+\begin{enumerate}
+\item from surface \moc{X-} to surface \moc{X+} ($i=1,j$ for each $j$);
+\item from surface \moc{Y-} to surface \moc{Y+} ($j=1,\textit{ly}$).
+\end{enumerate}
+\end{itemize}
+
+\item \moc{CARCEL} geometries.
+
+$$N_{t}=(\textit{lr}+1)\times\textit{lx}\times \textit{ly} $$
+
+The mixtures are then given in the following order
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}$) and such that \dusa{imix} is arbitrary (not used) if radial region $l$ does not intersect Cartesian region $(i,j)$;
+\item $l=\textit{lr+1}$ for the mixture outside the annular regions but inside Cartesian region $(i,j)$;
+\item from surface \moc{X-} to surface \moc{X+} ($i=1,\textit{lx}$ for each $j$);
+\item from surface \moc{Y-} to surface \moc{Y+} ($j=1,\textit{ly}$).
+\end{enumerate}
+
+\item \moc{CAR3D} geometry 
+\begin{itemize}
+\item without diagonal symmetry. 
+
+$$N_{t}=\textit{lx}\times \textit{ly}\times \textit{lz}$$
+
+The mixtures or cells are then given in the following order
+\begin{enumerate}
+\item from surface \moc{X-} to surface \moc{X+} ($i=1,\textit{lx}$ for each $j$ and $k$);
+\item from surface \moc{Y-} to surface \moc{Y+} ($j=1,\textit{ly}$ for $k$);
+\item from surface \moc{Z-} to surface \moc{Z+} ($k=1,\textit{lz}$).
+\end{enumerate}
+
+\item with diagonal symmetry (\moc{X-} and \moc{Y+}). 
+
+$$N_{t}=\frac{\textit{lx}\times (\textit{lx}+1)}{2}\times\textit{lz}$$
+
+The mixtures or cells are then given in the following order
+\begin{enumerate}
+\item from surface \moc{X-} to surface \moc{X+} ($i=j,\textit{lx}$ for each $j$ and $k$);
+\item from surface \moc{Y-} to surface \moc{Y+} ($j=1,\textit{ly}$) for each $k$);
+\item from surface \moc{Z-} to surface \moc{Z+} ($k=1,\textit{lz}$).
+\end{enumerate}
+ 
+
+\item with diagonal symmetry (\moc{X+} and \moc{Y-}). 
+
+$$N_{t}=\frac{\textit{lx}\times (\textit{lx}+1)}{2}\times\textit{lz}$$
+
+The mixtures or cells are then given in the following order
+\begin{enumerate}
+\item from surface \moc{X-} to surface \moc{X+} ($i=1,j$ for each $j$ and $k$);
+\item from surface \moc{Y-} to surface \moc{Y+} ($j=1,\textit{ly}$ for each $k$);
+\item from surface \moc{Z-} to surface \moc{Z+} ($k=1,\textit{lz}$).
+\end{enumerate}
+
+\end{itemize}
+
+\item \moc{CARCELX} geometry.
+
+$$N_{t}=(\textit{lr}+1)\times\textit{ly}\times \textit{lz}\times \textit{lx} $$
+
+The mixtures are then given in the following order
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}$) and such that \dusa{imix} is arbitrary (not used) if radial region $l$ does not intersect Cartesian region $(j,k,i)$;
+\item $l=\textit{lr+1}$ for the mixture outside the annular regions but inside Cartesian region $(j,k,i)$;
+\item from surface \moc{Y-} to surface \moc{Y+} ($j=1,\textit{ly}$ for each $k$ and $i$);
+\item from surface \moc{Z-} to surface \moc{Z+} ($k=1,\textit{lz}$ for each $i$);
+\item from surface \moc{X-} to surface \moc{X+} ($i=1,\textit{lx}$).
+\end{enumerate}
+
+\item \moc{CARCELY} geometry.
+
+$$N_{t}=(\textit{lr}+1)\times\textit{lz}\times \textit{lx}\times \textit{ly}$$
+
+The mixtures are then given in the following order
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}$) and such that \dusa{imix} is arbitrary (not used) if radial region $l$ does not intersect Cartesian region $(k,i,j)$;
+\item $l=\textit{lr+1}$ for the mixture outside the annular regions but inside Cartesian region $(k,i,j)$;
+\item from surface \moc{Z-} to surface \moc{Z+} ($k=1,\textit{lz}$ for each $i$ and $j$);
+\item from surface \moc{X-} to surface \moc{X+} ($i=1,\textit{lx}$ for each $j$);
+\item from surface \moc{Y-} to surface \moc{Y+} ($j=1,\textit{ly}$).
+\end{enumerate}
+
+\item \moc{CARCELZ} geometries.
+
+$$N_{t}=(\textit{lr}+1)\times\textit{lx}\times \textit{ly}\times \textit{lz}$$
+
+The mixtures are then given in the following order
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}$) and such that \dusa{imix} is arbitrary (not used) if radial region $l$ does not intersect Cartesian region $(i,j,k)$;
+\item $l=\textit{lr+1}$ for the mixture outside the annular regions but inside Cartesian region $(i,j,k)$;
+\item from surface \moc{X-} to surface \moc{X+} ($i=1,\textit{lx}$ for each $j$ and $k$);
+\item from surface \moc{Y-} to surface \moc{Y+} ($j=1,\textit{ly}$ for each $k$).
+\item from surface \moc{Z-} to surface \moc{Z+} ($k=1,\textit{lz}$).
+\end{enumerate}
+
+\item \moc{HEX} geometry.
+
+$$N_{t}=\textit{lh}$$
+The mixtures or cells are then given in the order provided in \Figto{s30}{compl}.
+
+\item \moc{HEXT} geometry.
+
+Three options are possible here:
+\begin{itemize}
+\item All the triangles in an hexagonal crown have the same mixture. In this case
+\begin{align*}N_{t}&=\textit{nhr}\end{align*}
+and the real and virtual mixtures are given from each crown starting at the center of the cell.
+
+\item All the triangles in an hexagonal crown in a given sector have the same mixture. In this case
+\begin{align*}N_{t}&=6\times \textit{nhr}\end{align*}
+and the real and virtual mixtures are given in the following order 
+\begin{enumerate}
+\item from each crown in sector $j$ starting from the center of the cell;
+\item for each sector $j=1,6$.
+\end{enumerate}
+
+\item All the triangles contain a different mixture. In this case
+\begin{align*}N_{t}&=6\times \textit{nhr}^{2}\end{align*}
+and the real and virtual mixtures are given in the following order 
+\begin{enumerate}
+\item from each triangle $l$ ($l=1,2\times \textit{nhc}-1$) in hexagonal crown $i$ of sector $j$. \Fig{GeoHEXT4} illustrates region and surface ordering in the case where the default value of \dusa{hexmsh} is used and \Fig{GeoHEXT4C} the same information when a different value of \dusa{hexmsh} is provided.
+\item from each crown in sector $j$ starting from the center of the cell;
+\item for each sector $j=1,6$.
+\end{enumerate}
+\end{itemize}
+
+\item \moc{HEXCEL} geometries.
+
+$$N_{t}=(\textit{lr}+1)$$
+
+The mixtures are then given in the following order
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}$);
+\item $l=\textit{lr+1}$ for the mixture outside the annular regions but inside the hexagonal region.
+\end{enumerate}
+
+\item \moc{HEXZ} geometry.
+
+$$N_{t}=\textit{lh}\times \textit{lz}$$
+
+The mixtures or cells are then given in the following order
+
+\begin{enumerate}
+\item according to \Figto{s30}{compl} for plane $k$;
+\item from surface \moc{Z-} to surface \moc{Z+} ($k=1,\textit{lz}$).
+\end{enumerate}
+
+\item \moc{HEXTCEL} geometries.
+
+Three options are possible here:
+\begin{itemize}
+\item All the triangles in an hexagonal crown have the same mixture. In this case
+\begin{align*}N_{t}&=(\textit{lr}+1)\times \textit{nhr}\end{align*}
+and the real and virtual mixtures are given in the following order
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}+1$) for each crown ($l=\textit{lr}+1$ is for the part of crown outside the annular regions);
+\item from each crown starting from the center of the cell.
+\end{enumerate}
+
+\item All the triangles in an hexagonal crown in a given sector have the same mixture. In this case
+\begin{align*}N_{t}&=6\times (\textit{lr}+1)\times \textit{nhr}\end{align*}
+and the real and virtual mixtures are given in the following order 
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}+1$) for each crown of each sector ($l=\textit{lr}+1$ is for the part of crown outside the annular regions);
+\item from each crown in sector $j$ starting from the center of the cell;
+\item for each sector $j=1,6$.
+\end{enumerate}
+
+\item All the triangles contain a different mixture. In this case
+\begin{align*}N_{t}&=6\times (\textit{lr}+1)\times \textit{nhr}^{2}\end{align*}
+and the real and virtual mixtures are given in the following order 
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}+1$) for each triangle ($l=\textit{lr}+1$ is for the part of triangle outside the annular regions);
+\item from each triangle $l$ ($l=1,2\times \textit{nhc}-1$) in hexagonal crown $i$ of sector $j$. \Fig{GeoHEXT4} illustrates region and surface ordering in the case where the default value of \dusa{hexmsh} is used and \Fig{GeoHEXT4C} the same information when a different value of \dusa{hexmsh} is provided.
+\item from each crown in sector $j$ starting from the center of the cell;
+\item for each sector $j=1,6$.
+\end{enumerate}
+\end{itemize}
+
+\item \moc{HEXTZ} geometry.
+
+Three options are again possible here:
+\begin{itemize}
+\item All the triangles in an hexagonal crown in a plane have the same mixture. In this case
+\begin{align*}N_{t}&=\textit{nhr}\times  \textit{lz}\end{align*}
+and the real and virtual mixtures are given in the following order
+\begin{enumerate}
+\item from each crown starting from the center of the cell;
+\item from lowest (\moc{Z-}) to highest (\moc{Z+}) plane ($k=1,\textit{lz}$).
+\end{enumerate}
+
+\item All the triangles in an hexagonal crown in a given sector in a plane have the same mixture. In this case
+\begin{align*}N_{t}&=6\times \textit{nhr}\times \textit{lz}\end{align*}
+and the real and virtual mixtures are given in the following order 
+\begin{enumerate}
+\item from each crown in sector $j$ starting from the center of the cell;
+\item for each sector $j=1,6$;
+\item from lowest (\moc{Z-}) to highest (\moc{Z+}) plane ($k=1,\textit{lz}$).
+\end{enumerate}
+
+\item All the triangles contain a different mixture. In this case
+\begin{align*}N_{t}&=6\times \textit{nhr}^{2}\times \textit{lz}\end{align*}
+and the real and virtual mixtures are given in the following order 
+\begin{enumerate}
+\item from each triangle $l$ ($l=1,2\times \textit{nhc}-1$) in hexagonal crown $i$ of sector $j$. \Fig{GeoHEXT4} illustrates region and surface ordering in the case where the default value of \dusa{hexmsh} is used and \Fig{GeoHEXT4C} the same information when a different value of \dusa{hexmsh} is provided.
+\item from each crown in sector $j$ starting from the center of the cell;
+\item for each sector $j=1,6$;
+\item from lowest (\moc{Z-}) to highest (\moc{Z+}) plane ($k=1,\textit{lz}$).
+\end{enumerate}
+\end{itemize}
+
+
+\item \moc{HEXCELZ} geometries.
+
+$$N_{t}=(\textit{lr}+1)\times \textit{lz}$$
+
+\item \moc{HEXTCELZ} geometries.
+
+Three options are possible here:
+\begin{itemize}
+\item All the triangles in an hexagonal crown have the same mixture. In this case
+\begin{align*}N_{t}&=(\textit{lr}+1)\times \textit{nhr}\times \textit{lz}\end{align*}
+and the real and virtual mixtures are given in the following order
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}+1$) for each crown ($l=\textit{lr}+1$ is for the part of crown outside the annular regions);
+\item from each crown starting from the center of the cell;
+\item from lowest (\moc{Z-}) to highest (\moc{Z+}) plane ($k=1,\textit{lz}$).
+\end{enumerate}
+
+\item All the triangles in an hexagonal crown in a given sector have the same mixture. In this case
+\begin{align*}N_{t}&=6\times (\textit{lr}+1)\times \textit{nhr}\times \textit{lz}\end{align*}
+and the real and virtual mixtures are given in the following order 
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}+1$) for each crown of each sector ($l=\textit{lr}+1$ is for the part of crown outside the annular regions);
+\item from each crown in sector $j$ starting from the center of the cell;
+\item for each sector $j=1,6$;
+\item from lowest (\moc{Z-}) to highest (\moc{Z+}) plane ($k=1,\textit{lz}$).
+\end{enumerate}
+
+\item All the triangles contain a different mixture. In this case
+\begin{align*}N_{t}&=6\times (\textit{lr}+1)\times \textit{nhr}^{2}\times \textit{lz}\end{align*}
+and the real and virtual mixtures are given in the following order 
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}+1$) for each triangle ($l=\textit{lr}+1$ is for the part of triangle outside the annular regions);
+\item from each triangle $l$ ($l=1,2\times \textit{nhc}-1$) in hexagonal crown $i$ of sector $j$. \Fig{GeoHEXT4} illustrates region and surface ordering in the case where the default value of \dusa{hexmsh} is used and \Fig{GeoHEXT4C} the same information when a different value of \dusa{hexmsh} is provided.
+\item from each crown in sector $j$ starting from the center of the cell;
+\item for each sector $j=1,6$.
+\item from lowest (\moc{Z-}) to highest (\moc{Z+}) plane ($k=1,\textit{lz}$).
+\end{enumerate}
+\end{itemize}
+
+\end{itemize}
+
+The mixtures are then given in the following order
+\begin{enumerate}
+\item radially outward ($l=1,\textit{lr}$) for plane $k$;
+\item $l=\textit{lr+1}$ for the mixture outside the annular regions but inside the hexagonal region on plane $k$;
+\item from surface \moc{Z-} to surface \moc{Z+} ($k=1,\textit{lz}$).
+\end{enumerate}
+
+\begin{figure}[h!]
+\begin{center} 
+\epsfxsize=8cm
+\centerline{ \epsffile{Goricart.eps}}
+\parbox{14cm}{\caption{Description of the various rotations allowed for
+Cartesian geometries}\label{fig:oricart}}   
+\end{center}  
+\end{figure}
+
+\begin{figure}[h!]  
+\begin{center} 
+\epsfxsize=11cm
+\centerline{ \epsffile{Gorihex.eps}}
+\parbox{14cm}{\caption{Description of the various rotation allowed for
+hexagonal geometries}\label{fig:orihex}}
+\end{center}  
+\end{figure}
+
+\begin{figure}[h!]  
+\begin{center} 
+\epsfxsize=7cm
+\centerline{ \epsffile{Gcluster.eps}}
+\parbox{14cm}{\caption{Typical cluster geometry}\label{fig:cluster}}
+\end{center}  
+\end{figure}
+
+\clearpage
+
+The inputs associated with this structure have the following meaning:
+
+\begin{ListeDeDescription}{mmmmmm}
+
+\item[\moc{MIX}] keyword to specify the isotopic mixture number or
+sub-geometry associated
+with each region inside the geometry. When diagonal symmetries are considered,
+only the mixture associated with regions inside the symmetrized geometry need to
+be specified. When a sub-geometry is located inside symmetrized geometry but
+outside the calculation region it must be declared {\sl virtual} (for example,
+the corners of a nuclear reactor). 
+
+\item[\dusa{imix}] array of $n_{t}\le N_t$ integers {\sl or} character variables associated
+with each region. An integer is a mixture number associated with a region
+\dusa{imix}$\le$\dusa{maxmix} (see \Sectand{MACData}{LIBData}). If
+\dusa{imix}=0, the corresponding volume is replaced by a void region. If
+\dusa{imix} is a character variable, it is replaced by the corresponding
+sub-geometry or {\sl generating cell}. These values must be specified in
+the following order for most geometries: 
+
+\begin{enumerate}
+\item radially from the inside out. 
+\item from surface \moc{X-} to surface \moc{X+}
+\item from surface \moc{Y-} to surface \moc{Y+}
+\item from surface \moc{Z-} to surface \moc{Z+}
+\end{enumerate}
+
+In the cases where a \moc{CARCELX} and a \moc{TUBEX} geometry are defined then we will use 
+
+\begin{enumerate}
+\item radially from the inside out ($lr+1$ mixtures for \moc{CARCELX} and $lr$ for \moc{TUBEX}). 
+\item from surface \moc{Y-} to surface \moc{Y+}
+\item from surface \moc{Z-} to surface \moc{Z+}
+\item from surface \moc{X-} to surface \moc{X+}
+\end{enumerate}
+
+Finally, for a \moc{CARCELY} and \moc{TUBEY} geometry are defined the following order is considered:
+
+\begin{enumerate}
+\item radially from the inside out ($lr+1$ mixtures for \moc{CARCELY} and $lr$ for \moc{TUBEY}) 
+\item from surface \moc{Z-} to surface \moc{Z+}
+\item from surface \moc{X-} to surface \moc{X+}
+\item from surface \moc{Y-} to surface \moc{Y+}
+\end{enumerate}
+
+In the cases where a sectorized cell geometry is defined, \dusa{imix} must
+be defined in each sector, following the order shown in \Figand{rect3}{hexa3}.
+Also note that \dusa{imix} is {\sl not affected} by the values of the
+mesh-splitting indices \dusa{ispltx}, \dusa{isplty}, \dusa{ispltz}
+or \dusa{ispltr}.
+
+\item[\moc{REPEAT}] keyword to specify the previous list of mixtures will be repeated. This is valid only when $N_t/n_t$ 
+is an integer. If this keyword is absent and $n_t < N_t$, then the missing mixtures will be replaced 
+with void (\dusa{imix}(i) $=0$).
+
+\item[\moc{PLANE}] keyword to attribute mixture numbers to each volume inside a single 2-D plane. This option is 
+valid only for 3-D geometries, Cartesian or hexagonal. 
+
+\item[\dusa{iplan}] plane number for which material mixture are input. 
+
+\item[\moc{SAME}] keyword to attribute the same material mixture numbers of the \dusa{iplan1} plane to the \dusa{iplan} plane. In 
+hexagonal geometry, it can indicate that the mixture numbers of the current crown of the \dusa{iplan}th 
+plane will be identical to those of the same crown of the \dusa{iplan1}th plane. 
+
+\item[\dusa{iplan1}] plane number used as reference to input the current plane or crown(s). 
+
+\item[\dusa{lp}] number of volumes in a plane. In Cartesian geometry, $lp=lx*ly$ and in hexagonal geometry, 
+$lp=lh$. 
+
+\item[\moc{CROWN}]  keyword to attribute mixture numbers to each hexagon of a single crown. This option is only 
+valid for \moc{COMPLETE} hexagonal geometry definition. Each use of the keyword \moc{CROWN} increases 
+the crown number by 1. So it is not required to give its number, but crowns must be defined from 
+the center to the peripherical regions of a plane. 
+
+\item[\dusa{lc}] number of hexagons in the current crown. For the \dusa{i}th crown of a compelete hexagonal plane, 
+$lc=(i-1)*6$. The first crown is composed of only one hexagon. 
+
+\item[\moc{ALL}] keyword to specify that the \dusa{lc} material mixture number of the current crown have the same value 
+\dusa{jmix}. 
+
+\item[\moc{UPTO}] keyword to attribute material mixture numbers of the current crown up to the \dusa{ic} one. 
+
+\item[\dusa{ic}] number of the last crown in \moc{UPTO} option. Its value must be greater than equal to the current 
+crown number.
+
+\item[\moc{HMIX}] keyword to specify the virtual isotopic mixture associated with each region inside the geometry. These
+virtual mixtures will be produced by homogenization in the {\tt EDI:} module (see \Sect{descedi}).
+
+\item[\moc{CELL}] keyword to specify the location of the sub-geometry called
+{\sl generating cells} in a Cartesian or hexagonal geometry.
+
+\item[\dusa{HCELL}] array of sub-geometry {\tt character*12} names which will
+be superimposed upon the current Cartesian geometry. The same sub-geometry may
+appear in different positions within the global geometry if the material
+properties and dimensions are identical. The concept of sub-geometry is useful
+for the interface current method in a SYBIL calculation since the collision
+probability matrix associated with each sub-geometry is computed independently
+of its location in the geometry. In general, the neutron fluxes in identical
+sub-geometry located at different locations will be different even if they are
+associated with the same collision probability matrix. These sub-geometry names
+must be specified in the following order: 
+
+\begin{enumerate}
+\item from surface \moc{X-} to surface \moc{X+}
+\item from surface \moc{Y-} to surface \moc{Y+}
+\item from surface \moc{Z-} to surface \moc{Z+}
+\end{enumerate}
+
+\item[\moc{MERGE}] keyword to specify that some sub-geometries or regions must
+be merged. 
+
+\item[\dusa{imerge}] array of numbers that associate a global sub-geometry or
+region number with each sub-geometry or region. All the sub-geometries  or
+regions with the same global number will be attributed the same flux.
+
+\item[\moc{TURN}] keyword to specify that some sub-geometries must be rotated
+in space before being located at a specific position.
+
+\item[\dusa{HTURN}] array of  {\tt character*1} keywords to rotate
+conveniently each sub-geometry. The letters {\tt A} to {\tt L} are used as
+keywords to specify these rotation. For Cartesian geometries, the eight possible
+orientations are shown in \Fig{oricart} while for hexagonal geometries
+the permitted orientations are shown in \Fig{orihex}. For 3-D cells, the
+same letters can be used to describe the rotation in the $X-Y$ plane. However,
+an additional $-$ sign can be glued to the 2-D rotation identifier to
+indicate reflection of the cell along the $Z$-axis ({\tt -A} to {\tt -L}).
+
+\item[\moc{CLUSTER}] keyword to specify that pin (cylindrical) sub-geometry
+will be inserted in the geometry (see \Fig{cluster}). 
+
+\item[\dusa{NAMPIN}] array of cylindrical sub-geometry {\tt character*12} name 
+representing a pin. This sub-geometry must be of type \moc{TUBE}, \moc{TUBEX},
+\moc{TUBEY} or \moc{TUBEZ}.
+
+\item[\moc{MIX-NAMES}] keyword to specify character names to material mixtures.
+By default, the material mixtures are not named.
+
+\item[\dusa{NAMMIX}] array of {\tt character*12} names for the material
+mixtures.
+
+\end{ListeDeDescription}
+
+\clearpage
+
+\subsubsection{Double-heterogeneity}\label{sect:descDH}
+
+The structure \dstr{descDH} provides the possibility to define a stochastic mixture of cylindrical or spherical micro-structures that can be distributed inside {\sl composite mixtures} of the current {\sl macro-geometry}. A composite mixture is represented by a {\sl material mixture index} with a value greater than \dusa{maxmix}, the maximum number of real mixtures. Each micro-structure can be composed of many micro-volumes.\cite{BIHET}
+
+\begin{DataStructure}{Structure \dstr{descDH}}
+$[$ \moc{BIHET}  $\{$ \moc{TUBE} $|$ \moc{SPHE} $\}$ \dusa{nmistr}
+\dusa{nmilg} \\
+\hskip 1.0cm (\dusa{ns}(i),i=1,\dusa{nmistr}) \\
+\hskip 1.0cm((\dusa{rs}(i,j),j=1,\dusa{ns}(i)+1),i=1,\dusa{nmistr})\\
+\hskip 1.0cm(\dusa{milie}(i),i=1,\dusa{nmilg})\\
+\hskip 1.0cm(\dusa{mixdil}(i),i=1,\dusa{nmilg})\\
+\hskip 1.0cm( (\dusa{fract}(i,j),j=1,\dusa{nmistr}) 
+( $[$(\dusa{mixgr}(i,j,k),k=1,\dusa{ns}(j))$]$,j=1,\dusa{nmistr}), i=1,\dusa{nmilg}) $]$
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\moc{BIHET}] keyword to specify that the current macro-geometry is containing composite mixtures.
+
+\item[\moc{TUBE}] keyword to specify that the micro-structures are of a
+cylindrical geometry;
+
+\item[\moc{SPHE}] keyword to specify that the micro-structures are of a
+spherical geometry.
+
+\item[\dusa{nmistr}] maximum number of micro-structure types in the composite mixtures. Each type of
+micro-structure is characterized by its dimension and may have distinct
+volumetric concentrations in each of the macro-geometry volumes. All the
+micro-structures of a given type have the same nuclear properties in a given
+macro-volume. The micro-structures of a given type may have different nuclear
+properties within different macro-volumes.
+
+\item[\dusa{nmilg}] number of composite mixtures. This is the number of material mixture indices of the macro-geometry with a value $>$\dusa{maxmix}.
+
+\item[\dusa{ns}] array giving the number of sub-regions (tubes or spherical
+shells) in the  micro-structures. Each type of micro-structures may contain a
+different number of micro-volumes.
+
+\item[\dusa{rs}] array giving the radius of the tubes or spherical shells
+making up the micro-structures. For each type of micro structure $i$, we will
+have an initial radius of \dusa{rs}$(1,i)=0.0$.
+
+\item[\dusa{milie}] array giving the indices used to defined composite mixtures in the macro-geometry. These composite mixture indices must be $>$\dusa{maxmix}.
+
+\item[\dusa{mixdil}] array giving the mixture indices associated with the diluent in each composite mixtures of the macro-geometry.  These values must be $\le$\dusa{maxmix}.
+
+\item[\dusa{fract}] array of volumetric concentration ($V_{G}/V_{R}$) of
+each micro-structures (volume $V_{G}$) in a given region (volume $V_{R}$) of the
+macro-geometry.  
+
+\item[\dusa{mixgr}] array giving the mixture index associated with each
+region of the micro-structures. Note that \dusa{mixgr} should be specified only
+for the regions of the micro-structure which have a concentration
+\dusa{fract}$>$0. These values must be $\le$\dusa{maxmix}.
+
+\end{ListeDeDescription}
+
+Examples of geometry definitions can be found in \Sect{ExGEOData}.
+
+\subsubsection{Do-it-yourself geometries}\label{sect:descSIJ}
+
+A {\sl do-it-yourself} geometry is an abstract representation of an assembly of arbitrary unit-cells defined in term of their probability of presence and of their probability to have a particular neighbor. Structure \dstr{descSIJ} is defined as
+
+\begin{DataStructure}{Structure \dstr{descSIJ}}
+$[$ \moc{POURCE} (\dusa{pcinl}(i),i=1,\dusa{lp}) $]$\\
+$[$ \moc{PROCEL} ((\dusa{pijcel}(i,j),j=1,\dusa{lp}),i=1,\dusa{lp}) $]$
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\moc{POURCE}] keyword to specify that a {\sl do-it-yourself} type
+geometry is to be defined, that is to say a geometry resembling the multicell
+geometry seen in APOLLO-1.\cite{apollo1} This option permits the interactions
+between different arbitrarily arranged cells in an infinite lattice to be
+treated. The cells are identified by the information
+following the keyword \moc{CELL}. The user must ensure that the total number of
+regions appearing in all the cells must be less than \dusa{maxreg}.
+
+\item[\dusa{pcinl}] array giving the proportion of each cell type in the
+lattice such that:
+
+$$|\sum_{i=1}^{{\it lp}}{\it pcinl}(i)-1.|<10^{-5}$$
+
+\item[\moc{PROCEL}] keyword to specify that in a {\sl do-it-yourself} type
+geometry rather than using a statistical arrangement of cells, a pre-calculated
+cell distribution is to be considered. If the \moc{POURCE} structure is
+given without the \moc{PROCEL} structure, a {\sl statistical} approximation
+is used, as defined in Ref.~\citen{apollo1}.
+
+\item[\dusa{pijcel}] array giving the pre-calculated probability for a neutron
+leaving a cell of type i to enter a cell of type j without crossing any other
+cell. We require: 
+
+$$|S(i){\it pcinl}(i){\it pijcel}(i,j)-S(j){\it pcinl}(j) {\it
+pijcel}(j,i)|<10^{-4}$$
+
+\noindent where $S(i)$ and $S(j)$ are the exterior surfaces area of the cells of
+type $i$ and $j$ respectively.
+
+\end{ListeDeDescription}
+
+Examples of geometry definitions can be found in \Sect{ExGEOData}.
+
+\eject

@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# ACCESS FILE OF CONVERSION DATA SET a2b_drglib_jeff3p1.x2m
+#
+if [ $# = 0 ]
+   then
+   echo "usage: a2b_drglib_jeff3p1.access directory" 1>&2
+   exit 1
+fi
+echo access a2b_drglib_jeff3p1.access
+if [ -f "$1"/../Njoy2012/python/Jeff3.1/draglibJeff3.1.gz ]
+   then
+    echo 'gunzipping library'
+    gunzip "$1"/../Njoy2012/python/Jeff3.1/draglibJeff3.1.gz
+fi
+ln -s "$1"/../Njoy2012/python/Jeff3.1/draglibJeff3.1 EXPORT
+ls -l

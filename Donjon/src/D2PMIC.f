@@ -1,0 +1,282 @@
+*DECK D2PMIC
+      SUBROUTINE D2PMIC(  IPDAT, IPMIC , IPRINT,    NGP, NBMIX, NBISO,
+     >                      NED,   NVAR, STAIDX,   LXES,  LDET,  LCOR,
+     >                     FLUX)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Recover microscopic cross sections from a microlib object and write
+* cross sections for one branch at a fixed burnup point in the INFO
+* data block
+*
+*Author(s): 
+* J. Taforeau
+*
+*Parameters: input
+* IPDAT   address of info data block
+* IPMIC   address of the microlib object
+* NBMIX   number of mixturess
+* NBISO   number of isotopes
+* NED     number of P0 additional XS
+* NGP     number of energy groups
+* NVAR    number of state variables
+* STAIDX  table of states index order
+*
+*Parameters: 
+* IPRINT   
+* NGP      
+* LXES     
+* LDET     
+* LCOR     
+* FLUX     
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      TYPE(C_PTR) IPDAT,IPMIC
+      INTEGER NBMIX,NBISO,NED,NGP,NVAR
+      INTEGER STAIDX(NVAR)
+      REAL FLUX(NGP)
+      LOGICAL LDET,LXES,LCOR
+*----
+*  LOCAL VARIABLES
+*----
+      TYPE(C_PTR) IPTH,KPTH,JPMIC
+      INTEGER :: iXE = 0
+      INTEGER :: iSM = 0
+      INTEGER :: IMR = 0
+      INTEGER :: iDT = 0
+      INTEGER ,DIMENSION(5) :: iCHAIN = 0
+      INTEGER :: DEB = -999
+      REAL XEND,SMND,MRND
+      REAL XSECT(NGP),XENG(NGP),SMNG(NGP),SCAT(NGP),DET(NGP)
+      REAL NFTOT(NGP),N2N(NGP)
+      REAL :: NUM = 0.
+      REAL :: DENO = 0.
+      REAL DEN(NBISO)
+      REAL NGXS(5,NGP),RPHI,YLDPM
+      CHARACTER(LEN=12) HUSE(NBISO),ISOTNAME(NBISO)
+      CHARACTER*8 XSNAM(12)
+      ! RECOVER ONLY EIGHT FIRST CHARACTER OF ISOTOPES
+      CHARACTER(LEN=8) ISOTOPES(2),HDET,SMCHAIN(5)
+
+
+      CALL LCMSIX (IPDAT,' ',0)
+      CALL LCMSIX (IPDAT,'SAPHYB_INFO',1)
+      CALL LCMSIX (IPDAT,'ISOTOPES',1)
+      CALL LCMGTC (IPDAT,'XE135',12,1,ISOTOPES(1))
+      CALL LCMGTC (IPDAT,'SM149',12,1,ISOTOPES(2))
+      CALL LCMGTC (IPDAT,'PM148',12,1,SMCHAIN(1))
+      CALL LCMGTC (IPDAT,'PM148M',12,1,SMCHAIN(2))
+      CALL LCMGTC (IPDAT,'PM149',12,1,SMCHAIN(3))
+      CALL LCMGTC (IPDAT,'PM147',12,1,SMCHAIN(4))
+      CALL LCMGTC (IPDAT,'ND147',12,1,SMCHAIN(5))
+      IF (LDET) CALL LCMGTC (IPDAT,'DET',12,1,HDET)
+
+      IF(NBMIX.NE.1) THEN
+        CALL XABORT('@D2P: MORE THAN ONE MIXTRURE IN SAPHYB')
+      ENDIF
+      IF(NED.GT.12) THEN
+        CALL XABORT('@D2P: MORE THAN 12 ADDITIONAL ISOTOPES')
+      ENDIF
+      
+      CALL LCMSIX(IPMIC,' ',0)
+      CALL LCMGET(IPMIC,'ISOTOPESDENS',DEN)
+      CALL LCMGTC(IPMIC,'ISOTOPESUSED',12,NBISO,HUSE)
+      CALL LCMGTC(IPMIC,'ISOTOPERNAME',12,NBISO,ISOTNAME)
+      CALL LCMGTC(IPMIC,'ADDXSNAME-P0',8,NED,XSNAM)
+
+      DO I=1,NBISO
+         IF(INDEX(HUSE(I),ISOTOPES(1))>0) iXE=I
+         IF(INDEX(HUSE(I),ISOTOPES(2))>0) iSM=I
+         IF(INDEX(HUSE(I),'*MAC*RES')>0) iMR=I
+         IF (INDEX(HUSE(I),SMCHAIN(1))>0) iCHAIN(1)=I
+         IF (INDEX(HUSE(I),SMCHAIN(2))>0) iCHAIN(2)=I
+         IF (INDEX(HUSE(I),SMCHAIN(3))>0) iCHAIN(3)=I
+         IF (INDEX(HUSE(I),SMCHAIN(4))>0) iCHAIN(4)=I
+         IF (INDEX(HUSE(I),SMCHAIN(5))>0) iCHAIN(5)=I
+         IF (LDET) THEN
+            IF(INDEX(HUSE(I),HDET)>0) iDT=I
+         ENDIF
+      ENDDO
+
+
+
+      IF (LXES) THEN
+       ! CHECK THE EXISTENCE OF XE AND SM ISOTOPES
+
+       IF(iXE==0) THEN
+         CALL XABORT('@D2PMIC: XE MUST BE A PARTICULARIZED ISOTOPE')
+       ELSE IF(iSM==0) THEN
+         CALL XABORT('@D2PMIC: SM MUST BE A PARTICULARIZED ISOTOPE')
+       ENDIF
+       XEND=DEN(iXE)
+       SMND=DEN(iSM)
+       MRND=DEN(iMR)
+       CALL LCMSIX(IPMIC,' ',0)
+       ! PROCESS MICROSCOPIC TOTAL XS INFORMATION FOR XE
+       JPMIC=LCMGID(IPMIC,'ISOTOPESLIST')
+       IPMIC=LCMGIL(JPMIC,iXE)
+
+       CALL LCMLEN(IPMIC,'NTOT0',ILONG,ITYLCM)
+
+       IF(ILONG.NE.NGP) THEN
+         CALL XABORT('@D2PMIC: INCONSISTENT NUMBERS OF ENERGY GROUP')
+       ENDIF
+       ! CALCULATION OF MICROSCOPIC ABSORPTION CROSS SECTIONS OF XE
+       CALL LCMGET(IPMIC,'NTOT0',XSECT)
+       CALL LCMGET(IPMIC,'SIGS00',SCAT)
+       DO I=1, NGP
+         XENG(I)=(XSECT(I)-SCAT(I))
+         IF (XENG(I)<0) THEN
+         XENG(I)= 0.
+          WRITE(6,*) '@D2PMIC: WARNING : XE NEGATIVE CROSS SECTION',
+     >    '=> ZERO CROSS SECTION ASSUMED'
+         ENDIF
+       ENDDO
+
+       ! PROCESS MICROSCOPIC TOTAL XS INFORMATION FOR SM
+       CALL LCMSIX(IPMIC,' ',0)
+       JPMIC=LCMGID(IPMIC,'ISOTOPESLIST')
+       IPMIC=LCMGIL(JPMIC,iSM)
+       CALL LCMLEN(IPMIC,'NTOT0',ILONG,ITYLCM)
+       IF(ILONG.NE.NGP) THEN
+         CALL XABORT('@D2PMIC: MORE THAN ONE MIXTRURE IN SAPHYB')
+       ENDIF
+       CALL XDISET(XSECT,NGP,0)
+       CALL XDISET(SCAT,NGP,0)
+
+       ! CALCULATION OF MICROSCOPIC ABSORPTION CROSS SECTIONS OF SM
+       CALL LCMGET(IPMIC,'NTOT0',XSECT)
+       CALL LCMGET(IPMIC,'SIGS00',SCAT)
+       DO I=1, NGP
+         SMNG(I)=(XSECT(I)-SCAT(I))
+         IF (SMNG(I)<0) THEN
+          SMNG(I)= 0.
+          WRITE(6,*) '@D2PMIC: WARNING : SM NEGATIVE CROSS SECTION',
+     >    '=> ZERO CROSS SECTION ASSUMED'
+         ENDIF
+       ENDDO
+      ENDIF
+
+      IF (LCOR.OR.LXES) THEN
+       ! RECOVER FISSION CROSS SECTION OF MACROSCOPIC RESIDUAL
+       CALL LCMSIX(IPMIC,' ',0)
+       JPMIC=LCMGID(IPMIC,'ISOTOPESLIST')
+       IPMIC=LCMGIL(JPMIC,iMR)
+       CALL LCMLEN(IPMIC,'NFTOT',ILONG,ITYLCM)
+       CALL LCMGET(IPMIC,'N2N',N2N)
+       IF(ILONG.NE.NGP) THEN
+         CALL XABORT('@D2PMIC: MORE THAN ONE MIXTRURE IN SAPHYB')
+       ENDIF
+
+       CALL XDISET(NFTOT,NGP,0)
+       CALL LCMGET(IPMIC,'NFTOT',NFTOT)
+
+       NFTOT(:)=NFTOT(:)*MRND
+       CALL LCMSIX(IPMIC,' ',0)
+      ENDIF
+
+      IF (LCOR) THEN
+       RPHI=FLUX(1)/FLUX(2)
+       DO I=1,4
+        JPMIC=LCMGID(IPMIC,'ISOTOPESLIST')
+        IPMIC=LCMGIL(JPMIC,iCHAIN(I))
+        CALL LCMGET(IPMIC,'NG',NGXS(I,:))
+        CALL LCMSIX(IPMIC,' ',0)
+       ENDDO
+       NUM=0.
+       DO I=1,2
+       NUM=NUM+DEN(iCHAIN(I))*(NGXS(I,1)*RPHI+NGXS(I,2))
+       ENDDO
+       DENO=NFTOT(1)*RPHI+NFTOT(2)
+
+       CALL LCMSIX(IPDAT,' ',0)
+       CALL LCMSIX(IPDAT,'GENPMAXS_INP',1)
+       CALL LCMGET(IPDAT,'FLAG',DEB)
+       CALL LCMSIX(IPDAT,' ',0)
+       IPTH=LCMGID(IPDAT,'TH_DATA')
+       KPTH=LCMDIL(IPTH,STAIDX(NVAR))
+       CALL LCMGET(KPTH,'YLDPm',YLDPM)
+       DENO=DENO*YLDPM
+       YLDPM=YLDPM*(1+(NUM/DENO))
+       IF (DEB.EQ.-999) THEN
+        CALL XABORT ("@D2PMIC : PROBLEM IN YIELD CORRECTION")
+       ELSE IF (DEB<0) THEN
+        CALL LCMPUT(KPTH,'YLDPm',1,2,YLDPM)
+       ENDIF
+
+      ENDIF
+
+
+      IF (LDET) THEN
+       IF(iDT==0) THEN
+         WRITE(6,*) '@D2PMIC: UNKNOWN ISOTOPE (',HDET,') FOR DETECTOR',
+     >   ' CROSS SECTIONS'
+         CALL XABORT ('=> PLEASE USE THE DET CARD IN D2P:')
+       ENDIF
+       CALL LCMSIX(IPMIC,' ',0)
+
+       JPMIC=LCMGID(IPMIC,'ISOTOPESLIST')
+       IPMIC=LCMGIL(JPMIC,iDT)
+       CALL LCMLEN(IPMIC,'NFTOT',ILONG,ITYLCM)
+              PRINT*,'ICI'
+       IF(ILONG.NE.NGP) THEN
+         CALL XABORT('@D2PMIC: INCONSISTENT NUMBERS OF ENERGY GROUP')
+       ENDIF
+       ! CALCULATION OF MICROSCOPIC ABSORPTION CROSS SECTIONS OF XE
+       CALL LCMGET(IPMIC,'NFTOT',DET)
+       CALL LCMSIX(IPMIC,' ',0)
+      ENDIF
+
+       CALL LCMSIX(IPDAT,' ',0)
+       CALL LCMSIX(IPDAT,'BRANCH_INFO',1)
+       IPTH=LCMGID(IPDAT,'CROSS_SECT')
+       KPTH=LCMDIL(IPTH,STAIDX(NVAR))
+
+
+      CALL LCMSIX(KPTH,'MACROLIB_XS',1)
+      IF (LXES) CALL LCMPUT(KPTH,'SFI',NGP,2,NFTOT)
+      CALL LCMSIX(KPTH,' ',2)
+      CALL LCMSIX(KPTH,'MICROLIB_XS',1)
+      IF (LXES) THEN
+       CALL LCMPUT(KPTH,'XENG',NGP,2,XENG)
+       CALL LCMPUT(KPTH,'SMNG',NGP,2,SMNG)
+       CALL LCMPUT(KPTH,'XEND',1,2,XEND)
+       CALL LCMPUT(KPTH,'SMND',1,2,SMND)
+      ENDIF
+      IF (LDET) CALL LCMPUT(KPTH,'DET',NGP,2,DET)
+      CALL LCMSIX(KPTH,' ',0)
+
+
+
+      IF(IPRINT > 1)  THEN
+       WRITE(6,*)
+       WRITE(6,*) "**************************************************"
+       WRITE(6,*) "*                     SUMMARY                    *"
+       WRITE(6,*) "**************************************************"
+       WRITE(6,*)
+       WRITE(6,*) "****      MICROSCOPIC cross sections       ****"
+       IF (LDET) THEN
+        WRITE(6,*) "DETECTOR                :",DET
+       ENDIF
+       IF (LXES) THEN
+        WRITE(6,*) "XENON ABSORPTION        :",XENG
+        WRITE(6,*) "SAMARIUM ABSORPTION     :",SMNG
+        WRITE(6,*) "XENON NUMBER DENSITY    :",XEND
+        WRITE(6,*) "SAMARIUM NUMBER DENSITY :",SMND
+        WRITE(6,*)
+        WRITE(6,*) "****  MACROSCOPIC cross sections(1:NGP) ****"
+        WRITE(6,*) "FISSION                 :",NFTOT
+        WRITE(6,*) "MAC*RES* NUMBER DENSITY :",MRND
+       ENDIF
+
+       IF (LCOR) THEN
+        WRITE(6,*) "PM149 FISSION YIELD CORRECTED:",YLDPM
+       ENDIF
+      ENDIF
+      END

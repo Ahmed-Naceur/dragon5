@@ -1,0 +1,954 @@
+\section{Contents of a \dir{macrolib} directory}\label{sect:macrolibdir}
+
+A \dir{macrolib} directory always contains the set of macroscopic multigroup cross
+sections associated with a set of mixtures. The structure of this directory,
+is quite different to that associated with an \dir{isotope} directory (see
+\Sect{isotopedir}). First, it is multi-level, namely, it contains sub-directories.
+Moreover instead of having one directory per mixture which contains the
+associated multigroup cross section, one will have one directory component per group containing
+multi-mixture information. Finally its contents will vary depending on the operator
+which was used to create it. Here for convenience we will define the variable $\mathcal{M}$ to
+identify the creation operator:
+\begin{displaymath}
+\mathcal{M} = \left\{
+\begin{array}{ll}
+0 & \textrm{if the directory is created by the \moc{MAC:} operator}\\
+1 & \textrm{if the directory is created by the \moc{LIB:} or \moc{EVO:} operator}\\
+2 & \textrm{if the directory is created by the \moc{EDI:} operator}\\
+3 & \textrm{if the directory is created by the \moc{OUT:} or \moc{NCR:} operator}
+\end{array} \right.
+\end{displaymath}
+
+In the case where the \moc{LIB:} or \moc{EDI:} operator is used to create this directory,
+it is embedded as a subdirectory in a \dir{microlib} or an \dir{edition} directory.
+For the other cases, it appears on the root level of the \dds{macrolib} data structure.
+
+\subsection{State vector content for the \dir{macrolib} data structure}\label{sect:macrolibstate}
+
+The dimensioning parameters for the \dir{macrolib} data structure, which are stored in
+the state vector $\mathcal{S}^{M}$, represent:
+
+\begin{itemize}
+\item The number of energy groups ${G}=\mathcal{S}^{M}_{1}$ 
+\item The number of mixtures $N_{m}=\mathcal{S}^{M}_{2}$
+\item The order for the scattering anisotropy $L=\mathcal{S}^{M}_{3}$ 
+($L=1$ is an isotropic collision; $L=2$ is a linearly anisotropic collision,
+etc.)
+\item The maximum number of fissile isotopes in a mixture $N_{f}=\mathcal{S}^{M}_{4}$ 
+\item The number of additional $\phi$--weighted editing cross sections $N_{e}=\mathcal{S}^{M}_{5}$ 
+\item The transport correction option $I_{tr}=\mathcal{S}^{M}_{6}$ 
+\begin{displaymath}
+I_{tr} = \left\{
+\begin{array}{ll}
+0 & \textrm{do not use a transport correction}\\
+1 & \textrm{use an APOLLO-type transport correction (micro-reversibility at
+all energies)}\\
+2 & \textrm{recover a transport correction from the cross-section library}\\
+4 & \textrm{use a leakage correction based on {\tt NTOT1} data.}
+\end{array} \right.
+\end{displaymath}
+\item The number of precursor groups for delayed neutron $N_{d}=\mathcal{S}^{M}_{7}$ 
+\item The number of physical albedo $N_{A}=\mathcal{S}^{M}_{8}$ 
+\item The type of leakage $I_{l}=\mathcal{S}^{M}_{9}$ 
+\begin{displaymath}
+I_{l} = \left\{
+\begin{array}{ll}
+0 & \textrm{no diffusion/leakage coefficient available}\\
+1 & \textrm{isotropic diffusion/leakage coefficient available}\\
+2 & \textrm{anisotropic diffusion/leakage coefficient available.}
+\end{array} \right.
+\end{displaymath}
+\item The maximum Legendre order of the weighting functions $I_{w}=\mathcal{S}^{M}_{10}$ 
+\begin{displaymath}
+I_{w} = \left\{
+\begin{array}{ll}
+0 & \textrm{use the flux as weighting function for all cross sections}\\
+1 & \textrm{use the fundamental current ${\cal J}$ as weighting function for
+scattering cross sections with}\\
+& \textrm{order $\ge 1$ and compute both $\phi$-- and
+${\cal J}$--weighted total cross sections.}
+\end{array} \right.
+\end{displaymath}
+\item The number of delta cross section sets $I_{\rm step}=\mathcal{S}^{M}_{11}$ used 
+for generalized perturbation theory (GPT) or kinetics calculations:
+\begin{displaymath}
+I_{\rm step} = \left\{
+\begin{array}{ll}
+0 & \textrm{no delta cross section sets}\\
+>0 & \textrm{number of delta cross section sets.}
+\end{array} \right.
+\end{displaymath}
+\item Discontinuity factor flag $I_{\rm df}=\mathcal{S}^{M}_{12}$:
+\begin{displaymath}
+I_{\rm df} = \left\{
+\begin{array}{ll}
+0 & \textrm{no discontinuity factor information}\\
+1 & \textrm{multigroup boundary current information is available}\\
+2 & \textrm{discontinuity factor information (see \Sect{macroADF}) is available.}
+\end{array} \right.
+\end{displaymath}
+\item Adjoint macrolib flag $I_{\rm adj}=\mathcal{S}^{M}_{13}$:
+\begin{displaymath}
+I_{\rm adj} = \left\{
+\begin{array}{ll}
+0 & \textrm{direct macrolib}\\
+1 & \textrm{adjoint macrolib.}
+\end{array} \right.
+\end{displaymath}
+\item SPH-information $I_{\rm sph}=\mathcal{S}^{M}_{14}$:
+\begin{displaymath}
+I_{\rm sph} = \left\{
+\begin{array}{ll}
+0 & \textrm{no SPH information available}\\
+1 & \textrm{SPH information is available.}
+\end{array} \right.
+\end{displaymath}
+\item Type of weighting in {\tt EDI:} module $I_{\rm pro}=\mathcal{S}^{M}_{15}$:
+\begin{displaymath}
+I_{\rm pro} = \left\{
+\begin{array}{ll}
+0 & \textrm{use a flux weighting}\\
+1 & \textrm{use an adjoint--direct (a.k.a., product) flux weighting. Only available if $\mathcal{M}\ge 2$}
+\end{array} \right.
+\end{displaymath}
+\item Group form factor index $I_{\rm gff}=\mathcal{S}^{M}_{16}$:
+\begin{displaymath}
+I_{\rm gff} = \left\{
+\begin{array}{ll}
+0 & \textrm{no group form factor information}\\
+>0 & \textrm{number of form factors per mixture and per energy group (see \Sect{macroGFF}).}
+\end{array} \right.
+\end{displaymath}
+\item Number of companion particles in coupled sets $I_{\rm part}=\mathcal{S}^{M}_{17}$:
+\begin{displaymath}
+I_{\rm part} = \left\{
+\begin{array}{ll}
+0 & \textrm{the macrolib doesn't include coupled sets}\\
+>0 & \textrm{number of companion particles.}
+\end{array} \right.
+\end{displaymath}
+\end{itemize}
+
+\subsection{The main \dir{macrolib} directory}\label{sect:macrolibdirmain}
+
+The following records and sub-directories will be found on the first level of a \dir{macrolib}
+directory:
+
+\begin{DescriptionEnregistrement}{Main records and sub-directories in \dir{macrolib}}{8.0cm}
+\CharEnr
+  {SIGNATURE\blank{3}}{$*12$}
+  {Signature of the \dir{macrolib} data structure ($\mathsf{SIGNA}=${\tt L\_MACROLIB\blank{2}}).}
+\IntEnr
+  {STATE-VECTOR}{$40$}
+  {Vector describing the various parameters associated with this data structure
+  $\mathcal{S}^{M}_{i}$, as defined in \Sect{macrolibstate}.}
+\OptCharEnr
+  {ADDXSNAME-P0}{$(N_{e})*8$}{$N_{e} \ge 1$}
+  {Names of the additional $\phi$--weighted editing cross sections ($\mathsf{ADDXS}_k$).
+  These names should not appear in Tables~\ref{tabl:tabnonlegendre} and \ref{tabl:tablegendre}.}
+\OptIntEnr
+  {FISSIONINDEX}{$N_{m},N_{f}$}{$N_{f} \ge 1,\mathcal{M}=1$}
+  {For each mixture $i$ contains the index of each fissile isotope $j$. The index is
+   pointing to a component of record \moc{ISOTOPESUSED} or \moc{ISOTOPERNAME}
+   of /microlib/.}
+\OptRealEnr
+  {ENERGY\blank{6}}{$G+1$}{$\mathcal{M}\ge 1$}{eV}
+  {Energy group limits $E_{g}$}
+\OptRealEnr
+  {DELTAU\blank{6}}{$G$}{$\mathcal{M}\ge 1$}{}
+  {Lethargy width of each group $U_{g}$}
+\OptRealEnr
+  {ALBEDO\blank{6}}{$N_{A}, G$}{$N_{A}> 0$}{}
+  {Multigroup and surface ordered physical albedos.}
+\OptRealEnr
+  {VOLUME\blank{6}}{$N_{m}$}{$\mathcal{M}\ge 2$}{cm$^{3}$~~}
+  {Volume of region containing this mixture $V_{m}$}
+\OptRealEnr
+  {FLUXDISAFACT}{$G$}{$\mathcal{M}=2$}{}
+  {Ratio of the flux in the fuel to the flux in the cell $F_{g}$ after homogenization}
+\OptRealEnr
+  {LAMBDA-D\blank{4}}{$N_{d},N_{f}$}{$N_{d}\ge 1$}{s$^{-1}$}
+  {Radioactive decay constants of each delayed neutron precursor group, for each
+  fissile isotope.}
+\OptRealEnr
+  {BETA-D\blank{6}}{$N_{d},N_{f}$}{$N_{d}\ge 1$}{}
+  {Delayed-neutron fraction for each delayed neutron precursor group, for each
+  fissile isotope.}
+\OptRealEnr
+  {K-EFFECTIVE\blank{1}}{$1$}{$N_{f} \ge 1$}{}
+  {Effective multiplication constant $k_{\mathrm{eff}}$}
+\OptRealEnr
+  {K-INFINITY\blank{2}}{$1$}{$N_{f} \ge 1$}{}
+  {Infinite multiplication constant $k_{\infty}$}
+\OptRealEnr
+  {DIFFB1HOM\blank{3}}{$G$}{$\mathcal{M}=2,I_{l} \ge 1$}{cm}
+  {Homogeneous leakage/diffusion coefficient $D^{g}$}
+\OptRealEnr
+  {B2\blank{2}B1HOM\blank{3}}{$1$}{$I_{l} \ge 1$}{cm$^{-2}$~~}
+  {Homogeneous Buckling $B_{\mathrm{hom}}$}
+\OptRealEnr
+  {B2\blank{2}HETE\blank{4}}{$3$}{$I_{l}=2$}{cm$^{-2}$}
+  {Directional Buckling $B_{j}$}
+\OptRealEnr
+  {TIMESTAMP\blank{3}}{$3$}{$\mathcal{M}=1$}{}
+  {A vector $T_{j}$ containing three elements. The first element $T_{1}=t$ is the time in days, the
+   second element $T_{2}=B$ is the burnup in MW day T$^{-1}$ and the third element $T_{3}=w$ is the 
+   irradiation in Kb$^{-1}$}
+\DirlEnr
+  {GROUP\blank{7}}{$G$}
+  {List of energy-group sub-directories. Each component of the list is a directory containing
+  the reference macroscopic cross-section information associated with a specific secondary group.}
+\OptCharEnr
+  {PARTICLE\blank{4}}{$*1$}{$I_{\rm part}\ge 1$} 
+  {Character name of the particle associated to the macrolib. Usual names for
+  particles are {\tt N} (neutrons), {\tt G} (photons), {\tt B} (electrons),
+  {\tt C} (positrons) and {\tt P} (protons).}
+\OptCharEnr
+  {PARTICLE-NAM}{($I_{\rm part}+1$)$*1$}{$I_{\rm part}\ge 1$} 
+  {Character name associated to each particle.}
+\OptIntEnr
+  {PARTICLE-NGR}{$I_{\rm part}+1$}{$I_{\rm part}\ge 1$}
+  {Number of energy groups associated to each particle.}
+\OptRealEnr
+  {PARTICLE-MC2}{$I_{\rm part}+1$}{$I_{\rm part}\ge 1$}{eV}
+  {Rest energy associated to each particle.}
+\OptRealVar
+  {\listedir{penergy}}{$G_i+1$}{$I_{\rm part}\ge 1$}{eV}
+  {Set of arrays containing energy groups limits for a companion particle. The character name
+  of each sub-directory is the concatenation of the character*1 name of the particle with ``{\tt ENERGY}''.
+  For example, {\tt GENERGY} contains the energy mesh of secondary photons ($G_i+1$ values).}
+\OptDirlVar
+  {\listedir{grpdir}}{$G$}{$I_{\rm part}\ge 1$} 
+  {List of energy-group sub-directories. Each component of the list is a directory containing
+  scattering transition cross-section information associated with a specific secondary group.
+  The directory \listedir{grpdir} name is the concatenation of {\tt GROUP-} with the character*6
+  name of the companion particle responsible for scattering transitions.}
+\OptDirlEnr
+  {STEP\blank{8}}{$I_{\rm step}$}{$I_{\rm step}\ge 1$} 
+  {List of GPT or kinetics perturbation sub-directories. Each component of
+  this list contains a single 
+  list of energy-group sub-directories following the \moc{GROUP} specification.
+  This \moc{GROUP} list contains variations or derivatives of the reference cross-section set.}
+\OptDirEnr
+  {ADF\blank{9}}{$I_{\rm df} \ge 1$}
+  {ADF--related information as presented in \Sect{macroADF}.}
+\OptDirEnr
+  {GFF\blank{9}}{$I_{\rm gff} \ge 1$}
+  {Group form factor information as presented in \Sect{macroGFF}.}
+\OptDirEnr
+  {SPH\blank{9}}{$I_{\rm sph} = 1$}
+  {SPH--related input data as presented in \Sect{macroSPH}.}
+\end{DescriptionEnregistrement}
+
+\subsection{The group sub-directory \moc{GROUP} in \dir{macrolib}}\label{sect:macrolibdirgroup}
+
+Each component of the list \moc{GROUP} is a directory containing cross-section information
+corresponding to a single energy group. Inside each groupwise directory, the following
+records associated with vectorial cross sections will be found:
+
+\begin{DescriptionEnregistrement}{Vectorial cross section records and directories in
+\moc{GROUP}}{7.0cm}
+\label{tabl:tabnonlegendre}
+\RealEnr
+  {NTOT0\blank{7}}{$N_{m}$}{cm$^{-1}$}
+  {The $\phi$--weighted total cross section $\Sigma_{0,m}^{g}$}
+\OptRealEnr
+  {NTOT1\blank{7}}{$N_{m}$}{$\mathcal{M}=2; \ I_{w}\ge 1$}{cm$^{-1}$}
+  {The ${\cal J}$--weighted total cross section $\Sigma_{1,m}^{g}$}
+\OptRealEnr
+  {TRANC\blank{7}}{$N_{m}$}{$I_{tr}=2$}{cm$^{-1}$} 
+  {The transport correction $\Sigma_{tc,m}^{g}$}
+\RealEnr
+  {FIXE\blank{8}}{$N_{m}$}{cm$^{-3}$s$^{-1}$}
+  {Fixed sources $S_{m}^{g}$.}
+\OptRealEnr
+  {NUSIGF\blank{6}}{$N_{m},N_{f}$}{$N_{f}\ge 1$}{cm$^{-1}$} 
+  {The product of $\Sigma_{f,m}^{g}$, the fission cross section with
+   $\nu_{m}^{{\rm ss},g}$, the steady-state number of neutron produced per fission,
+   $\nu\Sigma_{f,m}^{g}$}
+\OptRealEnr
+  {CHI\blank{9}}{$N_{m},N_{f}$}{$N_{f}\ge 1$}{}
+  {The steady-state energy spectrum of the neutron emitted by fission $\chi_{m}^{{\rm ss},g}$}
+\OptRealVar
+  {\{nusid\}}{$N_{m},N_{f}$}{$N_{d}\ge 1$}{cm$^{-1}$} 
+  {The product of $\Sigma_{f,m}^{g}$, the fission cross section with
+   $\nu_{m,\ell}^{{\rm D},g}$, the averaged number of fission--emitted delayed
+   neutron produced in the precursor group $\ell$,
+   $\nu\Sigma_{f,m,\ell}^{{\rm D},g}$}
+\OptRealVar
+  {\{chid\}}{$N_{m},N_{f}$}{$N_{d}\ge 1$}{}
+  {The energy spectrum of the fission--emitted delayed neutron
+  in the precursor group $\ell$, $\chi_{m,\ell}^{{\rm D},g}$}
+\OptRealEnr
+  {FLUX-INTG\blank{3}}{$N_{m}$}{$\mathcal{M}\ge 2$}{cm s$^{-1}$}  
+  {The volume-integrated flux $\Phi_{m}^{g}$}
+\OptRealEnr
+  {FLUX-INTG-P1}{$N_{m}$}{$\mathcal{M}\ge 2; \ I_{w}\ge 1$}{cm s$^{-1}$}  
+  {The volume-integrated fundamental current ${\cal J}_{m}^{g}$}
+\OptRealEnr
+  {NWAT0\blank{7}}{$N_{m}$}{$I_{\rm pro}=1$}{1}
+  {The multigroup neutron adjoint flux spectrum $\phi_{m}^{*g}$} 
+\OptRealEnr
+  {NWAT1\blank{7}}{$N_{m}$}{$I_{w}\ge 1; \ I_{\rm pro}=1$}{1}
+  {The multigroup fundamental adjoint current spectrum ${\cal J}_{m}^{*g}$} 
+\RealEnr
+  {OVERV\blank{7}}{$N_{m}$}{cm$^{-1}$s}  
+  {The average of the inverse neutron velocity \hbox{$<1/v>_{m}^g$}}
+\OptRealEnr
+  {DIFF\blank{8}}{$N_{m}$}{$\mathcal{M}=2; \ I_{l}=1$}{cm}  
+  {The isotropic diffusion coefficient
+   $D_{m}^{g}$}
+\OptRealEnr
+  {DIFFX\blank{7}}{$N_{m}$}{$\mathcal{M}=2; \ I_{l}=2$}{cm}  
+  {The $x$-directed diffusion coefficient
+   $D_{x,m}^{g}$}
+\OptRealEnr
+  {DIFFY\blank{7}}{$N_{m}$}{$\mathcal{M}=2; \ I_{l}=2$}{cm}  
+  {The $y$-directed diffusion coefficient
+   $D_{y,m}^{g}$}
+\OptRealEnr
+  {DIFFZ\blank{7}}{$N_{m}$}{$\mathcal{M}=2; \ I_{l}=2$}{cm}  
+  {The $z$-directed diffusion coefficient
+   $D_{z,m}^{g}$}
+\OptRealEnr
+  {NSPH\blank{8}}{$N_{m}$}{$\mathcal{M}=2$}{1}  
+  {SPH equivalence factors $\mu_{m}^{g}$. By default, these factors are set equal to 1.0.
+  Otherwise, all the cross sections, diffusion coefficients and integrated fluxes stored on the {\sc
+  macrolib} are SPH--corrected.}
+\OptRealEnr
+  {H-FACTOR\blank{4}}{$N_{m}$}{$\mathcal{M}=2$}{J cm$^{-1}$}  
+  {Energy production coefficients $H_{m}^{g}$ (product of each macroscopic cross section
+  times the energy emitted by this reaction).}
+\OptRealEnr
+  {ESTOPW\blank{6}}{$N_{m},2$}{*}{MeV cm$^{-1}$}  
+  {Initial and final stopping power. Information provided if {\tt PARTICLE}$=${\tt B}, {\tt C} or {\tt P}.}
+\OptRealEnr
+  {EMOMTR\blank{6}}{$N_{m}$}{*}{cm$^{-1}$}  
+  {Restricted momentum transfer cross section. Information provided if {\tt PARTICLE}$=${\tt B}, {\tt C} or {\tt P}.}
+\OptRealEnr
+  {C-FACTOR\blank{4}}{$N_{m}$}{*}{electron cm$^{-1}$}  
+  {Charge deposition cross section. Information provided if {\tt PARTICLE}$=${\tt B}, {\tt C} or {\tt P}.}
+\OptRealVar
+  {\listedir{xsname}}{$N_{m}$}{$N_{e}\ge 1$}{cm$^{-1}$}
+  {Set of cross section records specified by $\mathsf{ADDXS}_{k}$}
+\end{DescriptionEnregistrement}
+
+The set of delayed neutron records {\sl \{nusid\}} and {\sl \{chid\}} will be
+composed, using the following FORTRAN instructions, as $\mathsf{NUSID}$ and $\mathsf{CHID}$,
+respectively
+  \begin{displaymath}
+    \mathtt{WRITE(}\mathsf{NUSID}\mathtt{,'(A6,I2.2)')} \ \mathtt{'NUSIGF'},ell
+  \end{displaymath}
+  \begin{displaymath}
+    \mathtt{WRITE(}\mathsf{CHID}\mathtt{,'(A3,I2.2)')} \ \mathtt{'CHI'},ell
+  \end{displaymath}
+for $1\leq ell \leq N_d$. For example, in the case where two group cross sections are considered
+($N_d=2$), the following records would be generated:
+
+\begin{DescriptionEnregistrement}{Example of delayed--neutron records in
+\moc{GROUP}}{8.0cm}
+\OptRealEnr
+  {NUSIGF01\blank{4}}{$N_{m},N_{f}$}{$N_{d}\ge 1$}{cm$^{-1}$} 
+  {The product of $\Sigma_{f,m}^{g}$, the fission cross section with
+   $\nu_{m,1}^{{\rm D},g}$, the averaged number of fission--emitted delayed
+   neutron produced in the precursor group $\ell=1$,
+   $\nu\Sigma_{f,m,1}^{{\rm D},g}$}
+\OptRealEnr
+  {CHI01\blank{7}}{$N_{m},N_{f}$}{$N_{d}\ge 1$}{}
+  {The energy spectrum of the fission--emitted delayed neutron
+  in the precursor group $\ell=1$, $\chi_{m,1}^{{\rm D},g}$}
+\OptRealEnr
+  {NUSIGF02\blank{4}}{$N_{m},N_{f}$}{$N_{d}\ge 2$}{cm$^{-1}$~~} 
+  {The product of $\Sigma_{f,m}^{g}$, the fission cross section with
+   $\nu_{m,2}^{{\rm D},g}$, the averaged number of fission--emitted delayed
+   neutron produced in the precursor group $\ell=2$,
+   $\nu\Sigma_{f,m,2}^{{\rm D},g}$}
+\OptRealEnr
+  {CHI02\blank{7}}{$N_{m},N_{f}$}{$N_{d}\ge 2$}{}
+  {The energy spectrum of the fission--emitted delayed neutron
+  in the precursor group $\ell=2$, $\chi_{m,2}^{{\rm D},g}$}
+\end{DescriptionEnregistrement}
+
+\vskip 0.2cm
+
+In the case where $N_{e}=3$ and
+\begin{displaymath}
+\mathsf{ADDXS}_{k} = \left\{
+\begin{array}{lll}
+\mathtt{NG} & \textrm{for} & k=1\\
+\mathtt{N2N}& \textrm{for} & k=2\\
+\mathtt{NFTOT}& \textrm{for} & k=3
+\end{array} \right.
+\end{displaymath}
+the following reactions will be available in the data structure described
+in Table~\ref{tabl:tabnonlegendre}:
+
+\begin{DescriptionEnregistrement}{Additional cross section records}{7.0cm}
+\RealEnr
+  {NG\blank{10}}{$N_{m}$}{cm$^{-1}$}
+  {The neutron capture cross section $\Sigma_{{\rm c},m}^{g}$}
+\RealEnr
+  {N2N\blank{9}}{$N_{m}$}{cm$^{-1}$}
+  {The cross section
+   $\Sigma_{{\rm (n,2n)},m}^{g}$ for the reaction 
+   $^{A}_{Z}X+n \to ^{A-1}_{Z}X+2n$}
+\RealEnr
+  {NFTOT\blank{7}}{$N_{m}$}{cm$^{-1}$}
+  {The neutron fission cross section $\Sigma_{{\rm f},m}^{g}$}
+\end{DescriptionEnregistrement}
+
+The information associated with the multigroup scattering matrix, which gives the probability for a
+neutron in group $h$ to appear in group $g$ after a collision with an isotope in mixture $m$
+is represented by the form:
+  \begin{displaymath}
+    \Sigma_{s,m}^{h\to g}(\vec{\Omega}\to\vec{\Omega}')
+      =\sum_{l=0}^{L}{{2l+1}\over{4\pi}} P_{l}(\vec{\Omega}\cdot\vec{\Omega}')
+    \Sigma_{l,m}^{h\to g}
+      =\sum_{l=0}^{L}\sum_{m=-l}^{l}
+    Y_{l}^{m}(\vec{\Omega})Y_{l}^{m}(\vec{\Omega}')\Sigma_{l,m}^{h\to g}
+  \end{displaymath}
+using a series expansion to order $L$ in spherical harmonic. Assuming that the 
+spherical harmonic are orthonormalized, 
+we can define $\Sigma_{l,m}^{h\to g}$ in terms of $\Sigma_{s,m}^{h\to
+g}(\vec{\Omega}\to\vec{\Omega}')$ using the following integral:
+  \begin{displaymath}
+    \Sigma_{l,m}^{h\to g}
+      =\int_{4\pi}d^{2}\Omega \ \Sigma_{s,m}^{h\to g}(\vec{\Omega}\to\vec{\Omega}')
+     P_{l}(\vec{\Omega}\cdot\vec{\Omega}')
+  \end{displaymath}
+Note that this definition of $\Sigma_{l,m}^{h\to g}$ is not unique and some authors
+include the factor $2l+1$ directly in the different angular moments of the 
+scattering cross section.
+
+\vskip 0.2cm
+
+Here instead of storing the $G\times M$
+matrix $\Sigma_{l,m}^{h\to g}$ associated with each final energy group $g$, a vector which
+contains a compress form of the scattering  matrix will be considered. 
+We will first define three integer vectors $n_{l,m}^{g}$,
+$h_{l,m}^{g}$ and $p_{l,m}^{g}$ for order $l$ in the scattering cross section,
+final energy group $g$ and mixture $m$. They will contain respectively the number of
+initial energy groups $h$ for which the scattering cross section to group $g$ does not vanish, the
+maximum energy group index for which scattering to the final group $g$ does not vanishes and the
+position in the compressed scattering vector where the data associated with mixture $m$ for each
+energy group $g$ can be found. Here $p_{l,m}^{g}$ is directly related to $n_{l,m}^{g}$ by
+  \begin{displaymath}
+    p_{l,m}^{g}=1+\sum_{k=1}^{m-1} n_{l,k}^{g}
+  \end{displaymath}
+
+\begin{figure}[htbp] 
+\begin{center} 
+\epsfxsize=8cm
+\centerline{ \epsffile{scat.eps}}
+\parbox{14cm}{\caption{Numbering of scattering elements in {\tt 'SCAT'} matrices.}\label{fig:scat}} 
+\end{center} 
+\end{figure}
+
+Now consider the following 4 groups isotropic scattering cross
+section matrix associated with mixture 1 and 2 ($N_{m}=2$) respectively:
+
+\begin{center}
+\begin{tabular}{c||cccc|cccc}
+                        &\multicolumn{4}{l|}{Mixture $m=1$}     &
+                         \multicolumn{4}{l}{Mixture $m=2$}      \\
+$\sigma_{0,m}^{h\to g}$ &$g=1$   & $g=2$   & $g=3$   & $g=4$    &    
+                         $g=1$   & $g=2$   & $g=3$   & $g=4$    \\ \hline\hline
+$h=1$                  & $a_{1}$ & $a_{2}$ & 0       & 0        &
+                         $b_{1}$ & $b_{2}$ & 0       & 0        \\
+$h=2$                  & 0       & $a_{3}$ & $a_{4}$ & $a_{5}$  &
+                         $b_{3}$ & $b_{4}$ & $b_{5}$ & 0        \\
+$h=3$                  & 0       & $a_{6}$ & $a_{7}$ & 0        &
+                         0       & $b_{6}$ & $b_{7}$ & 0        \\
+$h=4$                  & 0       & $a_{8}$ & 0       & $a_{9}$  &
+                         0       & 0       & $b_{8}$ & $b_{9}$  \\ \hline\hline
+$h_{0,m}^{g}$          & 1       & 4       & 3       & 4        &
+                         2       & 3       & 4       & 4        \\
+$n_{0,m}^{g}$          & 1       & 4       & 2       & 3        &
+                         2       & 3       & 3       & 1        \\
+$p_{0,m}^{g}$          & 1       & 1       & 1       & 1        &
+                         2       & 5       & 3       & 4        \\
+\end{tabular}
+\end{center}
+
+\noindent
+The compressed scattering matrix will then take the following form for each final group $g$:
+
+\begin{eqnarray*}
+\Sigma_{0,k,c}^{1}&=&\left(a_{1},b_{3},b_{1}\right) \\
+\Sigma_{0,k,c}^{2}&=&\left(a_{8},a_{6},a_{3},a_{2},b_{6},b_{4},b_{2}\right) \\
+\Sigma_{0,k,c}^{3}&=&\left(a_{7},a_{4},b_{8},b_{7},b_{5}\right) \\
+\Sigma_{0,k,c}^{4}&=&\left(a_{9},0,a_{5},b_{9}\right) 
+\end{eqnarray*}
+Finally, we will also save the total scattering cross section vector of order
+$l$ which is defined as 
+  \begin{displaymath}
+    \Sigma_{l,m,s}^{g}=\sum_{h=1}^{G} \Sigma_{l,m}^{g\to h}
+  \end{displaymath}
+and the diagonal element of the scattering matrix:
+  \begin{displaymath}
+    \Sigma_{l,m,w}^{g}=\Sigma_{l,m}^{g\to g}
+  \end{displaymath}
+In the case where only the order $l=0$ and $l=1$ moment of scattering cross section are non
+vanishing (isotropic and linearly anisotropic scattering) the following records can be found on the
+group directory.
+
+\begin{DescriptionEnregistrement}{Scattering cross section records in \moc{GROUP}}{7.0cm}
+\label{tabl:tablegendre}
+\RealEnr
+ {SIGS00\blank{6}}{$N_{m}$}{cm$^{-1}$}
+ {The isotropic component ($l=0$) of the total scattering cross
+  section
+  $\Sigma_{0,m,s}^{g}$}
+\RealEnr
+ {SIGW00\blank{6}}{$N_{m}$}{cm$^{-1}$}
+ {The isotropic component ($l=0$) of the within group scattering cross
+  section
+  $\Sigma_{0,m,w}^{g}$}
+\IntEnr
+  {IJJS00\blank{6}}{$N_{m}$}
+  {Highest energy group number for which 
+   the isotropic component of the scattering cross section to group $g$ does not
+   vanish, $h_{0,m}^{g}$}
+\IntEnr
+  {NJJS00\blank{6}}{$N_{m}$}
+  {Number of energy groups for which 
+   the isotropic component of the scattering cross section to group $g$ does not
+   vanish, $n_{0,m}^{g}$}
+\IntEnr
+  {IPOS00\blank{6}}{$N_{m}$}
+  {Location in the isotropic compressed scattering matrix where information associated with mixture 
+   $m$ begins $p_{0,m}^{g}$}
+\RealEnr
+  {SCAT00\blank{6}}{$\sum_{m=1}^{N_{m}} n_{0,m}^{g}$}{cm$^{-1}$}
+  {Compressed isotropic component of the scattering matrix
+   $\Sigma_{0,k,c}^{g}$}
+\OptRealEnr
+ {SIGS01\blank{6}}{$N_{m}$}{$L\ge 1$}{cm$^{-1}$}
+ {The linearly anisotropic component  of the total scattering cross
+  section
+  $\Sigma_{1,m,s}^{g}$}
+\OptRealEnr
+ {SIGW01\blank{6}}{$N_{m}$}{$L\ge 1$}{cm$^{-1}$}
+ {The linearly anisotropic component of the within group scattering cross
+  section
+  $\Sigma_{1,m,w}^{g}$}
+\OptIntEnr
+  {IJJS01\blank{6}}{$N_{m}$}{$L\ge 1$}
+  {Highest energy group number for which 
+   the linearly anisotropic component of the scattering cross section to group $g$ does not
+   vanish, $h_{1,m}^{g}$}
+\OptIntEnr
+  {NJJS01\blank{6}}{$N_{m}$}{$L\ge 1$}
+  {Number of energy groups for which 
+   the linearly anisotropic component of the scattering cross section to group $g$ does not
+   vanish, $n_{1,m}^{g}$}
+\OptIntEnr
+  {IPOS01\blank{6}}{$N_{m}$}{$L\ge 1$}
+  {Location in the linearly anisotropic compressed scattering matrix where information
+   associated with mixture $m$ begins $p_{1,m}^{g}$}
+\OptRealEnr
+  {SCAT01\blank{6}}{$\sum_{m=1}^{N_{m}} n_{1,m}^{g}$}{$L\ge 1$}{cm$^{-1}$}
+  {Compressed linearly anisotropic component of the scattering matrix
+   $\Sigma_{1,k,c}^{g}$}
+\end{DescriptionEnregistrement}
+
+\subsection{The \moc{/ADF/} sub-directory in \dir{macrolib}}\label{sect:macroADF}
+
+Sub-directory containing ADF-type boundary flux edition information. This information can be used to compute
+discontinuity factors or to perform Selengut-type normalization with the {\sl superhomog\'en\'eisation} (SPH) method.
+
+\begin{DescriptionEnregistrement}{Records in the \moc{/ADF/} sub-directory}{7.5cm}
+\OptIntEnr
+  {NTYPE\blank{7}}{$1$}{$I_{\rm df} = 2$}
+  {Number of ADF-type boundary flux edits.}
+\OptCharEnr
+  {HADF\blank{8}}{({\tt NTYPE})$*8$}{$I_{\rm df} = 2$}
+  {Name of each ADF-type boundary flux edit. Any name can be used, but some
+  names are standard. Standard names are: $=$ \moc{FD\_C}:
+  corner flux edition; $=$ \moc{FD\_B}: surface (assembly gap) flux edition; $=$ \moc{FD\_H}:
+  row flux edition (these are the first row of surrounding cells in the assembly).}
+\OptRealEnr
+  {ALBS00\blank{6}}{$G,2$}{$I_{\rm df} = 1$}{}
+  {Multigroup boundary currents $J^{g}_{\rm out}$ and $J^{g}_{\rm in}$. These values correspond to surfaces where
+  a \moc{VOID} or \moc{ALBE} boundary condition is set in DRAGON.}
+\OptRealVar
+  {\listedir{type}}{$G$}{$I_{\rm df} = 2$}{}
+  {Averaged fluxes in boundary regions. Name {\sl type} is a component of {\tt HADF} array.}
+\end{DescriptionEnregistrement}
+
+\subsection{The \moc{/GFF/} sub-directory in \dir{macrolib}}\label{sect:macroGFF}
+
+Sub-directory containing group form factor information. This information can be used to perform
+{\sl fine power reconstruction} over a fuel assembly.
+
+\begin{DescriptionEnregistrement}{Records in the \moc{/GFF/} sub-directory}{7.5cm}
+\DirEnr
+  {GFF-GEOM\blank{4}}
+  {Macro--geometry directory. This geometry corresponds to an unfolded fuel assembly and is compatible
+  for a discretization with TRIVAC. This directory follows the specification presented in \Sect{geometrydirmain}.}
+\RealEnr
+  {VOLUME\blank{6}}{$N_{m},I_{\rm gff}$}{cm$^{3}$}
+  {Volumes of homogenized cells $V_{m}$}
+\RealEnr
+  {NWT0\blank{8}}{$N_{m},I_{\rm gff},G$}{s$^{-1}$cm$^{-2}$}
+  {The multigroup neutron flux spectrum $\phi_{w}^{g}$} 
+\RealEnr
+  {H-FACTOR\blank{4}}{$N_{m},I_{\rm gff},G$}{J cm$^{-1}$}  
+  {Energy production coefficients $H_{m}^{g}$ (product of each macroscopic cross section
+  times the energy emitted by this reaction).}
+\RealEnr
+  {NFTOT\blank{7}}{$N_{m},I_{\rm gff},G$}{cm$^{-1}$}
+  {The neutron fission cross section $\Sigma_{{\rm f},m}^{g}$}
+\IntEnr
+  {FINF\_NUMBER\blank{1}}{$N_{\rm ifx}$}
+  {Array containing the $N_{\rm ifx}$ $ifx$ indices used by the user every time the multicompo were ``enriched"
+  with different options.}
+\RealEnr
+  {\listedir{FINF}}{$N_{m},I_{\rm gff},G$}{s$^{-1}$cm$^{-2}$} 
+  {The diffusion multigroup neutron flux spectrum in an infinite domain $\psi_{m,p}^{d,\infty}$. See
+  \moc{NAP:} module description in IGE344 user guide for details.}
+\end{DescriptionEnregistrement}
+
+The set of diffusion multigroup neutron flux spectrum records \listedir{FINF} will be
+composed, using the following FORTRAN instructions as $\mathsf{HVECT}$,
+  \begin{displaymath}
+    \mathtt{WRITE(}\mathsf{HVECT}\mathtt{,'(5HFINF\_,I3.3)')} \ \mathtt{'ifx'}
+  \end{displaymath}
+where {\tt ifx} is a value chosen by the user (default value is 0). A different value can be chosen every time the multicompo
+are ``enriched" with different options (homogeneous/heterogeneous, tracking options, etc.).
+
+\subsection{The \moc{/SPH/} sub-directory in \dir{macrolib}}\label{sect:macroSPH}
+
+The first level of the macrolib directory may contains a {\sl superhomog\'en\'eisation} (SPH) sub-directory \moc{/SPH/}
+containing input data:
+
+\begin{DescriptionEnregistrement}{Records in the \moc{/SPH/} sub-directory}{7.5cm}
+\IntEnr
+  {STATE-VECTOR}{$40$}
+  {Vector describing the various parameters associated with this data structure $\mathcal{S}^{\rm sph}_{i}$.}
+\OptCharEnr
+  {SPH\$TRK\blank{5}}{$*12$}{$\mathcal{S}^{\rm sph}_{1}\ge 2$}
+  {Name of the flux solution door.}
+\OptRealEnr
+  {SPH-EPSILON\blank{1}}{$1$}{$\mathcal{S}^{\rm sph}_{1}\ge 2$}{1}
+  {Convergence criterion for stopping the SPH iterations.}
+\end{DescriptionEnregistrement}
+
+The dimensioning parameters for this data structure, which are stored in the state vector
+$\mathcal{S}^{\rm sph}$, represent values related to the last editing step:
+
+\begin{itemize}
+
+\item Type of SPH equivalence factors: 
+      $I_{\rm type}=\mathcal{S}^{\rm sph}_{1}$
+\begin{displaymath}
+I_{\rm type} = \left\{
+\begin{array}{ll}
+0 & \textrm{no SPH correction;} \\
+1 & \textrm{the SPH factors are read from LCM;} \\
+2 & \textrm{homogeneous macro-calculation (non-iterative procedure or H\'ebert-Benoist} \\
+   & \textrm{SPH-5 procedure);} \\
+3 & \textrm{any type of $P_{ij}$ macro-calculation;} \\
+4 & \textrm{any type of diffusion, $S_n$, $P_n$ or $SP_n$ macro-calculation.}
+\end{array} \right.
+\end{displaymath}
+    
+\item Type of SPH equivalence normalization $I_{\rm norm}=\mathcal{S}^{\rm sph}_{2}$
+\begin{displaymath}
+I_{\rm norm} = \left\{
+\begin{array}{ll}
+<0 & \textrm{asymptotic normalization with respect to homoheneous mixture} -I_{\rm norm}; \\
+1 & \textrm{average flux normalization;} \\
+2 & \textrm{Selengut normalization using {\tt ALBS00} information;} \\
+3 & \textrm{Selengut normalization using {\tt FD\_B} boundary fluxes;} \\
+4 & \textrm{Generalized Selengut normalization (EDF-type);} \\
+5 & \textrm{Selengut normalization with surface leakage.}
+\end{array} \right.
+\end{displaymath}
+
+\item The maximum number of SPH iterations $\mathcal{S}^{\rm sph}_{3}$ 
+
+\item The acceptable number of SPH iterations with an increase in convergence error before aborting $\mathcal{S}^{\rm sph}_{4}$
+
+\item Flag for forcing the production of a macrolib or microlib at LHS $I_{\rm lhs} = \mathcal{S}^{\rm sph}_{5}$
+\begin{displaymath}
+I_{\rm lhs} = \left\{
+\begin{array}{ll}
+0 & \textrm{produce an object of the type of the RHS;} \\
+1 & \textrm{produce an edition object;} \\
+2 & \textrm{produce a microlib;} \\
+3 & \textrm{produce a macrolib.}
+\end{array} \right.
+\end{displaymath}
+
+\item Type of SPH factors $I_{\rm imc} = \mathcal{S}^{\rm sph}_{6}$
+\begin{displaymath}
+I_{\rm imc} = \left\{
+\begin{array}{ll}
+1 & \textrm{factors compatible with diffusion theory, $P_n$ and $SP_n$ equations} \\
+2 & \textrm{factors compatible with other types of transport-theory macro-calculations} \\
+3 & \textrm{factors compatible with $P_{ij}$ macro-calculations and Bell acceleration.} \\
+\end{array} \right.
+\end{displaymath}
+
+\item The first group index where the equivalence process is applied $\mathcal{S}^{\rm sph}_{7}$ 
+
+\item The maximum group index where the equivalence process is applied $\mathcal{S}^{\rm sph}_{8}$ 
+
+\end{itemize}
+
+\subsection{Delayed neutron information}
+
+We will present space-time kinetics equations in the context of the diffusion
+approximation (i.e. using the Fick law) and equations used in a lattice code
+to produce condensed and homogenized information. These equations will be useful to understand the
+information written in the {\sc macrolib} specification. Similar expressions can
+be obtained in transport theory. Note that delayed neutron information
+$\beta_\ell$ and $\Lambda$ can also be computed at the scale of the complete reactor
+provided that bilinear direct--adjoint condensation and homogenization relations
+are used.
+
+\vskip 0.2cm
+
+The continuous-energy space-time diffusion equation is written:
+
+\begin{eqnarray}
+\nonumber {\partial\over \partial t}\left[ {1 \over v(E)} \ \phi(\vec r,E,t)\right] &=&
+\sum_j \chi_j^{\rm pr}(E)\int_0^\infty dE' \ \nu_j^{\rm pr}(\vec r,E',t)\Sigma_{{\rm f},j}(\vec r,E',t)
+\phi(\vec r,E',t)\\
+\nonumber &+&\sum_j\sum_\ell\chi_{\ell,j}^{\rm D}(E)\lambda_\ell c_{\ell,j}(\vec r,t) + \nabla \cdot D(\vec r,E,t) \nabla\phi(\vec r,E,t)\\
+&-& \Sigma(\vec r,E,t) \phi(\vec r,E,t) + \int_0^\infty dE' \ \Sigma_{\rm s0}(\vec r,E \leftarrow E',t)
+\phi(\vec r,E',t)
+\label{eq:eq1}
+\end{eqnarray}
+
+\noindent together with the set of $N_d$ precursor equations:
+
+\begin{equation}
+{\partial c_{\ell,j}(\vec r,t) \over \partial t}=\int_0^\infty dE \ \nu_{\ell,j}^{\rm D}(\vec r,E,t)
+\Sigma_{{\rm f},j}(\vec r,E,t) \phi(\vec r,E,t)-\lambda_\ell c_{\ell,j}(\vec r,t) \ \ ; \ \ \
+\ell=1,N_d
+\label{eq:eq2}
+\end{equation}
+
+\noindent where
+\begin{description}
+\item [$\phi(\vec r,E,t)$=] neutron flux
+\item [$\chi_j^{\rm pr}(E)$=] prompt neutron spectrum for a fission of isotope $j$
+\item [$\nu_j^{\rm pr}(\vec r,E,t)$=] number of prompt neutrons for a fission of isotope $j$
+\item [$\Sigma_{{\rm f},j}(\vec r,E,t)$=] macroscopic fission cross section for isotope $j$
+\item [$\chi_{\ell,j}^{\rm D}(E)$=] neutron spectra for delayed neutrons emitted by precursor group $\ell$
+due to a fission of isotope $j$
+\item [$\lambda_\ell$=] radioactive decay constant for precursor group $\ell$. This
+constant is assumed to be independent of the fissionable isotope $j$.
+\item [$c_{\ell,j}(\vec r,t)$=] concentration of the $\ell$--th precursor for a fission of isotope $j$
+\item [$D(\vec r,E,t)$=] diffusion coefficient
+\item [$\Sigma(\vec r,E,t)$=] macroscopic total cross section
+\item [$\Sigma_{\rm s0}(\vec r,E \leftarrow E',t)$=] macroscopic scattering cross section
+\item [$\nu_{\ell,j}^{\rm D}(\vec r,E,t)$=] number of delayed neutrons in precursor group $\ell$ for a fission of isotope $j$.
+\end{description}
+
+\vskip 0.2cm
+
+The neutron spectrum are normalized so that
+\begin{equation}
+\int_0^\infty dE \ \chi_j^{\rm ss}(E)=1
+\end{equation}
+
+\noindent and
+
+\begin{equation}
+\int_0^\infty dE \ \chi_\ell^{\rm D}(E)=1 \ \ ; \ \ \ell=1,N_d \ \ \ .
+\end{equation}
+
+\vskip 0.2cm
+
+After condensation over energy, Eqs.~(\ref{eq:eq1}) and~(\ref{eq:eq2}) are
+written
+
+\begin{eqnarray}
+\nonumber <1/v>^g{\partial\over \partial t}\phi^g(\vec r,t) &=& \sum_j
+\chi_j^{{\rm pr},g}
+\left[1-\sum_\ell\beta_{\ell,j}\right]\sum_h \nu\Sigma_{{\rm f},j}^h(\vec r,t) \phi^h(\vec r,t)\\
+\nonumber &+&\sum_j \sum_\ell\chi_{\ell,j}^{{\rm D},g}\lambda_\ell c_{\ell,j}(\vec r,t) + \nabla \cdot D^g(\vec r,t)
+\nabla\phi^g(\vec r,t)\\
+&-& \Sigma^g(\vec r,t) \phi^g(\vec r,t) +
+\sum_h \Sigma_{\rm s0}^{g \leftarrow h}(\vec r,t)
+\phi^h(\vec r,t)
+\label{eq:eq7}
+\end{eqnarray}
+
+\noindent together with the set of $N_d$ precursor equations:
+
+\begin{equation}
+{\partial c_{\ell,j}(\vec r,t) \over \partial t}=\beta_{\ell,j} \sum_h
+\nu\Sigma_{{\rm f},j}^h(\vec r,t) \phi^h(\vec r,t)-\lambda_\ell c_{\ell,j}(\vec r,t) \ \ ; \ \ \
+\ell=1,N_d
+\label{eq:eq8}
+\end{equation}
+
+\noindent where
+\begin{description}
+\item [$\nu\Sigma_{{\rm f},j}^h(\vec r,t)$=] product of the number $\nu_j^{\rm ss}(\vec r,E)$ of secondary neutrons
+(both prompt and delayed) for a fission of isotope $j$ times the macroscopic fission cross
+section for a fission of isotope $j$.
+\item [$\beta_{\ell,j}$=] delayed neutron fraction in precursor group $\ell$.
+\end{description}
+
+\vskip 0.2cm
+
+The following condensation formulas have been used:
+
+\begin{equation}
+\nu_j^{\rm ss}(\vec r,E)=\nu_j^{\rm pr}(\vec r,E)+\sum_\ell \nu_{\ell,j}^{\rm D}(\vec r,E)
+\end{equation}
+
+\begin{equation}
+\beta_{\ell,j}={\int\limits_0^\infty dE \ \nu_{\ell,j}^{\rm D}(\vec r,E)\Sigma_{{\rm f},j}(\vec r,E)
+\phi(\vec r,E) \over \int\limits_0^\infty dE \ \nu_j^{\rm ss}(\vec r,E)\Sigma_{{\rm f},j}(\vec r,E)
+\phi(\vec r,E)} = {\sum\limits_g \nu\Sigma_{{\rm f},\ell,j}^{{\rm D},g}(\vec r) \phi^g(\vec r) \over
+\sum\limits_g \nu\Sigma_{{\rm f},j}^g(\vec r) \phi^g(\vec r)}
+\end{equation}
+
+\begin{equation}
+\left[1-\sum_\ell\beta_{\ell,j}\right]={\int\limits_0^\infty dE \ \nu_j^{\rm pr}(\vec r,E)\Sigma_{{\rm f},j}(\vec r,E)
+\phi(\vec r,E) \over \int\limits_0^\infty dE \ \nu_j^{\rm ss}(\vec r,E)\Sigma_{{\rm f},j}(\vec r,E)
+\phi(\vec r,E)} = {\sum\limits_g \nu\Sigma_{{\rm f},j}^{{\rm pr},g}(\vec r)
+\phi^g(\vec r) \over \sum\limits_g \nu\Sigma_{{\rm f},j}^g(\vec r) \phi^g(\vec r)}
+\end{equation}
+
+\begin{equation}
+\phi^g(\vec r)=\int_{E_g}^{E_{g-1}} dE \ \phi(\vec r,E) 
+\end{equation}
+
+\begin{equation}
+\chi_j^{{\rm pr},g}=\int_{E_g}^{E_{g-1}} dE \ \chi_j^{\rm pr}(E) 
+\end{equation}
+
+\begin{equation}
+\chi_{\ell,j}^{{\rm D},g}=\int_{E_g}^{E_{g-1}} dE \ \chi_{\ell,j}^{\rm D}(E) \ \ ; \ \ \
+\ell=1,N_d
+\end{equation}
+
+\begin{equation}
+<1/v>^g={1 \over \phi^g(\vec r)} \int_{E_g}^{E_{g-1}} dE \ {\displaystyle 1 \over \displaystyle v(E)} \ \phi(\vec r,E)
+\end{equation}
+
+\begin{equation}
+\Sigma^g(\vec r)={1 \over \phi^g(\vec r)} \int_{E_g}^{E_{g-1}} dE \ \Sigma(\vec r,E) \ \phi(\vec r,E)
+\end{equation}
+
+\begin{equation}
+\Sigma_{\rm s0}^{g \leftarrow h}(\vec r)={1 \over \phi^h(\vec r)} \int_{E_g}^{E_{g-1}} dE \int_{E_h}^{E_{h-1}} dE' \ \Sigma_{\rm s0}(\vec r,E \leftarrow E') \ \phi(\vec r,E')
+\end{equation}
+
+\begin{equation}
+\nu\Sigma_{{\rm f},j}^g(\vec r)={1 \over \phi^g(\vec r)} \int_{E_g}^{E_{g-1}} dE \ \nu_j^{\rm ss}(\vec r,E) \ \Sigma_{{\rm f},j}(\vec r,E) \ \phi(\vec r,E) \ \ \ .
+\end{equation}
+
+\noindent where the variable $t$ has been omitted in order to simplify
+the notation.
+
+\vskip 0.2cm
+
+A steady-state fission spectrum (taking into account both prompt and delayed neutrons), for a fission of isotope $j$, is also required for solving the static neutron diffusion equation:
+
+\begin{equation}
+\chi_j^{\rm ss}(E)=\left[1-\sum_\ell\beta_{\ell,j}\right] \chi_j^{\rm pr}(E)+\sum_\ell \beta_{\ell,j} \ \chi_{\ell,j}^{\rm D}(E) \ \ \ .
+\end{equation}
+
+\vskip 0.2cm
+
+The group-integrated steady-state fission spectrum is therefore given as
+\begin{equation}
+\chi_j^{{\rm ss},g} = \left[1-\sum_\ell\beta_{\ell,j}\right] \chi_j^{{\rm pr},g}+\sum_\ell \beta_{\ell,j} \ \chi_{\ell,j}^{{\rm D},g} \ \ \ .
+\end{equation}
+
+\vskip 0.2cm
+
+The space-time diffusion equation is generally solved by assuming a {\sl unique} averaged fissionable isotope.
+In this case, the variable $N_f$ is set to 1 in the {\sc macrolib} specification
+and the summations over $j$ disapears in Eqs.~(\ref{eq:eq7}) and~(\ref{eq:eq8}):
+
+\begin{eqnarray}
+\nonumber <1/v>^g {\partial\over \partial t}\phi^g(\vec r,t) &=& \chi^{{\rm pr},g}
+\left[1-\sum_\ell\beta_\ell\right]\sum_h \nu\Sigma_{\rm f}^h(\vec r,t) \phi^h(\vec r,t)\\
+\nonumber &+&\sum_\ell\chi_\ell^{{\rm D},g}\lambda_\ell c_\ell(\vec r,t) + \nabla \cdot D^g(\vec r,t)
+\nabla\phi^g(\vec r,t)\\
+&-& \Sigma^g(\vec r,t) \phi^g(\vec r,t) +
+\sum_h \Sigma_{\rm s0}^{g \leftarrow h}(\vec r,t)
+\phi^h(\vec r,t)
+\label{eq:eq9}
+\end{eqnarray}
+
+\noindent together with the set of $n_d$ precursor equations:
+
+\begin{equation}
+{\partial c_\ell(\vec r,t) \over \partial t}=\beta_\ell \sum_g
+\nu\Sigma_{\rm f}^g(\vec r,t) \phi^g(\vec r,t)-\lambda_\ell c_\ell(\vec r,t) \ \ ; \ \ \
+\ell=1,N_d
+\label{eq:eq10}
+\end{equation}
+
+\vskip 0.2cm
+
+Using additional approximations, the new condensation relations are rewritten as
+
+\begin{equation}
+\nu\Sigma_{\rm f}(\vec r,E)=\sum_j \nu\Sigma_{{\rm f},j}(\vec r,E)=\sum_j \nu_j^{\rm ss}(\vec r,E) \ \Sigma_{{\rm f},j}(\vec r,E)
+\end{equation}
+
+\begin{equation}
+\beta_\ell={\sum\limits_j{\beta_{\ell,j}\int\limits_0^\infty dE \ \nu_j^{\rm ss}(\vec r,E) \ \Sigma_{{\rm f},j}(\vec r,E) \
+\phi(\vec r,E)} \over \sum\limits_j{\int\limits_0^\infty dE \ \nu_j^{\rm ss}(\vec r,E) \ \Sigma_{{\rm f},j}(\vec r,E) \
+\phi(\vec r,E)} } = {\sum\limits_j{\beta_{\ell,j}\sum\limits_g \nu\Sigma_{{\rm
+f},j}^g(\vec r) \ \phi^g(\vec r)} \over \sum\limits_j{\sum\limits_g
+\nu\Sigma_{{\rm f},j}^g(\vec r) \ \phi^g(\vec r)} } \ \ \ ,
+\end{equation}
+
+\vskip 0.2cm
+
+\begin{eqnarray}
+\nonumber \chi^{{\rm pr},g}&=&{\sum\limits_j\left[1-\sum\limits_\ell\beta_{\ell,j}\right]{\int\limits_{E_g}^{E_{g-1}}
+dE \ \chi_j^{\rm pr}(E) \int\limits_0^\infty dE' \ \nu_j^{\rm ss}(\vec r,E') \ \Sigma_{{\rm f},j}(\vec r,E')
+\ \phi(\vec r,E')} \over \left[1-\sum\limits_\ell\beta_\ell\right] \sum\limits_j{\int\limits_0^\infty dE
+\ \nu_j^{\rm ss}(\vec r,E) \ \Sigma_{{\rm f},j}(\vec r,E) \ \phi(\vec r,E)}} \\
+ &=& {\sum\limits_j\left[1-\sum\limits_\ell\beta_{\ell,j}\right]{
+\chi_j^{{\rm pr},g} \sum\limits_h \nu\Sigma_{{\rm f},j}^h(\vec r)
+\ \phi^h(\vec r)} \over \left[1-\sum\limits_\ell\beta_\ell\right] \sum\limits_j{
+\sum\limits_h \nu\Sigma_{{\rm f},j}^h(\vec r) \ \phi^h(\vec r)}}
+\end{eqnarray}
+
+\noindent and
+
+\begin{eqnarray}
+\nonumber \chi_\ell^{{\rm D},g}&=&{\sum\limits_j \beta_{\ell,j}{\int\limits_{E_g}^{E_{g-1}} dE \ \chi_{\ell,j}^{\rm D}(E)
+\int\limits_0^\infty dE' \ \nu_j^{\rm ss}(\vec r,E') \ \Sigma_{{\rm f},j}(\vec r,E')
+\ \phi(\vec r,E')} \over \beta_\ell \sum\limits_j{\int\limits_0^\infty dE \ \nu_j^{\rm ss}(\vec r,E)
+\ \Sigma_{{\rm f},j}(\vec r,E) \ \phi(\vec r,E)}} \ \ ; \ \ \ \ell=1,N_d \\
+&=&{\sum\limits_j \beta_{\ell,j} \ {\chi_{\ell,j}^{{\rm D},g}
+\sum\limits_h \nu\Sigma_{{\rm f},j}^h(\vec r)
+\ \phi^h(\vec r)} \over \beta_\ell \sum\limits_j{\sum\limits_h \nu\Sigma_{{\rm f},j}^h(\vec r)
+\ \phi^h(\vec r)}} \ \ ; \ \ \ \ell=1,N_d \ \ \ .
+\end{eqnarray}
+
+\vskip 0.2cm
+
+The above definitions ensure that the group-integrated steady-state fission spectrum is given as
+
+\begin{equation}
+\chi^{{\rm ss},g} = \left[1-\sum_\ell\beta_\ell\right] \chi^{{\rm pr},g}+\sum_\ell \beta_\ell \ \chi_\ell^{{\rm D},g} \ \ \ .
+\end{equation}
+
+\vskip 0.2cm
+
+A mean neutron generation time can also be written as
+
+\begin{equation}
+\Lambda={\int\limits_0^\infty dE \ {\displaystyle 1 \over \displaystyle v(E)} \ \phi(\vec r,E) \over
+\sum\limits_j{\int\limits_0^\infty dE \
+\nu_j^{\rm ss}(\vec r,E)\ \Sigma_{{\rm f},j}(\vec r,E) \ \phi(\vec r,E)}}={\sum\limits_g <1/v>^g \ \phi^g(\vec r) \over
+\sum\limits_j{\sum\limits_g \nu\Sigma_{{\rm f},j}^g(\vec r) \ \phi^g(\vec r)}} \ \ \ .
+\end{equation}
+
+\eject

@@ -1,0 +1,34 @@
+*----
+* Windmill geometry constructed with G2S:
+* UOX or MOX assembly with control rods out
+*----
+SEQ_ASCII FIG.ps :: FILE './UOX_PIN_FIG.ps' ;
+SEQ_ASCII UOX_PIN :: FILE './UOX_PIN.dat' ;
+SEQ_ASCII Lines.m :: FILE './Lines_tiso.m' ;
+LINKED_LIST GEOM TRACK ;
+MODULE GEO: G2S: SALT: TLM: END: ;
+INTEGER an2d := 8 ;
+SEQ_BINARY TF_EXC  ;
+REAL densur := 20.0 ;
+*
+GEOM := GEO: :: CARCEL 2
+    X- ALBE 1.0 X+ ALBE 1.0 Y- ALBE 1.0 Y+ ALBE 1.0
+    RADIUS 0.000 0.25 0.450
+    MIX 3 2 1
+    MESHX -0.625  0.625
+    MESHY -0.725  0.725 ;
+
+UOX_PIN FIG.ps := G2S: GEOM :: DRAWNOD ;
+
+TRACK TF_EXC := SALT: UOX_PIN ::
+  EDIT 2
+  ALLG
+  TISO <<an2d>> <<densur>> REND LONG ;
+
+Lines.m := TLM: TRACK TF_EXC ::
+  EDIT 99
+  NTPO 1
+  DIRECTIONS NoPause DIR 0 ;
+
+ECHO "test g2s_pincell completed" ;
+END: ;

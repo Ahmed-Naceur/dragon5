@@ -1,0 +1,131 @@
+\subsection{The \texttt{PLQ:} module}
+
+The {\tt PLQ:} module is used to solve a general non-linear optimization problem with constraints using the Optex method.\cite{optex1,optex2,optex3,PIP2016}
+The {\tt PLQ:} module performs a single iteration of the Optex method where a linearized optimization problem is solved with a quadratic constraint.
+This quadratic constraint is of the form
+$$
+\sum_{i=1}^{\sl nvar} \omega_i \left( \Delta x_i^{(n)}\right)^2 \le \left( S^{(n)}\right)^2
+$$
+\noindent where $\omega_i$ is a weight defined after keyword \moc{CST-WEIGHT} in module {\tt GRAD:} and $\Delta x_i^{(n)}$ is a displacement for
+$i$--th control variable at iteration $(n)$. The initial value of radius $S^{(1)}$ is defined after keyword \moc{OUT-STEP-LIM}.
+
+\vskip 0.08cm
+
+The gradients of the {\sl system characteristics} can be calculated with module {\tt GRAD:}. The {\tt PLQ:} module is also used to
+define options and parameters for the different method to solve the optimization problem and to reduces the radius $S^{(n)}$ of
+the quadratic constraint.
+
+\vskip 0.08cm
+
+The calling specifications are:
+
+\begin{DataStructure}{Structure \moc{PLQ:}}
+\dusa{OPTIM} \moc{:=} \moc{PLQ:} \dusa{OPTIM} \moc{::} \dstr{plq\_data}
+\end{DataStructure}
+
+\noindent where
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dusa{OPTIM}] \texttt{character*12} name of the \dds{optimize} object ({\tt L\_OPTIMIZE} signature) containing the
+optimization informations. Object \dusa{OPTIM} must appear on both LHS and RHS to be able to update the previous values.
+
+\item[\dstr{plq\_data}] structure containing the data to the module \texttt{PLQ:} (see Sect.~\ref{sect:plq_data}).
+
+\end{ListeDeDescription}
+\vskip 0.2cm
+
+\subsubsection{Data input for module \texttt{PLQ:}}\label{sect:plq_data}
+
+\begin{DataStructure}{Structure \moc{plq\_data}}
+$[$ \moc{EDIT} \dusa{iprint} $]$ \\
+$[~\{$ \moc{MAXIMIZE} $|$ \moc{MINIMIZE} $\}~]$ \\
+$[$ \moc{METHOD} \{ \moc{SIMPLEX} $|$ \moc{LEMKE} $|$ \moc{MAP} $|$ \moc{AUG-LAGRANG} $|$ \moc{PENAL-METH} \} $]$ \\
+$[$ \moc{OUT-STEP-LIM} \dusa{sr} $]$ \\
+$[$ \moc{OUT-STEP-EPS} \dusa{$\epsilon_{ext}$} $]~[$ \moc{INN-STEP-EPS} \dusa{$\epsilon_{inn}$} $]$ \\
+$[$ \moc{CST-QUAD-EPS} \dusa{$\epsilon_{quad}$} $]$ \\
+$[$ \moc{STEP-REDUCT} $\{$ \moc{HALF} $|$ \moc{PARABOLIC} $\}~]$ \\
+$[$ \moc{WARNING-ONLY} $]$ \\
+\moc{CALCUL-DX} $[$ \moc{NO-STORE-OLD} $]$ \\
+$[$ \moc{COST-EXTRAP} {\tt >>} \dusa{ecost} {\tt <<} $]$ \\
+$[$ \moc{OUT-CONV-TST} {\tt >>} \dusa{$l_{conv}$} {\tt <<} $]$ \\
+;
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing in module.
+
+\item[\moc{MAXIMIZE}] keyword used to specify that the optimization problem will be a maximization.
+
+\item[\moc{MINIMIZE}] keyword used to specify that the optimization problem will be a minimization (default).
+
+\item[\moc{METHOD}] keyword used to define the quasi-linear programming method. {\bf Note:} If the general Lemke method is
+used, the quadratic constraint must be active. The strategy consists to proceed in two steps:
+\begin{itemize}
+\item At first step, the linear programming problem
+(i. e., without the quadratic contraint) is solved and the control-variable displacement is computed. If this displacement is less
+than the radius of the quadratic constraint, the step one solution is accepted and step two is not performed. If this displacement is greater
+than the radius of the quadratic constraint, the step one solution is rejected and step two is performed. Step one can be
+solved with the SIMPLEX method or with the linear LEMKE method.
+\item At step two, the general LEMKE method is used to find the correct solution. The general Lemke method is based on a parametric linear
+complementarity principle, as explained in Ref.~\citen{ferland}.
+\end{itemize}
+
+\item[\moc{SIMPLEX}] keyword used to specify that the SIMPLEX method will be used at step one and the general LEMKE method at step two.
+
+\item[\moc{LEMKE}] keyword used to specify that the linear LEMKE method will be used at step one and the general LEMKE method at step two.
+
+\item[\moc{MAP}] keyword used to specify that the MAP method will be used. The quadratic constraint is linearized and a converging sequence
+of SIMPLEX calculations is performed.
+
+\item[\moc{AUG-LAGRANG}] keyword used to specify that the augmented Lagrangian method will be used.
+
+\item[\moc{PENAL-METH}] keyword used to specify that the penalty method will be used.
+
+\item[\moc{OUT-STEP-LIM}] keyword used to set or reset the initial radius of the quadratic constraint (default value is \dusa{sr} $=1.0$ or the value
+recovered from \dusa{OPTIM}).
+
+\item[\dusa{sr}] initial radius of the quadratic constraint (real or double precision).
+
+\item[\moc{OUT-STEP-EPS}] keyword used to set the tolerance of outer iteration convergence inside module {\tt PLQ:} (default value
+is $1.0 \times 10^{-4}$).
+
+\item[\dusa{$\epsilon_{ext}$}] tolerance value (real or double precision).
+
+\item[\moc{INN-STEP-EPS}] keyword used to set the tolerance used within the SIMPLEX or LEMKE method (default value
+is $1.0 \times 10^{-4}$).
+
+\item[\dusa{$\epsilon_{inn}$}] tolerance value (real or double precision).
+
+\item[\moc{CST-QUAD-EPS}] keyword to set the convergence parameter \dusa{epsilon4} for the radius of the quadratic constraint inside module {\tt GRAD:}.
+
+\item[\dusa{$\epsilon_{quad}$}] tolerance for convergence of the radius of the quadratic constraint (real).
+
+\item[\moc{STEP-REDUCT}] keyword used to define the method of the reduction of the outer step.
+
+\item[\moc{HALF}] keyword used to specify that the step will be reduced by a factor of 2.
+
+\item[\moc{PARABOLIC}] keyword used to specify that the step will be reduced with the parabolic method.
+
+\item[\moc{WARNING-ONLY}] keyword used to specify that only a warning will be used when no valid previous decision vectors can
+be recall in case of error of the mathematical programming.
+
+\item[\moc{CALCUL-DX}] keyword used to specify that the new step will be calculated.
+
+\item[\moc{NO-STORE-OLD}] keyword used to specify that the old value of decision variables and gradients will not be stored in
+the {\tt L\_OPTIMIZE/'OLD-VALUE'} directory.
+
+\item[\moc{COST-EXTRAP}] keyword used to calculate the extrapolated objective constant \dusa{ecost}.
+
+\item[\dusa{ecost}] extrapolated objective constant.
+
+\item[\moc{OUT-CONV-TST}] keyword used to calculate if the external convergence has been reached.
+
+\item[\dusa{$l_{conv}$}] $=1$ means that external convergence has been reached; $=0$ otherwise.
+
+\end{ListeDeDescription}
+\clearpage

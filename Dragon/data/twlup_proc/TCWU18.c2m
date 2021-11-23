@@ -1,0 +1,93 @@
+*----
+* Exemple 3D NXT case with self-shielding              
+*                                                           
+*----
+*  modules and data structures
+*----
+REAL  VoidF :=  0.0 ;   
+REAL  DtCool :=  0.653 ;   
+REAL  TFuel :=  900.0 ;   
+REAL  TCool :=  600.0 ;   
+REAL  RFuel  RClad :=  0.608  0.628 ;   
+INTEGER  IDcool :=  4 ;   
+REAL  HA1  HA2  HA3 :=   20.0  10.0  50.0   ;   
+INTEGER  NumZA1  NumZA2  NumZA3 :=   2  1  10   ;   
+INTEGER  IDA1  IDA2  IDA3 :=   4  5  1   ;   
+EVALUATE DtCool := DtCool VoidF * ;  ! Evaluate the coolant density
+REAL pitch := 1.26 ;
+INTEGER NumX NumRF NumRC := 1 -2  1 ;
+LINKED_LIST BWRF MICLIB MICLIB2 LATTICE PIJ SYS FLUX EDITION TRKNAM ;   
+SEQ_ASCII res FigReg.ps micro ;   
+MODULE MAC: ASM: FLU: NXT: END: GEO: LIB: SHI: EDI: EXCELT: USS: ;
+PROCEDURE assertS ;
+
+************************************************************************
+* Material Definitions                                                 *
+************************************************************************
+MICLIB2 := LIB: ::
+  NMIX 5 CTRA WIMS  SUBG
+*  CALENDF 4  (*CALENDF TYPE PROBABILITY TABLES*)
+  DEPL LIB: WIMSD4 FIL: iaea
+  MIXS LIB: WIMSD4 FIL: iaea
+  MIX  1   <<TFuel>>  11.72        ! ThO2  11.72 g/cm3 
+    U233     = '9233' 8.82    1    ! UO2   10.3  g/cm3
+    U235     = '2235' 0.0     1    ! UN    14.42 g/cm3
+    Th232    = '2232' 79.06   1
+    O16      = '6016' 12.12      
+  MIX  2   <<TFuel>>  6.55     ! Cladding
+    SN       = '118'    1.45
+    Zr4      = '91'     98.23
+    Fe       = '1054'   0.22
+    Cr       = '52'     0.1
+  MIX  3    <<TCool>>   <<DtCool>>    ! H2O
+    HH       = '3001'   20.0
+    O16      = '6016'   80.0 
+  MIX  4    <<TCool>>   <<DtCool>>     ! D2O
+    HD       = '3002'   20.0
+    O16      = '6016'   80.0 
+  MIX  5    <<TFuel>>   11.72        ! ThO2  11.72 g/cm3 
+    U233     = '9233' 0.0     1      ! UO2   10.3  g/cm3
+    U235     = '2235' 0.0     1      ! UN    14.42 g/cm3
+    Th232    = '2232' 87.88   1
+    O16      = '6016' 12.12      
+    ;     
+
+************************************************************************
+* Geometry Definitions    3D Pin cell                                  *
+************************************************************************    
+BWRF  :=  GEO: :: CAR3D  1  1  5
+   X- REFL  X+ REFL  
+   Y- REFL  Y+ REFL
+   Z- REFL  Z+ REFL
+   CELL  A1 A2 A3 A2 A1  
+   :::  A1 := GEO: CARCELZ 2 1
+                MESHX   0.0 <<pitch>>  SPLITX <<NumX>>
+                MESHY   0.0 <<pitch>>  SPLITY <<NumX>>
+                MESHZ   0.0 <<HA1>>    SPLITZ <<NumZA1>>
+                RADIUS  0.0 <<RFuel>>  <<RClad>> 
+                SPLITR  <<NumRF>>  <<NumRC>>     
+                MIX  <<IDA1>> 2 <<IDcool>>   ;
+   :::  A2 := GEO: A1
+                MESHZ   0.0 <<HA2>>   SPLITZ <<NumZA2>>    
+                MIX  <<IDA2>> 2 <<IDcool>>  ;
+   :::  A3 := GEO: A1
+                MESHZ   0.0 <<HA3>>   SPLITZ <<NumZA3>>    
+                MIX  <<IDA3>> 2 <<IDcool>>  ;
+   ;
+
+TRKNAM := NXT: BWRF ::  
+     TISO 4 12.0 ;
+  
+MICLIB := USS: MICLIB2 TRKNAM :: EDIT 2 ;
+  
+SYS := ASM: MICLIB TRKNAM  :: ;
+FLUX := FLU: SYS MICLIB TRKNAM :: 
+   TYPE K ;
+EDITION := EDI: FLUX MICLIB TRKNAM  ::
+  EDIT 0
+  MERGE COMP 
+  SAVE ;
+assertS FLUX :: 'K-INFINITY' 1 1.090306 ;
+ECHO "test TCWU18 completed" ;
+END: ;
+QUIT "LIST" . 

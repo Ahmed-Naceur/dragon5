@@ -1,0 +1,167 @@
+****************************************************************
+*                                                              *
+* Procedure :  Pfluxtest.c2m                                   *
+* Purpose   :  Time-average calculation for ACR-1000 core      *
+*               using the NCR module instead of CRE            *
+* Author     :  R. Chambon (2008/03)                           *
+* based on   :  D. Sekki (2007/10)                             *
+*                                                              *
+* CALL      :  FMAP MATEX := Pfluxtest FMAP MATEX MACRO1       *
+*                            DEVICE TRACK LMCPO ::             *
+*            <<NamFueld>> <<NamPARKEYF>>                       *
+*            <<mFue20>> <<mFue18>> <<NamFue20>> <<NamFue18>>   *
+*            <<Pow>> <<epsil>> <<Prec>> <<maxItr>> <<iEdit>>   *
+*            >>nbItr<<  >>Keff<< >>Bexit<< ;                                       *
+****************************************************************
+
+PARAMETER    FMAP MATEX MACRO1 DEVICE TRACK 
+             LMCPO18 LMCPO20  :: :::
+ LINKED_LIST FMAP MATEX MACRO1 DEVICE TRACK 
+             LMCPO18 LMCPO20  ; ;
+
+MODULE       DELETE: GREP: END: CRE: MACINI: NEWMAC:
+             TAVG: FLUD: FLPOW: TRIVAT: TRIVAA: NCR: ;
+
+LINKED_LIST  FLUX POWER SYSTEM MACFL MACRO2 MACRO ;
+
+INTEGER      mFue20 mFue18 maxItr iEdit ;
+REAL         Pow epsil Prec Eps epsM Keff Bexit ;
+STRING       NamFueld NamPARKEYF NamFue20 NamFue18 ;
+INTEGER      iter iPwPrt := 0 0 ;
+  :: >>NamFueld<< >>NamPARKEYF<<
+     >>mFue20<< >>mFue18<< >>NamFue20<< >>NamFue18<<
+     >>Pow<<  >>epsil<<  >>Prec<<  >>maxItr<< >>iEdit<< ;
+
+*---------------------------------------------------------------
+*                  TIME-AVERAGE CALCULATION
+*---------------------------------------------------------------
+EVALUATE Eps := epsil 1. + ;
+EVALUATE epsM := Eps ;
+
+WHILE Eps epsil > iter maxItr < * DO
+
+  EVALUATE iter := iter 1 + ;
+*--
+* fuel-map macrolib:
+*--
+  MACFL := NCR: LMCPO18 LMCPO20 FMAP :: 
+    EDIT 0 MACRO 
+    TABLE LMCPO20 <<NamFueld>>  BURN
+      MIX <<mFue20>> 
+        SET <<NamPARKEYF>> <<NamFue20>> 
+        SET X-COOL 1.0
+        SET T-COOL 5.731600E+02
+        SET T-FUEL 9.601600E+02
+        ADD X-COOL 1.0 MAP 
+            REF 
+               BURN SAMEASREF 
+               T-COOL 5.731600E+02
+               T-FUEL 9.601600E+02
+            ENDREF
+        ADD T-COOL 5.731600E+02 MAP 
+            REF 
+               BURN SAMEASREF 
+               X-COOL 1.0
+               T-FUEL 9.601600E+02
+            ENDREF
+        ADD T-FUEL 9.601600E+02 MAP 
+            REF 
+               BURN SAMEASREF 
+               X-COOL 1.0
+               T-COOL 5.731600E+02
+            ENDREF
+      ENDMIX
+   TABLE LMCPO18 <<NamFueld>>  BURN
+      MIX <<mFue18>> 
+        SET <<NamPARKEYF>> <<NamFue18>> 
+        SET X-COOL 1.0
+        SET T-COOL 5.731600E+02
+        SET T-FUEL 9.601600E+02
+        SET RDTPOS 0.0
+        SET RDDPOS 0.0
+        ADD X-COOL 1.0 MAP 
+            REF 
+               BURN SAMEASREF 
+               T-COOL 5.731600E+02
+               T-FUEL 9.601600E+02
+               RDTPOS 0.0
+               RDDPOS 0.0
+            ENDREF
+        ADD T-COOL 5.731600E+02 MAP 
+            REF 
+               BURN SAMEASREF 
+               X-COOL 1.0
+               T-FUEL 9.601600E+02
+               RDTPOS 0.0
+               RDDPOS 0.0
+            ENDREF
+        ADD T-FUEL 9.601600E+02 MAP 
+            REF 
+               BURN SAMEASREF 
+               X-COOL 1.0
+               T-COOL 5.731600E+02
+               RDTPOS 0.0
+               RDDPOS 0.0
+            ENDREF
+      ENDMIX
+   ;
+*--
+* extended macrolib:
+*--
+  MACRO2 MATEX := MACINI: MATEX MACRO1 MACFL :: EDIT 0 ;
+  MACFL := DELETE: MACFL ;
+*--
+* complete macrolib:
+*--
+  MACRO MATEX := NEWMAC: MATEX MACRO2 DEVICE :: EDIT 0 ;
+  MACRO2 := DELETE: MACRO2 ;
+*--
+* numerical solution:
+*--
+  SYSTEM := TRIVAA: MACRO TRACK :: EDIT 0 ;
+  MACRO := DELETE: MACRO ;
+  IF iter 1 = THEN
+    FLUX := FLUD: SYSTEM TRACK :: EDIT 10
+          ACCE 3 3  ADI 2  EXTE 1000 <<Prec>>
+          THER 1000 ;
+  ELSE
+    FLUX := FLUD: FLUX SYSTEM TRACK :: EDIT 10
+          ACCE 3 3  ADI 2  EXTE 1000 <<Prec>>
+          THER 1000 ;
+  ENDIF ;
+  SYSTEM := DELETE: SYSTEM ;
+*--
+* flux and power:
+*--
+  EVALUATE iPwPrt := 0 ;
+  POWER := FLPOW: FMAP FLUX TRACK MATEX ::
+           EDIT <<iPwPrt>> PTOT <<Pow>> ;
+*--
+* burnups integration limits:
+*--
+  FMAP := TAVG: FMAP POWER :: EDIT 0 AX-SHAPE RELAX 0.55 B-EXIT ;
+  GREP: POWER :: GETVAL 'K-EFFECTIVE' 1 >>Keff<< ;
+  POWER := DELETE: POWER ;
+*--
+* current parameters:
+*--
+  GREP: FMAP :: GETVAL EPS-AX 1 >>Eps<< ;
+  ECHO "Iteration No. " iter ;
+  ECHO "AXIAL-SHAPE ERROR : " Eps  ;
+  ECHO "RESULTING K-EFF   : " Keff ;
+
+  IF epsM Eps > THEN
+    EVALUATE epsM := Eps ;
+  ELSE
+    EVALUATE epsil := Eps ;
+    EVALUATE maxItr := iter ;
+  ENDIF ;
+
+ENDWHILE ;
+FLUX := DELETE: FLUX ;
+GREP: FMAP :: GETVAL B-EXIT 1 >>Bexit<< ;
+
+  :: <<iter>> <<Keff>> <<Bexit>> ;
+
+END: ;
+QUIT .

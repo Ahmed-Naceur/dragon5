@@ -1,0 +1,326 @@
+ ! "xmachar" program to check IEEE compliance of your machine
+ !
+ !  REFERENCE: "Numerical recipes in FORTRAN,
+ !              The Art of Scientific Computing, Second Edition"
+ !              Press, Teukolsky, Vetterling, Flannery
+ !              Cambridge University Press
+ !              ISBN 0-521-43064-X
+ !      PAGES:  881-886 (similar to "SUBROUTINE machar")
+ !
+
+ INTEGER ibeta_R iexp_R irnd_R it_R machep_R
+         maxexp_R minexp_R negep_R ngrd_R ;
+ REAL    eps_R epsneg_R xmax_R xmin_R ;
+
+ INTEGER ibeta_D iexp_D irnd_D it_D machep_D
+         maxexp_D minexp_D negep_D ngrd_D ;
+ DOUBLE  eps_D epsneg_D xmax_D xmin_D ;
+
+ REAL    a_R b_R beta_R betah_R betain_R one_R t_R
+         temp_R temp1_R tempa_R two_R y_R z_R zero_R ;
+ DOUBLE  a_D b_D beta_D betah_D betain_D one_D t_D
+         temp_D temp1_D tempa_D two_D y_D z_D zero_D ;
+ INTEGER i itemp iz j k mx nxres ;
+ LOGICAL LFLAG ;
+
+ ! "machar" routine for single precision
+ EVALUATE one_R := 1 I_TO_R ;
+ EVALUATE two_R zero_R a_R := one_R one_R + one_R one_R - one_R ;
+ REPEAT
+   EVALUATE a_R := a_R a_R + ;
+   EVALUATE temp_R := a_R one_R + ;
+   EVALUATE temp1_R := temp_R a_R - ;
+ UNTIL temp1_R one_R - zero_R <> ;
+ EVALUATE b_R := one_R ;
+ REPEAT
+   EVALUATE b_R := b_R b_R + ;
+   EVALUATE temp_R := a_R b_R + ;
+   EVALUATE itemp := temp_R a_R - R_TO_I ;
+ UNTIL itemp 0 <> ;
+ EVALUATE ibeta_R beta_R := itemp itemp I_TO_R ;
+ EVALUATE it_R b_R := 0 one_R ;
+ REPEAT
+   EVALUATE it_R := it_R 1 + ;
+   EVALUATE b_R := b_R beta_R * ;
+   EVALUATE temp_R := b_R one_R + ;
+   EVALUATE temp1_R := temp_R b_R - ;
+ UNTIL temp1_R one_R - zero_R <> ;
+ EVALUATE irnd_R := 0 ;
+ EVALUATE betah_R := beta_R two_R / ;
+ EVALUATE temp_R := a_R betah_R + ;
+ IF temp_R a_R - zero_R <> THEN
+   EVALUATE irnd_R := 1 ;
+ ENDIF ;
+ EVALUATE tempa_R := a_R beta_R + ;
+ EVALUATE temp_R := tempa_R betah_R + ;
+ IF irnd_R 0 = temp_R tempa_R - zero_R <> * THEN
+   EVALUATE irnd_R := 2 ;
+ ENDIF ;
+ EVALUATE negep_R := it_R 3 + ;
+ EVALUATE betain_R a_R := one_R beta_R / one_R ;
+ EVALUATE i := 1 ;
+ WHILE i negep_R <= DO
+   EVALUATE a_R i := a_R betain_R * i 1 + ;
+ ENDWHILE ;
+ EVALUATE b_R temp_R := a_R one_R a_R - ;
+ WHILE temp_R one_R - zero_R = DO
+   EVALUATE a_R negep_R := a_R beta_R * negep_R 1 - ;
+   EVALUATE temp_R := one_R a_R - ;
+ ENDWHILE ;
+ EVALUATE negep_R epsneg_R machep_R := negep_R CHS a_R it_R 3 + CHS ;
+ EVALUATE a_R := b_R ;
+ EVALUATE temp_R := one_R a_R + ;
+ WHILE temp_R one_R - zero_R = DO
+   EVALUATE a_R machep_R := a_R beta_R * machep_R 1 + ;
+   EVALUATE temp_R := one_R a_R + ;
+ ENDWHILE ;
+ EVALUATE eps_R := a_R ;
+ EVALUATE ngrd_R temp_R := 0 one_R eps_R + ;
+ IF irnd_R 0 = temp_R one_R * one_R - zero_R <> * THEN
+   EVALUATE ngrd_R := 1 ;
+ ENDIF ;
+ EVALUATE i k z_R t_R nxres := 0 1 betain_R one_R eps_R + 0 ;
+ EVALUATE y_R := z_R ;
+ EVALUATE z_R := y_R y_R * ;
+ EVALUATE a_R temp_R := z_R one_R * z_R t_R * ;
+ EVALUATE LFLAG := $True_L ;
+ WHILE a_R a_R + zero_R <> z_R ABS y_R < * LFLAG * DO
+   EVALUATE temp1_R := temp_R betain_R * ;
+   IF temp1_R beta_R * z_R = THEN
+     EVALUATE LFLAG := $False_L ;
+   ELSE
+     EVALUATE i k := i 1 + k k + ;
+     EVALUATE y_R := z_R ;
+     EVALUATE z_R := y_R y_R * ;
+     EVALUATE a_R temp_R := z_R one_R * z_R t_R * ;
+   ENDIF ;
+ ENDWHILE ;
+ IF ibeta_R 10 <> THEN
+   EVALUATE iexp_R mx := i 1 + k k + ;
+ ELSE
+   EVALUATE iexp_R iz := 2 ibeta_R ;
+   WHILE k iz >= DO
+     EVALUATE iz iexp_R := iz ibeta_R * iexp_R 1 + ;
+   ENDWHILE ;
+   EVALUATE mx := iz iz + 1 - ;
+ ENDIF ;
+ EVALUATE xmin_R := y_R ;
+ EVALUATE y_R := y_R betain_R * ;
+ EVALUATE a_R := y_R one_R * ;
+ EVALUATE temp_R := y_R t_R * ;
+ EVALUATE LFLAG := $True_L ;
+ WHILE a_R a_R + zero_R <> y_R ABS xmin_R < * LFLAG * DO
+   EVALUATE k := k 1 + ;
+   EVALUATE temp1_R := temp_R betain_R * ;
+   IF temp1_R beta_R * y_R <> temp_R y_R = + THEN
+     EVALUATE xmin_R := y_R ;
+     EVALUATE y_R := y_R betain_R * ;
+     EVALUATE a_R := y_R one_R * ;
+     EVALUATE temp_R := y_R t_R * ;
+   ELSE
+     EVALUATE nxres xmin_R := 3 y_R ;
+     EVALUATE LFLAG := $False_L ;
+   ENDIF ;
+ ENDWHILE ;
+ EVALUATE minexp_R := k CHS ;
+ IF mx k k + 3 - <= ibeta_R 10 <> * THEN
+   EVALUATE mx iexp_R := mx mx + iexp_R 1 + ;
+ ENDIF ;
+ EVALUATE maxexp_R irnd_R := mx minexp_R + irnd_R nxres + ;
+ IF irnd_R 2 >= THEN
+   EVALUATE maxexp_R := maxexp_R 2 - ;
+ ENDIF ;
+ EVALUATE i := maxexp_R minexp_R + ;
+ IF ibeta_R 2 = i 0 = * THEN
+   EVALUATE maxexp_R := maxexp_R 1 - ;
+ ENDIF ;
+ IF i 20 > THEN
+   EVALUATE maxexp_R := maxexp_R 1 - ;
+ ENDIF ;
+ IF a_R y_R <> THEN
+   EVALUATE maxexp_R := maxexp_R 2 - ;
+ ENDIF ;
+ EVALUATE xmax_R := one_R epsneg_R - ;
+ IF xmax_R one_R * xmax_R <> THEN
+   EVALUATE xmax_R := one_R beta_R epsneg_R * - ;
+ ENDIF ;
+ EVALUATE xmax_R := xmax_R beta_R beta_R * beta_R * xmin_R * / ;
+ EVALUATE i := maxexp_R minexp_R + 3 + ;
+ EVALUATE j := 1 ;
+ WHILE j i <= DO
+   IF ibeta_R 2 = THEN
+     EVALUATE xmax_R := xmax_R xmax_R + ;
+   ELSE
+     EVALUATE xmax_R := xmax_R beta_R * ;
+   ENDIF ;
+   EVALUATE j := j 1 + ;
+ ENDWHILE ;
+
+ ! "machar" routine for double precision
+ EVALUATE one_D := 1 I_TO_D ;
+ EVALUATE two_D zero_D a_D := one_D one_D + one_D one_D - one_D ;
+ REPEAT
+   EVALUATE a_D := a_D a_D + ;
+   EVALUATE temp_D := a_D one_D + ;
+   EVALUATE temp1_D := temp_D a_D - ;
+ UNTIL temp1_D one_D - zero_D <> ;
+ EVALUATE b_D := one_D ;
+ REPEAT
+   EVALUATE b_D := b_D b_D + ;
+   EVALUATE temp_D := a_D b_D + ;
+   EVALUATE itemp := temp_D a_D - D_TO_I ;
+ UNTIL itemp 0 <> ;
+ EVALUATE ibeta_D beta_D := itemp itemp I_TO_D ;
+ EVALUATE it_D b_D := 0 one_D ;
+ REPEAT
+   EVALUATE it_D := it_D 1 + ;
+   EVALUATE b_D := b_D beta_D * ;
+   EVALUATE temp_D := b_D one_D + ;
+   EVALUATE temp1_D := temp_D b_D - ;
+ UNTIL temp1_D one_D - zero_D <> ;
+ EVALUATE irnd_D := 0 ;
+ EVALUATE betah_D := beta_D two_D / ;
+ EVALUATE temp_D := a_D betah_D + ;
+ IF temp_D a_D - zero_D <> THEN
+   EVALUATE irnd_D := 1 ;
+ ENDIF ;
+ EVALUATE tempa_D := a_D beta_D + ;
+ EVALUATE temp_D := tempa_D betah_D + ;
+ IF irnd_D 0 = temp_D tempa_D - zero_D <> * THEN
+   EVALUATE irnd_D := 2 ;
+ ENDIF ;
+ EVALUATE negep_D := it_D 3 + ;
+ EVALUATE betain_D a_D := one_D beta_D / one_D ;
+ EVALUATE i := 1 ;
+ WHILE i negep_D <= DO
+   EVALUATE a_D i := a_D betain_D * i 1 + ;
+ ENDWHILE ;
+ EVALUATE b_D temp_D := a_D one_D a_D - ;
+ WHILE temp_D one_D - zero_D = DO
+   EVALUATE a_D negep_D := a_D beta_D * negep_D 1 - ;
+   EVALUATE temp_D := one_D a_D - ;
+ ENDWHILE ;
+ EVALUATE negep_D epsneg_D machep_D := negep_D CHS a_D it_D 3 + CHS ;
+ EVALUATE a_D := b_D ;
+ EVALUATE temp_D := one_D a_D + ;
+ WHILE temp_D one_D - zero_D = DO
+   EVALUATE a_D machep_D := a_D beta_D * machep_D 1 + ;
+   EVALUATE temp_D := one_D a_D + ;
+ ENDWHILE ;
+ EVALUATE eps_D := a_D ;
+ EVALUATE ngrd_D temp_D := 0 one_D eps_D + ;
+ IF irnd_D 0 = temp_D one_D * one_D - zero_D <> * THEN
+   EVALUATE ngrd_D := 1 ;
+ ENDIF ;
+ EVALUATE i k z_D t_D nxres := 0 1 betain_D one_D eps_D + 0 ;
+ EVALUATE y_D := z_D ;
+ EVALUATE z_D := y_D y_D * ;
+ EVALUATE a_D temp_D := z_D one_D * z_D t_D * ;
+ EVALUATE LFLAG := $True_L ;
+ WHILE a_D a_D + zero_D <> z_D ABS y_D < * LFLAG * DO
+   EVALUATE temp1_D := temp_D betain_D * ;
+   IF temp1_D beta_D * z_D = THEN
+     EVALUATE LFLAG := $False_L ;
+   ELSE
+     EVALUATE i k := i 1 + k k + ;
+     EVALUATE y_D := z_D ;
+     EVALUATE z_D := y_D y_D * ;
+     EVALUATE a_D temp_D := z_D one_D * z_D t_D * ;
+   ENDIF ;
+ ENDWHILE ;
+ IF ibeta_D 10 <> THEN
+   EVALUATE iexp_D mx := i 1 + k k + ;
+ ELSE
+   EVALUATE iexp_D iz := 2 ibeta_D ;
+   WHILE k iz >= DO
+     EVALUATE iz iexp_D := iz ibeta_D * iexp_D 1 + ;
+   ENDWHILE ;
+   EVALUATE mx := iz iz + 1 - ;
+ ENDIF ;
+ EVALUATE xmin_D := y_D ;
+ EVALUATE y_D := y_D betain_D * ;
+ EVALUATE a_D := y_D one_D * ;
+ EVALUATE temp_D := y_D t_D * ;
+ EVALUATE LFLAG := $True_L ;
+ WHILE a_D a_D + zero_D <> y_D ABS xmin_D < * LFLAG * DO
+   EVALUATE k := k 1 + ;
+   EVALUATE temp1_D := temp_D betain_D * ;
+   IF temp1_D beta_D * y_D <> temp_D y_D = + THEN
+     EVALUATE xmin_D := y_D ;
+     EVALUATE y_D := y_D betain_D * ;
+     EVALUATE a_D := y_D one_D * ;
+     EVALUATE temp_D := y_D t_D * ;
+   ELSE
+     EVALUATE nxres xmin_D := 3 y_D ;
+     EVALUATE LFLAG := $False_L ;
+   ENDIF ;
+ ENDWHILE ;
+ EVALUATE minexp_D := k CHS ;
+ IF mx k k + 3 - <= ibeta_D 10 <> * THEN
+   EVALUATE mx iexp_D := mx mx + iexp_D 1 + ;
+ ENDIF ;
+ EVALUATE maxexp_D irnd_D := mx minexp_D + irnd_D nxres + ;
+ IF irnd_D 2 >= THEN
+   EVALUATE maxexp_D := maxexp_D 2 - ;
+ ENDIF ;
+ EVALUATE i := maxexp_D minexp_D + ;
+ IF ibeta_D 2 = i 0 = * THEN
+   EVALUATE maxexp_D := maxexp_D 1 - ;
+ ENDIF ;
+ IF i 20 > THEN
+   EVALUATE maxexp_D := maxexp_D 1 - ;
+ ENDIF ;
+ IF a_D y_D <> THEN
+   EVALUATE maxexp_D := maxexp_D 2 - ;
+ ENDIF ;
+ EVALUATE xmax_D := one_D epsneg_D - ;
+ IF xmax_D one_D * xmax_D <> THEN
+   EVALUATE xmax_D := one_D beta_D epsneg_D * - ;
+ ENDIF ;
+ EVALUATE xmax_D := xmax_D beta_D beta_D * beta_D * xmin_D * / ;
+ EVALUATE i := maxexp_D minexp_D + 3 + ;
+ EVALUATE j := 1 ;
+ WHILE j i <= DO
+   IF ibeta_D 2 = THEN
+     EVALUATE xmax_D := xmax_D xmax_D + ;
+   ELSE
+     EVALUATE xmax_D := xmax_D beta_D * ;
+   ENDIF ;
+   EVALUATE j := j 1 + ;
+ ENDWHILE ;
+
+ ECHO "*** Single precision machine parameters ***" ;
+ ECHO " " ;
+ ECHO "ibeta= " ibeta_R  ;
+ ECHO "it=    " it_R     ;
+ ECHO "machep=" machep_R ;
+ ECHO "eps=   " eps_R    ;
+ ECHO "negep= " negep_R  ;
+ ECHO "epsneg=" epsneg_R ;
+ ECHO "iexp=  " iexp_R   ;
+ ECHO "minexp=" minexp_R ;
+ ECHO "xmin=  " xmin_R   ;
+ ECHO "maxexp=" maxexp_R ;
+ ECHO "xmax=  " xmax_R   ;
+ ECHO "irnd=  " irnd_R   ;
+ ECHO "ngrd=  " ngrd_R   ;
+ ECHO " " ;
+ ECHO "*** Double precision machine parameters ***" ;
+ ECHO " " ;
+ ECHO "ibeta= " ibeta_D  ;
+ ECHO "it=    " it_D     ;
+ ECHO "machep=" machep_D ;
+ ECHO "eps=   " eps_D    ;
+ ECHO "negep= " negep_D  ;
+ ECHO "epsneg=" epsneg_D ;
+ ECHO "iexp=  " iexp_D   ;
+ ECHO "minexp=" minexp_D ;
+ ECHO "xmin=  " xmin_D   ;
+ ECHO "maxexp=" maxexp_D ;
+ ECHO "xmax=  " xmax_D   ;
+ ECHO "irnd=  " irnd_D   ;
+ ECHO "ngrd=  " ngrd_D   ;
+ ECHO " " ;
+ ECHO "QUESTION: Do you have a typical IEEE-compliant machine ?" ;
+
+ QUIT " Program *xmachar* " .

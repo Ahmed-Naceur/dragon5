@@ -1,0 +1,167 @@
+*                                                              
+* TEST CASE TCM11                                             
+* MACROSCOPIC CROSS SECTIONS                                   
+* FIXED SOURCE PROBLEM                                         
+* CARTESIAN 4 X 4 ASSEMBLY WITH FUEL RODS AND POISON           
+* KAVENOKY BENCHMARK                                           
+*                                                              
+* REF: R. Roy, "The Cyclic Characteristics Method,"            
+*      Int. Conf. Physics of Nuclear Science and Technology,   
+*      Long Island, NY, October 1998, pp. 407-414.             
+*                                                              
+STRING Polar_Ang := "CACB"  ;
+INTEGER   Nazimuth  :=  8    ;
+REAL      DenTrak   := 100.  ;
+INTEGER   Nsplit    :=  5    ;
+REAL      Tolerance := 5.E-6 ;
+LINKED_LIST PWR TRACK MACRO SYS FLUX EDITION ;
+SEQ_BINARY  PWRTRK ;
+MODULE GEO: EXCELT: MCCGT: MAC: ASM: FLU: EDI: END: DELETE: GREP: ;
+PROCEDURE assertV ;
+REAL ou := 100. ;
+REAL
+  f1 f2 f3 f8 f9 f10 f11 f12 f13 f14 f15 
+  v1 v2 v3 v8 v9 v10 v11 v12 v13 v14 v15 ;
+REAL
+  r1     r2    r3         
+               r8    r9    r10    
+  r11    r12   r13   r14   r15  :=   
+  5.166  3.699 4.183 
+               3.178 3.617 0.2847 
+  2.913  3.441 3.937 3.225 3.673 ;
+REAL
+  e1     e2    e3         
+               e8    e9    e10    
+  e11    e12   e13   e14   e15  :=   
+  0.11   0.08  0.07
+               0.04  0.05  0.002
+  0.03   0.03  0.04  0.05  0.05 ;
+EVALUATE
+  e1      e2      e3      
+                  e8      e9      e10    
+  e11     e12     e13     e14     e15   :=
+  e1 r1 / e2 r2 / e3 r3 / 
+                  e8 r8 / e9 r9 / e10 r10 / 
+  e11 r11 / e12 r12 / e13 r13 / e14 r14 / e15 r15 / ;
+EVALUATE
+  e1      e2      e3      
+                  e8      e9      e10    
+  e11     e12     e13     e14     e15   :=  
+  e1 ou * e2 ou * e3 ou * 
+                  e8 ou * e9 ou * e10 ou * 
+  e11 ou * e12 ou * e13 ou * e14 ou * e15 ou * ;
+*----
+* Macroscopic XS
+*----
+MACRO := MAC: ::
+  NGRO 1 NMIX 19
+  READ INPUT
+  MIX  1 TOTAL  1.250  SCAT 1 1  1.242  FIXE 1.000
+  MIX  2 TOTAL  0.625  SCAT 1 1  0.355  FIXE 0.000
+  MIX  3 TOTAL  1.250  SCAT 1 1  1.242  FIXE 1.000
+  MIX  4 TOTAL  0.625  SCAT 1 1  0.355  FIXE 0.000
+  MIX  5 TOTAL  1.250  SCAT 1 1  1.242  FIXE 1.000
+  MIX  6 TOTAL  0.625  SCAT 1 1  0.355  FIXE 0.000
+  MIX  7 TOTAL  1.250  SCAT 1 1  1.242  FIXE 1.000
+  MIX  8 TOTAL  0.625  SCAT 1 1  0.355  FIXE 0.000
+  MIX  9 TOTAL  1.250  SCAT 1 1  1.242  FIXE 1.000
+  MIX 10 TOTAL 14.000  SCAT 1 1  0.000  FIXE 0.000
+  MIX 11 TOTAL  1.250  SCAT 1 1  1.242  FIXE 1.000
+  MIX 12 TOTAL  0.625  SCAT 1 1  0.355  FIXE 0.000
+  MIX 13 TOTAL  1.250  SCAT 1 1  1.242  FIXE 1.000
+  MIX 14 TOTAL  0.625  SCAT 1 1  0.355  FIXE 0.000
+  MIX 15 TOTAL  1.250  SCAT 1 1  1.242  FIXE 1.000
+  MIX 16 TOTAL  0.625  SCAT 1 1  0.355  FIXE 0.000
+  MIX 17 TOTAL  1.250  SCAT 1 1  1.242  FIXE 1.000
+  MIX 18 TOTAL  0.625  SCAT 1 1  0.355  FIXE 0.000
+  MIX 19 TOTAL  1.250  SCAT 1 1  1.242  FIXE 1.000
+  ;
+*----
+*  Geometry : PWR - Cartesian 7x7
+*  Tracking : EXCELT
+*----
+PWR := GEO: :: CAR2D 4 4
+  X- DIAG  X+ REFL Y- SYME  Y+ DIAG
+  CELL   WA  F2  F4  F6
+             F8  P10 F12
+                 F14 F16
+                     F18
+  ::: WA := GEO: CAR2D 1 1
+    MESHX -0.625  0.625 SPLITX <<Nsplit>>
+    MESHY -0.625  0.625 SPLITY <<Nsplit>>
+    MIX          1               ;
+  ::: F2  := GEO: CARCEL 1
+    MESHX -0.625  0.625 SPLITX <<Nsplit>>
+    MESHY -0.625  0.625 SPLITY <<Nsplit>>
+    RADIUS 0.000 0.450 
+    MIX         2     3          ;
+  ::: F4  := GEO: F2
+    MIX         4     5          ;
+  ::: F6  := GEO: F2
+    MIX         6     7          ;
+  ::: F8  := GEO: F2
+    MIX         8     9          ;
+  ::: P10 := GEO: F2
+    MIX        10    11 SPLITR 3 ;
+  ::: F12 := GEO: F2
+    MIX        12    13          ;
+  ::: F14 := GEO: F2
+    MIX        14    15          ;
+  ::: F16 := GEO: F2
+    MIX        16    17          ;
+  ::: F18 := GEO: F2
+    MIX        18    19          ;
+  ;
+TRACK PWRTRK := EXCELT: PWR :: 
+  MAXR 300 TRAK TSPC <<Nazimuth>> <<DenTrak>>  ;
+TRACK := MCCGT: TRACK PWRTRK ::
+  EDIT 1 <<Polar_Ang>> 4
+  AAC 80 TMT EPSI 1E-5
+  MAXI 1 KRYL 0 SCR 0 HDD 0.0 ;
+SYS := ASM: MACRO TRACK PWRTRK :: 
+    EDIT 2 ARM ;
+FLUX := FLU: MACRO TRACK SYS PWRTRK ::
+  TYPE S
+  THER <<Tolerance>> 100 EXTE <<Tolerance>> 100 ;
+EDITION := EDI: FLUX MACRO TRACK ::
+  EDIT 2 SAVE
+  MERGE  MIX  1 2 3 0 0 0 0 4 5 6 7 8 9 10 11 0 0 0 0  ;
+ GREP: EDITION ::
+  STEP UP 'REF-CASE0001' STEP UP MACROLIB
+  GETVAL VOLUME 1 11
+  >>v1<< >>v2<< >>v3<< >>v8<< >>v9<< >>v10<< 
+  >>v11<< >>v12<< >>v13<< >>v14<< >>v15<< 
+    STEP UP 'GROUP' STEP AT 1
+    GETVAL FLUX-INTG 1 11
+  >>f1<< >>f2<< >>f3<< >>f8<< >>f9<< >>f10<< 
+  >>f11<< >>f12<< >>f13<< >>f14<< >>f15<<
+  ;
+EVALUATE f1 f2 f3 f8 f9 f10 f11 f12 f13 f14 f15 :=
+                  f1 v1 / r1 - r1 / ou *  
+                  f2 v2 / r2 - r2 / ou *
+                  f3 v3 / r3 - r3 / ou *
+                  f8 v8 / r8 - r8 / ou * 
+                  f9 v9 / r9 - r9 / ou * 
+                  f10 v10 / r10 - r10 / ou * 
+                  f11 v11 / r11 - r11 / ou * 
+                  f12 v12 / r12 - r12 / ou * 
+                  f13 v13 / r13 - r13 / ou * 
+                  f14 v14 / r14 - r14 / ou * 
+                  f15 v15 / r15 - r15 / ou * 
+                  ;
+* SOLUTION FOR KAVENORY BENCHMARK                              
+* FLUX VALUES COMPARED TO MONTE-CARLO RESULTS                 
+* SEE TABLE 3. (ref. p. 412)                                  
+ECHO "DF( 1/ 3)%=" f1  f2  f3  ;
+ECHO "DF( 8/ 9)%="     f8  f9  ; 
+ECHO "DF(10/12)%=" f10 f11 f12 ; 
+ECHO "DF(13/15)%=" f13 f14 f15 ; 
+ECHO "ACCEPT=" f1 ABS e1 <= f2 ABS e2 <= f3 ABS e3 <= ;
+ECHO "ACCEPT="              f8 ABS e8 <= f9 ABS e9 <= ;
+ECHO "ACCEPT=" f10 ABS e10 <= f11 ABS e11 <= f12 ABS e12 <= ;
+ECHO "ACCEPT=" f13 ABS e13 <= f14 ABS e14 <= f15 ABS e15 <= ;
+PWRTRK := DELETE: PWRTRK ;
+assertV FLUX :: 'FLUX' (*GROUP*) 1 (*REGION*) 30 3.84262705 ;
+ECHO "test TCM11 completed" ;
+END: ;
+QUIT .

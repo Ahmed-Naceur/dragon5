@@ -1,0 +1,58 @@
+!***********************************************************************
+!* PROCEDURE:  Pcalflu
+!* USAGE:      Static flux calculation for Gentilly2 reactor
+!* AUTHOR:     E. Varin (96/02/01)
+!* MODIFIED:   E. Varin (98/01/23)
+!*             A. Hebert (11/11/11) (pour DONJON4)
+!* CALL:
+!*
+!*  FLUX MACOLD TRACK := Pcalflu MACRO2 DEVICE G23D2 ::
+!*                       i Maxreg Refl Xfacc Xfacp Precf ;  When i = 1
+!*
+!*
+!*  FLUX  MACOLD      := Pcalflu   FLUX TRACK MACRO2 DEVICE G23D2 ::
+!*                      i Maxreg Refl Xfacc Xfacp Precf ;   When i <> 1
+!*
+!* NOTES:
+!*        Maxreg = maximum number of material regions in geometry
+!*        Refl= { REFL-SIGF | NOSIGF }
+!*        Xfacc= facteur de correction des delta sigma
+!*               de type CONTROLLED
+!*        Xfacp= facteur de correction des delta sigma
+!*               de type PERT
+!*        Pour un autre type de controleurs, Xfacc s'applique.
+!*
+!*        Precf = Flux precision
+!*        i = 1  new flux calculation
+!*          > 1  update flux
+!*
+!***********************************************************************
+ PARAMETER   FLUX MACOLD TRACK SYSTEM INDEX MACRO2 DEVICE G23D2 ::
+   ::: LINKED_LIST  FLUX MACOLD TRACK SYSTEM INDEX MACRO2 DEVICE
+                    G23D2 ; ;
+ MODULE      TRIVAT: TRIVAA: NEWMAC: FLUD: FREE: END: READ: ;
+ INTEGER     i Maxreg ;
+ REAL        Xfacc Xfacp Precf ;
+ CHARACTER   Refl ;
+ !
+!
+::  >>i<< >>Maxreg<< >>Refl<< >>Xfacc<< >>Xfacp<< >>Precf<<  ;
+!
+ IF i 1 = THEN
+ TRACK := TRIVAT: G23D2 ::
+     EDIT 1
+     TITLE 'G2 3D '
+     MAXR <<Maxreg>> MCFD 1 ;
+ ENDIF ;
+
+ MACOLD INDEX := NEWMAC: INDEX MACRO2 DEVICE ::
+    EDIT 1  XFAC <<Xfacc>> ;
+
+ SYSTEM := TRIVAA: MACOLD TRACK :: EDIT 1  UNIT OVEL ;
+
+ IF i 1 = THEN
+   FLUX := FLUD: SYSTEM TRACK :: EDIT 1 EXTE 100 <<Precf>> ADI 5 ;
+ ELSE
+   FLUX := FLUD: FLUX SYSTEM TRACK :: EDIT 1 EXTE 100 <<Precf>> ;
+ ENDIF ;
+ END: ;

@@ -1,0 +1,271 @@
+*DECK SPHCMI
+      SUBROUTINE SPHCMI(IPMICR,IPRINT,IMC,NMERGE,NISOT,NGCOND,NL,NW,
+     1 NED,NDEL,NALBP,SPH)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* SPH-correction of a Microlib.
+*
+*Copyright:
+* Copyright (C) 2011 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): A. Hebert
+*
+*Parameters: input
+* IPMICR  pointer to the condensed microlib (L_LIBRARY signature).
+* IPRINT  print flag (equal to 0 for no print).
+* IMC     type of macro-calculation (=1 diffusion or SPN;
+*         =2 other options;
+*         =3 type PIJ with Bell acceleration).
+* NMERGE  number of merged regions.
+* NISOT   number of isotopes in microlib.
+* NGCOND  number of condensed groups.
+* NL      number of Legendre orders in scattering info.
+* NW      type of weighting for PN cross section info (=0 P0; =1 P1).
+* NED     number of additional phi-weighted edits in microlib.
+* NDEL    number of delayed precursor groups.
+* NALBP   number of physical albedos per condensed group.
+* SPH     SPH homogenization factors.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      TYPE(C_PTR) IPMICR
+      INTEGER IPRINT,IMC,NMERGE,NISOT,NGCOND,NL,NW,NED,NDEL,NALBP
+      REAL SPH(NMERGE+NALBP,NGCOND)
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER(NSTATE=40)
+      INTEGER ISTATE(NSTATE)
+      TYPE(C_PTR) KPMICR
+      CHARACTER HSIGN*12,TEXT12*12,CM*2,TEXT8*8,HSMG*131
+      DOUBLE PRECISION DSUM
+*----
+*  ALLOCATABLE ARRAYS
+*----
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: IMIX,ITYPR
+      INTEGER, ALLOCATABLE, DIMENSION(:,:) :: IHUSED,IHEDIT
+      REAL, ALLOCATABLE, DIMENSION(:,:) :: GAR
+      REAL, ALLOCATABLE, DIMENSION(:,:,:) :: WSCAT
+      CHARACTER(LEN=12), ALLOCATABLE, DIMENSION(:) :: HMAKE
+      TYPE(C_PTR), ALLOCATABLE, DIMENSION(:) :: IPISO
+*----
+*  SCRATCH STORAGE ALLOCATION
+*   IHEDIT  character*8 names of phi-weighted edits in microlib.
+*----
+      MAXH=7+2*NW+NL+NED+NDEL
+      ALLOCATE(IHEDIT(2,NED+1),ITYPR(NL))
+      ALLOCATE(GAR(NGCOND,MAXH),WSCAT(NGCOND,NGCOND,NL))
+      ALLOCATE(IHUSED(3,NISOT),IMIX(NISOT),IPISO(NISOT))
+      ALLOCATE(HMAKE(MAXH+NL))
+*----
+*  RECOVER MICROLIB INFORMATION
+*----
+      CALL LCMGTC(IPMICR,'SIGNATURE',12,1,HSIGN)
+      IF(HSIGN.NE.'L_LIBRARY') CALL XABORT('SPHCMI: MICROLIB EXPECTED')
+      CALL LCMGET(IPMICR,'STATE-VECTOR',ISTATE)
+      IF(ISTATE(1).NE.NMERGE) CALL XABORT('SPHCMI: INVALID NMERGE')
+      IF(ISTATE(2).NE.NISOT) CALL XABORT('SPHCMI: INVALID NISOT')
+      IF(ISTATE(3).NE.NGCOND) CALL XABORT('SPHCMI: INVALID NGCOND')
+      IF(ISTATE(4).NE.NL) CALL XABORT('SPHCMI: INVALID NL')
+      IF(ISTATE(13).NE.NED) CALL XABORT('SPHCMI: INVALID NED')
+      IF(ISTATE(19).NE.NDEL) CALL XABORT('SPHCMI: INVALID NDEL')
+      IF(NED.GT.0) CALL LCMGET(IPMICR,'ADDXSNAME-P0',IHEDIT)
+*----
+*  LOOP OVER ISOTOPES
+*----
+      CALL LCMGET(IPMICR,'ISOTOPESUSED',IHUSED)
+      CALL LCMGET(IPMICR,'ISOTOPESMIX',IMIX)
+      CALL LIBIPS(IPMICR,NISOT,IPISO)
+      DO 200 ISOT=1,NISOT
+      WRITE(TEXT12,'(3A4)') (IHUSED(I0,ISOT),I0=1,3)
+      IF(IPRINT.GT.4) THEN
+         WRITE(6,'(29H SPHCMI: PROCESSING ISOTOPE '',A12,2H''.)') TEXT12
+      ENDIF
+      IBM=IMIX(ISOT)
+      KPMICR=IPISO(ISOT) ! set ISOT-th isotope
+      IF(.NOT.C_ASSOCIATED(KPMICR)) THEN
+         WRITE(HSMG,'(17HSPHCMI: ISOTOPE '',A12,16H'' IS NOT AVAILAB,
+     >   19HLE IN THE MICROLIB.)') TEXT12
+         CALL XABORT(HSMG)
+      ENDIF
+      MAXH=MAXH
+      DO 10 J=1,MAXH+NL
+      HMAKE(J)=' '
+   10 CONTINUE
+      CALL XDRSET(GAR,NGCOND*MAXH,0.0)
+      CALL XDRSET(WSCAT,NGCOND*NGCOND*NL,0.0)
+*----
+*  RECOVER CALCULATION-SPECIFIC ISOTOPIC DATA
+*----
+      DO 20 IW=1,MIN(NW+1,10)
+      WRITE(TEXT12,'(3HNWT,I1)') IW-1
+      CALL LCMLEN(KPMICR,TEXT12,LENGTH,ITYLCM)
+      IF(LENGTH.EQ.NGCOND) THEN
+         CALL LCMGET(KPMICR,TEXT12,GAR(1,IW))
+      ELSE
+         CALL LCMGET(KPMICR,'NWT0',GAR(1,IW))
+      ENDIF
+      HMAKE(IW)=TEXT12
+      WRITE(TEXT12,'(4HNTOT,I1)') IW-1
+      CALL LCMLEN(KPMICR,TEXT12,LENGTH,ITYLCM)
+      IF(LENGTH.EQ.NGCOND) THEN
+         CALL LCMGET(KPMICR,TEXT12,GAR(1,1+IW+NW))
+      ELSE
+         CALL LCMGET(KPMICR,'NTOT0',GAR(1,1+IW+NW))
+      ENDIF
+      HMAKE(1+IW+NW)=TEXT12
+   20 CONTINUE
+      CALL XDRLGS(KPMICR,-1,IPRINT,0,NL-1,1,NGCOND,GAR(1,3+2*NW),WSCAT,
+     > ITYPR)
+      DO 30 IL=0,NL-1
+      IF(ITYPR(IL+1).NE.0) THEN
+         WRITE (CM,'(I2.2)') IL
+         HMAKE(3+2*NW+IL)='SIGS'//CM
+      ENDIF
+   30 CONTINUE
+      CALL LCMLEN(KPMICR,'NUSIGF',LENGTH,ITYLCM)
+      IF(LENGTH.EQ.NGCOND) THEN
+         CALL LCMGET(KPMICR,'NUSIGF',GAR(1,3+2*NW+NL))
+         HMAKE(3+2*NW+NL)='NUSIGF'
+      ENDIF
+      IF(NDEL.GT.0) THEN
+         WRITE(TEXT12,'(6HNUSIGF,I2.2)') NDEL
+         CALL LCMLEN(KPMICR,TEXT12,LENGTH,ITYLCM)
+         IF(LENGTH.EQ.NGCOND) THEN
+            DO 40 IDEL=1,NDEL
+            WRITE(TEXT12,'(6HNUSIGF,I2.2)') IDEL
+            CALL LCMGET(KPMICR,TEXT12,GAR(1,3+2*NW+NL+IDEL))
+            HMAKE(3+2*NW+NL+IDEL)=TEXT12
+   40       CONTINUE
+         ENDIF
+      ENDIF
+      CALL LCMLEN(KPMICR,'H-FACTOR',LENGTH,ITYLCM)
+      IF(LENGTH.EQ.NGCOND) THEN
+         CALL LCMGET(KPMICR,'H-FACTOR',GAR(1,4+2*NW+NL+NDEL))
+         HMAKE(4+2*NW+NL+NDEL)='H-FACTOR'
+      ENDIF
+      CALL LCMLEN(KPMICR,'OVERV',LENGTH,ITYLCM)
+      IF(LENGTH.EQ.NGCOND) THEN
+         CALL LCMGET(KPMICR,'OVERV',GAR(1,5+2*NW+NL+NDEL))
+         HMAKE(5+2*NW+NL+NDEL)='OVERV'
+      ENDIF
+      CALL LCMLEN(KPMICR,'TRANC',LENGTH,ITYLCM)
+      IF(LENGTH.EQ.NGCOND) THEN
+         CALL LCMGET(KPMICR,'TRANC',GAR(1,6+2*NW+NL+NDEL))
+         HMAKE(6+2*NW+NL+NDEL)='TRANC'
+      ENDIF
+      DO 60 IED=1,NED
+      WRITE(TEXT8,'(2A4)') (IHEDIT(I0,IED),I0=1,2)
+      CALL LCMLEN(KPMICR,TEXT8,LENGTH,ITYLCM)
+      IF((LENGTH.GT.0).AND.(TEXT8.NE.'TRANC')) THEN
+         CALL LCMGET(KPMICR,TEXT8,GAR(1,6+2*NW+NL+NDEL+IED))
+         HMAKE(6+2*NW+NL+NDEL+IED)=TEXT8
+      ENDIF
+   60 CONTINUE
+      CALL LCMLEN(KPMICR,'STRD',LENGTH,ITYLCM)
+      IF(LENGTH.EQ.NGCOND) THEN
+         CALL LCMGET(KPMICR,'STRD',GAR(1,7+2*NW+NL+NDEL+NED))
+         HMAKE(7+2*NW+NL+NDEL+NED)='STRD'
+      ENDIF
+*----
+*  APPLY SPH CORRECTION
+*----
+      DO 80 J=1,MAXH
+      IF((HMAKE(J).NE.' ').AND.(HMAKE(J)(:4).NE.'SIGS')) THEN
+         DO 70 IG=1,NGCOND
+         IF((HMAKE(J)(:4).EQ.'NTOT').AND.(MOD(J-2-NW,2).EQ.1).AND.
+     >      (IMC.EQ.1)) THEN
+            GAR(IG,J)=GAR(IG,J)/SPH(IBM,IG)
+         ELSE IF((HMAKE(J)(:3).EQ.'NWT').AND.(MOD(J-1,2).EQ.0)) THEN
+            GAR(IG,J)=GAR(IG,J)/SPH(IBM,IG)
+         ELSE IF((HMAKE(J)(:4).EQ.'STRD').OR.(HMAKE(J).EQ.'TRANC')) THEN
+            GAR(IG,J)=GAR(IG,J)/SPH(IBM,IG)
+         ELSE IF((HMAKE(J)(:3).EQ.'NWT').AND.(MOD(J-1,2).EQ.1)) THEN
+            CONTINUE
+         ELSE IF((HMAKE(J)(:4).EQ.'NTOT').AND.(MOD(J-2-NW,2).EQ.0).AND.
+     >           (IMC.EQ.1)) THEN
+            GAR(IG,J)=GAR(IG,J)*SPH(IBM,IG)
+         ELSE IF((HMAKE(J)(:4).EQ.'NTOT').AND.(IMC.GT.1)) THEN
+            CONTINUE
+         ELSE
+            GAR(IG,J)=GAR(IG,J)*SPH(IBM,IG)
+         ENDIF
+   70    CONTINUE
+      ENDIF
+   80 CONTINUE
+      DO 105 IL=1,NL
+      ITYPR(IL)=0
+      IF(HMAKE(MAXH+IL+1).NE.' ') ITYPR(IL)=1
+      DO 100 IG2=1,NGCOND
+      DSUM=0.0
+      DO 90 IG1=1,NGCOND
+      IF(MOD(IL-1,2).EQ.0) THEN
+         IF((IG1.EQ.IG2).AND.(IMC.GT.1).AND.(IL.LE.NW+1)) THEN
+           WSCAT(IG1,IG1,IL)=WSCAT(IG1,IG1,IL)*SPH(IBM,IG1)
+     >     +(GAR(IG1,2+NW)-GAR(IG1,1+IL+NW)*SPH(IBM,IG1))
+         ELSE
+           WSCAT(IG1,IG2,IL)=WSCAT(IG1,IG2,IL)*SPH(IBM,IG2) ! IG1 <- IG2
+         ENDIF
+      ELSE
+         IF((IG1.EQ.IG2).AND.(IMC.GT.1).AND.(IL.LE.NW+1)) THEN
+           WSCAT(IG1,IG1,IL)=WSCAT(IG1,IG1,IL)/SPH(IBM,IG1)
+     >     +(GAR(IG1,2+NW)-GAR(IG1,1+IL+NW)/SPH(IBM,IG1))
+         ELSE
+           WSCAT(IG1,IG2,IL)=WSCAT(IG1,IG2,IL)/SPH(IBM,IG1)
+         ENDIF
+      ENDIF
+      DSUM=DSUM+WSCAT(IG1,IG2,IL)
+   90 CONTINUE
+      IF((IL.EQ.1).AND.(IMC.GT.1)) THEN
+         GAR(IG2,2+2*NW+IL)=GAR(IG2,2+2*NW+IL)*SPH(IBM,IG2)+
+     >   GAR(IG2,2+NW)*(1.0-SPH(IBM,IG2))
+      ELSE IF(IL.EQ.1) THEN
+         GAR(IG2,2+2*NW+IL)=GAR(IG2,2+2*NW+IL)*SPH(IBM,IG2)
+      ELSE
+         GAR(IG2,2+2*NW+IL)=REAL(DSUM)
+      ENDIF
+  100 CONTINUE
+  105 CONTINUE
+*----
+*  SAVE CORRECTED INFORMATION ON LCM
+*----
+      DO 110 J=1,MAXH
+      IF((HMAKE(J).NE.' ').AND.(HMAKE(J)(:4).NE.'SIGS')) THEN
+         CALL LCMPUT(KPMICR,HMAKE(J),NGCOND,2,GAR(1,J))
+      ENDIF
+  110 CONTINUE
+      CALL XDRLGS(KPMICR,1,IPRINT,0,NL-1,1,NGCOND,GAR(1,3+2*NW),WSCAT,
+     > ITYPR)
+  200 CONTINUE
+*----
+*  CORRECT MACROLIB INFORMATION
+*----
+      CALL LCMLEN(IPMICR,'MACROLIB',ILONG,ITYLCM)
+      IF(ILONG.NE.0) THEN
+         CALL LCMSIX(IPMICR,'MACROLIB',1)
+         CALL LCMGET(IPMICR,'STATE-VECTOR',ISTATE)
+         NIFISS=ISTATE(4)
+         CALL SPHCMA(IPMICR,IPRINT,IMC,NMERGE,NGCOND,NIFISS,NED,NALBP,
+     >   SPH)
+         CALL LCMSIX(IPMICR,' ',2)
+      ENDIF
+      IF(IPRINT.GT.5) WRITE(6,'(/28H SPHCMI: MICROLIB CORRECTED.)')
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
+      DEALLOCATE(HMAKE)
+      DEALLOCATE(IPISO,IMIX,IHUSED)
+      DEALLOCATE(WSCAT,GAR)
+      DEALLOCATE(ITYPR,IHEDIT)
+      RETURN
+      END

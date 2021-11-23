@@ -1,0 +1,68 @@
+*----
+*  TEST CASE Test_IDET
+*  MULTICELL CARTESIAN ASSEMBLY WITH WATER HOLE
+*  DETECTOR INTEGRATED RESPONSE CALCULATION
+*----
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST DATABASE LIBRARY GEOM TRACK MACRO SYSTEM DFLUX DETECTOR ;
+MODULE NCR: TRIVAT: TRIVAA: FLUD: GREP: END: IDET: ;
+REAL keff1 dete4 ;
+SEQ_ASCII _DATABASE :: FILE './_DATABASE.txt' ;
+PROCEDURE assertS ;
+*--
+* define microlib
+*--
+DATABASE := _DATABASE ;
+LIBRARY := NCR: DATABASE ::
+             EDIT 0
+             LINEAR MICRO NMIX 6
+             COMPO DATABASE fuel
+             MIX  1 USE ENDMIX
+             MIX  2 USE ENDMIX
+             MIX  3 USE ENDMIX
+             MIX  4 USE ENDMIX
+             MIX  5 USE ENDMIX
+             MIX  6 USE ENDMIX
+;
+*--
+* define and track geometry
+*--
+GEOM := DATABASE :: STEP UP fuel STEP UP 'GEOMETRIES' STEP AT 1 ;
+TRACK := TRIVAT: GEOM ::
+      TITLE 'DONJON GEOMETRY'
+      EDIT 9 MAXR 50 DUAL (*IELEM=*) 3 (*ICOL=*) 2 ;
+*--
+* compute DONJON flux
+*--
+MACRO := LIBRARY :: STEP UP MACROLIB ;
+SYSTEM := TRIVAA: MACRO TRACK :: EDIT 0 ;
+DFLUX := FLUD: SYSTEM TRACK :: EDIT 2 ADI 5 ACCE 5 3 ;
+
+GREP: DFLUX   :: GETVAL 'K-EFFECTIVE' 1  >>keff1<<  ;
+
+ECHO "==> keff1=" keff1 ;
+
+assertS DFLUX :: 'K-EFFECTIVE' 1 1.298056 ;
+*--
+* compute detector response
+*--
+DETECTOR := IDET: TRACK DFLUX LIBRARY :: EDIT 2
+   DETECTOR
+     POSITION 1.9 1.1
+     POSITION 3.6 1.4
+     POSITION 2.6 2.6 INTEG 0.25 1.75
+     POSITION INTEG 1.25 1.27 INTEG 2.51 2.53
+   ENDD ;
+*--
+* validation
+*--
+GREP: DETECTOR   :: GETVAL 'RESPON' 4  >>dete4<<  ;
+
+ECHO "==> dete4=" dete4 ;
+
+assertS DETECTOR :: 'RESPON' 4 100.6081 ;
+ECHO "test Test_IDET completed" ;
+END: ;
+QUIT .

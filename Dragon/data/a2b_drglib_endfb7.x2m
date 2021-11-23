@@ -1,0 +1,10 @@
+*----
+*  Draglib conversion, from ascii export to xsm binary
+*----
+XSM_FILE DRGLIB :: FILE './DRGLIB' ;
+SEQ_ASCII EXPORT ;
+MODULE UTL: END: ;
+*
+DRGLIB := EXPORT :: EDIT 10 ;
+UTL: DRGLIB :: DIR ;
+END: ;

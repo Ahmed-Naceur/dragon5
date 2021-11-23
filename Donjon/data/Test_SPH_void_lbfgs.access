@@ -1,0 +1,10 @@
+#!/bin/sh
+if [ $# = 0 ]
+   then
+   echo "usage: Test_SPH_void_lbfgs.access directory" 1>&2
+   exit 1
+fi
+ln -s $1/data/Test_SPH_void_bfgs_proc/_OUTV .
+cp $1/data/Test_SPH_void_bfgs_proc/SPH_LNSR_imp.c2m .
+ls -l
+echo "Test_SPH_void_lbfgs access script terminated"

@@ -1,0 +1,91 @@
+*----
+*  Nom          : candu6_iram.x2m
+*  Type         : time averaged fundamental plus 12 modes calculation
+*----
+*  Definition STRUCTURES, MODULES et PROCEDURES
+*----
+LINKED_LIST G23d2 Index Device Track Reseau System Mactot Macres
+            Macnod Lfuel Macro Flux ;
+MODULE      DSET: TRIVAT: FLUD: DELETE: GREP: ABORT: END: ;
+
+PROCEDURE   PgeoG2 PdevR PdevL Pinires Pmacfix Pfluax ;
+PROCEDURE   assertS ;
+INTEGER     Iprint := 1 ;
+REAL        B1 := 7935.748 ;   ! Averaged exit burnup in zone 1
+REAL        B2 := 7978.868 ;   ! Averaged exit burnup in zone 2
+REAL        B3 := 7378.825 ;   ! Averaged exit burnup in zone 3
+REAL        Precf := 1.E-8 ;   ! Flux calculation accuracy
+REAL        Pow  := 2061.4 ;   ! Total fission power
+REAL        keff1 ;
+INTEGER     Maxreg := 27700 ;  ! max number of regions in the geometry
+SEQ_ASCII   fnat :: FILE 'fnat' ;
+STRING      Lbl := "DONJON" ;  ! Modele pour le niveau max des barres
+                               ! liquides; choix: OPTEX/DONJON/HQ
+
+* Define the G2 geometry
+************************
+G23d2 Index := PgeoG2 :: <<Maxreg>> ;
+
+*--
+* Definition of adjuster-rods Devices:
+*--
+ Device Index := PdevR Index ;
+
+*--
+* Definition of liquid zone controllers:
+*--
+ Device Index := PdevL Device Index :: <<Lbl>> ;
+
+*--
+* Set Devices parameters:
+*--
+ Device := DSET: Device :: EDIT 1
+           ROD-GROUP 1  LEVEL 0.9455 END
+           LZC-GROUP 1  LEVEL 0.3    END
+           LZC-GROUP 2  LEVEL 0.5    END ;
+
+* Tracking of the geometry
+**************************
+Track := TRIVAT: G23d2 ::
+       EDIT 1 
+       TITLE 'G2 3D time-averaged'
+       MAXR <<Maxreg>> MCFD 1 ;
+
+* Definition initiale des melanges (sections efficaces macroscopiques)
+**********************************************************************
+Macro := Pmacfix ; ! proprietes fixes=independant du burnup
+
+Reseau Index := Pinires Index :: <<B1>> <<B2>> <<B3>> ; 
+                               ! proprietes dependantes du burnup
+
+* Import the fuel Compo
+***********************
+ Lfuel := fnat ;
+
+* Convergence on the axial Flux
+*******************************
+ Reseau Flux System Mactot Macres Macnod Index := Pfluax 
+    Reseau Index Track Lfuel Macro Device ::
+    <<Precf>> <<Pow>> 1 <<Iprint>> ;        
+
+GREP: Flux   ::
+  GETVAL 'K-EFFECTIVE ' 1  >>keff1<<  ;
+
+ECHO "axially converged K-effective 1 = " keff1   ;
+
+Flux := DELETE: Flux ;
+
+* Compute the modes
+*******************
+Flux := FLUD: System Track ::
+  EDIT 2 IRAM 3 13 EXTE <<Precf>> ;
+
+GREP: Flux   ::
+  GETVAL 'K-EFFECTIVE ' 1  >>keff1<<  ;
+
+ECHO "K-effective 1 = " keff1   ;
+assertS Flux :: 'K-EFFECTIVE' 1 1.0000000 ;
+
+ECHO "test candu6_iram.x2m completed" ;
+END: ;
+QUIT "LIST" .

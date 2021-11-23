@@ -1,0 +1,809 @@
+*DECK FLDMON
+      SUBROUTINE FLDMON (IPTRK,IPSYS,IPFLUX,LL4,ITY,NUN,NGRP,LMOD,ICL1,
+     1 ICL2,IMPX,IMPH,TITR,EPS2,NADI,MAXOUT,MAXINR,EPSINR,RAND,FKEFF,
+     2 EVECT,ADECT)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Solution of multigroup eigenvalue systems for the calculation of the
+* LMOD first bi-orthogonal harmonics of the diffusion equation in
+* Trivac. Use the preconditionned power method with Hotelling deflation
+* and a two-parameter SVAT acceleration technique.
+*
+*Copyright:
+* Copyright (C) 2002 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): A. Hebert
+*
+*Parameters: input
+* IPTRK   L_TRACK pointer to the tracking information.
+* IPSYS   L_SYSTEM pointer to system matrices.
+* IPFLUX  L_FLUX pointer to the solution.
+* LL4     order of the system matrices.
+* ITY     type of solution (2: classical Trivac; 3: Thomas-Raviart).
+* NUN     number of unknowns in each energy group.
+* NGRP    number of energy groups.
+* LMOD    number of bi-orthogonal harmonics to compute.
+* ICL1    number of free iterations in one cycle of the inverse power
+*         method.
+* ICL2    number of accelerated iterations in one cycle.
+* IMPX    print parameter: =0: no print ; =1: minimum printing;
+*         =2: iteration history is printed; =3: solution is printed.
+* IMPH    type of histogram processing:
+*         =0: no action is taken;
+*         =1: the flux is compared to a reference flux stored on LCM
+*         =2: the convergence histogram is printed;
+*         =3: the convergence histogram is printed with axis and
+*            titles. The plotting file is completed;
+*         =4: the convergence histogram is printed with axis, acce-
+*            leration factors and titles. The plotting file is
+*            completed.
+* TITR    title.
+* EPS2    convergence criteria for the flux.
+* NADI    number of inner ADI iterations per outer iteration.
+* MAXOUT  maximum number of outer iterations.
+* MAXINR  maximum number of thermal iterations.
+* EPSINR  thermal iteration epsilon.
+* RAND    initialization flag:
+*         =.true. use an initial random flux; =.false. use a flat flux.
+*
+*Parameters: output
+* FKEFF   effective multiplication factor of each harmonic.
+* EVECT   converged direct harmonic vector.
+* ADECT   converged adjoint harmonic vector.
+*
+*References:
+* A. H\'ebert, 'Preconditioning the power method for reactor
+* calculations', Nucl. Sci. Eng., 94, 1 (1986).
+* J. H. Wilkinson, "The algebraic eigenvalue problem", Clarendon
+* Press, Oxford, p. 584, 1965.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      TYPE(C_PTR) IPTRK,IPSYS,IPFLUX
+      CHARACTER TITR*72
+      INTEGER LL4,ITY,NUN,NGRP,LMOD,ICL1,ICL2,IMPX,IMPH,NADI,MAXOUT,
+     1 MAXINR
+      REAL EPS2,EPSINR,FKEFF(LMOD),EVECT(NUN,NGRP,LMOD),
+     1 ADECT(NUN,NGRP,LMOD)
+      LOGICAL RAND
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER (MMAXX=250,EPS1=1.0E-5)
+      PARAMETER (IM=714025,ID=1366,IC=150889,RM=1.4005112E-6)
+      CHARACTER*12 TEXT12
+      LOGICAL LOGTES
+      DOUBLE PRECISION AEAE,AEAG,AEAH,AGAG,AGAH,AHAH,BEBE,BEBG,BEBH,
+     1 BGBG,BGBH,BHBH,AEBE,AEBG,AEBH,AGBE,AGBG,AGBH,AHBE,AHBG,AHBH,
+     2 X,DXDA,DXDB,Y,DYDA,DYDB,Z,DZDA,DZDB,F,D2F(2,3),EVAL,ALP,BET,Z1,
+     3 FMIN
+      TYPE(C_PTR) JPFLUX,KPFLUX,MPFLUX,NPFLUX
+      REAL ERR(MMAXX),ALPH(MMAXX),BETA(MMAXX)
+      DOUBLE PRECISION, PARAMETER :: ALP_TAB(24) = (/ 0.2, 0.4, 0.6,
+     1  0.8, 1.0, 1.2, 1.5, 2.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0,
+     2  40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0 /)
+      DOUBLE PRECISION, PARAMETER :: BET_TAB(11) = (/ -1.0, -0.8, -0.6,
+     1 -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 /)
+      REAL, DIMENSION(:), ALLOCATABLE :: AGAR
+      REAL, DIMENSION(:,:), ALLOCATABLE :: GRAD1,GRAD2,VEA1,VEA2,VEA3,
+     1 VEB1,VEB2,VEB3
+      REAL, DIMENSION(:), POINTER :: AGARM
+      TYPE(C_PTR) AGARM_PTR
+*----
+*  SCRATCH STORAGE ALLOCATION
+*----
+      ALLOCATE(AGAR(LL4),GRAD1(NUN,NGRP),GRAD2(NUN,NGRP),VEA1(NUN,NGRP),
+     1 VEA2(NUN,NGRP),VEA3(NUN,NGRP),VEB1(NUN,NGRP),VEB2(NUN,NGRP),
+     2 VEB3(NUN,NGRP))
+*
+*     TKT : CPU TIME FOR THE SOLUTION OF LINEAR SYSTEMS.
+*     TKB : CPU TIME FOR BILINEAR PRODUCT EVALUATIONS.
+      TKT=0.0
+      TKB=0.0
+      CALL MTOPEN(IMPX,IPTRK,LL4)
+      IF(LL4.GT.NUN) CALL XABORT('FLDMON: INVALID NUMBER OF UNKNOWNS.')
+*
+      DO 390 IMOD=1,LMOD
+      CALL KDRCPU(TK1)
+      IF(IMPX.GE.1) WRITE (6,'(1H1//13H HARMONIC NB.,I3//)') IMOD
+      CALL LCMLEN(IPFLUX,'MODE',ILONG,ITYLCM)
+      IF((ILONG.NE.0).AND.(IMPH.EQ.0)) THEN
+         JPFLUX=LCMGID(IPFLUX,'MODE')
+         KPFLUX=LCMGIL(JPFLUX,IMOD)
+         MPFLUX=LCMGID(KPFLUX,'FLUX')
+         NPFLUX=LCMGID(KPFLUX,'AFLUX')
+         DO 10 IGR=1,NGRP
+         CALL LCMGDL(MPFLUX,IGR,EVECT(1,IGR,IMOD))
+         CALL LCMGDL(NPFLUX,IGR,ADECT(1,IGR,IMOD))
+   10    CONTINUE
+      ELSE IF((IMOD.EQ.1).OR.(.NOT.RAND)) THEN
+*        UNIFORM UNKNOWN VECTOR.
+         DO 25 IGR=1,NGRP
+         DO 20 I=1,NUN
+         EVECT(I,IGR,IMOD)=1.0
+         ADECT(I,IGR,IMOD)=1.0
+   20    CONTINUE
+   25    CONTINUE
+      ELSE
+*        RANDOM UNKNOWN VECTOR.
+         ISEED=0
+         DO 35 IGR=1,NGRP
+         DO 30 I=1,NUN
+         ISEED=MOD(ISEED*ID+IC,IM)
+         RAN=REAL(ISEED)*RM
+         EVECT(I,IGR,IMOD)=RAN
+         ADECT(I,IGR,IMOD)=RAN
+   30    CONTINUE
+   35    CONTINUE
+      ENDIF
+*----
+*  PRECONDITIONED POWER METHOD FOR THE DIRECT PROBLEM
+*----
+      EVAL=1.0D0
+      VVV=0.0
+      ISTART=1
+      NNADI=NADI
+      TEST=0.0
+      IF(IMPX.GE.1) WRITE (6,600) NADI,'DIRECT'
+      IF(IMPX.GE.2) WRITE (6,610)
+      CALL FLDDEF(NUN,IPTRK,IPSYS,LL4,ITY,NGRP,IMOD,LMOD,EVECT,ADECT,
+     1 EVECT(1,1,IMOD),1,VEA1,VEB1)
+      CALL KDRCPU(TK2)
+      TKB=TKB+(TK2-TK1)
+      M=0
+   50 M=M+1
+*----
+*  EIGENVALUE EVALUATION
+*----
+      CALL KDRCPU(TK1)
+      AEBE=0.0D0
+      BEBE=0.0D0
+      DO 65 IGR=1,NGRP
+      DO 60 I=1,LL4
+      AEBE=AEBE+VEA1(I,IGR)*VEB1(I,IGR)
+      BEBE=BEBE+VEB1(I,IGR)**2
+   60 CONTINUE
+   65 CONTINUE
+      EVAL=AEBE/BEBE
+      CALL KDRCPU(TK2)
+      TKB=TKB+(TK2-TK1)
+*----
+*  DIRECTION EVALUATION
+*----
+      DO 110 IGR=1,NGRP
+      CALL KDRCPU(TK1)
+      DO 70 I=1,LL4
+      GRAD1(I,IGR)=REAL(EVAL)*VEB1(I,IGR)-VEA1(I,IGR)
+   70 CONTINUE
+      DO 100 JGR=1,IGR-1
+      WRITE(TEXT12,'(1HA,2I3.3)') IGR,JGR
+      CALL LCMLEN(IPSYS,TEXT12,ILONG,ITYLCM)
+      IF(ILONG.EQ.0) GO TO 100
+      IF(ITY.EQ.13) THEN
+         CALL MTLDLM(TEXT12,IPTRK,IPSYS,LL4,ITY,GRAD1(1,JGR),AGAR)
+         DO 80 I=1,LL4
+         GRAD1(I,IGR)=GRAD1(I,IGR)+AGAR(I)
+   80    CONTINUE
+      ELSE
+         CALL LCMGPD(IPSYS,TEXT12,AGARM_PTR)
+         CALL C_F_POINTER(AGARM_PTR,AGARM,(/ ILONG /))
+         DO 90 I=1,ILONG
+         GRAD1(I,IGR)=GRAD1(I,IGR)+AGARM(I)*GRAD1(I,JGR)
+   90    CONTINUE
+      ENDIF
+  100 CONTINUE
+      CALL KDRCPU(TK2)
+      TKB=TKB+(TK2-TK1)
+*
+      CALL KDRCPU(TK1)
+      WRITE(TEXT12,'(1HA,2I3.3)') IGR,IGR
+      CALL FLDADI(TEXT12,IPTRK,IPSYS,LL4,ITY,GRAD1(1,IGR),NNADI)
+      CALL KDRCPU(TK2)
+      TKT=TKT+(TK2-TK1)
+  110 CONTINUE
+*----
+*  PERFORM THERMAL (UP-SCATTERING) ITERATIONS
+*----
+      IF(MAXINR.GT.1) THEN
+         CALL FLDTHR(IPTRK,IPSYS,IPFLUX,.FALSE.,LL4,ITY,NUN,NGRP,ICL1,
+     1   ICL2,IMPX,NNADI,0,MAXINR,EPSINR,ITER,TKT,TKB,GRAD1)
+      ENDIF
+*----
+*  DISPLACEMENT EVALUATION
+*----
+      CALL KDRCPU(TK1)
+      F=0.0D0
+      DELS=ABS(REAL((EVAL-VVV)/EVAL))
+      VVV=REAL(EVAL)
+*----
+*  EVALUATION OF THE TWO ACCELERATION PARAMETERS ALP AND BET
+*----
+      ALP=1.0D0
+      BET=0.0D0
+      N=0
+      AEAE=0.0D0
+      AEAG=0.0D0
+      AEAH=0.0D0
+      AGAG=0.0D0
+      AGAH=0.0D0
+      AHAH=0.0D0
+      BEBG=0.0D0
+      BEBH=0.0D0
+      BGBG=0.0D0
+      BGBH=0.0D0
+      BHBH=0.0D0
+      AEBG=0.0D0
+      AEBH=0.0D0
+      AGBE=0.0D0
+      AGBG=0.0D0
+      AGBH=0.0D0
+      AHBE=0.0D0
+      AHBG=0.0D0
+      AHBH=0.0D0
+      CALL FLDDEF(NUN,IPTRK,IPSYS,LL4,ITY,NGRP,IMOD,LMOD,EVECT,ADECT,
+     1 GRAD1,1,VEA2,VEB2)
+      IF(1+MOD(M-ISTART,ICL1+ICL2).GT.ICL1) THEN
+         DO 125 IGR=1,NGRP
+         DO 120 I=1,LL4
+*        COMPUTE (A ,A )
+         AEAE=AEAE+VEA1(I,IGR)**2
+         AEAG=AEAG+VEA1(I,IGR)*VEA2(I,IGR)
+         AEAH=AEAH+VEA1(I,IGR)*VEA3(I,IGR)
+         AGAG=AGAG+VEA2(I,IGR)**2
+         AGAH=AGAH+VEA2(I,IGR)*VEA3(I,IGR)
+         AHAH=AHAH+VEA3(I,IGR)**2
+*        COMPUTE (B ,B )
+         BEBG=BEBG+VEB1(I,IGR)*VEB2(I,IGR)
+         BEBH=BEBH+VEB1(I,IGR)*VEB3(I,IGR)
+         BGBG=BGBG+VEB2(I,IGR)**2
+         BGBH=BGBH+VEB2(I,IGR)*VEB3(I,IGR)
+         BHBH=BHBH+VEB3(I,IGR)**2
+*        COMPUTE (A ,B )
+         AEBG=AEBG+VEA1(I,IGR)*VEB2(I,IGR)
+         AEBH=AEBH+VEA1(I,IGR)*VEB3(I,IGR)
+         AGBE=AGBE+VEA2(I,IGR)*VEB1(I,IGR)
+         AGBG=AGBG+VEA2(I,IGR)*VEB2(I,IGR)
+         AGBH=AGBH+VEA2(I,IGR)*VEB3(I,IGR)
+         AHBE=AHBE+VEA3(I,IGR)*VEB1(I,IGR)
+         AHBG=AHBG+VEA3(I,IGR)*VEB2(I,IGR)
+         AHBH=AHBH+VEA3(I,IGR)*VEB3(I,IGR)
+  120    CONTINUE
+  125    CONTINUE
+*
+  130    N=N+1
+         IF(N.GT.10) THEN
+            IF(IMPX.GT.0) WRITE(6,'(/30H FLDMON: FAILURE OF THE NEWTON,
+     1      55H-RAPHTON ALGORIHTHM FOR COMPUTING THE OVERRELAXATION PA,
+     2      12HRAMETERS(1).)')
+            GO TO 135
+         ENDIF
+*        COMPUTE X(M+1)
+         X=BEBE+ALP*ALP*BGBG+BET*BET*BHBH+2.0D0*(ALP*BEBG+BET*BEBH
+     1   +ALP*BET*BGBH)
+         DXDA=2.0D0*(BEBG+ALP*BGBG+BET*BGBH)
+         DXDB=2.0D0*(BEBH+ALP*BGBH+BET*BHBH)
+*        COMPUTE Y(M+1)
+         Y=AEAE+ALP*ALP*AGAG+BET*BET*AHAH+2.0D0*(ALP*AEAG+BET*AEAH
+     1   +ALP*BET*AGAH)
+         DYDA=2.0D0*(AEAG+ALP*AGAG+BET*AGAH)
+         DYDB=2.0D0*(AEAH+ALP*AGAH+BET*AHAH)
+*        COMPUTE Z(M+1)
+         Z=AEBE+ALP*ALP*AGBG+BET*BET*AHBH+ALP*(AEBG+AGBE)
+     1   +BET*(AEBH+AHBE)+ALP*BET*(AGBH+AHBG)
+         DZDA=AEBG+AGBE+2.0D0*ALP*AGBG+BET*(AGBH+AHBG)
+         DZDB=AEBH+AHBE+ALP*(AGBH+AHBG)+2.0D0*BET*AHBH
+*        COMPUTE F(M+1)
+         F=X*Y-Z*Z
+         D2F(1,1)=2.0D0*(BGBG*Y+DXDA*DYDA+X*AGAG-DZDA**2-2.0D0*Z*AGBG)
+         D2F(1,2)=2.0D0*BGBH*Y+DXDA*DYDB+DXDB*DYDA+2.0D0*X*AGAH
+     1   -2.0D0*DZDA*DZDB-2.0D0*Z*(AGBH+AHBG)
+         D2F(2,2)=2.0D0*(BHBH*Y+DXDB*DYDB+X*AHAH-DZDB**2-2.0D0*Z*AHBH)
+         D2F(2,1)=D2F(1,2)
+         D2F(1,3)=DXDA*Y+X*DYDA-2.0D0*Z*DZDA
+         D2F(2,3)=DXDB*Y+X*DYDB-2.0D0*Z*DZDB
+*        SOLUTION OF A LINEAR SYSTEM.
+         CALL ALSBD(2,1,D2F,IER,2)
+         IF(IER.NE.0) CALL XABORT('FLDMON: SINGULAR MATRIX.')
+         ALP=ALP-D2F(1,3)
+         BET=BET-D2F(2,3)
+         IF(ALP.GT.100.0) THEN
+            IF(IMPX.GT.0) WRITE(6,'(/30H FLDMON: FAILURE OF THE NEWTON,
+     1      55H-RAPHTON ALGORIHTHM FOR COMPUTING THE OVERRELAXATION PA,
+     2      12HRAMETERS(2).)')
+            GO TO 135
+         ENDIF
+         IF((ABS(D2F(1,3)).LE.1.0D-4).AND.(ABS(D2F(2,3)).LE.1.0D-4))
+     1   GO TO 140
+         GO TO 130
+*
+*        alternative algorithm in case of Newton-Raphton failure
+  135    IAMIN=999
+         IBMIN=999
+         FMIN=HUGE(FMIN)
+         DO IA=1,SIZE(ALP_TAB)
+           ALP=ALP_TAB(IA)
+           DO IB=1,SIZE(BET_TAB)
+             BET=BET_TAB(IB)
+*            COMPUTE X
+             X=BEBE+ALP*ALP*BGBG+BET*BET*BHBH+2.0D0*(ALP*BEBG+BET*BEBH
+     1       +ALP*BET*BGBH)
+*            COMPUTE Y
+             Y=AEAE+ALP*ALP*AGAG+BET*BET*AHAH+2.0D0*(ALP*AEAG+BET*AEAH
+     1       +ALP*BET*AGAH)
+*            COMPUTE Z
+             Z=AEBE+ALP*ALP*AGBG+BET*BET*AHBH+ALP*(AEBG+AGBE)
+     1       +BET*(AEBH+AHBE)+ALP*BET*(AGBH+AHBG)
+*            COMPUTE F
+             F=X*Y-Z*Z
+             IF(F.LT.FMIN) THEN
+               IAMIN=IA
+               IBMIN=IB
+               FMIN=F
+             ENDIF
+           ENDDO
+         ENDDO
+         ALP=ALP_TAB(IAMIN)
+         BET=BET_TAB(IBMIN)
+  140    BET=BET/ALP
+         IF((ALP.LT.1.0D0).AND.(ALP.GT.0.0D0)) THEN
+            ALP=1.0D0
+            BET=0.0D0
+         ELSE IF(ALP.LE.0.0D0) THEN
+            ISTART=M+1
+            ALP=1.0D0
+            BET=0.0D0
+         ENDIF
+         DO 155 IGR=1,NGRP
+         DO 150 I=1,LL4
+         GRAD1(I,IGR)=REAL(ALP)*(GRAD1(I,IGR)+REAL(BET)*GRAD2(I,IGR))
+         VEA2(I,IGR)=REAL(ALP)*(VEA2(I,IGR)+REAL(BET)*VEA3(I,IGR))
+         VEB2(I,IGR)=REAL(ALP)*(VEB2(I,IGR)+REAL(BET)*VEB3(I,IGR))
+  150    CONTINUE
+  155    CONTINUE
+      ENDIF
+      CALL KDRCPU(TK2)
+      TKB=TKB+(TK2-TK1)
+*
+      LOGTES=(M.LT.ICL1).OR.(MOD(M-ISTART,ICL1+ICL2).EQ.ICL1-1)
+      IF(LOGTES.AND.(DELS.LE.EPS1)) THEN
+         DELT=0.0
+         DO 170 IGR=1,NGRP
+         DELN=0.0
+         DELD=0.0
+         DO 160 I=1,LL4
+         EVECT(I,IGR,IMOD)=EVECT(I,IGR,IMOD)+GRAD1(I,IGR)
+         VEA1(I,IGR)=VEA1(I,IGR)+VEA2(I,IGR)
+         VEB1(I,IGR)=VEB1(I,IGR)+VEB2(I,IGR)
+         GRAD2(I,IGR)=GRAD1(I,IGR)
+         VEA3(I,IGR)=VEA2(I,IGR)
+         VEB3(I,IGR)=VEB2(I,IGR)
+         DELN=MAX(DELN,ABS(VEB2(I,IGR)))
+         DELD=MAX(DELD,ABS(VEB1(I,IGR)))
+  160    CONTINUE
+         IF(DELD.NE.0.0) DELT=MAX(DELT,DELN/DELD)
+  170    CONTINUE
+         IF(IMPX.GE.2) WRITE (6,615) M,AEAE,AEAG,AEAH,AGAG,AGAH,AHAH,
+     1   BEBE,ALP,BET,EVAL,F,DELS,DELT,N,BEBG,BEBH,BGBG,BGBH,BHBH,
+     2   AEBE,AEBG,AEBH,AGBE,AGBG,AGBH,AHBE,AHBG,AHBH
+*        COMPUTE THE CONVERGENCE HISTOGRAM.
+         IF((IMPH.GE.1).AND.(M.LE.MMAXX)) THEN
+            JPFLUX=LCMGID(IPFLUX,'MODE')
+            KPFLUX=LCMGIL(JPFLUX,IMOD)
+            CALL FLDXCO(KPFLUX,LL4,NUN,EVECT(1,NGRP,IMOD),.TRUE.,ERR(M))
+            ALPH(M)=REAL(ALP)
+            BETA(M)=REAL(BET)
+         ENDIF
+         IF(DELT.LE.EPS2) GO TO 190
+      ELSE
+         DO 185 IGR=1,NGRP
+         DO 180 I=1,LL4
+         EVECT(I,IGR,IMOD)=EVECT(I,IGR,IMOD)+GRAD1(I,IGR)
+         VEA1(I,IGR)=VEA1(I,IGR)+VEA2(I,IGR)
+         VEB1(I,IGR)=VEB1(I,IGR)+VEB2(I,IGR)
+         GRAD2(I,IGR)=GRAD1(I,IGR)
+         VEA3(I,IGR)=VEA2(I,IGR)
+         VEB3(I,IGR)=VEB2(I,IGR)
+  180    CONTINUE
+  185    CONTINUE
+         IF(IMPX.GE.2) WRITE (6,620) M,AEAE,AEAG,AEAH,AGAG,AGAH,AHAH,
+     1   BEBE,ALP,BET,EVAL,F,DELS,N,BEBG,BEBH,BGBG,BGBH,BHBH,AEBE,
+     2   AEBG,AEBH,AGBE,AGBG,AGBH,AHBE,AHBG,AHBH
+*        COMPUTE THE CONVERGENCE HISTOGRAM.
+         IF((IMPH.GE.1).AND.(M.LE.MMAXX)) THEN
+            JPFLUX=LCMGID(IPFLUX,'MODE')
+            KPFLUX=LCMGIL(JPFLUX,IMOD)
+            CALL FLDXCO(KPFLUX,LL4,NUN,EVECT(1,NGRP,IMOD),.TRUE.,ERR(M))
+            ALPH(M)=REAL(ALP)
+            BETA(M)=REAL(BET)
+         ENDIF
+      ENDIF
+*
+      IF(M.EQ.1) TEST=DELS
+      IF((M.GT.5).AND.(DELS.GT.TEST)) CALL XABORT('FLDMON: CONVERGENCE'
+     1 //' FAILURE.')
+      IF(M.GE.MAXOUT) THEN
+         WRITE (6,'(/46H FLDMON: ***WARNING*** MAXIMUM NUMBER OF ITERA,
+     1   17HTIONS IS REACHED.)')
+         GO TO 190
+      ENDIF
+      IF(MOD(M,36).EQ.0) THEN
+         ISTART=M+1
+         NNADI=NNADI+1
+         IF(IMPX.GE.1) WRITE (6,700) NNADI
+      ENDIF
+      GO TO 50
+*----
+*  DIRECT SOLUTION EDITION
+*----
+  190 Z1=1.0D0/EVAL
+      IF(IMPX.GE.1) WRITE (6,630) 1.0D0/EVAL
+      IF(IMPX.EQ.1) WRITE (6,640) M
+      IF(IMPX.EQ.3) THEN
+         DO 210 IGR=1,NGRP
+         WRITE (6,660) 'DIRECT',IGR,(EVECT(I,IGR,IMOD),I=1,LL4)
+  210    CONTINUE
+      ENDIF
+      IF(IMPH.EQ.1) THEN
+         JPFLUX=LCMGID(IPFLUX,'MODE')
+         KPFLUX=LCMGIL(JPFLUX,IMOD)
+         CALL LCMLEN(KPFLUX,'REF',ILONG,ITYLCM)
+         IF(ILONG.EQ.0) THEN
+            WRITE(6,'(44H FLDMON: STORE A REFERENCE THERMAL HARMONIC.)')
+            CALL LCMPUT(KPFLUX,'REF',NUN,2,EVECT(1,NGRP,IMOD))
+         ENDIF
+      ELSE IF(IMPH.GE.2) THEN
+         JPFLUX=LCMGID(IPFLUX,'MODE')
+         KPFLUX=LCMGIL(JPFLUX,IMOD)
+         IGRAPH=0
+  215    IGRAPH=IGRAPH+1
+         WRITE (TEXT12,'(5HHISTO,I3)') IGRAPH
+         CALL LCMLEN (KPFLUX,TEXT12,ILENG,ITYLCM)
+         IF(ILENG.EQ.0) THEN
+            MM=MIN(M,MMAXX)
+            CALL LCMSIX (KPFLUX,TEXT12,1)
+            CALL LCMPTC (KPFLUX,'HTITLE',72,1,TITR)
+            CALL LCMPUT (KPFLUX,'ALPHA',MM,2,ALPH)
+            CALL LCMPUT (KPFLUX,'BETA',MM,2,BETA)
+            CALL LCMPUT (KPFLUX,'ERROR',MM,2,ERR)
+            CALL LCMPUT (KPFLUX,'IMPH',1,1,IMPH)
+            CALL LCMSIX (KPFLUX,' ',2)
+         ELSE
+            GO TO 215
+         ENDIF
+      ENDIF
+*----
+*  PRECONDITIONED POWER METHOD FOR THE ADJOINT PROBLEM
+*----
+      CALL KDRCPU(TK1)
+      EVAL=1.0D0
+      VVV=0.0
+      ISTART=1
+      NNADI=NADI
+      TEST=0.0
+      IF(IMPX.GE.1) WRITE (6,600) NADI,'ADJOINT'
+      IF(IMPX.GE.2) WRITE (6,610)
+      CALL FLDDEF(NUN,IPTRK,IPSYS,LL4,ITY,NGRP,IMOD,LMOD,EVECT,ADECT,
+     1 ADECT(1,1,IMOD),2,VEA1,VEB1)
+      CALL KDRCPU(TK2)
+      TKB=TKB+(TK2-TK1)
+      M=0
+  220 M=M+1
+*----
+*  EIGENVALUE CALCULATION
+*----
+      CALL KDRCPU(TK1)
+      AEBE=0.0D0
+      BEBE=0.0D0
+      DO 235 IGR=1,NGRP
+      DO 230 I=1,LL4
+      AEBE=AEBE+VEA1(I,IGR)*VEB1(I,IGR)
+      BEBE=BEBE+VEB1(I,IGR)**2
+  230 CONTINUE
+  235 CONTINUE
+      EVAL=AEBE/BEBE
+      CALL KDRCPU(TK2)
+      TKB=TKB+(TK2-TK1)
+*----
+*  DIRECTION EVALUATION
+*----
+      DO 280 IGR=NGRP,1,-1
+      CALL KDRCPU(TK1)
+      DO 240 I=1,LL4
+      GRAD1(I,IGR)=REAL(EVAL)*VEB1(I,IGR)-VEA1(I,IGR)
+  240 CONTINUE
+      DO 270 JGR=NGRP,IGR+1,-1
+      WRITE(TEXT12,'(1HA,2I3.3)') JGR,IGR
+      CALL LCMLEN(IPSYS,TEXT12,ILONG,ITYLCM)
+      IF(ILONG.EQ.0) GO TO 270
+      IF(ITY.EQ.13) THEN
+         CALL MTLDLM(TEXT12,IPTRK,IPSYS,LL4,ITY,GRAD1(1,JGR),AGAR)
+         DO 250 I=1,LL4
+         GRAD1(I,IGR)=GRAD1(I,IGR)+AGAR(I)
+  250    CONTINUE
+      ELSE
+         CALL LCMGPD(IPSYS,TEXT12,AGARM_PTR)
+         CALL C_F_POINTER(AGARM_PTR,AGARM,(/ ILONG /))
+         DO 260 I=1,ILONG
+         GRAD1(I,IGR)=GRAD1(I,IGR)+AGARM(I)*GRAD1(I,JGR)
+  260    CONTINUE
+      ENDIF
+  270 CONTINUE
+      CALL KDRCPU(TK2)
+      TKB=TKB+(TK2-TK1)
+*
+      CALL KDRCPU(TK1)
+      WRITE(TEXT12,'(1HA,2I3.3)') IGR,IGR
+      CALL FLDADI(TEXT12,IPTRK,IPSYS,LL4,ITY,GRAD1(1,IGR),NNADI)
+      CALL KDRCPU(TK2)
+      TKT=TKT+(TK2-TK1)
+  280 CONTINUE
+*----
+*  PERFORM THERMAL (UP-SCATTERING) ITERATIONS
+*----
+      IF(MAXINR.GT.1) THEN
+         CALL FLDTHR(IPTRK,IPSYS,IPFLUX,.TRUE.,LL4,ITY,NUN,NGRP,ICL1,
+     1   ICL2,IMPX,NNADI,0,MAXINR,EPSINR,ITER,TKT,TKB,GRAD1)
+      ENDIF
+*----
+*  DISPLACEMENT EVALUATION
+*----
+      CALL KDRCPU(TK1)
+      F=0.0D0
+      DELS=ABS(REAL((EVAL-VVV)/EVAL))
+      VVV=REAL(EVAL)
+*----
+*  EVALUATION OF THE TWO ACCELERATION PARAMETERS ALP AND BET
+*----
+      ALP=1.0D0
+      BET=0.0D0
+      N=0
+      AEAE=0.0D0
+      AEAG=0.0D0
+      AEAH=0.0D0
+      AGAG=0.0D0
+      AGAH=0.0D0
+      AHAH=0.0D0
+      BEBG=0.0D0
+      BEBH=0.0D0
+      BGBG=0.0D0
+      BGBH=0.0D0
+      BHBH=0.0D0
+      AEBG=0.0D0
+      AEBH=0.0D0
+      AGBE=0.0D0
+      AGBG=0.0D0
+      AGBH=0.0D0
+      AHBE=0.0D0
+      AHBG=0.0D0
+      AHBH=0.0D0
+      CALL FLDDEF(NUN,IPTRK,IPSYS,LL4,ITY,NGRP,IMOD,LMOD,EVECT,ADECT,
+     1 GRAD1,2,VEA2,VEB2)
+      IF(1+MOD(M-ISTART,ICL1+ICL2).GT.ICL1) THEN
+         DO 295 IGR=1,NGRP
+         DO 290 I=1,LL4
+*        COMPUTE (A ,A )
+         AEAE=AEAE+VEA1(I,IGR)**2
+         AEAG=AEAG+VEA1(I,IGR)*VEA2(I,IGR)
+         AEAH=AEAH+VEA1(I,IGR)*VEA3(I,IGR)
+         AGAG=AGAG+VEA2(I,IGR)**2
+         AGAH=AGAH+VEA2(I,IGR)*VEA3(I,IGR)
+         AHAH=AHAH+VEA3(I,IGR)**2
+*        COMPUTE (B ,B )
+         BEBG=BEBG+VEB1(I,IGR)*VEB2(I,IGR)
+         BEBH=BEBH+VEB1(I,IGR)*VEB3(I,IGR)
+         BGBG=BGBG+VEB2(I,IGR)**2
+         BGBH=BGBH+VEB2(I,IGR)*VEB3(I,IGR)
+         BHBH=BHBH+VEB3(I,IGR)**2
+*        COMPUTE (A ,B )
+         AEBG=AEBG+VEA1(I,IGR)*VEB2(I,IGR)
+         AEBH=AEBH+VEA1(I,IGR)*VEB3(I,IGR)
+         AGBE=AGBE+VEA2(I,IGR)*VEB1(I,IGR)
+         AGBG=AGBG+VEA2(I,IGR)*VEB2(I,IGR)
+         AGBH=AGBH+VEA2(I,IGR)*VEB3(I,IGR)
+         AHBE=AHBE+VEA3(I,IGR)*VEB1(I,IGR)
+         AHBG=AHBG+VEA3(I,IGR)*VEB2(I,IGR)
+         AHBH=AHBH+VEA3(I,IGR)*VEB3(I,IGR)
+  290    CONTINUE
+  295    CONTINUE
+*
+  300    N=N+1
+         IF(N.GT.10) THEN
+            IF(IMPX.GT.0) WRITE(6,'(/30H FLDMON: FAILURE OF THE NEWTON,
+     1      55H-RAPHTON ALGORIHTHM FOR COMPUTING THE OVERRELAXATION PA,
+     2      12HRAMETERS(3).)')
+            GO TO 305
+         ENDIF
+*        COMPUTE X(M+1)
+         X=BEBE+ALP*ALP*BGBG+BET*BET*BHBH+2.0D0*(ALP*BEBG+BET*BEBH
+     1   +ALP*BET*BGBH)
+         DXDA=2.0D0*(BEBG+ALP*BGBG+BET*BGBH)
+         DXDB=2.0D0*(BEBH+ALP*BGBH+BET*BHBH)
+*        COMPUTE Y(M+1)
+         Y=AEAE+ALP*ALP*AGAG+BET*BET*AHAH+2.0D0*(ALP*AEAG+BET*AEAH
+     1   +ALP*BET*AGAH)
+         DYDA=2.0D0*(AEAG+ALP*AGAG+BET*AGAH)
+         DYDB=2.0D0*(AEAH+ALP*AGAH+BET*AHAH)
+*        COMPUTE Z(M+1)
+         Z=AEBE+ALP*ALP*AGBG+BET*BET*AHBH+ALP*(AEBG+AGBE)
+     1   +BET*(AEBH+AHBE)+ALP*BET*(AGBH+AHBG)
+         DZDA=AEBG+AGBE+2.0D0*ALP*AGBG+BET*(AGBH+AHBG)
+         DZDB=AEBH+AHBE+ALP*(AGBH+AHBG)+2.0D0*BET*AHBH
+*        COMPUTE F(M+1)
+         F=X*Y-Z*Z
+         D2F(1,1)=2.0D0*(BGBG*Y+DXDA*DYDA+X*AGAG-DZDA**2-2.0D0*Z*AGBG)
+         D2F(1,2)=2.0D0*BGBH*Y+DXDA*DYDB+DXDB*DYDA+2.0D0*X*AGAH
+     1   -2.0D0*DZDA*DZDB-2.0D0*Z*(AGBH+AHBG)
+         D2F(2,2)=2.0D0*(BHBH*Y+DXDB*DYDB+X*AHAH-DZDB**2-2.0D0*Z*AHBH)
+         D2F(2,1)=D2F(1,2)
+         D2F(1,3)=DXDA*Y+X*DYDA-2.0D0*Z*DZDA
+         D2F(2,3)=DXDB*Y+X*DYDB-2.0D0*Z*DZDB
+*        SOLUTION OF A LINEAR SYSTEM.
+         CALL ALSBD(2,1,D2F,IER,2)
+         IF(IER.NE.0) CALL XABORT('FLDMON: SINGULAR MATRIX.')
+         ALP=ALP-D2F(1,3)
+         BET=BET-D2F(2,3)
+         IF(ALP.GT.100.0) THEN
+            IF(IMPX.GT.0) WRITE(6,'(/30H FLDMON: FAILURE OF THE NEWTON,
+     1      55H-RAPHTON ALGORIHTHM FOR COMPUTING THE OVERRELAXATION PA,
+     2      12HRAMETERS(4).)')
+            GO TO 305
+         ENDIF
+         IF((ABS(D2F(1,3)).LE.1.0D-4).AND.(ABS(D2F(2,3)).LE.1.0D-4))
+     1   GO TO 310
+         GO TO 300
+*
+*        alternative algorithm in case of Newton-Raphton failure
+  305    IAMIN=999
+         IBMIN=999
+         FMIN=HUGE(FMIN)
+         DO IA=1,SIZE(ALP_TAB)
+           ALP=ALP_TAB(IA)
+           DO IB=1,SIZE(BET_TAB)
+             BET=BET_TAB(IB)
+*            COMPUTE X
+             X=BEBE+ALP*ALP*BGBG+BET*BET*BHBH+2.0D0*(ALP*BEBG+BET*BEBH
+     1       +ALP*BET*BGBH)
+*            COMPUTE Y
+             Y=AEAE+ALP*ALP*AGAG+BET*BET*AHAH+2.0D0*(ALP*AEAG+BET*AEAH
+     1       +ALP*BET*AGAH)
+*            COMPUTE Z
+             Z=AEBE+ALP*ALP*AGBG+BET*BET*AHBH+ALP*(AEBG+AGBE)
+     1       +BET*(AEBH+AHBE)+ALP*BET*(AGBH+AHBG)
+*            COMPUTE F
+             F=X*Y-Z*Z
+             IF(F.LT.FMIN) THEN
+               IAMIN=IA
+               IBMIN=IB
+               FMIN=F
+             ENDIF
+           ENDDO
+         ENDDO
+         ALP=ALP_TAB(IAMIN)
+         BET=BET_TAB(IBMIN)
+  310    BET=BET/ALP
+*
+         IF((ALP.LT.1.0D0).AND.(ALP.GT.0.0D0)) THEN
+            ALP=1.0D0
+            BET=0.0D0
+         ELSE IF(ALP.LE.0.0D0) THEN
+            ISTART=M+1
+            ALP=1.0D0
+            BET=0.0D0
+         ENDIF
+         DO 325 IGR=1,NGRP
+         DO 320 I=1,LL4
+         GRAD1(I,IGR)=REAL(ALP)*(GRAD1(I,IGR)+REAL(BET)*GRAD2(I,IGR))
+         VEA2(I,IGR)=REAL(ALP)*(VEA2(I,IGR)+REAL(BET)*VEA3(I,IGR))
+         VEB2(I,IGR)=REAL(ALP)*(VEB2(I,IGR)+REAL(BET)*VEB3(I,IGR))
+  320    CONTINUE
+  325    CONTINUE
+      ENDIF
+      CALL KDRCPU(TK2)
+      TKB=TKB+(TK2-TK1)
+*
+      LOGTES=(M.LT.ICL1).OR.(MOD(M-ISTART,ICL1+ICL2).EQ.ICL1-1)
+      IF(LOGTES.AND.(DELS.LE.EPS1))THEN
+         DELT=0.0
+         DO 340 IGR=1,NGRP
+         DELN=0.0
+         DELD=0.0
+         DO 330 I=1,LL4
+         ADECT(I,IGR,IMOD)=ADECT(I,IGR,IMOD)+GRAD1(I,IGR)
+         VEA1(I,IGR)=VEA1(I,IGR)+VEA2(I,IGR)
+         VEB1(I,IGR)=VEB1(I,IGR)+VEB2(I,IGR)
+         GRAD2(I,IGR)=GRAD1(I,IGR)
+         VEA3(I,IGR)=VEA2(I,IGR)
+         VEB3(I,IGR)=VEB2(I,IGR)
+         DELN=MAX(DELN,ABS(VEB2(I,IGR)))
+         DELD=MAX(DELD,ABS(VEB1(I,IGR)))
+  330    CONTINUE
+         IF(DELD.NE.0.0) DELT=MAX(DELT,DELN/DELD)
+  340    CONTINUE
+         IF(IMPX.GE.2) WRITE (6,615) M,AEAE,AEAG,AEAH,AGAG,AGAH,AHAH,
+     1   BEBE,ALP,BET,EVAL,F,DELS,DELT,N,BEBG,BEBH,BGBG,BGBH,BHBH,AEBE,
+     2   AEBG,AEBH,AGBE,AGBG,AGBH,AHBE,AHBG,AHBH
+         IF(DELT.LE.EPS2) GO TO 360
+      ELSE
+         DO 355 IGR=1,NGRP
+         DO 350 I=1,LL4
+         ADECT(I,IGR,IMOD)=ADECT(I,IGR,IMOD)+GRAD1(I,IGR)
+         VEA1(I,IGR)=VEA1(I,IGR)+VEA2(I,IGR)
+         VEB1(I,IGR)=VEB1(I,IGR)+VEB2(I,IGR)
+         GRAD2(I,IGR)=GRAD1(I,IGR)
+         VEA3(I,IGR)=VEA2(I,IGR)
+         VEB3(I,IGR)=VEB2(I,IGR)
+  350    CONTINUE
+  355    CONTINUE
+         IF(IMPX.GE.2) WRITE (6,620) M,AEAE,AEAG,AEAH,AGAG,AGAH,AHAH,
+     1   BEBE,ALP,BET,EVAL,F,DELS,N,BEBG,BEBH,BGBG,BGBH,BHBH,AEBE,
+     2   AEBG,AEBH,AGBE,AGBG,AGBH,AHBE,AHBG,AHBH
+      ENDIF
+      IF(M.EQ.1) TEST=DELS
+      IF((M.GT.5).AND.(DELS.GT.TEST)) CALL XABORT('FLDMON: CONVERGENCE'
+     1 //' FAILURE.')
+      IF(M.GE.MAXOUT) THEN
+         WRITE (6,'(/46H FLDMON: ***WARNING*** MAXIMUM NUMBER OF ITERA,
+     1   17HTIONS IS REACHED.)')
+         GO TO 360
+      ENDIF
+      IF(MOD(M,36).EQ.0) THEN
+         ISTART=M+1
+         NNADI=NNADI+1
+         IF(IMPX.GE.1) WRITE (6,700) NNADI
+      ENDIF
+      GO TO 220
+*----
+*  ADJOINT SOLUTION EDITION
+*----
+  360 IF(IMPX.GE.1) WRITE (6,630) 1.0D0/EVAL
+      IF(IMPX.EQ.1) WRITE (6,640) M
+      IF(IMPX.EQ.3) THEN
+         DO 380 IGR=1,NGRP
+         WRITE (6,660) 'ADJOINT',IGR,(ADECT(I,IGR,IMOD),I=1,LL4)
+  380    CONTINUE
+      ENDIF
+*
+      IF(ABS(Z1-1.0D0/EVAL).GT.1.0E-4) CALL XABORT('FLDMON: FAILURE O'
+     1 //'F HARMONIC COMPUTATION.')
+      FKEFF(IMOD)=REAL(0.5D0*(Z1+1.0D0/EVAL))
+  390 CONTINUE
+      IF(IMPX.GE.1) THEN
+        WRITE (6,650) TKT,TKB,TKT+TKB
+        WRITE (6,670) (FKEFF(IMOD),IMOD=1,LMOD)
+      ENDIF
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
+      DEALLOCATE(AGAR,GRAD1,GRAD2,VEA1,VEA2,VEA3,VEB1,VEB2,VEB3)
+      RETURN
+*
+  600 FORMAT(1H1/50H FLDMON: ITERATIVE PROCEDURE BASED ON PRECONDITION,
+     1 17HED POWER METHOD (,I2,37H ADI ITERATIONS PER OUTER ITERATION)./
+     2 9X,A7,10H EQUATION.)
+  610 FORMAT(//5X,17HBILINEAR PRODUCTS,48X,5HALPHA,3X,4HBETA,3X,
+     1 12HEIGENVALUE..,12X,8HACCURACY,11(1H.),2X,1HN)
+  615 FORMAT(1X,I3,1P,7E9.1,0P,2F8.3,E14.6,3E10.2,I4/
+     1 (4X,1P,7E9.1))
+  620 FORMAT(1X,I3,1P,7E9.1,0P,2F8.3,E14.6,2E10.2,10X,I4/
+     1 (4X,1P,7E9.1))
+  630 FORMAT(/42H FLDMON: EFFECTIVE MULTIPLICATION FACTOR =,1P,D17.10/)
+  640 FORMAT(/23H FLDMON: CONVERGENCE IN,I5,12H ITERATIONS.)
+  650 FORMAT(/53H FLDMON: CPU TIME USED TO SOLVE THE TRIANGULAR LINEAR,
+     1 10H SYSTEMS =,F10.3/23X,34HTO COMPUTE THE BILINEAR PRODUCTS =,
+     2 F10.3,20X,16HTOTAL CPU TIME =,F10.3)
+  660 FORMAT(//9H FLDMON: ,A7,37H EIGENVECTOR CORRESPONDING TO THE GRO,
+     1 2HUP,I4//(5X,1P,8E14.5))
+  670 FORMAT(//21H FLDMON: EIGENVALUES:/(5X,1P,E17.10))
+  700 FORMAT(/53H FLDMON: INCREASING THE NUMBER OF INNER ITERATIONS TO,
+     1 I3,36H ADI ITERATIONS PER OUTER ITERATION./)
+      END

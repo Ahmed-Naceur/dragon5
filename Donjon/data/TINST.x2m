@@ -1,0 +1,185 @@
+*----
+*  TEST CASE FOR TINST:
+*  17 X 17 PWR ASSEMBLY WITHOUT POISON
+*  DEPLETION WITH MULTICOMPO DATABASE
+*  172-GROUP JEF2.2 DRAGLIB
+*
+*  REF: TCDR14.x2m
+*  Geometry is the same as TCDR14 except that it is unfolded
+*  since DONJON can't deal with DIAG and SYME boundary conditions.
+*  Besides DONJON needs a CARD3D geometry with equally sized cells
+*  (RESINI: can't deal with bundle of different sizes) so the water
+*  gap is not included here
+*
+*  A mixture number 3 has been included because we need at least
+*  one reflector material otherwise USPLIT: is unhappy
+*
+*  AUTHOR : B. Toueg
+*  DATE   : 2010/03/10
+*
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  MULTICOMPO ASSMB_HOM MATEX CORETRACK FUELMAP MACFL MACNOEVO 
+  MACROEXT MATRIX COREFLUX POWER ;
+MODULE
+  GEO: USPLIT: TRIVAT: RESINI: NCR: MACINI: TRIVAA: FLUD: FLPOW: TINST:
+  DELETE: END: ;
+PROCEDURE assertS ;
+
+* loading the L_MULTICOMPO generated with TCDR14.x2m
+SEQ_ASCII  saCOMPO :: FILE 'saCOMPO' ;
+MULTICOMPO := saCOMPO ;
+
+ASSMB_HOM := GEO: :: CAR3D 17 17 1
+  X- REFL X+ REFL Y- REFL Y+ REFL Z- REFL Z+ REFL
+  MIX 2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 2 2 2 1 2 2   1   2 2 1 2 2 2 2 2
+      2 2 2 3 2 2 2 2   2   2 2 2 2 1 2 2 2 ! 1 dummy reflector material
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 1 2 2 1 2 2   1   2 2 1 2 2 1 2 2
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+
+      2 2 1 2 2 1 2 2   1   2 2 1 2 2 1 2 2
+
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 1 2 2 1 2 2   1   2 2 1 2 2 1 2 2
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 2 1 2 2 2 2   2   2 2 2 2 1 2 2 2
+      2 2 2 2 2 1 2 2   1   2 2 1 2 2 2 2 2
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  MESHX -10.11776
+        -8.85304 -7.58832 -6.3236 -5.05888 -3.79416 -2.52944 -1.26472
+        0.0 1.26472 2.52944 3.79416 5.05888 6.3236 7.58832 8.85304
+        10.11776 11.38248 ! and not 11.43248 because no water gap
+  MESHY -10.11776
+        -8.85304 -7.58832 -6.3236 -5.05888 -3.79416 -2.52944 -1.26472
+        0.0 1.26472 2.52944 3.79416 5.05888 6.3236 7.58832 8.85304
+        10.11776 11.38248 ! and not 11.43248 because no water gap
+  MESHZ 0.0 1.26472
+  ;
+
+
+INTEGER MaxR := 17 17 * 1 * ;
+ASSMB_HOM MATEX := USPLIT: ASSMB_HOM :: NGRP 2 MAXR <<MaxR>>
+                     NREFL 1  RMIX 3
+                     NFUEL 2  FMIX 1 2
+;
+INTEGER MCFD := 3 ;
+CORETRACK := TRIVAT: ASSMB_HOM :: MAXR <<MaxR>> MCFD <<MCFD>> ;
+
+FUELMAP MATEX  := RESINI: MATEX ::
+  EDIT 3
+  :::
+GEO: CAR3D 17 17 1
+  MIX 2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 2 2 2 1 2 2   1   2 2 1 2 2 2 2 2
+      2 2 2 0 2 2 2 2   2   2 2 2 2 1 2 2 2
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 1 2 2 1 2 2   1   2 2 1 2 2 1 2 2
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+
+      2 2 1 2 2 1 2 2   1   2 2 1 2 2 1 2 2
+
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 1 2 2 1 2 2   1   2 2 1 2 2 1 2 2
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 2 1 2 2 2 2   2   2 2 2 2 1 2 2 2
+      2 2 2 2 2 1 2 2   1   2 2 1 2 2 2 2 2
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+      2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  MESHX -10.11776
+        -8.85304 -7.58832 -6.3236 -5.05888 -3.79416 -2.52944 -1.26472
+        0.0 1.26472 2.52944 3.79416 5.05888 6.3236 7.58832 8.85304
+        10.11776 11.38248 ! and not 11.43248 because no water gap
+  MESHY -10.11776
+        -8.85304 -7.58832 -6.3236 -5.05888 -3.79416 -2.52944 -1.26472
+        0.0 1.26472 2.52944 3.79416 5.05888 6.3236 7.58832 8.85304
+        10.11776 11.38248 ! and not 11.43248 because no water gap
+  MESHZ 0.0 1.26472
+  ;
+  NXNAME
+  '1' '2' '3' '4' '5' '6' '7' '8'
+  '9'
+  '10' '11' '12' '13' '14' '15' '16' '17'
+  NYNAME
+  'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H'
+  'I'
+  'K' 'L' 'M' 'N' 'O' 'P' 'Q' 'R''
+  NCOMB ALL
+  FUEL WEIGHT 460. 460. ! arbitrary values needed for TINST:
+;
+FUELMAP  := RESINI: FUELMAP ::
+  EDIT 0
+  BTYPE INST-BURN
+  INST-BVAL
+  SAME 0.
+;
+
+REAL Power := 31.9713 ; ! value taken from TCDR14
+
+INTEGER iter max_iter := 0 5 ;
+WHILE iter max_iter < DO 
+
+MACFL := NCR: MULTICOMPO FUELMAP ::
+  EDIT 0
+  MACRO
+  LINEAR
+  TABLE MULTICOMPO default 'BURN'
+          MIX 1 FROM 1
+                  MICRO ALL
+          ENDMIX
+          MIX 2 FROM 2 ! can't be 1 !?
+                  MICRO ALL
+          ENDMIX
+;
+MACNOEVO := NCR: MULTICOMPO ::
+  EDIT 0
+  MACRO
+  LINEAR
+  NMIX 3
+  COMPO MULTICOMPO default
+          MIX 3 FROM 1
+                  SET 'BURN' 0.
+                  MICRO ALL
+          ENDMIX
+;
+
+
+MACROEXT MATEX := MACINI: MATEX MACNOEVO MACFL :: EDIT 1 ;
+
+MATRIX := TRIVAA: MACROEXT CORETRACK :: EDIT 1 ;
+
+COREFLUX := FLUD: MATRIX CORETRACK ::
+    EDIT 2 ACCE 5 3 EXTE 1E-5 ADI 5 ;
+
+POWER := FLPOW: FUELMAP COREFLUX CORETRACK MATEX ::
+  EDIT 1
+  PTOT <<Power>>
+;
+
+FUELMAP := TINST: FUELMAP POWER ::
+  EDIT 1
+  BURN-STEP 30.
+;
+
+EVALUATE iter := iter 1 + ;
+IF iter max_iter < THEN
+MACFL MACNOEVO MACROEXT MATRIX COREFLUX POWER := DELETE:
+MACFL MACNOEVO MACROEXT MATRIX COREFLUX POWER ;
+ENDIF ;
+
+ENDWHILE ;
+
+assertS COREFLUX :: 'K-INFINITY' 1 1.221152 ;
+ECHO "test TINST completed" ;
+END: ;
+QUIT "LIST" .

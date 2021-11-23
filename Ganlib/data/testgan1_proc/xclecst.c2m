@@ -1,0 +1,110 @@
+ !
+ ! Describes the parametric constant package provided with the source.
+ ! Author: R. Roy
+ ! Date:   Dec 13, 1999
+ !
+ ECHO "" ;
+ ECHO "Constants given in Example *CLECST* of"
+      $Code_S "Release" $Release_S ;
+ ECHO "" ;
+ ECHO "1) Integer        constants:"  ;
+ ECHO "   $Version_I  =" $Version_I   ;
+ ECHO "   $XLangLvl_I =" $XLangLvl_I  ;
+ ECHO "   $c0_I       =" $c0_I        ;
+ ECHO "   $Date_I     =" $Date_I      ;
+ ECHO "   $Time_I     =" $Time_I      ;
+ ECHO "   $True_I     =" $True_I      ;
+ ECHO "   $False_I    =" $False_I     ;
+ ECHO "" ;
+ ECHO "2) Real           constants:"  ;
+ ECHO "   $Pi_R       =" $Pi_R        ;
+ ECHO "   $E_R        =" $E_R         ;
+ ECHO "   $Euler_R    =" $Euler_R     ;
+ ECHO "   $c0_R       =" $c0_R        ;
+ ECHO "   $Na_R       =" $Na_R        ;
+ ECHO "   $u_R        =" $u_R         ;
+ ECHO "   $eV_R       =" $eV_R        ;
+ ECHO "   $h_R        =" $h_R         ;
+ ECHO "" ;
+ ECHO "3) String         constants:"  ;
+ ECHO "   $Code_S     =" $Code_S      ;
+ ECHO "   $Release_S  =" $Release_S   ;
+ ECHO "   $XLang_S    =" $XLang_S     ;
+ ECHO "   $Date_S     =" $Date_S      ;
+ ECHO "   $Time_S     =" $Time_S      ;
+ ECHO "   $Bang_S     =" $Bang_S      ;
+ ECHO "   $GetIn_S    =" $GetIn_S    ;
+ ECHO "   $GetOut_S   =" $GetOut_S    ;
+ ECHO "" ;
+ ECHO "4) Double         constants:"  ;
+ ECHO "   $Pi_D       =" $Pi_D        ;
+ ECHO "   $E_D        =" $E_D         ;
+ ECHO "   $Euler_D    =" $Euler_D     ;
+ ECHO "   $c0_D       =" $c0_D        ;
+ ECHO "   $Na_D       =" $Na_D        ;
+ ECHO "   $u_D        =" $u_D         ;
+ ECHO "   $eV_D       =" $eV_D        ;
+ ECHO "   $h_D        =" $h_D         ;
+ ECHO "" ;
+ ECHO "5) Logical        constants:"  ;
+ ECHO "   $True_L     =" $True_L      ;
+ ECHO "   $False_L    =" $False_L     ;
+ ECHO "" ;
+ !
+ IF $XLangLvl_I 77 = THEN
+    ECHO "Fortran-77:" ;
+    ECHO "$Date_S is hard-coded as:" $Date_S ;
+    ECHO "$Time_S is hard-coded as:" $Time_S ;
+    ECHO " Time is generic:" ;
+ ELSEIF $XLangLvl_I 90 = THEN
+    ECHO "Fortran-90:" ;
+    ECHO "$Date_S gives today-s ISO compilation date:" $Date_S ;
+    ECHO "$Time_S gives hhmmss  ISO compilation time:" $Time_S ;
+    ECHO " Time *stamp* is:" ;
+ ENDIF ;
+ !
+ INTEGER yyyy_MM_dd := $Date_I ;
+ INTEGER yyyy_MM    := yyyy_MM_dd 100 / ;
+ INTEGER yyyy       := yyyy_MM    100 / ;
+ INTEGER MM         := yyyy_MM yyyy 100 * - ;
+ INTEGER dd         := yyyy_MM_dd yyyy_MM 100 * - ;
+ INTEGER hhmmss_sss := $Time_I ;
+ INTEGER hhmm       := hhmmss_sss 100 /  ;
+ INTEGER hh         := hhmm 100 / ;
+ INTEGER mm         := hhmm hh 100 * - ;
+ INTEGER ss         := hhmmss_sss hhmm 100 * - ;
+ !
+ IF     MM  1 = THEN
+    ECHO " (" hh ":" mm ":" ss ") on Jan" dd "," yyyy ;
+    IF  yyyy 2000 = dd 1 = + THEN
+       ECHO " Have we solved all Y2K problems ?" ;
+    ENDIF ;
+ ELSEIF MM  2 = THEN
+    ECHO " (" hh ":" mm ":" ss ") on Feb" dd "," yyyy ;
+ ELSEIF MM  3 = THEN
+    ECHO " (" hh ":" mm ":" ss ") on Mar" dd "," yyyy ;
+ ELSEIF MM  4 = THEN
+    ECHO " (" hh ":" mm ":" ss ") on Apr" dd "," yyyy ;
+ ELSEIF MM  5 = THEN
+    ECHO " (" hh ":" mm ":" ss ") on May" dd "," yyyy ;
+ ELSEIF MM  6 = THEN
+    ECHO " (" hh ":" mm ":" ss ") on Jun" dd "," yyyy ;
+ ELSEIF MM  7 = THEN
+    ECHO " (" hh ":" mm ":" ss ") on Jul" dd "," yyyy ;
+ ELSEIF MM  8 = THEN
+    ECHO " (" hh ":" mm ":" ss ") on Aug" dd "," yyyy ;
+ ELSEIF MM  9 = THEN
+    ECHO " (" hh ":" mm ":" ss ") on Sep" dd "," yyyy ;
+ ELSEIF MM 10 = THEN
+    ECHO " (" hh ":" mm ":" ss ") on Oct" dd "," yyyy ;
+ ELSEIF MM 11 = THEN
+    ECHO " (" hh ":" mm ":" ss ") on Nov" dd "," yyyy ;
+ ELSEIF MM 12 = THEN
+    ECHO " (" hh ":" mm ":" ss ") on Dec" dd "," yyyy ;
+    IF dd 21 = THEN
+       ECHO " " yyyy 1953 - "years old " $Bang_S + ;
+       ECHO "  *HAPPY BIRTHDAY* to Robert " $Bang_S + ;
+    ENDIF ;
+ ENDIF ;
+ ECHO "" ;
+ QUIT " Program *xclecst* " .

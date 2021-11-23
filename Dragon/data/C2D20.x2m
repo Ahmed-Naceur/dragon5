@@ -1,0 +1,117 @@
+*----
+*  TEST CASE C2D20
+*  ACR ANNULAR CELL WITH NXT
+*----
+MODULE      SHI: ASM: FLU: DELETE: END:                   ;
+PROCEDURE   GeoACRC2DN                                    ;
+PROCEDURE   MicACRE620  MicACRE6UH MicACRE6UW             ;
+LINKED_LIST CFLXS.tds CFLXF.tds Flux Compo1               ;
+SEQ_BINARY  CFLXS.trk CFLXF.trk                           ;
+XSM_FILE    MicLib ConcIso EditDS Pij                     ;
+STRING      Modele Option Etat BCtrk DiscrOpt TypeMRG     ;
+REAL        FuelSplit CoolSplit PTSplit CTSplit ModeSplit ;
+PROCEDURE assertS ;
+*----
+*  Get cross sections
+*----
+MicLib := MicACRE620 ;
+MicLib := MicACRE6UH MicLib ;
+MicLib := MicACRE6UW MicLib ;
+*----
+*  Initialyze geometry options
+*----
+INTEGER   NbAngles :=  10                 ;
+REAL      TrkDens  :=  20.0               ;
+EVALUATE  Etat BCtrk DiscrOpt := "Present" "TISO" "Thickness" ;
+*----------
+*  Get geometry for resonance self shielding
+*----------
+EVALUATE Modele   := "C2D6" ;
+EVALUATE TypeMRG := "Supercell" ;  ! "Supercell"  OR  "Reactor"
+EVALUATE FuelSplit CoolSplit PTSplit CTSplit ModeSplit :=
+         0.0       0.0       0.0     0.0     0.0       ;         
+EVALUATE Option  := "Shield" ;
+CFLXS.tds CFLXS.trk := GeoACRC2DN ::
+  <<Modele>> <<Option>> <<Etat>> <<BCtrk>> 
+  <<NbAngles>> <<TrkDens>>
+  ;
+*----------
+*  Get coarse geometry for flux calculations
+*  Uncomment EVALUATE command for fine mesh.
+*----------
+EVALUATE FuelSplit CoolSplit PTSplit CTSplit ModeSplit :=
+         -0.25       0.1       0.0    0.0    0.3       ;              
+EVALUATE Option := "Flux" ;
+CFLXF.tds CFLXF.trk := GeoACRC2DN ::
+  <<Modele>> <<Option>> <<Etat>> <<BCtrk>> <<DiscrOpt>>
+  <<FuelSplit>> <<CoolSplit>> <<PTSplit>> <<CTSplit>> <<ModeSplit>>
+  <<NbAngles>> <<TrkDens>>
+  ;
+*----
+* Self-shielding Calculation
+*----
+MicLib := SHI: MicLib CFLXS.tds CFLXS.trk   :: 
+       EDIT 0 LJ ;
+*----
+* Flux Calculation with SKIP
+*----
+Pij    := ASM: MicLib CFLXF.tds CFLXF.trk   :: 
+       EDIT 0 PIJK SKIP PNOR HELI ;
+Flux   := FLU: Pij MicLib CFLXF.tds         :: 
+       EDIT 1 TYPE B B1 SIGS ;
+assertS Flux :: 'K-INFINITY' 1 1.165185 ;
+Flux   := DELETE: Flux ;
+Flux   := FLU: Pij MicLib CFLXF.tds         :: 
+       EDIT 1 TYPE B B1 PNL ;
+assertS Flux :: 'K-INFINITY' 1 1.165601 ;
+Flux   := DELETE: Flux ;
+Flux   := FLU: Pij MicLib CFLXF.tds         :: 
+       EDIT 1 TYPE B B1 PNLR ;
+assertS Flux :: 'K-INFINITY' 1 1.165601 ;
+Flux   := DELETE: Flux ;
+Flux   := FLU: Pij MicLib CFLXF.tds         :: 
+       EDIT 1 TYPE B B1 HETE ;
+assertS Flux :: 'K-INFINITY' 1 1.164401 ;
+Pij Flux   := DELETE: Pij Flux ;
+Pij    := ASM: MicLib CFLXF.tds CFLXF.trk   :: 
+       EDIT 0 PIJ SKIP PNOR HELI ECCO ;
+Flux   := FLU: Pij MicLib CFLXF.tds         :: 
+       EDIT 1 TYPE B B1 ECCO ;
+assertS Flux :: 'K-INFINITY' 1 1.164370 ;
+Pij Flux   := DELETE: Pij Flux ;
+*----
+* Flux Calculation without SKIP
+*----
+Pij    := ASM: MicLib CFLXF.tds CFLXF.trk   :: 
+       EDIT 0 PIJK PNOR HELI ;
+Flux   := FLU: Pij MicLib CFLXF.tds         :: 
+       EDIT 1 TYPE B B1 SIGS ;
+assertS Flux :: 'K-INFINITY' 1 1.165184 ;
+Flux   := DELETE: Flux ;
+Flux   := FLU: Pij MicLib CFLXF.tds         :: 
+       EDIT 1 TYPE B B1 PNL ;
+assertS Flux :: 'K-INFINITY' 1 1.165599 ;
+Flux   := DELETE: Flux ;
+Flux   := FLU: Pij MicLib CFLXF.tds         :: 
+       EDIT 1 TYPE B B1 PNLR ;
+assertS Flux :: 'K-INFINITY' 1 1.165524 ;
+Flux   := DELETE: Flux ;
+Flux   := FLU: Pij MicLib CFLXF.tds         :: 
+       EDIT 1 TYPE B B1 HETE ;
+assertS Flux :: 'K-INFINITY' 1 1.164400 ;
+Pij Flux   := DELETE: Pij Flux ;
+Pij    := ASM: MicLib CFLXF.tds CFLXF.trk   :: 
+       EDIT 0 PIJ PNOR HELI ECCO ;
+Flux   := FLU: Pij MicLib CFLXF.tds         :: 
+       EDIT 1 TYPE B B1 ECCO ;
+assertS Flux :: 'K-INFINITY' 1 1.164370 ;
+*----
+*  Cleanup 
+*----
+Pij Flux := DELETE: Pij Flux ;
+CFLXS.tds CFLXF.tds CFLXS.trk CFLXF.trk  := DELETE: 
+CFLXS.tds CFLXF.tds CFLXS.trk CFLXF.trk  ;
+MicLib := DELETE: MicLib ;
+ECHO "test C2D20 completed" ;
+END: ;
+QUIT "LIST" .

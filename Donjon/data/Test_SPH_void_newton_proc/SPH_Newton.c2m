@@ -1,0 +1,135 @@
+****************************************************************
+*                                                              *
+* Procedure :  SPH_Newton.c2m                                  *
+* Purpose   :  Compute SPH factorss using the explicit Newton  *
+*              approach                                        *
+* Author    :  A. Hebert                                       *
+*                                                              *
+* CALL      :                                                  *
+*  Macro2 Optex := SPH_Newton Macro1 Macrogeom Track           *
+*                     :: (data) ;                              *
+*                                                              *
+*  Output object:                                              *
+*    Macro2    : Corrected macrolib                            *
+*    Optex     : L_OPTIMIZE object with individual components  *
+*                                                              *
+*  Input objects:                                              *
+*    Macro1    : Reference macrolib for the the macro-geometry *
+*    Macrogeom : Macro-geometry                                *
+*    Track     : Tracking of the macro-geometry                *
+*                                                              *
+*  Input data:                                                 *
+*    fmin      : minimum acceptable correction factor          *
+*    fmax      : maximum acceptable correction factor          *
+*    epsout    : convergence criterion for outer iterations    *
+*    IterEmax  : maximum number of iterations                  *
+*                                                              *
+****************************************************************
+PARAMETER  MACRO2 OPTEX MACRO1 MACROGEOM TRACK ::
+  ::: LINKED_LIST MACRO2 OPTEX MACRO1 MACROGEOM TRACK ; ;
+MODULE DSPH: TRIVAA: FLUD: GREP: OUT: DREF: GPTFLU: DELETE:
+       DLEAK: DELTA: GRAD: FPSPH: MAC: ERROR: END: UTL: ABORT: ;
+LINKED_LIST DMACRO1 SYSTEM CALC EDIT DSYSTEM GPTD GPTA DCALCD ;
+INTEGER LConv IterE nlf ;
+REAL Keff rmsval ;
+LOGICAL Conv ;
+REAL fmin fmax epsout ;
+INTEGER IterEmax ;
+  :: >>fmin<< >>fmax<< >>epsout<< >>IterEmax<< ;
+
+!****************************************
+!****************************************
+!*******   EXTERNAL ITERATIONS   ********
+!****************************************
+!****************************************
+
+DMACRO1 OPTEX := DSPH: MACRO1 :: EDIT 1 SPH PN ;
+
+MACRO2 := MACRO1 ;
+
+EVALUATE IterE := 0 ;
+REPEAT
+
+  EVALUATE IterE := IterE 1 + ;
+  ECHO "#------------------------------" ;
+  IF IterE 10 < THEN
+    ECHO "#-------------" IterE "--------------" ;
+  ELSE
+    ECHO "#------------" IterE "--------------" ;
+  ENDIF ;
+  ECHO "#------------------------------" ;
+
+  SYSTEM := TRIVAA: MACRO2 TRACK :: EDIT 0 ;
+  CALC := FLUD: SYSTEM TRACK ::
+      EDIT 0 ADI 5 EXTE 300 1.0E-6 ACCE 5 3 ADJ ;
+      
+  GREP: CALC :: GETVAL 'K-EFFECTIVE ' 1 >>Keff<< ;
+
+  EDIT := OUT: CALC MACROGEOM MACRO2 TRACK ::
+      EDIT 0 INTG MIX ;
+  IF IterE 1 = THEN
+     ECHO "Error statistics before correction" ;
+     ERROR: MACRO1 EDIT :: HREA 'NUSIGF' ;
+  ENDIF ;
+*----
+* DIRECT SOURCE CALCULATION
+*----
+  DSYSTEM := TRIVAA: MACRO2 TRACK DMACRO1 :: EDIT 0 DERI ;
+  GPTD := DELTA: CALC SYSTEM DSYSTEM TRACK :: EDIT 0 ;
+  DSYSTEM := DELETE: DSYSTEM ;
+*----
+* EXPLICIT SOLUTION.
+* SOLUTION OF A DIRECT FIXED SOURCE EIGENVALUE PROBLEM.
+*----
+  DCALCD := GPTFLU: GPTD CALC SYSTEM TRACK ::
+      EDIT 0 ADI 5 EXTE 50 1.0E-6 ACCE 5 3 GMRES 10
+      EXPLICIT FROM-TO ALL ;
+  SYSTEM GPTD := DELETE: SYSTEM GPTD ;
+*----
+* ADJOINT SOURCE CALCULATION
+*----
+  GPTA OPTEX := DREF: OPTEX CALC TRACK EDIT MACRO1 ::
+      EDIT 2 NEWTON RMS >>rmsval<< ;
+  ECHO "iter=" IterE "rmsval=" rmsval "Keff=" Keff ;
+*----
+* IMPLICIT GRADIENT CALCULATION
+*----
+  OPTEX := GRAD: OPTEX DCALCD GPTA :: EDIT 0 ;
+  
+  CALC DCALCD GPTA := DELETE: CALC DCALCD GPTA ;
+*----
+* COMPUTE NEW CONTROL VARIABLES
+*----
+  OPTEX := FPSPH: OPTEX EDIT MACRO1 :: EDIT 5
+       VAR-VAL-MIN <<fmin>>
+       VAR-VAL-MAX <<fmax>>
+       OUT-STEP-EPS <<epsout>>
+       OUT-CONV-TST >>Conv<< ;
+  EDIT := DELETE: EDIT ;
+
+  GREP: OPTEX :: GETVAL STATE-VECTOR 4 >>LConv<< ; 
+  ECHO "Convergence" Conv LConv ;
+
+  IF LConv 1 <  THEN
+    ECHO "Outer iteration --> no convergence" ;
+  ENDIF ;
+*----
+* UPDATE MACROLIB WITH NEW CONTROL VARIABLES
+*----
+  MACRO2 := MACRO2 MACRO1 ;
+  MACRO2 := MAC: MACRO2 OPTEX ;
+
+UNTIL Conv IterE IterEmax > + ;
+*----
+* VERIFICATION CALCULATION
+*----
+SYSTEM := TRIVAA: MACRO2 TRACK :: EDIT 0 ;
+CALC := FLUD: SYSTEM TRACK ::
+      EDIT 0 ADI 5 EXTE 300 1.0E-6 ACCE 5 3 ;
+
+EDIT := OUT: CALC MACROGEOM MACRO2 TRACK ::
+      EDIT 0 INTG MIX ;
+
+ECHO "Error statistics after correction" ;
+ERROR: MACRO1 EDIT :: HREA 'NUSIGF' ;
+END: ;

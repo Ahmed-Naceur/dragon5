@@ -1,0 +1,359 @@
+* DRAGON GEOMETRY PROCEDURE DECK
+***********************************************************************
+* Purpose:
+* geometry definition of 2-D cell of CANDU reactor.
+*
+* author:
+* MAJID FASSI FEHRI 09/08/28
+* CNSC
+*
+* Modified:
+* Richard CHAMBON 11/02/21
+* Ecole Polytechnique
+*
+***********************************************************************
+PARAMETER TRKS TRKF TLINES TLINEF ::
+ ::: LINKED_LIST TRKS   TRKF ; 
+ ::: SEQ_BINARY  TLINES TLINEF ;  ;
+PROCEDURE CREEP ;
+LINKED_LIST GEOMS GEOMF ;
+MODULE GEO: END: NXT: ;
+
+INTEGER ICREEP ;
+REAL PtRinRef PtRoutRef PtRin PtRout OffsetY ;
+
+REAL r1      r2      r3      r4 
+     a1      a2      a3      a4 
+     n1      n2      n3      n4 :=
+     0.0     1.48850 2.87550 4.33050
+     0.0     0.0     0.26180 0.0    
+     1.0     6.0     12.0    18.0
+     ;
+REAL x101 x201 x202 x203 x204 x205 x206 x301 x302 x303 x304 x305 x306  
+     x307 x308 x309 x310 x311 x312 x401 x402 x403 x404 x405 x406 x407
+     x408 x409 x410 x411 x412 x413 x414 x415 x416 x417 x418
+     ;
+     
+REAL y101 y201 y202 y203 y204 y205 y206 y301 y302 y303 y304 y305 y306  
+     y307 y308 y309 y310 y311 y312 y401 y402 y403 y404 y405 y406 y407
+     y408 y409 y410 y411 y412 y413 y414 y415 y416 y417 y418 
+     ;
+
+REAL r101 r201 r202 r203 r204 r205 r206 r301 r302 r303 r304 r305 r306  
+     r307 r308 r309 r310 r311 r312 r401 r402 r403 r404 r405 r406 r407
+     r408 r409 r410 r411 r412 r413 r414 r415 r416 r417 r418
+     ;
+     
+REAL a101 a201 a202 a203 a204 a205 a206 a301 a302 a303 a304 a305 a306  
+     a307 a308 a309 a310 a311 a312 a401 a402 a403 a404 a405 a406 a407
+     a408 a409 a410 a411 a412 a413 a414 a415 a416 a417 a418 
+     ;
+
+REAL pi := 3.141592653589793238462 ;
+
+:: >>ICREEP<< ;
+
+ECHO "GEOMETRY CREATION STARTED" ;
+
+CREEP :: 0          >>PtRinRef<< >>PtRoutRef<< ;
+
+CREEP :: <<ICREEP>> >>PtRin<<    >>PtRout<<    ;
+
+EVALUATE OffsetY := PtRinRef PtRin - ;
+
+* Compute the APIN and RPIN coefficients 
+*   in DRAGON 3.06 XPIN and YPIN values can be provided directly
+EVALUATE x101 := r1 a1 0.0 2.0 pi * n1 / * + COS * ;
+EVALUATE x201 := r2 a2 0.0 2.0 pi * n2 / * + COS * ;
+EVALUATE x202 := r2 a2 1.0 2.0 pi * n2 / * + COS * ;
+EVALUATE x203 := r2 a2 2.0 2.0 pi * n2 / * + COS * ;
+EVALUATE x204 := r2 a2 3.0 2.0 pi * n2 / * + COS * ;
+EVALUATE x205 := r2 a2 4.0 2.0 pi * n2 / * + COS * ;
+EVALUATE x206 := r2 a2 5.0 2.0 pi * n2 / * + COS * ;
+EVALUATE x301 := r3 a3 0.0 2.0 pi * n3 / * + COS * ;
+EVALUATE x302 := r3 a3 1.0 2.0 pi * n3 / * + COS * ;
+EVALUATE x303 := r3 a3 2.0 2.0 pi * n3 / * + COS * ;
+EVALUATE x304 := r3 a3 3.0 2.0 pi * n3 / * + COS * ;
+EVALUATE x305 := r3 a3 4.0 2.0 pi * n3 / * + COS * ;
+EVALUATE x306 := r3 a3 5.0 2.0 pi * n3 / * + COS * ;
+EVALUATE x307 := r3 a3 6.0 2.0 pi * n3 / * + COS * ;
+EVALUATE x308 := r3 a3 7.0 2.0 pi * n3 / * + COS * ;
+EVALUATE x309 := r3 a3 8.0 2.0 pi * n3 / * + COS * ;
+EVALUATE x310 := r3 a3 9.0 2.0 pi * n3 / * + COS * ;
+EVALUATE x311 := r3 a3 10.0 2.0 pi * n3 / * + COS * ;
+EVALUATE x312 := r3 a3 11.0 2.0 pi * n3 / * + COS * ;
+EVALUATE x401 := r4 a4 0.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x402 := r4 a4 1.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x403 := r4 a4 2.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x404 := r4 a4 3.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x405 := r4 a4 4.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x406 := r4 a4 5.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x407 := r4 a4 6.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x408 := r4 a4 7.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x409 := r4 a4 8.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x410 := r4 a4 9.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x411 := r4 a4 10.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x412 := r4 a4 11.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x413 := r4 a4 12.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x414 := r4 a4 13.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x415 := r4 a4 14.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x416 := r4 a4 15.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x417 := r4 a4 16.0 2.0 pi * n4 / * + COS * ;
+EVALUATE x418 := r4 a4 17.0 2.0 pi * n4 / * + COS * ;
+EVALUATE y101 := r1 a1 0.0 2.0 pi * n1 / * + SIN * OffsetY + ;
+EVALUATE y201 := r2 a2 0.0 2.0 pi * n2 / * + SIN * OffsetY + ;
+EVALUATE y202 := r2 a2 1.0 2.0 pi * n2 / * + SIN * OffsetY + ;
+EVALUATE y203 := r2 a2 2.0 2.0 pi * n2 / * + SIN * OffsetY + ;
+EVALUATE y204 := r2 a2 3.0 2.0 pi * n2 / * + SIN * OffsetY + ;
+EVALUATE y205 := r2 a2 4.0 2.0 pi * n2 / * + SIN * OffsetY + ;
+EVALUATE y206 := r2 a2 5.0 2.0 pi * n2 / * + SIN * OffsetY + ;
+EVALUATE y301 := r3 a3 0.0 2.0 pi * n3 / * + SIN * OffsetY + ;
+EVALUATE y302 := r3 a3 1.0 2.0 pi * n3 / * + SIN * OffsetY + ;
+EVALUATE y303 := r3 a3 2.0 2.0 pi * n3 / * + SIN * OffsetY + ;
+EVALUATE y304 := r3 a3 3.0 2.0 pi * n3 / * + SIN * OffsetY + ;
+EVALUATE y305 := r3 a3 4.0 2.0 pi * n3 / * + SIN * OffsetY + ;
+EVALUATE y306 := r3 a3 5.0 2.0 pi * n3 / * + SIN * OffsetY + ;
+EVALUATE y307 := r3 a3 6.0 2.0 pi * n3 / * + SIN * OffsetY + ;
+EVALUATE y308 := r3 a3 7.0 2.0 pi * n3 / * + SIN * OffsetY + ;
+EVALUATE y309 := r3 a3 8.0 2.0 pi * n3 / * + SIN * OffsetY + ;
+EVALUATE y310 := r3 a3 9.0 2.0 pi * n3 / * + SIN * OffsetY + ;
+EVALUATE y311 := r3 a3 10.0 2.0 pi * n3 / * + SIN * OffsetY + ;
+EVALUATE y312 := r3 a3 11.0 2.0 pi * n3 / * + SIN * OffsetY + ;
+EVALUATE y401 := r4 a4 0.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y402 := r4 a4 1.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y403 := r4 a4 2.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y404 := r4 a4 3.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y405 := r4 a4 4.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y406 := r4 a4 5.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y407 := r4 a4 6.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y408 := r4 a4 7.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y409 := r4 a4 8.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y410 := r4 a4 9.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y411 := r4 a4 10.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y412 := r4 a4 11.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y413 := r4 a4 12.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y414 := r4 a4 13.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y415 := r4 a4 14.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y416 := r4 a4 15.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y417 := r4 a4 16.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE y418 := r4 a4 17.0 2.0 pi * n4 / * + SIN * OffsetY + ;
+EVALUATE r101 := x101 2. ** y101 2.0  ** + 0.5 ** ;
+EVALUATE r201 := x201 2. ** y201 2.0  ** + 0.5 ** ;
+EVALUATE r202 := x202 2. ** y202 2.0  ** + 0.5 ** ;
+EVALUATE r203 := x203 2. ** y203 2.0  ** + 0.5 ** ;
+EVALUATE r204 := x204 2. ** y204 2.0  ** + 0.5 ** ;
+EVALUATE r205 := x205 2. ** y205 2.0  ** + 0.5 ** ;
+EVALUATE r206 := x206 2. ** y206 2.0  ** + 0.5 ** ;
+EVALUATE r301 := x301 2. ** y301 2.0  ** + 0.5 ** ;
+EVALUATE r302 := x302 2. ** y302 2.0  ** + 0.5 ** ;
+EVALUATE r303 := x303 2. ** y303 2.0  ** + 0.5 ** ;
+EVALUATE r304 := x304 2. ** y304 2.0  ** + 0.5 ** ;
+EVALUATE r305 := x305 2. ** y305 2.0  ** + 0.5 ** ;
+EVALUATE r306 := x306 2. ** y306 2.0  ** + 0.5 ** ;
+EVALUATE r307 := x307 2. ** y307 2.0  ** + 0.5 ** ;
+EVALUATE r308 := x308 2. ** y308 2.0  ** + 0.5 ** ;
+EVALUATE r309 := x309 2. ** y309 2.0  ** + 0.5 ** ;
+EVALUATE r310 := x310 2. ** y310 2.0  ** + 0.5 ** ;
+EVALUATE r311 := x311 2. ** y311 2.0  ** + 0.5 ** ;
+EVALUATE r312 := x312 2. ** y312 2.0  ** + 0.5 ** ;
+EVALUATE r401 := x401 2. ** y401 2.0  ** + 0.5 ** ;
+EVALUATE r402 := x402 2. ** y402 2.0  ** + 0.5 ** ;
+EVALUATE r403 := x403 2. ** y403 2.0  ** + 0.5 ** ;
+EVALUATE r404 := x404 2. ** y404 2.0  ** + 0.5 ** ;
+EVALUATE r405 := x405 2. ** y405 2.0  ** + 0.5 ** ;
+EVALUATE r406 := x406 2. ** y406 2.0  ** + 0.5 ** ;
+EVALUATE r407 := x407 2. ** y407 2.0  ** + 0.5 ** ;
+EVALUATE r408 := x408 2. ** y408 2.0  ** + 0.5 ** ;
+EVALUATE r409 := x409 2. ** y409 2.0  ** + 0.5 ** ;
+EVALUATE r410 := x410 2. ** y410 2.0  ** + 0.5 ** ;
+EVALUATE r411 := x411 2. ** y411 2.0  ** + 0.5 ** ;
+EVALUATE r412 := x412 2. ** y412 2.0  ** + 0.5 ** ;
+EVALUATE r413 := x413 2. ** y413 2.0  ** + 0.5 ** ;
+EVALUATE r414 := x414 2. ** y414 2.0  ** + 0.5 ** ;
+EVALUATE r415 := x415 2. ** y415 2.0  ** + 0.5 ** ;
+EVALUATE r416 := x416 2. ** y416 2.0  ** + 0.5 ** ;
+EVALUATE r417 := x417 2. ** y417 2.0  ** + 0.5 ** ;
+EVALUATE r418 := x418 2. ** y418 2.0  ** + 0.5 ** ;
+IF r101 0.0 = THEN
+EVALUATE a101 := 0.0 ;
+ELSE
+EVALUATE a101 := x101 r101 / ARCCOS ;
+ENDIF ;
+EVALUATE a201 := x201 r201 / ARCCOS ;
+EVALUATE a202 := x202 r202 / ARCCOS ;
+EVALUATE a203 := x203 r203 / ARCCOS ;
+EVALUATE a204 := x204 r204 / ARCCOS ;
+EVALUATE a205 := x205 r205 / ARCCOS ;
+EVALUATE a206 := x206 r206 / ARCCOS ;
+EVALUATE a301 := x301 r301 / ARCCOS ;
+EVALUATE a302 := x302 r302 / ARCCOS ;
+EVALUATE a303 := x303 r303 / ARCCOS ;
+EVALUATE a304 := x304 r304 / ARCCOS ;
+EVALUATE a305 := x305 r305 / ARCCOS ;
+EVALUATE a306 := x306 r306 / ARCCOS ;
+EVALUATE a307 := x307 r307 / ARCCOS ;
+EVALUATE a308 := x308 r308 / ARCCOS ;
+EVALUATE a309 := x309 r309 / ARCCOS ;
+EVALUATE a310 := x310 r310 / ARCCOS ;
+EVALUATE a311 := x311 r311 / ARCCOS ;
+EVALUATE a312 := x312 r312 / ARCCOS ;
+EVALUATE a401 := x401 r401 / ARCCOS ;
+EVALUATE a402 := x402 r402 / ARCCOS ;
+EVALUATE a403 := x403 r403 / ARCCOS ;
+EVALUATE a404 := x404 r404 / ARCCOS ;
+EVALUATE a405 := x405 r405 / ARCCOS ;
+EVALUATE a406 := x406 r406 / ARCCOS ;
+EVALUATE a407 := x407 r407 / ARCCOS ;
+EVALUATE a408 := x408 r408 / ARCCOS ;
+EVALUATE a409 := x409 r409 / ARCCOS ;
+EVALUATE a410 := x410 r410 / ARCCOS ;
+EVALUATE a411 := x411 r411 / ARCCOS ;
+EVALUATE a412 := x412 r412 / ARCCOS ;
+EVALUATE a413 := x413 r413 / ARCCOS ;
+EVALUATE a414 := x414 r414 / ARCCOS ;
+EVALUATE a415 := x415 r415 / ARCCOS ;
+EVALUATE a416 := x416 r416 / ARCCOS ;
+EVALUATE a417 := x417 r417 / ARCCOS ;
+EVALUATE a418 := x418 r418 / ARCCOS ;
+IF y101 0.0 < THEN EVALUATE a101 := a101 -1. * ; ENDIF ;
+IF y201 0.0 < THEN EVALUATE a201 := a201 -1. * ; ENDIF ;
+IF y202 0.0 < THEN EVALUATE a202 := a202 -1. * ; ENDIF ;
+IF y203 0.0 < THEN EVALUATE a203 := a203 -1. * ; ENDIF ;
+IF y204 0.0 < THEN EVALUATE a204 := a204 -1. * ; ENDIF ;
+IF y205 0.0 < THEN EVALUATE a205 := a205 -1. * ; ENDIF ;
+IF y206 0.0 < THEN EVALUATE a206 := a206 -1. * ; ENDIF ;
+IF y301 0.0 < THEN EVALUATE a301 := a301 -1. * ; ENDIF ;
+IF y302 0.0 < THEN EVALUATE a302 := a302 -1. * ; ENDIF ;
+IF y303 0.0 < THEN EVALUATE a303 := a303 -1. * ; ENDIF ;
+IF y304 0.0 < THEN EVALUATE a304 := a304 -1. * ; ENDIF ;
+IF y305 0.0 < THEN EVALUATE a305 := a305 -1. * ; ENDIF ;
+IF y306 0.0 < THEN EVALUATE a306 := a306 -1. * ; ENDIF ;
+IF y307 0.0 < THEN EVALUATE a307 := a307 -1. * ; ENDIF ;
+IF y308 0.0 < THEN EVALUATE a308 := a308 -1. * ; ENDIF ;
+IF y309 0.0 < THEN EVALUATE a309 := a309 -1. * ; ENDIF ;
+IF y310 0.0 < THEN EVALUATE a310 := a310 -1. * ; ENDIF ;
+IF y311 0.0 < THEN EVALUATE a311 := a311 -1. * ; ENDIF ;
+IF y312 0.0 < THEN EVALUATE a312 := a312 -1. * ; ENDIF ;
+IF y401 0.0 < THEN EVALUATE a401 := a401 -1. * ; ENDIF ;
+IF y402 0.0 < THEN EVALUATE a402 := a402 -1. * ; ENDIF ;
+IF y403 0.0 < THEN EVALUATE a403 := a403 -1. * ; ENDIF ;
+IF y404 0.0 < THEN EVALUATE a404 := a404 -1. * ; ENDIF ;
+IF y405 0.0 < THEN EVALUATE a405 := a405 -1. * ; ENDIF ;
+IF y406 0.0 < THEN EVALUATE a406 := a406 -1. * ; ENDIF ;
+IF y407 0.0 < THEN EVALUATE a407 := a407 -1. * ; ENDIF ;
+IF y408 0.0 < THEN EVALUATE a408 := a408 -1. * ; ENDIF ;
+IF y409 0.0 < THEN EVALUATE a409 := a409 -1. * ; ENDIF ;
+IF y410 0.0 < THEN EVALUATE a410 := a410 -1. * ; ENDIF ;
+IF y411 0.0 < THEN EVALUATE a411 := a411 -1. * ; ENDIF ;
+IF y412 0.0 < THEN EVALUATE a412 := a412 -1. * ; ENDIF ;
+IF y413 0.0 < THEN EVALUATE a413 := a413 -1. * ; ENDIF ;
+IF y414 0.0 < THEN EVALUATE a414 := a414 -1. * ; ENDIF ;
+IF y415 0.0 < THEN EVALUATE a415 := a415 -1. * ; ENDIF ;
+IF y416 0.0 < THEN EVALUATE a416 := a416 -1. * ; ENDIF ;
+IF y417 0.0 < THEN EVALUATE a417 := a417 -1. * ; ENDIF ;
+IF y418 0.0 < THEN EVALUATE a418 := a418 -1. * ; ENDIF ;
+
+ECHO "OFFSETY " OffsetY ;
+
+* END: ;
+* SELF-SHIELDING GEOMETRY
+GEOMS := GEO: ::  CARCEL 6 1 1
+  EDIT 1
+  X- REFL MESHX -14.2875 14.2875 X+ REFL
+  Y- TRAN MESHY -14.2875 14.2875 Y+ TRAN
+  RADIUS  0.00000 2.16175 <<PtRin>> 
+          <<PtRout>> 6.44780 6.58750 10.43700
+  MIX     1 1 2 3 4 5 5 
+  CLUSTER ROD1 ROD2 ROD3 ROD4
+  ::: ROD1 := GEO: TUBE 2 
+    MIX  6 10
+    NPIN 1  
+    RPIN <<r101>>
+    APIN <<a101>>
+    RADIUS 0.00000 0.61220 0.65400      ;
+  ::: ROD2 := GEO: TUBE 2    
+    MIX  7 10  
+    NPIN 6      
+    RPIN <<r201>> <<r202>> <<r203>> <<r204>> <<r205>> <<r206>> 
+    APIN <<a201>> <<a202>> <<a203>> <<a204>> <<a205>> <<a206>> 
+    RADIUS 0.00000 0.61220 0.65400      ;
+  ::: ROD3 := GEO: TUBE 2   
+    MIX  8 10 
+    NPIN 12 
+    RPIN <<r301>> <<r302>> <<r303>> <<r304>> <<r305>> <<r306>>
+         <<r307>> <<r308>> <<r309>> <<r310>> <<r311>> <<r312>>
+    APIN <<a301>> <<a302>> <<a303>> <<a304>> <<a305>> <<a306>>
+         <<a307>> <<a308>> <<a309>> <<a310>> <<a311>> <<a312>>
+    RADIUS 0.00000 0.61220 0.65400      ;
+  ::: ROD4 := GEO: TUBE 2   
+    MIX  9 10 
+    NPIN 18 
+    RPIN <<r401>> <<r402>> <<r403>> <<r404>> <<r405>> <<r406>>
+         <<r407>> <<r408>> <<r409>> <<r410>> <<r411>> <<r412>>
+         <<r413>> <<r414>> <<r415>> <<r416>> <<r417>> <<r418>>
+    APIN <<a401>> <<a402>> <<a403>> <<a404>> <<a405>> <<a406>>
+         <<a407>> <<a408>> <<a409>> <<a410>> <<a411>> <<a412>>
+         <<a413>> <<a414>> <<a415>> <<a416>> <<a417>> <<a418>>
+    RADIUS 0.00000 0.61220 0.65400      ;
+;
+
+* FLUX GEOMETRY
+GEOMF := GEO: ::  CARCEL 9 1 1
+  EDIT 0
+  X- REFL MESHX -14.2875 14.2875 X+ REFL
+  Y- TRAN MESHY -14.2875 14.2875 Y+ TRAN
+  RADIUS  0.00000 0.72425 2.16175 3.60300 5.076700
+          <<PtRin>> <<PtRout>> 6.44780 6.58750 10.43700
+  MIX     1 1 1 1 1 2 3 4 5 5 
+  CLUSTER ROD1 ROD2 ROD3 ROD4
+  ::: ROD1 := GEO: TUBE 2 
+    MIX  6 10
+    NPIN 1  
+    RPIN <<r101>> 
+    APIN <<a101>> 
+    RADIUS 0.00000 0.61220 0.65400      ;
+  ::: ROD2 := GEO: TUBE 2    
+    MIX  7 10  
+    NPIN 6      
+    RPIN <<r201>> <<r202>> <<r203>> <<r204>> <<r205>> <<r206>> 
+    APIN <<a201>> <<a202>> <<a203>> <<a204>> <<a205>> <<a206>> 
+    RADIUS 0.00000 0.61220 0.65400      ;
+  ::: ROD3 := GEO: TUBE 2   
+    MIX  8 10 
+    NPIN 12 
+    RPIN <<r301>> <<r302>> <<r303>> <<r304>> <<r305>> <<r306>>
+         <<r307>> <<r308>> <<r309>> <<r310>> <<r311>> <<r312>>
+    APIN <<a301>> <<a302>> <<a303>> <<a304>> <<a305>> <<a306>>
+         <<a307>> <<a308>> <<a309>> <<a310>> <<a311>> <<a312>>
+    RADIUS 0.00000 0.61220 0.65400      ;
+  ::: ROD4 := GEO: TUBE 2   
+    MIX  9 10 
+    NPIN 18 
+    RPIN <<r401>> <<r402>> <<r403>> <<r404>> <<r405>> <<r406>>
+         <<r407>> <<r408>> <<r409>> <<r410>> <<r411>> <<r412>>
+         <<r413>> <<r414>> <<r415>> <<r416>> <<r417>> <<r418>>
+    APIN <<a401>> <<a402>> <<a403>> <<a404>> <<a405>> <<a406>>
+         <<a407>> <<a408>> <<a409>> <<a410>> <<a411>> <<a412>>
+         <<a413>> <<a414>> <<a415>> <<a416>> <<a417>> <<a418>>
+    RADIUS 0.00000 0.61220 0.65400      ;
+;
+
+* TRACKING FOR SELF-SHIELDING
+
+TRKS TLINES := NXT: GEOMS ::
+EDIT 0 
+TITLE 'C6CELLS'
+TISO 11 15.0
+;
+
+* TRACKING FOR FLUX
+
+TRKF TLINEF := NXT: GEOMF ::
+EDIT 0 
+TITLE 'C6CELLF'
+TISO 15 30.0
+;
+
+ECHO "GEOMETRY CREATION FINISHED" ;
+
+END: ;

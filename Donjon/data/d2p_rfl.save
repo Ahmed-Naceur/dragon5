@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+if [ $# = 0 ]
+   then
+   echo "usage: d2p_rfl.save directory" 1>&2
+   exit 1
+fi
+MACH=`uname -s`
+Sysx="`echo $MACH | cut -b -6`"
+if [ $Sysx = "CYGWIN" ]; then
+   MACH=`uname -o`
+elif [ $Sysx = "AIX" ]; then
+   MACH=`uname -s`
+else
+   MACH=`uname -sm | sed 's/[ ]/_/'`
+fi
+ls -l
+
+mkdir -p $1/"$MACH"/d2p_result/d2p_rfl
+mv Info.xsm $1/"$MACH"/d2p_result/d2p_rfl
+mv d2p_proc.x2m $1/"$MACH"/d2p_result/d2p_rfl/d2p_rfl_2.x2m
+
+echo "d2p_rfl.save completed"

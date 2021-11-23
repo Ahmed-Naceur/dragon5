@@ -1,0 +1,142 @@
+\subsection{The \moc{CVR:} module}\label{sect:cvr}
+
+\vskip 0.2cm
+The \moc{CVR:} module is used to update the fuel-type index and the coolant densities
+throughout the reactor core as required for the voiding simulations. A particular core-voiding
+pattern is either selected from the several pre-defined patterns \dusa{or} directly defined by
+the user in an arbitrary fashion. In the last case, the user may specify the individual voided
+channels by indicating their identification names. The \moc{CVR:} module will create a new
+(perturbed) \dds{fmap} object, in which the fuel-type mixtures indices are modified according
+to the specified core-voiding pattern. The information with respect to the relative coolant
+densities is required only for the subsequent interpolation of fuel properties using the \moc{NCR:}
+module. These data will also be reordered by the \moc{CVR:} module according to the specified
+voiding pattern and recorded as local parameter in the perturbed fuel-map object (see \Sect{resiniaram}).\\
+
+\noindent
+The \moc{CVR:} module specification is: 
+
+\begin{DataStructure}{Structure \moc{CVR:}}
+\dusa{FMAPV} \moc{:=} \moc{CVR:} \dusa{FMAP} \moc{::} \dstr{descrcvr}
+\end{DataStructure}
+
+\noindent where
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dusa{FMAP}] \texttt{character*12} name of a read-only \dds{fmap} object,
+created in the \moc{RESINI:} module. This object must contain the non-perturbed
+fuel-cell properties.
+
+\item[\dusa{FMAPV}] \texttt{character*12} name of a new \dds{fmap} object,
+that will contain the modified fuel-type indices and reordered coolant densities
+according to the specified core-voiding pattern.
+
+\item[\dstr{descrcvr}] structure describing the input data to the \moc{CVR:} module.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+
+\subsubsection{Input data to the \moc{CVR:} module}\label{sect:cvrstr}
+
+\noindent
+Note that the input order must be respected.\\
+
+\begin{DataStructure}{Structure \dstr{descrcvr}}
+~\moc{EDIT} \dusa{iprint} \\
+( \moc{MIX-FUEL} \dusa{mixF}(i) ~\moc{MIX-VOID} \dusa{mixV}(i) ,  i = 1, \dusa{nfuel} ) \\
+$[$ \moc{DENS-COOL} \dusa{PNAME} ~\moc{SET} \dusa{dcoolV} $]$ \\
+~\moc{VOID-PATTERN} $\{$ \moc{FULL} $|$ \moc{HALF} $|$ \moc{QUARTER} $|$
+\moc{CHECKER} $|$ \moc{CHECKER-1/2} $|$ \moc{CHECKER-1/4} $|$ \\
+~\moc{CHAN-VOID} \dusa{nvoid} ( \dusa{YNAME}(i) \dusa{XNAME}(i) ,  i = 1, \dusa{nvoid} ) $\}$ \\
+~;
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] integer index used to control the printing on screen:  = 0  for
+no print; = 1 for minimum printing; = 2 modified fuel indices and coolant densities
+are printed per bundle over each channel; = 3 modified fuel indices are printed
+per each radial plane; for larger values of \dusa{iprint} everything will be printed.
+
+\item[\moc{MIX-FUEL}] keyword used to specify \dusa{mixF}.
+
+\item[\dusa{mixF}] integer fuel-type mixture number of the non-perturbed fuel cell.
+This number must be specified for each fuel type as been recorded in the \dds{matex}
+object (see \Sect{usplitstr}).
+
+\item[\moc{MIX-VOID}] keyword used to specify \dusa{mixV}.
+
+\item[\dusa{mixV}] integer new mixture number assigned to the voided fuel cell.
+Note that this number must be specified for each fuel type and it must be different
+from any other reactor material mixtures.
+
+\item[\moc{DENS-COOL}] keyword used to specify \dusa{PNAME}. This information
+is required only for the interpolation of fuel properties using the \moc{NCR:} module.
+
+\item[\dusa{PNAME}] \texttt{character*12} user-defined identification name
+of local parameter associated with the relative coolant density. The recommended name
+is {\tt D-COOL}. This parameter
+name and the unperturbed densities values should be previously recorded in the
+\dusa{FMAP} object (see \Sect{resiniaram}). The same \dusa{PNAME} will be
+set for the coolant density in the perturbed \dusa{FMAPV}, but the actual values
+of coolant densities throughout the core will be reordered by the \moc{CVR:} module
+according to the specified voiding pattern.
+
+\item[\moc{SET}] keyword used to specify the value \dusa{dcoolV}.
+
+\item[\dusa{dcoolV}] real value of the relative coolant density (with respect to
+the nominal or unperturbed conditions) associated with the voided reactor channels.
+In general, this value equals to 0.0 for the complete voiding of a channel and to
+1.0 for an unperturbed channel. Intermediate values of \dusa{dcoolV} will then
+correspond to the partially voided channels. It is supposed that all voided channels
+will have the same \dusa{dcoolV} value.
+
+\item[\moc{VOID-PATTERN}] keyword used to specify the core voiding pattern,
+which will be used for a particular voiding simulation.
+
+\item[\moc{FULL}] keyword used to specify the full-core voiding pattern.
+According to this pattern, the fuel mixtures will be modified for all reactor channels.
+
+\item[\moc{HALF}] keyword used to specify the half-core voiding pattern.
+According to this pattern, the fuel mixtures will be modified only for the upper-half
+of reactor channels.
+
+\item[\moc{QUARTER}] keyword used to specify the quarter-core voiding pattern.
+According to this pattern, the fuel mixtures will be modified only for the upper-left
+quarter of reactor channels.
+
+\item[\moc{CHECKER}] keyword used to specify the checkerboard-full voiding pattern.
+According to this pattern, the fuel mixtures will be modified for all reactor channels in
+which the direction of coolant flow is positive.
+
+\item[\moc{CHECKER-1/2}] keyword used to specify the checkerboard-half voiding
+pattern. According to this pattern, the fuel mixtures will be modified only for the upper-half
+of reactor channels in which the direction of coolant flow is positive.
+
+\item[\moc{CHECKER-1/4}] keyword used to specify the checkerboard-quarter voiding
+pattern. According to this pattern, the fuel mixtures will be modified only for the upper-left
+quarter of reactor channels in which the direction of coolant flow is positive.
+
+\item[\moc{CHAN-VOID}] keyword used to specify the user-defined voiding pattern.
+Each voided channel must be identified by its \dusa{YNAME} name followed by its
+\dusa{XNAME}.
+
+\item[\dusa{nvoid}] integer total number of the voided channels. This number must be
+greater than 0 and less than (or equal to) the total number of reactor channels.
+
+\item[\dusa{YNAME}] \texttt{character*2} vertical name of the voided channel.
+A vertical channel name is identified by the channel row using an alphabetical letter
+('A', 'B', 'C', etc). The total number of the specified Y-names must equal to the total number
+of voided channels \dusa{nvoid}.
+
+\item[\dusa{XNAME}] \texttt{character*2} horizontal name of the voided channel.
+A horizontal channel name is identified by the channel column using a numerical
+character ('1', '2', '3', etc.). The total number of the specified X-names must equal
+to the total number of voided channels \dusa{nvoid}.
+
+\end{ListeDeDescription}
+\clearpage

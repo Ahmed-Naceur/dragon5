@@ -1,0 +1,255 @@
+\subsection{The \moc{AFM:} module}
+
+The \moc{AFM:} module is used to create an extended \dds{macrolib} 
+containing set of interpolated nuclear properties
+from a feedback model database.\cite{sissaoui}
+The \dds{database} information are obtained by previous DRAGON calculations
+using module \moc{CFC:}.\cite{dragstruc}
+
+There are two possible utilizations:
+\begin{itemize}
+\item Construction of an extended \dds{macrolib} for fuel properties 
+directly from \dds{database} information with respect to local parameters
+contained in the fuel map object or directly input.
+\item Construction of an extended \dds{macrolib} containing only one set
+of cross sections derivated from the \dds{database} information. 
+Properties can be obtained for fuel or reflector.
+\end{itemize}
+
+The calling specifications are:
+
+\begin{DataStructure}{Structure \moc{AFM:}}
+\dusa{MACRO} \moc{:=} \moc{AFM:} $[$ \dusa{MACRO} $]$ \dusa{DBASE} 
+$[$ \dusa{MAPFL} $]$
+\moc{::} \dstr{descafm}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dusa{MACRO}] \texttt{character*12} name of 
+the extended \dds{macrolib}. The \dds{macrolib} can be in modification
+mode.
+
+\item[\dusa{DBASE}] \texttt{character*12} name of the \dds{database}
+object containing fuel properties with respect to local parameters.
+
+\item[\dusa{MAPFL}] \texttt{character*12} name of the \dds{map} 
+object containing fuel regions description and burnup
+informations. This file is only required when a \dds{MACRO} is created
+for fuel area.
+
+\item[\dstr{descafm}] structure containing the data to module \moc{AFM:}.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+
+\subsubsection{Input data to the \moc{AFM:} module}
+
+\begin{DataStructure}{Structure \dstr{descafm}}
+$\{$ \moc{MAP} $|$ \moc{MCR} \dusa{mmix} $\}$ 
+\moc{INFOR} \dusa{NAMDB} \\
+\moc{DNAME} \dusa{ntyp} ( \dusa{NAMTYP}(i), i=1,\dusa{ntyp} ) \\
+\moc{REFT} ( \dusa{imix}(i) \dusa{NAMTYP}(i), i=1,\dusa{ntyp}  ) \\
+$[$ \moc{EDIT} \dusa{iprint} $]$ \\
+$[$ \moc{FIXP} $\{$ \moc{INIT} $|$ \dusa{pow} $\}~]$ \\
+$[~\{$ \moc{PWF} $|$ \moc{NPWF} $\}~]$ \\
+$[$ \moc{TFUEL} \dusa{tfuel} $]$ \\
+$[$ \moc{TCOOL} \dusa{tcool} $]$ \\
+$[$ \moc{TMOD} \dusa{tmod} $]$ \\
+$[$ \moc{BORON} \dusa{nB} $]$ \\
+$[$ \moc{RDCL} \dusa{dcool} $]$ \\
+$[$ \moc{RDMD} \dusa{dmod} $]$ \\
+$[$ \moc{PUR} \dusa{purity} $]$ \\
+$[$ \moc{BURN} \dusa{bval} $]$ \\
+$[$ $\{$ \moc{XENON} \dusa{nXe} $|$ \moc{XEREF} $\}$ $]$ \\
+$[$ $\{$ \moc{NEP} \dusa{nNp} $|$ \moc{NREF} $\}$ $]$ \\
+$[$ \moc{SAM} \dusa{nSm} $]$ \\
+$[$ \moc{IMET} \dusa{imet} $]$ \\
+$[$ \moc{BLIN} $]$ \\
+;
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{MAP}] keyword to specify that a \dds{macrolib} for fuel properties
+will be computed.
+
+\item[\moc{MCR}] keyword to specify that a \dds{macrolib} containing only
+one non-zero mixture will be created.
+
+\item[\dusa{mmix}] maximum number of mixtures in the \dds{macrolib}.
+
+\item[\moc{INFOR}] keyword to specify the data base name.
+
+\item[\dusa{NAMDB}] \texttt{character*72} title of the database as it has been
+created.
+
+\item[\moc{DNAME}] keyword to specify the number of fuel types and their
+names as stored in the data base.
+
+\item[\dusa{ntyp}] number of fuel types. For \moc{MCR} option, \dusa{ntyp}
+must be 1.
+
+\item[\dusa{NAMTYP}(i)] \texttt{character*12} name of the directory where each
+fuel type information has been stored.
+\item[\moc{REFT}] keyword to specify a number associated with
+a fuel type name.
+
+\item[\dusa{imix}(i)] fuel type index as specified for the fuel map or a
+non-zero mixture number for the single-property {sc macrolib}.
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing in module {\tt
+AFM:}. =0 for no print(default value); =1 for minimum printing; 
+larger values produce increasing amounts of output.
+
+\item[\moc{FIXP}] keyword used to set the power used for cross-section interpolation.
+
+\item[\moc{INIT}] a distributed beginning-of-transient bundle power in kW is used. This power distribution has to be pre-calculated 
+in the \moc{FLPOW:} module using the \moc{INIT} keyword.
+
+\item[\dusa{pow}] uniform bundle power in kW. If this data is omitted, the
+reference value in the data base is used or the bundle powers present
+in a \dds{map}. The reference value is 615 kW if none were provided at the
+database computation time.
+
+\item[\moc{PWF}] keyword used to activate power bundle feedback on fuel properties using powers
+recovered from {\tt 'BUND-PW'} record in \dusa{MAPFL}. This is the default option
+if \moc{MAP} is selected.
+
+\item[\moc{NPWF}] keyword used to desactivate \moc{PWF} feedback. This is the only possible option
+if \moc{MCR} is selected.
+
+\item[\moc{TFUEL}] keyword used to set \dusa{tfuel}.
+
+\item[\dusa{tfuel}] fuel temperature in K. If this data is omitted and
+the bundle powers present in a \dds{map}, fuel temperatures are 
+computed with respect to powers.
+If this data is omitted and there is no bundle power, the
+reference value in the data base is used, where it is 941.29 K if none were provided at the database computation time.
+
+\item[\moc{TCOOL}] keyword used to set \dusa{tcool}.
+
+\item[\dusa{tcool}] coolant temperature in K. If this data is omitted, the
+reference value in the data base is used. The reference value is 560.66 K if none were provided at the database computation time.
+
+\item[\moc{TMOD}] keyword used to set \dusa{tmod}.
+
+\item[\dusa{tmod}] moderator temperature in K. If this data is omitted, the
+reference value in the data base is used. The reference value is 345.66 K if none were provided at the database computation time.
+
+\item[\moc{BORON}] keyword used to set \dusa{nB}.
+
+\item[\dusa{nB}] Boron concentration in ppm. If this data is omitted, the
+reference value in the data base is used. The reference value is 0.0 ppm. See note below for inside equations.
+
+\item[\moc{RDCL}] keyword used to set \dusa{dcool}.
+
+\item[\dusa{dcool}] coolant density in $g/cm^3$.
+If this data is omitted, the
+reference value in the data base is used. The reference value is 
+0.81212 $g/cm^3$ if none were provided at the database computation time.
+
+\item[\moc{RDMD}] keyword used to set \dusa{dmod}.
+
+\item[\dusa{dmod}] moderator density in $g/cm^3$.
+If this data is omitted, the
+reference value in the data base is used. The reference value is 
+1.082885 $g/cm^3$ if none were provided at the database computation time.
+
+\item[\moc{PUR}] keyword used to set \dusa{purity}.
+
+\item[\dusa{purity}] moderator purity in atm\%.
+If this data is omitted, the
+reference value in the data base is used. The reference value is 
+99.911 atm\% if none were provided at the database computation time.
+
+\item[\moc{BURN}] keyword used to set \dusa{bval}. This option is
+valid only when \moc{MCR} is used and can not be omitted.
+
+\item[\dusa{bval}] fuel burnup in MWd/t. This value must be positive. 
+
+\item[\moc{XENON}] keyword used to set \dusa{nXe}.
+
+\item[\dusa{nXe}] Xenon concentration in $10^{24} at/cm^3$. 
+This concentration will be applied to every bundle.
+
+\item[\moc{XEREF}] keyword used to specify that the Xenon concentrations
+as computed with DRAGON will be taken. If this option is omitted and \dds{map} 
+contains bundle fluxes, new Xenon concentrations will be computed and used.
+\item[\moc{NEP}] keyword used to set \dusa{nNp}.
+
+\item[\dusa{nNp}] Neptunium concentration in $10^{24} at/cm^3$. 
+
+\item[\moc{XEREF}] keyword used to specify that the Neptunium concentrations
+as computed with DRAGON will be taken. If this option is omitted and \dds{map} 
+contains bundle fluxes, new Neptunium concentrations will be computed and used.
+
+\item[\moc{SAM}] keyword used to set \dusa{nSm}.
+
+\item[\dusa{nSm}] Samarium concentration in $10^{24} at/cm^3$. 
+If this data is omitted, bundle concentrations as computed by DRAGON is used.
+
+\item[\moc{IMET}] keyword used to set \dusa{imet}.
+
+\item[\dusa{imet}] interpolation type for time-average calculations.
+\dusa{imet} = 1: using Lagrange approximations; \dusa{imet} = 2: using 
+spline approximations; \dusa{imet} = 3: using Hermite approximations
+(default value).
+
+\item[\moc{BLIN}] keyword used to linear interpolation for burnup instead of the Lagrangian
+interpolation method.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+
+Note: The concentration of boron is provided in terms of $10^{24}at/cm^3$ in the database. However, the usual units are $ppm (wt)$ of Boron. Thus, the input asks for $ppm$ of Boron ($n_B$), and automatically transform the units into $10^{24}at/cm^3$ using the following equations:
+\begin{eqnarray*}
+\rho_B(g/cm^3) & = & n_B \ . \ \rho_{\rm water}(g/cm^3)\\
+ {\rm and} & & \\
+ \rho_{\rm water}(at/cm^3) & = & 3 \rho_{\rm water}(molecule/cm^3) =\frac{3.N}{M_{\rm water}} \rho_{\rm water}(g/cm^3)\\
+ \rho_{B}(at/cm^3) & = & \rho_{B}(molecule/cm^3) =\frac{N}{M_{B}} \rho_{}(g/cm^3)\\
+ {\rm thus} & & \\
+ \rho_{B}(10^{24}at/cm^3) & = &  n_B \ . \ \frac{M_{\rm water}}{3.M_{B}} \rho_{\rm water}(10^{24}at/cm^3) 
+\end{eqnarray*}
+where $M$ molar mass and $N$ the Avogadro number.
+
+They are many options on how to use the module {\tt AFM:} for its different purposes. A compact summary is presented on Tab. \ref{tabAFM}.
+
+\begin{table}[!h]
+\caption{AFM options summary}
+\begin{center}
+\begin{tabular}{|p{0.15\textwidth}|p{0.28\textwidth}|p{0.45\textwidth}|}
+\hline
+Option & Keywords & Parameter values \\
+\hline
+MCR  & REFT & Nominal values \\
+  & REFT + \{TFUEL, TCOOL, ...\} & Nominal values except for specified parameters \\
+\hline
+TAB & REFT & Nominal values except for TFUEL parameter which is computed according to the Rozon correlation using nominal power\\
+  & REFT + \{TFUEL, TCOOL, ...\} & Same as above except for specified parameters which will have a constant value \\
+\hline
+MAP with local parameters & REFT & Nominal values except for local parameters included in MAP\\
+  & REFT + \{TFUEL, TCOOL, ...\} & Same as above except for specified parameters which will have a constant value\\
+\hline
+MAP without local parameters & REFT & Nominal values except for TFUEL parameter which is computed according to the Rozon correlation if power distribution is available\\
+  & REFT + \{TFUEL, TCOOL, ...\} & Same as above except for specified parameters which will have a constant value\\
+\hline
+
+\end{tabular}
+\end{center}
+\label{tabAFM}
+\end{table}
+
+The Rozon correlation for fuel temperature as a function of bundle power is:
+$$
+T_{\rm fuel}= T_{\rm cool} + 0.476 \, P + 2.267 \, P^2 \times 10^{-4}
+$$
+where $P$ is in kW and temperatures are in Kelvin.
+
+\clearpage

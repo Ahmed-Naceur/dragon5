@@ -1,0 +1,123 @@
+\subsection{Contents of a \dir{detect} data structure}\label{sect:detectdir}
+
+\vskip 0.2cm
+The \dir{detect} data structure is used to store detector positions and 
+responses. This object has a signature {\tt L\_DETECT}; it is created using
+the \moc{DETINI:} module. The information contained in
+this data structure can be used and updated in other DONJON modules
+which are related to the detectors, namely: \moc{DETECT:} and \moc{DETINI:}
+modules.
+
+\subsubsection{The state-vector content}\label{sect:devicestate}
+\noindent
+The dimensioning parameters $\mathcal{S}_i$, which are stored in the state
+vector for this data structure, represent:
+
+\begin{itemize}
+
+\item  The number of energy
+  groups. $N_g = \mathcal{S}_1$
+
+\item  The total number of detectors $\sum
+  \mathcal{I}_{1} = \mathcal{S}_2$ . 
+
+\item  Flag for hexagonal detector definition  $\mathcal{S}_3
+  = 1$ for hexagonal detector definition,
+$= 0$ otherwise.
+
+\end{itemize}
+
+The dimensioning parameters for a specific detector type, which are stored
+in the vector 
+
+$\mathcal{I}_{i}$, represents:
+
+\begin{itemize}
+
+\item The number of detectors of type \{ name\_type \} $\mathcal{I}_{1}$.
+
+\item The number of delayed responses + 2, $\mathcal{I}_{2}$.
+
+\end{itemize}
+
+\subsubsection{The main \dir{detect} directory}\label{sect:detectdir}
+\noindent
+The following records and sub-directories will be found on the first level
+of \dir{detect} directory:
+
+\begin{DescriptionEnregistrement}{Records and sub-directories in \dir{detect}
+data structure}{7cm} 
+
+\CharEnr
+{SIGNATURE\blank{3}}{$*12$}
+{Signature of the \dir{detect} data structure ($\mathsf{SIGNA}=${\tt L\_DETECT\blank{4}}).}
+
+\IntEnr
+{STATE-VECTOR}{$40$}
+{Vector describing the various parameters associated with this data structure $\mathcal{S}_i$}
+
+\DirVar
+{\listedir{name\_type}}
+{Detector type sub-directory contains informations
+for each detector of this type.}
+
+\end{DescriptionEnregistrement}
+
+\subsubsection{The \dir{name\_type} sub-directories}\label{sect:nametype}
+
+\noindent
+Inside each \dir{name\_type} sub-directory, the following records will be found:
+
+\begin{DescriptionEnregistrement}{Records in \dir{name\_type} sub-directories}
+{7.0cm} \label{tabl:tabdet}
+
+\IntEnr
+{INFORMATIONS}{$2$}
+{Record containing describing the various parameters associated with a
+  detector type $\mathcal{I}_{i}$.}
+
+\OptRealEnr
+{INV-CONST\blank{3}}{$\mathcal{I}_2 -2$}{}{$s^{-1}$}
+{The inverse time constant of the
+delayed detector responses.}
+
+\OptRealEnr
+{FRACTION\blank{4}}{$\mathcal{I}_2 -1$}{}{}
+{The delayed and prompt fractions
+of the detector responses.}
+
+\RealEnr
+{SPECTRAL\blank{4}}{$\mathcal{I}_2 -1$}{}
+{The energy spectrum of the
+detector.}
+
+\DirVar
+{\listedir{name\_detect}}
+{Detector information sub-directory}
+
+
+\end{DescriptionEnregistrement}
+
+\subsubsection{The \dir{name\_detect} sub-directories}\label{sect:detector}
+
+\noindent
+Inside each \dir{name\_detect} sub-directory, the following records will be found:
+
+\begin{DescriptionEnregistrement}{Records in \dir{name\_detect} sub-directories}
+{7.0cm} \label{tabl:tabrodgroup}
+
+\OptIntEnr
+{NHEX\blank{8}}{$nhex$}{$hex=1$}
+{The numbers of affected hexagons in the first X-Y plane.}
+
+\RealEnr
+{POSITION\blank{4}}{$6$}{cm}
+{The coordinates of the 
+detector.}
+
+\RealEnr
+{RESPON\blank{6}}{$\mathcal{I}_2$}{}
+{The responses of the detector.}
+
+\end{DescriptionEnregistrement}
+\clearpage

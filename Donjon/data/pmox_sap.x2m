@@ -1,0 +1,125 @@
+*----
+*  Name          : pmox_sap.x2m
+*  Type          : DONJON procedure
+*  Author        : V. Salino (IRSN), basis by A. Hebert
+*  Date          : 01/11/2014
+*----
+*  STRUCTURES, MODULES and PROCEDURES definitions
+*----
+LINKED_LIST GeoRes Track Matex Fmap Power PrevPower
+            Thermo XeMicroF Flux SapUOX ;
+MODULE      TRIVAT: RESINI: SIM: DELETE: GREP: UTL: ABORT: EVO: END: ;
+PROCEDURE   Init Geo FMap Conv ;
+PROCEDURE   assertS ;
+SEQ_ASCII _Saphyb_UOX :: FILE './_Saphyb_UOX' ;
+*----
+* Copy Saphyb into memory
+*----
+SapUOX := _Saphyb_UOX ;
+*----
+*  Local parameters
+*----
+LOGICAL True False := $True_L $False_L ;
+REAL BUcycle PrevBUcycle ;
+REAL keff CB PrevCB PredicCB BURNSTEP NextBURNSTEP Yintrcpt Slope ;
+REAL keff_ref Diff_keff ;
+REAL b1 b2 b3 ;
+REAL evostep ;
+REAL DELTA REFVALUE CALCULATED ;
+INTEGER BUindex BuBarr ;
+LOGICAL EoC ; ! End-of-Cycle reached (TRUE) or not (FALSE)
+REAL cond := 3. ;
+
+*----
+*  Calculation options
+*---- 
+INTEGER Splitx Splitz := 2 2 ;
+STRING  Dir := "EDI2B" ;
+
+*----
+*  Define geometric properties
+*----
+REAL rPavX     := 17.0 ;  ! assemblage 17 x 17
+INTEGER iPavX  := 17 ; ! assemblage 17 x 17
+REAL LPitch    := 1.26 ;
+REAL Lame      := 0.042 ;
+REAL dx        := 21.6 ;
+REAL dz        := 368.0 31. / ;
+ECHO "dz:" dz ;
+INTEGER MaxR   := iPavX iPavX * 33 * Splitx * Splitx * Splitz * ;
+  GeoRes Matex := Geo  ::
+     <<Splitx>> <<Splitz>> <<MaxR>> <<dx>> <<dz>> ;
+Track := TRIVAT: GeoRes ::
+   MAXR <<MaxR>> DUAL 2 3 ;
+
+*--
+* Define the fuel map
+*--
+  Fmap Matex := FMap Matex :: <<dx>> <<dz>> ;
+
+*----
+*  A simple cycle depletion
+*----
+STRING Cycle := "T1" ;
+INTEGER CycleIndex := 1 ;
+
+EVALUATE BUcycle BUindex := 0.0 1 ;
+*  Initialisation du premier chargement
+   Fmap := SIM: Fmap ::
+    EDIT 10
+    CYCLE <<Cycle>>
+     QMAP
+    H   G   F   E   D   C   B   A
+ 8 SPC SPC SPC SPC SPC NEW SPC SPC
+ 9 SPC SPC SPC SPC SPC SPC NEW SPC   
+10 SPC SPC SPC SPC SPC SPC NEW  | 
+11 SPC SPC SPC SPC SPC NEW NEW  | 
+12 SPC SPC SPC SPC NEW SPC  |   |     
+13 NEW SPC SPC NEW SPC  |   |   | 
+14 SPC NEW NEW NEW  |   |   |   | 
+15 SPC SPC  |   |   |   |   |   | 
+     SPEC
+     A08 H01 R08 H15 SET AVGB 37000.0
+     H08             SET AVGB 40000.0
+     D08 H04 M08 H12 SET AVGB 36000.0
+     G09 G07 J07 J09 SET AVGB 9000.0
+     C09 G03 N07 J13 SET AVGB 35000.0
+     A09 G01 R07 J15 SET AVGB 38000.0
+     C12 D03 N04 M13 SET AVGB 26000.0
+     G13 C07 J03 N09 SET AVGB 35000.0
+     D13 C04 M03 N12 SET AVGB 26000.0
+     G15 A07 J01 R09 SET AVGB 38000.0
+     F08 H06 K08 H10 SET AVGB 9000.0
+     E09 G05 L07 J11 SET AVGB 12000.0
+     F10 F06 K06 K10 SET AVGB 12000.0
+     E10 F05 L06 K11 SET AVGB 27000.0
+     D10 F04 M06 K12 SET AVGB 11000.0
+     G11 E07 J05 L09 SET AVGB 12000.0
+     F11 E06 K05 L10 SET AVGB 27000.0
+     D11 E04 M05 L12 SET AVGB 26000.0
+     F12 D06 K04 M10 SET AVGB 11000.0
+     E12 D05 L04 M11 SET AVGB 26000.0
+     G08 H07 J08 H09 SET AVGB 35000.0 
+     E08 H05 L08 H11 SET AVGB 25000.0 
+     B08 H02 P08 H14 SET AVGB 23000.0 
+     F09 G06 K07 J10 SET AVGB 24000.0 
+     D09 G04 M07 J12 SET AVGB 9000.0 
+     G10 F07 J06 K09 SET AVGB 24000.0 
+     C10 F03 N06 K13 SET AVGB 13000.0 
+     E11 E05 L05 L11 SET AVGB 22000.0 
+     G12 D07 J04 M09 SET AVGB 9000.0 
+     F13 C06 K03 N10 SET AVGB 13000.0 
+    ENDCYCLE ;
+
+Flux Thermo XeMicroF Fmap Matex := Init
+Fmap Matex Track SapUOX ;
+
+EVALUATE PredicCB := 2000.0 ; ! CBinit, debut de cycle
+Power Flux Fmap Matex Thermo XeMicroF := Conv
+Flux Fmap Matex Thermo XeMicroF Track SapUOX ::
+  <<True>> <<PredicCB>> 1.0 286.5 >>CB<< >>keff<< ;
+
+assertS Flux :: 'K-EFFECTIVE' 1 0.9833664 ;
+ECHO "test pmox_sap.x2m completed" ;
+END: ;
+QUIT "LIST" .

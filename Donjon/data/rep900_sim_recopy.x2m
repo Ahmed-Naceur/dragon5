@@ -1,0 +1,363 @@
+*----
+*  Name          : rep900_sim_recopy.x2m
+*  Type          : DONJON procedure
+*  Author        : V. Salino (IRSN), basis by A. Hebert
+*  Date          : 01/11/2014
+*
+*  Compute a simple cycle depletion with critical boron.
+*  Compute equilibrium cycle for a fictive UOX/MOX loading pattern.
+*  Simulate various additionnal cycle sequences.
+*----
+*  References
+*
+*    Loading pattern freely inspired from public data:
+*      Exploitation des coeurs REP (p.36),
+*      N. Kerkar, P. Paulin,
+*      EDP Sciences, 2008.
+*----
+*  STRUCTURES, MODULES and PROCEDURES definitions
+*----
+LINKED_LIST GeoRes Track MacroRefl Matex Fmap Power PrevPower
+            Thermo MicroF Burn Refl.XS SapUOX SapMOX 
+            Flux BuPC MicPC ;
+SEQ_ASCII   Saphyb_UOX :: FILE './Saphyb_UOX' ;
+SEQ_ASCII   Saphyb_MOX :: FILE './Saphyb_MOX' ;
+SEQ_ASCII   Refl.XS_as :: FILE './Refl.XS_as' ;
+MODULE      TRIVAT: RESINI: SIM: DELETE: GREP: EVO: ABORT: END: ;
+REAL        DELTA ;
+PROCEDURE   GeoCo SetFuelMap Steady InitSteady ;
+
+*----
+*  Local parameters
+*----
+LOGICAL True False := $True_L $False_L ;
+REAL BUcycle PrevBUcycle ;
+REAL keff CB PrevCB PredicCB BURNSTEP NextBURNSTEP Yintrcpt Slope ;
+REAL evostep ;
+REAL CBinit := 2000.0 ;
+INTEGER BUindex ;
+LOGICAL EoC ; ! End-of-Cycle reached (TRUE) or not (FALSE)
+
+*----
+*  Calculation options
+*----
+INTEGER Splitx Splitz := 1 1 ;
+STRING  Dir := "EDI2B" ;
+
+*----
+*  Recover the reflector Macrolib and Saphybs
+*----
+Refl.XS := Refl.XS_as ;
+SapUOX := Saphyb_UOX ;
+SapMOX := Saphyb_MOX ;
+
+*----
+*  Set reflector cross sections (Lefebvre-Lebigot)
+*----
+MacroRefl := Refl.XS ;
+
+*----
+*  Define geometric properties
+*----
+REAL rPavX     := 17.0 ;  ! assemblage 17 x 17
+INTEGER iPavX  := 17 ; ! assemblage 17 x 17
+REAL LPitch    := 1.26 ;
+REAL Lame      := 0.04 ;
+REAL dx        := 21.5 ;
+INTEGER MaxR   := iPavX iPavX * 33 * Splitx * Splitx * Splitz * ;
+GeoRes Matex := GeoCo  ::
+   <<Splitx>> <<Splitz>> <<MaxR>> <<dx>> ;
+Track := TRIVAT: GeoRes ::
+   MAXR <<MaxR>> DUAL 2 3 ;
+
+*--
+* Define the fuel map
+*--
+Fmap Matex := SetFuelMap Matex :: <<dx>> ;
+
+*----
+*  A simple cycle depletion
+*----
+STRING Cycle := "T1" ;
+INTEGER CycleIndex := 1 ;
+EVALUATE BUcycle BUindex := 0.0 1 ;
+
+*----
+*  Equilibrium cycle convergence
+*----
+
+LOGICAL EquilibrCycl := $False_L ;
+REAL BUprevCycle ; ! Mean burnup added during the previous cycle
+REAL DiffBUCycle MaxDiffBU MaxDiffPow ;
+EVALUATE BUprevCycle := BUcycle ;
+STRING   PrevCycle := Cycle ;
+STRING   MainCycle ;
+EVALUATE CycleIndex := 1 ;
+INTEGER Return PrevBUindex RtnBUindex ;
+STRING ReturnCycle PrevRtnCycle ;
+
+REAL epsBUcycle      epsBUlocal      epsPowlocal :=
+     5.0 (* MWd/t *) 10. (* MWd/t *) 0.5E-2 (* Relative error *) ;
+
+REPEAT
+  EVALUATE MainCycle := "T" CycleIndex I_TO_S + ;
+  EVALUATE Return := 0 ;
+  EVALUATE Cycle := MainCycle ;
+IF CycleIndex 1 = THEN
+Fmap := SIM: Fmap ::
+ EDIT 2
+ CYCLE <<Cycle>>
+  QMAP
+      H   G   F   E   D   C   B   A
+   8 SPC SPC SPC SPC SPC SPC 4   SPC
+   9 SPC SPC NEW SPC SPC SPC NEW SPC
+  10 SPC NEW SPC SPC SPC SPC 4    |
+  11 SPC SPC SPC SPC SPC NEW 4    |
+  12 SPC SPC SPC SPC SPC 4    |   |
+  13 SPC SPC SPC NEW 4    |   |   |
+  14 4   NEW 4   4    |   |   |   |
+  15 SPC SPC  |   |   |   |   |   |
+  SPEC
+  E09 J11 L07 G05 G11 L09 J05 E07
+  D10 K12 M06 F04 F12 M10 K04 D06 SET AVGB 12500. ! UOX
+  E10 K11 L06 F05 F11 L10 K05 E06
+  D09 J12 M07 G04 G12 M09 J04 D07 SET AVGB 12500. ! MOX
+  C09 J13 N07 G03 G13 N09 J03 C07
+  C10 K13 N06 F03 F13 N10 K03 C06 SET AVGB 25000.
+  A09 J15 R07 G01 G15 R09 J01 A07
+  D11 L12 M05 E04 E12 M11 L04 D05 SET AVGB 37500.
+  G08 H09 J08 H07
+  F08 H10 K08 H06
+  D08 H12 M08 H04
+  E11 L11 L05 E05 SET AVGB 12500.
+  F10 K10 K06 F06
+  D12 M12 M04 D04
+  E08 H11 L08 H05 SET AVGB 25000.
+  C08 H13 N08 H03
+  A08 H15 R08 H01
+  G09 J09 J07 G07 SET AVGB 37500.
+  H08 SET AVGB 12500.
+ ENDCYCLE ;
+  Flux Thermo MicroF Burn Fmap Matex  := InitSteady
+  Fmap Matex SapUOX SapMOX MacroRefl Track :: <<CycleIndex>> ;
+ELSE
+* Equilibrium cycle loading pattern
+* Debut du cycle suivant :
+* On recharge avec SIM. Le contenu de {hcycle} de la Fmap 
+* est recupere et mis dans ISOTOPESDENS de la Microlib.
+* Pour les assemblages NEW, il faut les initialiser a 0. (pas de Xenon)
+ MicroF Fmap := SIM: MicroF Fmap ::
+   EDIT 1
+   CYCLE <<Cycle>> FROM <<PrevCycle>>
+    QMAP
+        H   G   F   E   D   C   B   A
+     8 B08 C12 D13 E11 G10 E08 NEW F10
+     9 M13 D12 NEW B10 B09 E09 NEW C10
+    10 N12 NEW F08 C11 B11 D10 NEW  |
+    11 L11 F14 E13 F09 C09 NEW NEW  |
+    12 K09 G14 E14 G13 G08 NEW  |   |
+    13 H11 G11 F12 NEW NEW  |   |   |
+    14 NEW NEW NEW NEW  |   |   |   |
+    15 K10 F13  |   |   |   |   |   |
+   ENDCYCLE ;
+  Flux Thermo MicroF Burn Fmap Matex  := InitSteady
+  MicroF Fmap Matex SapUOX SapMOX MacroRefl Track :: <<CycleIndex>> ;
+ENDIF ;
+
+  EVALUATE BURNSTEP := 50.0 ;
+  EVALUATE evostep  := BURNSTEP 38. / ;
+* 38. correspond au facteur de conversion MWj/t -> JEPP
+  ECHO "pas de temps (en JEPP):" evostep ;
+  EVALUATE BUcycle BUindex := 0.0 1 ;
+
+  EVALUATE PredicCB := 2000.0 ; ! CBinit, debut de cycle
+  Power Flux Thermo MicroF Burn Fmap Matex  := Steady
+  Flux Thermo MicroF Burn Fmap Matex SapUOX SapMOX 
+  MacroRefl Track ::
+    <<True>> <<PredicCB>> <<False>> <<True>> 
+     >>CB<< >>keff<< ;
+  ECHO "BUcycle( 0 )=" BUcycle "CB=" CB "keff=" keff ;
+  EVALUATE PredicCB := CB ;
+  EVALUATE PrevCB PrevBUcycle := CB BUcycle ;
+  EVALUATE BUindex := 1 ;
+  REPEAT
+    ECHO "BURNSTEP(" BUindex ") =" BURNSTEP ;
+    EVALUATE BUcycle := BUcycle BURNSTEP + ;
+* A chaque debut d'un nouveau pas de temps on enregistre le contenu 
+* de la Microlib dans la Fmap, dans le repertoire {hcycle}
+    Fmap := SIM: Fmap MicroF Power ::
+     EDIT 1
+     CYCLE <<Cycle>>
+       BURN-STEP <<BURNSTEP>>
+     ENDCYCLE ;
+* Mise en place du predicteur-correcteur : on realise un premier pas 
+* pour faire evoluer les isotopes au pas de temps i+1
+        BuPC := Burn ;
+        MicPC := MicroF ;
+    Burn MicroF := EVO: Burn MicroF Power ::
+      EDIT 0 RUNG FLUX_POW PIFI DEPL <<evostep>> DAY KEEP ;
+    Power := DELETE: Power ;
+* S'en suit un deuxieme passage dans Steady pour :
+* 1) Calcul du flux converge au pas i+1
+* 2) Extraction du flux au pas de temps i+1/2 a l'aide des
+*    flux i et i+1
+  Power Flux Thermo MicroF Burn Fmap Matex  := Steady
+  Flux Thermo MicroF Burn Fmap Matex SapUOX SapMOX 
+  MacroRefl Track ::
+    <<True>> <<PredicCB>> <<False>> <<True>> 
+     >>CB<< >>keff<< ;
+    Burn MicroF := DELETE: Burn MicroF ;
+* Pour finir, une evolution des isotopes est realisee du pas de 
+* temps i (on reprend la Microlib issue du premier passage dans
+* Steady, au pas i+1 en utilisant le flux au pas i+1/2
+    BuPC MicPC := EVO: BuPC MicPC Power ::
+      EDIT 0 RUNG FLUX_POW PIFI DEPL <<evostep>> DAY KEEP ;
+        Burn := BuPC ;
+        MicroF := MicPC ;
+    BuPC MicPC := DELETE: BuPC MicPC ; 
+
+    PrevPower := Power ;
+    Power := DELETE: Power ;
+  Power Flux Thermo MicroF Burn Fmap Matex  := Steady
+  Flux Thermo MicroF Burn Fmap Matex SapUOX SapMOX 
+  MacroRefl Track ::
+    <<True>> <<PredicCB>> <<False>> <<False>> 
+     >>CB<< >>keff<< ;
+    ECHO "BUcycle(" BUindex ")=" BUcycle "CB=" CB "keff=" keff ;
+    
+    ECHO "Save number densities of particularized isotopes in Fmap"
+    " at cycle " Cycle ;
+    Fmap := SIM: Fmap MicroF Power ::
+     EDIT 1
+     CYCLE <<Cycle>>
+       SET-FOLLOW
+     ENDCYCLE ;
+
+    IF CB 10.0 - ABS 1.0 < THEN ! Narrower criteria for equilibrium
+      EVALUATE EoC := $True_L ;
+    ELSE
+      EVALUATE EoC := $False_L ;
+*     Find end-of-cycle using a Newton's method
+      EVALUATE Slope := PrevCB CB - PrevBUcycle BUcycle - / ;
+      EVALUATE Yintrcpt := CB Slope BUcycle * - ;
+* Distinction des BUindex car le pas de temps utilise n'est pas 
+* regulier
+* Maillage utilise : 0, 50, 100, 150, 300, 500, 1000, 2000, ...
+* La condition d'arret du cycle est CB= 10 ppm
+      IF BUindex 1 = BUindex 2 = + THEN
+          EVALUATE PredicCB := BUcycle 50.0 + Slope * Yintrcpt + ;
+      ELSEIF BUindex 3 = THEN
+          EVALUATE PredicCB := BUcycle 150.0 + Slope * Yintrcpt + ;
+      ELSEIF BUindex 4 = THEN
+          EVALUATE PredicCB := BUcycle 200.0 + Slope * Yintrcpt + ;
+      ELSEIF BUindex 5 = THEN
+          EVALUATE PredicCB := BUcycle 500.0 + Slope * Yintrcpt + ;
+      ELSE
+          EVALUATE PredicCB := BUcycle 1000.0 + Slope * Yintrcpt + ;
+      ENDIF ;
+      IF PredicCB 10.0 < THEN
+        EVALUATE NextBURNSTEP := 10.0 Yintrcpt - Slope / BUcycle - ;
+        EVALUATE PredicCB := 10.0 ; ! ppm aimed
+      ELSEIF BUindex 1 = BUindex 2 = + THEN
+        EVALUATE NextBURNSTEP := 50.0 ; !We have margins before EoC
+      ELSEIF BUindex 3 = THEN
+        EVALUATE NextBURNSTEP := 150.0 ; !We have margins before EoC
+      ELSEIF BUindex 4 = THEN
+        EVALUATE NextBURNSTEP := 200.0 ; !We have margins before EoC
+      ELSEIF BUindex 5 = THEN
+        EVALUATE NextBURNSTEP := 500.0 ; !We have margins before EoC
+      ELSE
+        EVALUATE NextBURNSTEP := 1000.0 ; !We have margins before EoC
+      ENDIF ;
+*     Use the previous step for future BURNSTEP evaluation
+      EVALUATE PrevCB PrevBUcycle := CB BUcycle ;
+      IF NextBURNSTEP 0.0 < THEN
+*       Return back in time
+        EVALUATE BUcycle := BUcycle BURNSTEP - ;
+        IF BUindex 1 = NOT THEN
+          EVALUATE ReturnCycle RtnBUindex := Cycle BUindex ;
+        ELSE
+          EVALUATE ReturnCycle RtnBUindex := PrevRtnCycle PrevBUindex ;
+        ENDIF ;
+        EVALUATE Return := Return 1 + ;
+        EVALUATE Cycle := MainCycle "rtn" Return I_TO_S + + ;
+        Fmap := SIM: Fmap ::
+         EDIT 1
+         CYCLE <<Cycle>> FROM <<ReturnCycle>> BURN <<RtnBUindex>>
+          QMAP
+              H   G   F   E   D   C   B   A
+           8 H08 G08 F08 E08 D08 C08 B08 A08
+           9 H09 G09 F09 E09 D09 C09 B09 A09
+          10 H10 G10 F10 E10 D10 C10 B10  |
+          11 H11 G11 F11 E11 D11 C11 B11  |
+          12 H12 G12 F12 E12 D12 C12  |   |
+          13 H13 G13 F13 E13 D13  |   |   |
+          14 H14 G14 F14 E14  |   |   |   |
+          15 H15 G15  |   |   |   |   |   |
+         ENDCYCLE ;
+*       Reuse previous power distribution
+        Power := DELETE: Power ;
+        Power := PrevPower ;
+        IF BUindex 1 = NOT THEN
+*         For the next step, use previous step if CB still not above 10
+          EVALUATE PrevRtnCycle := ReturnCycle ;
+          EVALUATE PrevBUindex := BUindex ;
+        ENDIF ;
+*       Reestablishing cycle implies BUindex reboot
+        EVALUATE BUindex := 1 ;
+*       Recompute a smaller step
+        EVALUATE BURNSTEP := BURNSTEP NextBURNSTEP + ;
+      ELSE
+        EVALUATE BURNSTEP := NextBURNSTEP ;
+  EVALUATE evostep  := BURNSTEP 36.8 / ;
+  ECHO "pas de temps:" evostep ;
+        EVALUATE BUindex := BUindex 1 + ;
+      ENDIF ;
+    ENDIF ;
+    PrevPower := DELETE: PrevPower ;
+  UNTIL BUindex 2 = ;
+  ECHO "Duration of cycle =" BUcycle "MWj/t, for cycle" Cycle ;
+Flux := DELETE: Flux ;  
+Power Thermo Burn := DELETE: Power Thermo Burn ;
+
+IF CycleIndex 1 > THEN
+  Fmap := SIM: Fmap ::
+   EDIT 1
+   COMPARE <<Cycle>> <<PrevCycle>> DIST-BURN >>MaxDiffBU<<
+   COMPARE <<Cycle>> <<PrevCycle>> DIST-POWR >>MaxDiffPow<< ;
+  EVALUATE DiffBUCycle := BUprevCycle BUcycle - ABS ;
+  ECHO "Delta BUcycle =" DiffBUCycle ;
+  ECHO "Delta BUlocal =" MaxDiffBU ;
+  ECHO "Delta Powlocal =" MaxDiffPow ;
+  EVALUATE EquilibrCycl := ! 3 convergence criterion
+   BUprevCycle BUcycle - ABS epsBUcycle  <
+   MaxDiffBU                 epsBUlocal  < *
+   MaxDiffPow                epsPowlocal < * ;
+ENDIF ;
+
+  EVALUATE BUprevCycle := BUcycle ;
+  EVALUATE PrevCycle := Cycle ;
+  EVALUATE CycleIndex := CycleIndex 1 + ;
+  IF CycleIndex 20 > THEN
+    ECHO "Non-convergence " ;
+    ECHO "Equibrium cycle was not found after 20 iterations." ;
+    ABORT: ;
+  ENDIF ;
+UNTIL CycleIndex 3 = ;
+
+ECHO "Converged Delta BUlocal =" MaxDiffBU ;
+REAL REFVALUE := 12497.43 ;
+EVALUATE DELTA := MaxDiffBU REFVALUE - REFVALUE / ABS ;
+IF DELTA 5.0E-5 < THEN
+  PRINT "TEST SUCCESSFUL; DELTA=" DELTA ;
+ELSE
+  PRINT "------------" ;
+  PRINT "TEST FAILURE" ;
+  PRINT "------------" ;
+  PRINT "REFERENCE=" REFVALUE " CALCULATED=" MaxDiffBU ;
+  ABORT: ;
+ENDIF ;
+ECHO "Successful end of rep900_sim_recopy." ;
+
+END: ;
+QUIT "LIST" .

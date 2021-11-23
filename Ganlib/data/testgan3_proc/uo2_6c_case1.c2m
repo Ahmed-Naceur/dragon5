@@ -1,0 +1,13 @@
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST GEOM TRACK LIBRARY LIBRARY2 CP FLUX ;
+MODULE LIB: UTL: DELETE: END: ;
+PROCEDURE assertS ;
+*
+FLUX := UTL: :: CREA 'K-EFFECTIVE' 1 = 1.703945 ;
+FLUX := UTL: FLUX :: CREA 'SIGNATURE' 3 = 'L_FL' 'UX' ' ' ;
+UTL: FLUX :: DIR ;
+assertS FLUX :: 'K-EFFECTIVE' 1  1.703945 ;
+ECHO "test uo2_6c_case5 completed" ;
+QUIT "LIST" .

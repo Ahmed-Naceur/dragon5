@@ -1,0 +1,157 @@
+LINKED_LIST IAEA3D MACRO TRACK SYSTEM FLUX EDIT REF ;
+MODULE GEO: MAC: TRIVAT: TRIVAA: FLUD: OUT: DELETE: END: ;
+PROCEDURE assertS ;
+*
+IAEA3D := GEO: :: CAR3D 9 9 4
+          EDIT 2
+          X- DIAG  X+ VOID 
+          Y- SYME  Y+ DIAG 
+          Z- VOID  Z+ VOID 
+          MESHX 0.0 20.0 40.0 60.0 80.0 100.0 120.0 140.0 160.0 180.0 
+          MESHZ 0.0 20.0 280.0 360.0 380.0 
+          SPLITZ 1 2 1 1
+          ! PLANE NB 1
+          MIX 4 4 4 4 4 4 4 4 4 
+                4 4 4 4 4 4 4 4 
+                  4 4 4 4 4 4 4 
+                    4 4 4 4 4 4 
+                      4 4 4 4 0 
+                        4 4 4 0 
+                          4 0 0 
+                            0 0 
+                              0 
+              ! PLANE NB 2
+              3 2 2 2 3 2 2 1 4 
+                2 2 2 2 2 2 1 4 
+                  2 2 2 2 1 1 4 
+                    2 2 2 1 4 4 
+                      3 1 1 4 0 
+                        1 4 4 0 
+                          4 0 0 
+                            0 0 
+                              0 
+              ! PLANE NB 3
+              3 2 2 2 3 2 2 1 4 
+                2 2 2 2 2 2 1 4 
+                  3 2 2 2 1 1 4 
+                    2 2 2 1 4 4 
+                      3 1 1 4 0 
+                        1 4 4 0 
+                          4 0 0 
+                            0 0 
+                              0 
+              ! PLANE NB 4
+              5 4 4 4 5 4 4 4 4 
+                4 4 4 4 4 4 4 4 
+                  5 4 4 4 4 4 4 
+                    4 4 4 4 4 4 
+                      5 4 4 4 0 
+                        4 4 4 0 
+                          4 0 0 
+                            0 0 
+                              0 
+           ;
+MACRO := MAC: ::
+ EDIT 2 NGRO 2 NMIX 5 NIFI 1
+ READ INPUT
+ MIX     1
+     DIFFX  1.500E+00  4.0000E-01
+     TOTAL  3.000E-02  8.0000E-02
+    NUSIGF  0.000E+00  1.3500E-01
+  H-FACTOR  0.000E+00  1.3500E-01
+      SCAT  1 1 0.0 2 2 0.0 0.2E-01
+ MIX     2
+     DIFFX  1.500E+00  4.0000E-01
+     TOTAL  3.000E-02  8.5000E-02
+    NUSIGF  0.000E+00  1.3500E-01
+  H-FACTOR  0.000E+00  1.3500E-01
+      SCAT  1 1 0.0 2 2 0.0 0.2E-01
+ MIX     3
+     DIFFX  1.500E+00  4.00000E-01
+     TOTAL  3.000E-02  1.30000E-01
+    NUSIGF  0.000E+00  1.35000E-01
+  H-FACTOR  0.000E+00  1.35000E-01
+      SCAT  1 1 0.0 2 2 0.0 0.2E-01
+ MIX     4
+     DIFFX  2.000E+00  3.0000E-01
+     TOTAL  4.000E-02  1.0000E-02
+      SCAT  1 1 0.0 2 2 0.0 0.4E-01
+ MIX     5
+     DIFFX  2.000E+00  3.0000E-01
+     TOTAL  4.000E-02  5.5000E-02
+      SCAT  1 1 0.0 2 2 0.0 0.4E-01
+ ;
+TRACK := TRIVAT: IAEA3D ::
+      TITLE 'TEST IAEA 3D'
+      EDIT 5 MAXR 405 DUAL 3 3 ;
+SYSTEM := TRIVAA: MACRO TRACK ::
+      EDIT 5 ;
+FLUX := FLUD: SYSTEM TRACK ::
+      EDIT 2 ;
+assertS FLUX :: 'K-EFFECTIVE' 1 1.028981 ;
+EDIT := OUT: FLUX TRACK MACRO IAEA3D ::
+       EDIT 2 INTG
+       (*PLANE NB 1*) 
+       0  0  0  0  0  0  0  0  0 
+          0  0  0  0  0  0  0  0 
+             0  0  0  0  0  0  0 
+                0  0  0  0  0  0 
+                   0  0  0  0  0
+                      0  0  0  0
+                         0  0  0
+                            0  0
+                               0
+       (*PLANE NB 2*) 
+       1  2  3  4  5  6  7  8  0 
+          9 10 11 12 13 14 15  0 
+            16 17 18 19 20 21  0 
+               22 23 24 25  0  0 
+                  26 27 28  0  0
+                     29  0  0  0
+                         0  0  0
+                            0  0
+                               0
+       (*PLANE NB 3*) 
+       30 31 32 33 34 35 36 37  0 
+          38 39 40 41 42 43 44  0 
+             45 46 47 48 49 50  0 
+                51 52 53 54  0  0 
+                   55 56 57  0  0
+                      58  0  0  0
+                          0  0  0
+                             0  0
+                                0
+       (*PLANE NB 4*) 
+       0  0  0  0  0  0  0  0  0 
+          0  0  0  0  0  0  0  0 
+             0  0  0  0  0  0  0 
+                0  0  0  0  0  0 
+                   0  0  0  0  0
+                      0  0  0  0
+                         0  0  0
+                            0  0
+                               0
+       ;
+TRACK SYSTEM FLUX EDIT := DELETE: TRACK SYSTEM FLUX EDIT ;
+*
+TRACK := TRIVAT: IAEA3D ::
+      TITLE 'TEST IAEA 3D'
+      EDIT 5 MAXR 405 PRIM 3 ;
+SYSTEM := TRIVAA: MACRO TRACK ::
+      EDIT 5 ;
+FLUX := FLUD: SYSTEM TRACK ::
+      EDIT 2 ;
+assertS FLUX :: 'K-EFFECTIVE' 1 1.029308 ;
+TRACK SYSTEM FLUX := DELETE: TRACK SYSTEM FLUX ;
+*
+TRACK := TRIVAT: IAEA3D ::
+      TITLE 'TEST IAEA 3D'
+      EDIT 5 MAXR 405 MCFD 3 ;
+SYSTEM := TRIVAA: MACRO TRACK ::
+      EDIT 5 ;
+FLUX := FLUD: SYSTEM TRACK ::
+      EDIT 2 ;
+assertS FLUX :: 'K-EFFECTIVE' 1 1.028842 ;
+TRACK SYSTEM FLUX := DELETE: TRACK SYSTEM FLUX ;
+ECHO "test iaea3d completed" ;
+END: ;

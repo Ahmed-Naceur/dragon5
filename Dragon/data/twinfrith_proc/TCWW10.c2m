@@ -1,0 +1,78 @@
+*----
+*  TEST CASE TCWW10
+*  MOSTELLER BENCHMARK FOR 1-D ANNULAR CELL
+*  WIMS-AECL 69 GROUPS LIBRARY FILE WIMSLIB
+*  FIXED SOURCE PROBLEM IN MULTIPLICATIVE MEDIA
+*
+*  REF: None
+*
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  MOSTELA VOLMAT LIBRARY PIJ FLUX OUT ;
+MODULE
+  LIB: MAC: GEO: SYBILT: SHI: ASM: FLU: EDI: DELETE: END: ;
+PROCEDURE assertS assertV ;
+*----
+*  Microscopic cross section from file WIMSLIB format WIMS-AECL
+*  Fixed source of 1.0E5 in group 6
+*----
+LIBRARY := LIB: ::
+  EDIT 0 NMIX 3  CTRA WIMS
+  MIXS LIB: WIMSAECL FIL: WIMSLIB
+  MIX 1 600.0                        O16      = O16      4.61309E-2
+    U235     = U235     1.66078E-4 1
+    U238     = U238     2.28994E-2 1
+  MIX 2 600.0
+    Zr91     = ZR91     3.83243E-2
+  MIX 3 600.0
+    H1H2O    = H1H2O    4.42326E-2   O16H2O   = O16H2O   2.21163E-2
+    BNat     = B-NAT    1.02133E-5
+  ;
+LIBRARY  := MAC: LIBRARY  ::
+  EDIT 0
+  READ INPUT
+  MIX 3 FIXE
+  0.0 0.0 0.0 0.0 0.0 1.0E+5 0.0 0.0 0.0 0.0
+  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+  ;
+*----
+*  Geometry MOSTELA : Annular cell with reflective BC
+*----
+MOSTELA := GEO: :: TUBE 3
+  RADIUS 0.0 0.39306 0.45802 0.71206
+  SPLITR     2       1       1
+  MIX        1       2       3
+  R+ REFL ;
+*----
+*  Self-Shielding calculation SYBIL
+*  Transport calculation      SYBIL
+*  Flux calculation for keff
+*----
+VOLMAT := SYBILT: MOSTELA ::
+  TITLE 'TCWW10: SYBIL TRACK MOSTELLER BENCHMARK'
+  MAXR 4 QUA1 5 ;
+LIBRARY := SHI: LIBRARY VOLMAT :: EDIT 0 NOLJ ;
+PIJ := ASM: LIBRARY VOLMAT ;
+FLUX := FLU: PIJ LIBRARY VOLMAT ::
+  TYPE K ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.8267476 ;
+OUT := EDI: FLUX LIBRARY VOLMAT  ::
+  EDIT 4 MERG MIX 1 2 3 COND 4.0 ;
+FLUX := DELETE: FLUX ;
+FLUX := FLU: PIJ LIBRARY VOLMAT  ::
+  TYPE S EXTE 30 UNKT 1.0E-3 ;
+assertV FLUX :: 'FLUX' (*GROUP*) 10 (*REGION*) 4 4.292641E+05 ;
+OUT := EDI: OUT FLUX LIBRARY VOLMAT ::
+  EDIT 4 MERG MIX 1 2 3 COND 4.0 ;
+OUT FLUX PIJ LIBRARY VOLMAT := DELETE:
+  OUT FLUX PIJ LIBRARY VOLMAT  ;
+ECHO "test TCWW10 completed" ;
+END: ;   
+QUIT "LIST" .

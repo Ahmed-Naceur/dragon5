@@ -1,0 +1,933 @@
+*----
+*  Nom           : rep900_mco.x2m
+*  Auteur        : R. Vallerent
+*  PWR branch calculation and production of a Multicompo
+*  Le Tellier extended type
+*----
+*  Define STRUCTURES and MODULES used
+*----
+************************************************************************
+* BEGIN DECLARATION                                                    *
+************************************************************************
+INTEGER istep iautop ;
+LINKED_LIST
+  GEOSS GEON1 GEON2 TRACKSS TRACKN1 TRACKN2 FLUX1 LIBRARY LIBRARY2
+  LIBEQ DONNEES MICLIB BURN164 FLUX2 LIBHOM EDIOBJ COMPO ;
+SEQ_BINARY TRKFILN2 ;
+SEQ_ASCII ACOMPO :: FILE './ACOMPO' ;
+MODULE
+  GEO: SYBILT: EXCELT: MCCGT: DELETE: GREP: NXT: BIVACT: END:
+  EVO: UTL: COMPO: ABORT: ;
+PROCEDURE
+  Geo_N1_32 Geo_N2_32 Geo_SS_32 Geo_N1_20 Geo_N2_20 Geo_SS_20 GetDim
+  Mix_UOX_20 Mix_MOX_32 Mix_UOX_32 ConcLIBRARY2 Condense_2gr Homogenize
+  BranchFlux CalcFlux ConcLIBEQ
+  ;
+PROCEDURE assertS ;
+
+*----
+*  Choix des options de calcul
+*----
+STRING TypeCal := "Public" ; ! EDF with APOLIB ou Public with DRAGLIB
+STRING Fuel := "UOX"    ; ! UOX/MOX
+STRING TypeCompo := "Assembly" ; ! PinByPin or Assembly
+INTEGER NbRegions := 32 ; ! 32 pour le MOX, 20 ou 32 pour l'UOX
+STRING Library := "DLIBJ3_281" ;
+*----
+*  Calculation data
+*----
+REAL Kinf1 Kinf2 Keff2 B2 ;
+INTEGER iBoreMax := 5 ;
+INTEGER iAutopMax := 9 ;
+INTEGER iTfMax := 5 ;
+INTEGER iTcaMax := 3 ;
+INTEGER iDcaMax := 4 ;
+REAL Rcomb1 Rcomb2 Rcomb3 Rcomb4 
+     R_int_TG R_ext_TG R_int_TI R_ext_TI R_int_G R_ext_G 
+     Cote Lame CoteL 
+     RmodeN1 RmodeN2 
+     R_ext_G2 R_ext_TGm R_ext_TIm
+     N_U5_UOX N_U5_MOX
+     N_Pu8 N_Pu9 N_Pu0 N_Pu1 N_Pu2 N_Am1
+     densU_UOX densU_MOX densPu_MOX
+     teneur1_Pu teneur2_Pu teneur3_Pu
+     temp_comb temp_mode dens_mod
+     temp_comb_0 temp_mode_0 dens_mod_0 pbore ;
+REAL Tbeg Tend BUbeg BUend BUnextSS ;
+REAL Fuelpwr := 38.425 ; ! W/g ou kW/kg ou MW/t
+
+************************************************************************
+*  BEGIN VALUES EVALUATION                                             *
+************************************************************************
+REAL pbore_0 := 500. ; ! natural boron concentration in ppm
+IF TypeCal "Public" = THEN
+  GetDim ::
+    >>Rcomb1<< >>Rcomb2<< >>Rcomb3<< >>Rcomb4<<
+    >>R_int_TG<< >>R_ext_TG<< >>R_int_TI<< >>R_ext_TI<<
+    >>R_int_G<< >>R_ext_G<< >>Cote<< >>Lame<< >>CoteL<<
+    >>RmodeN1<< >>RmodeN2<< >>R_ext_G2<< >>R_ext_TGm<< >>R_ext_TIm<<
+    >>N_U5_UOX<< >>N_U5_MOX<< >>N_Pu8<< >>N_Pu9<< >>N_Pu0<<
+    >>N_Pu1<< >>N_Pu2<< >>N_Am1<< >>densU_UOX<< >>densU_MOX<<
+    >>densPu_MOX<< >>teneur1_Pu<< >>teneur2_Pu<< >>teneur3_Pu<<
+    >>temp_comb_0<< >>temp_mode_0<< >>dens_mod_0<< ;
+ELSE
+  ECHO "TypeCal incorrect" ;
+  ABORT: ;
+ENDIF ;
+************************************************************************
+*  END VALUES EVALUATION                                               *
+************************************************************************
+
+INTEGER maxstep ;
+IF Fuel "MOX" = THEN
+  EVALUATE maxstep := 55 ;
+  DONNEES := UTL: ::
+    CREA
+      burn <<maxstep>> =
+            0.0       9.375    18.75     37.5      75.0     150.0
+          325.0     500.0     750.0    1000.0    1500.0    2000.0
+         2500.0    3000.0    4000.0    5000.0    6000.0    7000.0
+         8000.0    9000.0   10000.0   11000.0   12000.0   13000.0
+        14000.0   15000.0   16000.0   17000.0   18000.0   19000.0
+        20000.0   21000.0   22000.0   23000.0   24000.0   25000.0
+        26000.0   27000.0   28000.0   29000.0   30000.0   31000.0
+        32000.0   33000.0   34000.0   35000.0   36000.0   37000.0
+        38000.0   39000.0   40000.0   50000.0   60000.0   70000.0
+        80000.0
+    ;
+ELSEIF Fuel "UOX" = THEN
+  EVALUATE maxstep := 67 ;
+  DONNEES := UTL: ::
+    CREA
+      burn <<maxstep>> =
+            0.0       9.375    18.75     37.5      75.0     150.0
+          237.5     325.0     412.5     500.0     625.0     750.0
+         1000.0    1250.0    1500.0    1750.0    2000.0    2500.0
+         3000.0    3500.0    4000.0    4500.0    5000.0    5500.0
+         6000.0    6500.0    7000.0    7500.0    8000.0    8500.0
+         9000.0    9500.0   10000.0   10500.0   11000.0   11500.0
+        12000.0   12500.0   13000.0   13500.0   14000.0   14500.0
+        15000.0   15500.0   16000.0   16500.0   17000.0   17500.0
+        18000.0   18500.0   19000.0   19500.0   20000.0   22000.0
+        24000.0   26000.0   28000.0   30000.0   32000.0   34000.0
+        36000.0   38000.0   40000.0   50000.0   60000.0   70000.0
+        80000.0
+    ;
+ELSE
+  ECHO "Fuel incorrect" ;
+  ABORT: ;
+ENDIF ;
+DONNEES := UTL: DONNEES ::
+  CREA
+    ppmBore <<iBoreMax>> =
+          0.0     500.0    1000.0    1500.0    2000.0
+  CREA
+    autop <<iAutopMax>> =
+          0.0    4000.0    8000.0   12000.0   24000.0   36000.0
+      40000.0   60000.0   80000.0
+  CREA
+    tf <<iTfMax>> =
+        550.0     800.0   1150.0   1500.0     2000.0
+  CREA
+    tca <<iTcaMax>> =
+        500.0     600.0    700.0
+  CREA
+    dca <<iDcaMax>> =
+        0.300     0.500     0.659    0.800
+  ;
+
+************************************************************************
+*  END DECLARATION                                                     *
+************************************************************************
+************************************************************************
+*  BEGIN GEOMETRY                                                      *
+************************************************************************
+IF NbRegions 20 = THEN
+  GEOSS := Geo_SS_20 :: <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>>
+                        <<R_int_TG>> <<R_ext_TG>> <<R_int_TI>> 
+                        <<R_ext_TI>> <<R_int_G>> <<R_ext_G>> <<Cote>>
+                        <<CoteL>> ;
+
+  GEON1 := Geo_N1_20 :: <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>>
+                        <<R_int_TG>> <<R_ext_TG>> <<R_int_TI>> 
+                        <<R_ext_TI>> <<R_int_G>> <<R_ext_G>> <<Cote>>
+                        <<CoteL>> <<RmodeN1>> ;
+
+  GEON2 := Geo_N2_20 :: <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>>
+                        <<R_int_TG>> <<R_ext_TG>> <<R_int_TI>> 
+                        <<R_ext_TI>> <<R_int_G>> <<R_ext_G>> <<Cote>>
+                        <<Lame>> <<RmodeN2>>
+                        <<R_ext_G2>> <<R_ext_TGm>> <<R_ext_TIm>> ;
+
+ELSEIF NbRegions 32 = THEN
+  GEOSS := Geo_SS_32 :: <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>>
+                        <<R_int_TG>> <<R_ext_TG>> <<R_int_TI>> 
+                        <<R_ext_TI>> <<R_int_G>> <<R_ext_G>> <<Cote>>
+                        <<CoteL>> ;
+
+  GEON1 := Geo_N1_32 :: <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>>
+                        <<R_int_TG>> <<R_ext_TG>> <<R_int_TI>> 
+                        <<R_ext_TI>> <<R_int_G>> <<R_ext_G>> <<Cote>>
+                        <<CoteL>> <<RmodeN1>> ;
+
+  GEON2 := Geo_N2_32 :: <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>>
+                        <<R_int_TG>> <<R_ext_TG>> <<R_int_TI>> 
+                        <<R_ext_TI>> <<R_int_G>> <<R_ext_G>> <<Cote>>
+                        <<Lame>> <<RmodeN2>>
+                        <<R_ext_G2>> <<R_ext_TGm>> <<R_ext_TIm>> ;
+ELSE
+  ECHO "NbRegions incorrect" ;
+  ABORT: ;
+ENDIF ;
+************************************************************************
+*  END GEOMETRY                                                        *
+************************************************************************
+************************************************************************
+*  BEGIN TRACKING                                                      *
+************************************************************************
+! Self-shielding
+TRACKSS := SYBILT: GEOSS ::
+  EDIT 0
+  MAXR 500
+  MAXZ  1000000
+  TITLE 'TRACKING FOR ASSEMBLY SS'
+  QUA2 20 3
+  DP01 ;
+! Level One
+TRACKN1 := SYBILT: GEON1 ::
+  EDIT 0
+  MAXR 500
+  MAXZ  1000000
+  TITLE 'TRACKING FOR ASSEMBLY N1'
+  QUA2 20 3
+  DP01 ;
+! Level two
+TRACKN2 TRKFILN2 := NXT: GEON2 ::
+  EDIT 0
+  ALLG
+  TSPC 20 15.0 ;
+TRACKN2 := MCCGT: TRACKN2 TRKFILN2 GEON2 ::
+  EDIT 0 LCMD 2
+  AAC 150 TMT SCR 0 EPSI 1E-4 STIS -1
+  MAXI 1 KRYL 0 HDD 0.0 ;
+************************************************************************
+*  END TRACKING                                                        *
+************************************************************************
+************************************************************************
+*  BEGIN COMPO INITIALIZATION                                          *
+************************************************************************
+IF TypeCompo "PinByPin" = THEN
+  COMPO := COMPO: ::
+    EDIT 10
+    STEP UP 'EDI2A'
+    MAXCAL 5
+    COMM 'evolution burnup PinByPin' ENDC
+    PARA 'burnup' IRRA
+    PARA 'ppmBore' VALU REAL
+    PARA 'TF' TEMP LIBRARY 9
+    PARA 'TCA' TEMP LIBRARY 4
+    PARA 'DCA' VALU REAL
+    INIT
+    ;
+ELSEIF TypeCompo "Assembly" = THEN
+  COMPO := COMPO: ::
+    EDIT 10
+    STEP UP 'EDI2B'
+    MAXCAL 5
+    COMM 'evolution burnup Assembly' ENDC
+    PARA 'burnup' IRRA
+    PARA 'ppmBore' VALU REAL 
+    PARA 'TF' TEMP LIBRARY 9
+    PARA 'TCA' TEMP LIBRARY 4
+    PARA 'DCA' VALU REAL
+    INIT
+    ;
+ELSE
+  ECHO "TypeCompo incorrect" ;
+  ABORT: ;
+ENDIF ;
+************************************************************************
+*  END COMPO INITIALIZATION                                            *
+************************************************************************
+
+************************************************************************
+*  REFERENCE BURNUP LOOP WITH DEPLETION                                *
+************************************************************************
+************************************************************************
+*  BEGIN LIBRARY READING                                               *
+************************************************************************
+IF TypeCal "Public" = THEN
+  IF Fuel "MOX" = THEN
+    LIBRARY := Mix_MOX_32 ::
+    <<Library>> <<dens_mod_0>> <<pbore_0>> <<N_U5_MOX>> <<N_Pu8>>
+    <<N_Pu9>> <<N_Pu0>> <<N_Pu1>> <<N_Pu2>> <<N_Am1>> <<densU_MOX>>
+    <<densPu_MOX>> <<teneur1_Pu>> <<teneur2_Pu>> <<teneur3_Pu>>
+    <<temp_comb_0>> <<temp_mode_0>> ;
+  ELSEIF Fuel "UOX" = NbRegions 20 = * THEN
+      LIBRARY := Mix_UOX_20 ::
+      <<Library>> <<dens_mod_0>> <<pbore_0>> <<N_U5_UOX>> <<densU_UOX>>
+      <<temp_comb_0>> <<temp_mode_0>> ;
+  ELSEIF Fuel "UOX" = NbRegions 32 = * THEN
+      LIBRARY := Mix_UOX_32 ::
+      <<Library>> <<dens_mod_0>> <<pbore_0>> <<N_U5_UOX>> <<densU_UOX>>
+      <<temp_comb_0>> <<temp_mode_0>> ;
+  ELSE
+      ECHO "Probleme dans la lecture des librairies" ;
+      ABORT: ;
+  ENDIF ;
+ENDIF ;
+
+************************************************************************
+*  INITIAL TWO-LEVEL FLUX CALCULATION                                  *
+************************************************************************
+EVALUATE istep iautop := 1 1 ;
+EVALUATE Tend BUend := 0.0 0.0 ;
+GREP: DONNEES :: GETVAL 'autop' <<iautop>> >>BUnextSS<< ;
+ECHO "BUnextSS=" BUnextSS ;
+ECHO "call CalcFlux(1)" ;
+LIBRARY2 FLUX1 FLUX2 BURN164 LIBEQ := CalcFlux
+    LIBRARY TRACKSS TRACKN1 TRACKN2 TRKFILN2 :: <<istep>> <<Fuel>>
+    <<NbRegions>> <<BUend>> <<BUnextSS>> <<Fuelpwr>> ;
+EVALUATE iautop := iautop 1 + ;
+GREP: DONNEES :: GETVAL 'autop' <<iautop>> >>BUnextSS<< ;
+
+************************************************************************
+*  2-GROUPS ENERGY CONDENSATION AND HOMOGENISATION                     *
+************************************************************************
+EDIOBJ := Condense_2gr FLUX2 LIBEQ TRACKN2
+    :: <<Library>> <<TypeCompo>> ;
+
+************************************************************************
+*  INITIAL MULTICOMPO FEEDING                                          *
+************************************************************************
+IF TypeCompo "PinByPin" = THEN
+  COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+    EDIT 2
+    STEP UP 'EDI2A'
+    'ppmBore' <<pbore_0>>
+    'DCA' <<dens_mod_0>>
+    SET <<Tend>> DAY ;
+ELSEIF TypeCompo "Assembly" = THEN
+  COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+    EDIT 2
+    STEP UP 'EDI2B'
+    'ppmBore' <<pbore_0>>
+    'DCA' <<dens_mod_0>>
+    SET <<Tend>> DAY ;
+ELSE
+  ECHO "TypeCompo incorrect" ;
+  ABORT: ;
+ENDIF ;
+
+EDIOBJ := DELETE: EDIOBJ ;
+
+************************************************************************
+*  DEPLETION - HOMOGENISATION                                          *
+************************************************************************
+WHILE istep maxstep < DO
+  EVALUATE istep := istep 1 + ;
+  ECHO "istep vaut" istep "sur" maxstep ;
+
+  EVALUATE BUbeg Tbeg := BUend Tend ;
+  GREP: DONNEES :: GETVAL 'burn' <<istep>> >>BUend<< ;
+  EVALUATE Tend := BUend Fuelpwr / ;
+
+  BURN164 LIBEQ := EVO: BURN164 LIBEQ FLUX2 TRACKN2 ::
+    EDIT 0 DEPL <<Tbeg>> <<Tend>> DAY POWR <<Fuelpwr>>
+  ;
+
+  LIBHOM := Homogenize FLUX2 LIBEQ TRACKN2 :: <<NbRegions>> ;
+  LIBRARY2 := ConcLIBRARY2 LIBRARY2 LIBHOM :: <<NbRegions>> ;
+  LIBHOM LIBEQ := DELETE: LIBHOM LIBEQ ;
+  ECHO "BURNUP_sortie = " BUend "Next SS = " BUnextSS ;
+
+************************************************************************
+*  TWO-LEVEL FLUX CALCULATION                                          *
+************************************************************************
+  ECHO "call CalcFlux(2)" ;
+  LIBRARY2 FLUX1 FLUX2 BURN164 LIBEQ := CalcFlux LIBRARY2 FLUX1 FLUX2
+    BURN164 LIBRARY TRACKSS TRACKN1 TRACKN2 TRKFILN2
+    :: <<istep>> <<Fuel>> <<NbRegions>> <<BUend>> <<BUnextSS>>
+       <<Fuelpwr>> ;
+  IF BUend BUnextSS - ABS 1E-5 < THEN
+   EVALUATE iautop := iautop 1 + ;
+   IF iautop iAutopMax <= THEN
+      GREP: DONNEES :: GETVAL 'autop' <<iautop>> >>BUnextSS<< ;
+   ENDIF ;
+  ENDIF ;
+
+************************************************************************
+*  2-GROUPS ENERGY CONDENSATION AND HOMOGENISATION                     *
+************************************************************************
+  EDIOBJ := Condense_2gr FLUX2 LIBEQ TRACKN2
+    :: <<Library>> <<TypeCompo>> ;
+
+************************************************************************
+*  MULTICOMPO FEEDING                                                  *
+************************************************************************
+  IF TypeCompo "PinByPin" = THEN
+    COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+      EDIT 2
+      STEP UP 'EDI2A'
+      'ppmBore' <<pbore_0>>
+      'DCA' <<dens_mod_0>>
+      SET <<Tend>> DAY ;
+  ELSEIF TypeCompo "Assembly" = THEN
+    COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+      EDIT 2
+      STEP UP 'EDI2B'
+      'ppmBore' <<pbore_0>>
+      'DCA' <<dens_mod_0>>
+      SET <<Tend>> DAY ;
+  ELSE
+    ECHO "TypeCompo incorrect" ;
+    ABORT: ;
+  ENDIF ;
+  EDIOBJ := DELETE: EDIOBJ ;
+
+ENDWHILE ; ! reference burnup loop
+IF Fuel "MOX" = THEN
+  assertS FLUX2 :: K-INFINITY 1 0.8468311 ;
+ELSEIF Fuel "UOX" = NbRegions 20 = * THEN
+  assertS FLUX2 :: K-INFINITY 1 0.7621447 ;
+ELSEIF Fuel "UOX" = NbRegions 32 = * THEN
+  assertS FLUX2 :: K-INFINITY 1 0.7621409 ;
+ENDIF ;
+
+LIBRARY LIBRARY2 LIBEQ := DELETE: LIBRARY LIBRARY2 LIBEQ ;
+FLUX1 FLUX2 := DELETE: FLUX1 FLUX2 ;
+************************************************************************
+*  END OF REFERENCE BURNUP LOOP WITH DEPLETION                         *
+************************************************************************
+************************************************************************
+************************************************************************
+
+************************************************************************
+*  BORON LOOP                                                          *
+************************************************************************
+ECHO "$$$ Boron loop" ;
+INTEGER iBoreStep := 0 ;
+WHILE iBoreStep iBoreMax < DO
+  EVALUATE iBoreStep := iBoreStep 1 + ;
+  ECHO "iBoreStep vaut" iBoreStep "sur" iBoreMax ;
+  GREP: DONNEES :: GETVAL 'ppmBore' <<iBoreStep>> >>pbore<< ;
+************************************************************************
+*  BEGIN LIBRARY READING                                               *
+************************************************************************
+IF TypeCal "Public" = THEN
+  IF Fuel "MOX" = THEN
+    LIBRARY := Mix_MOX_32 ::
+    <<Library>> <<dens_mod_0>> <<pbore>> <<N_U5_MOX>> <<N_Pu8>>
+    <<N_Pu9>> <<N_Pu0>> <<N_Pu1>> <<N_Pu2>> <<N_Am1>> <<densU_MOX>>
+    <<densPu_MOX>> <<teneur1_Pu>> <<teneur2_Pu>> <<teneur3_Pu>>
+    <<temp_comb_0>> <<temp_mode_0>> ;
+  ELSEIF Fuel "UOX" = NbRegions 20 = * THEN
+      LIBRARY := Mix_UOX_20 ::
+      <<Library>> <<dens_mod_0>> <<pbore>> <<N_U5_UOX>> <<densU_UOX>>
+      <<temp_comb_0>> <<temp_mode_0>> ;
+  ELSEIF Fuel "UOX" = NbRegions 32 = * THEN
+      LIBRARY := Mix_UOX_32 ::
+      <<Library>> <<dens_mod_0>> <<pbore>> <<N_U5_UOX>> <<densU_UOX>>
+      <<temp_comb_0>> <<temp_mode_0>> ;
+  ELSE
+      ECHO "Probleme dans la lecture des librairies" ;
+      ABORT: ;
+  ENDIF ;
+ENDIF ;
+
+************************************************************************
+*  INITIAL TWO-LEVEL FLUX CALCULATION                                  *
+************************************************************************
+EVALUATE istep iautop := 0 1 ;
+EVALUATE Tend BUend := 0.0 0.0 ;
+GREP: DONNEES :: GETVAL 'autop' <<iautop>> >>BUnextSS<< ;
+ECHO "BUnextSS=" BUnextSS ;
+
+************************************************************************
+*  DEPLETION - HOMOGENISATION                                          *
+************************************************************************
+WHILE istep maxstep < DO
+  EVALUATE istep := istep 1 + ;
+  ECHO "branch istep vaut" istep "sur" maxstep ;
+
+  EVALUATE BUbeg Tbeg := BUend Tend ;
+  GREP: DONNEES :: GETVAL 'burn' <<istep>> >>BUend<< ;
+  EVALUATE Tend := BUend Fuelpwr / ;
+
+************************************************************************
+*  RECOVER NUMBER DENSITIES FOR THE CURRENT BURNUP STEP                *
+************************************************************************
+  IF istep 1 > THEN
+    LIBEQ := ConcLIBEQ LIBEQ BURN164 :: <<istep>> ;
+    LIBHOM := Homogenize FLUX2 LIBEQ TRACKN2 :: <<NbRegions>> ;
+    LIBEQ := DELETE: LIBEQ ;
+    LIBRARY2 := ConcLIBRARY2 LIBRARY2 LIBHOM :: <<NbRegions>> ;
+    LIBHOM := DELETE: LIBHOM ;
+  ENDIF ;
+
+  ECHO "BURNUP_sortie = " BUend "Next SS = " BUnextSS ;
+
+************************************************************************
+*  TWO-LEVEL FLUX CALCULATION                                          *
+************************************************************************
+  ECHO "call BranchFlux" ;
+  IF istep 1 = THEN
+    LIBRARY2 FLUX1 FLUX2 LIBEQ := BranchFlux LIBRARY2
+    BURN164 LIBRARY TRACKSS TRACKN1 TRACKN2 TRKFILN2
+    :: <<istep>> <<Fuel>> <<NbRegions>> <<BUend>> <<BUnextSS>>
+       <<Fuelpwr>> ;
+  ELSE
+    LIBRARY2 FLUX1 FLUX2 LIBEQ := BranchFlux LIBRARY2 FLUX1 FLUX2
+    BURN164 LIBRARY TRACKSS TRACKN1 TRACKN2 TRKFILN2
+    :: <<istep>> <<Fuel>> <<NbRegions>> <<BUend>> <<BUnextSS>>
+       <<Fuelpwr>> ;
+  ENDIF ;
+  IF BUend BUnextSS - ABS 1E-5 < THEN
+   EVALUATE iautop := iautop 1 + ;
+   IF iautop iAutopMax <= THEN
+      GREP: DONNEES :: GETVAL 'autop' <<iautop>> >>BUnextSS<< ;
+   ENDIF ;
+  ENDIF ;
+
+************************************************************************
+*  2-GROUPS ENERGY CONDENSATION AND HOMOGENISATION                     *
+************************************************************************
+  EDIOBJ := Condense_2gr FLUX2 LIBEQ TRACKN2
+    :: <<Library>> <<TypeCompo>> ;
+
+************************************************************************
+*  MULTICOMPO FEEDING                                                  *
+************************************************************************
+  IF pbore pbore_0 = THEN
+    ECHO "Duplicate branch calculation at pbore=" pbore ;
+  ELSEIF TypeCompo "PinByPin" = THEN
+    COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+      EDIT 2
+      STEP UP 'EDI2A'
+      'ppmBore' <<pbore>>
+      'DCA' <<dens_mod_0>>
+      SET <<Tend>> DAY ;
+  ELSEIF TypeCompo "Assembly" = THEN
+    COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+      EDIT 2
+      STEP UP 'EDI2B'
+      'ppmBore' <<pbore>>
+      'DCA' <<dens_mod_0>>
+      SET <<Tend>> DAY ;
+  ENDIF ;
+  EDIOBJ := DELETE: EDIOBJ ;
+
+ENDWHILE ; ! burnup loop
+
+LIBRARY LIBRARY2 LIBEQ := DELETE: LIBRARY LIBRARY2 LIBEQ ;
+FLUX1 FLUX2 := DELETE: FLUX1 FLUX2 ;
+
+ENDWHILE ; ! boron loop
+************************************************************************
+*  END OF BORON LOOP                                                   *
+************************************************************************
+************************************************************************
+************************************************************************
+
+
+************************************************************************
+*  FUEL TEMPERATURE LOOP                                               *
+************************************************************************
+ECHO "$$$ Fuel temperature loop" ;
+INTEGER iTfStep := 0 ;
+WHILE iTfStep iTfMax < DO
+  EVALUATE iTfStep := iTfStep 1 + ;
+  ECHO "iTfStep vaut" iTfStep "sur" iTfMax ;
+  GREP: DONNEES :: GETVAL 'tf' <<iTfStep>> >>temp_comb<< ;
+************************************************************************
+*  BEGIN LIBRARY READING                                               *
+************************************************************************
+IF TypeCal "Public" = THEN
+  IF Fuel "MOX" = THEN
+    LIBRARY := Mix_MOX_32 ::
+    <<Library>> <<dens_mod_0>> <<pbore_0>> <<N_U5_MOX>> <<N_Pu8>>
+    <<N_Pu9>> <<N_Pu0>> <<N_Pu1>> <<N_Pu2>> <<N_Am1>> <<densU_MOX>>
+    <<densPu_MOX>> <<teneur1_Pu>> <<teneur2_Pu>> <<teneur3_Pu>>
+    <<temp_comb>> <<temp_mode_0>> ;
+  ELSEIF Fuel "UOX" = NbRegions 20 = * THEN
+      LIBRARY := Mix_UOX_20 ::
+      <<Library>> <<dens_mod_0>> <<pbore_0>> <<N_U5_UOX>> <<densU_UOX>>
+      <<temp_comb>> <<temp_mode_0>> ;
+  ELSEIF Fuel "UOX" = NbRegions 32 = * THEN
+      LIBRARY := Mix_UOX_32 ::
+      <<Library>> <<dens_mod_0>> <<pbore_0>> <<N_U5_UOX>> <<densU_UOX>>
+      <<temp_comb>> <<temp_mode_0>> ;
+  ELSE
+      ECHO "Probleme dans la lecture des librairies" ;
+      ABORT: ;
+  ENDIF ;
+ENDIF ;
+
+************************************************************************
+*  INITIAL TWO-LEVEL FLUX CALCULATION                                  *
+************************************************************************
+EVALUATE istep iautop := 0 1 ;
+EVALUATE Tend BUend := 0.0 0.0 ;
+GREP: DONNEES :: GETVAL 'autop' <<iautop>> >>BUnextSS<< ;
+ECHO "BUnextSS=" BUnextSS ;
+
+************************************************************************
+*  DEPLETION - HOMOGENISATION                                          *
+************************************************************************
+WHILE istep maxstep < DO
+  EVALUATE istep := istep 1 + ;
+  ECHO "branch istep vaut" istep "sur" maxstep ;
+
+  EVALUATE BUbeg Tbeg := BUend Tend ;
+  GREP: DONNEES :: GETVAL 'burn' <<istep>> >>BUend<< ;
+  EVALUATE Tend := BUend Fuelpwr / ;
+
+************************************************************************
+*  RECOVER NUMBER DENSITIES FOR THE CURRENT BURNUP STEP                *
+************************************************************************
+  IF istep 1 > THEN
+    LIBEQ := ConcLIBEQ LIBEQ BURN164 :: <<istep>> ;
+    LIBHOM := Homogenize FLUX2 LIBEQ TRACKN2 :: <<NbRegions>> ;
+    LIBEQ := DELETE: LIBEQ ;
+    LIBRARY2 := ConcLIBRARY2 LIBRARY2 LIBHOM :: <<NbRegions>> ;
+    LIBHOM := DELETE: LIBHOM ;
+  ENDIF ;
+
+  ECHO "BURNUP_sortie = " BUend "Next SS = " BUnextSS ;
+
+************************************************************************
+*  TWO-LEVEL FLUX CALCULATION                                          *
+************************************************************************
+  ECHO "call BranchFlux" ;
+  IF istep 1 = THEN
+    LIBRARY2 FLUX1 FLUX2 LIBEQ := BranchFlux LIBRARY2
+    BURN164 LIBRARY TRACKSS TRACKN1 TRACKN2 TRKFILN2
+    :: <<istep>> <<Fuel>> <<NbRegions>> <<BUend>> <<BUnextSS>>
+       <<Fuelpwr>> ;
+  ELSE
+    LIBRARY2 FLUX1 FLUX2 LIBEQ := BranchFlux LIBRARY2 FLUX1 FLUX2
+    BURN164 LIBRARY TRACKSS TRACKN1 TRACKN2 TRKFILN2
+    :: <<istep>> <<Fuel>> <<NbRegions>> <<BUend>> <<BUnextSS>>
+       <<Fuelpwr>> ;
+  ENDIF ;
+  IF BUend BUnextSS - ABS 1E-5 < THEN
+   EVALUATE iautop := iautop 1 + ;
+   IF iautop iAutopMax <= THEN
+      GREP: DONNEES :: GETVAL 'autop' <<iautop>> >>BUnextSS<< ;
+   ENDIF ;
+  ENDIF ;
+
+************************************************************************
+*  2-GROUPS ENERGY CONDENSATION AND HOMOGENISATION                     *
+************************************************************************
+  EDIOBJ := Condense_2gr FLUX2 LIBEQ TRACKN2
+    :: <<Library>> <<TypeCompo>> ;
+
+************************************************************************
+*  MULTICOMPO FEEDING                                                  *
+************************************************************************
+  IF temp_comb temp_comb_0 = THEN
+    ECHO "Duplicate branch calculation at temp_comb=" temp_comb ;
+  ELSEIF TypeCompo "PinByPin" = THEN
+    COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+      EDIT 2
+      STEP UP 'EDI2A'
+      'ppmBore' <<pbore_0>>
+      'DCA' <<dens_mod_0>>
+      SET <<Tend>> DAY ;
+  ELSEIF TypeCompo "Assembly" = THEN
+    COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+      EDIT 2
+      STEP UP 'EDI2B'
+      'ppmBore' <<pbore_0>>
+      'DCA' <<dens_mod_0>>
+      SET <<Tend>> DAY ;
+  ENDIF ;
+  EDIOBJ := DELETE: EDIOBJ ;
+
+ENDWHILE ; ! burnup loop
+
+LIBRARY LIBRARY2 LIBEQ := DELETE: LIBRARY LIBRARY2 LIBEQ ;
+FLUX1 FLUX2 := DELETE: FLUX1 FLUX2 ;
+
+ENDWHILE ; ! fuel temperature loop
+************************************************************************
+*  END OF FUEL TEMPERATURE LOOP                                        *
+************************************************************************
+************************************************************************
+************************************************************************
+
+
+************************************************************************
+*  MODERATOR TEMPERATURE LOOP                                          *
+************************************************************************
+ECHO "$$$ Moderator temperature loop" ;
+INTEGER iTcaStep := 0 ;
+WHILE iTcaStep iTcaMax < DO
+  EVALUATE iTcaStep := iTcaStep 1 + ;
+  ECHO "iTcaStep vaut" iTcaStep "sur" iTcaMax ;
+  GREP: DONNEES :: GETVAL 'tca' <<iTcaStep>> >>temp_mode<< ;
+************************************************************************
+*  BEGIN LIBRARY READING                                               *
+************************************************************************
+IF TypeCal "Public" = THEN
+  IF Fuel "MOX" = THEN
+    LIBRARY := Mix_MOX_32 ::
+    <<Library>> <<dens_mod_0>> <<pbore_0>> <<N_U5_MOX>> <<N_Pu8>>
+    <<N_Pu9>> <<N_Pu0>> <<N_Pu1>> <<N_Pu2>> <<N_Am1>> <<densU_MOX>>
+    <<densPu_MOX>> <<teneur1_Pu>> <<teneur2_Pu>> <<teneur3_Pu>>
+    <<temp_comb_0>> <<temp_mode>> ;
+  ELSEIF Fuel "UOX" = NbRegions 20 = * THEN
+      LIBRARY := Mix_UOX_20 ::
+      <<Library>> <<dens_mod_0>> <<pbore_0>> <<N_U5_UOX>> <<densU_UOX>>
+      <<temp_comb_0>> <<temp_mode>> ;
+  ELSEIF Fuel "UOX" = NbRegions 32 = * THEN
+      LIBRARY := Mix_UOX_32 ::
+      <<Library>> <<dens_mod_0>> <<pbore_0>> <<N_U5_UOX>> <<densU_UOX>>
+      <<temp_comb_0>> <<temp_mode>> ;
+  ELSE
+      ECHO "Probleme dans la lecture des librairies" ;
+      ABORT: ;
+  ENDIF ;
+ENDIF ;
+
+************************************************************************
+*  INITIAL TWO-LEVEL FLUX CALCULATION                                  *
+************************************************************************
+EVALUATE istep iautop := 0 1 ;
+EVALUATE Tend BUend := 0.0 0.0 ;
+GREP: DONNEES :: GETVAL 'autop' <<iautop>> >>BUnextSS<< ;
+ECHO "BUnextSS=" BUnextSS ;
+
+************************************************************************
+*  DEPLETION - HOMOGENISATION                                          *
+************************************************************************
+WHILE istep maxstep < DO
+  EVALUATE istep := istep 1 + ;
+  ECHO "branch istep vaut" istep "sur" maxstep ;
+
+  EVALUATE BUbeg Tbeg := BUend Tend ;
+  GREP: DONNEES :: GETVAL 'burn' <<istep>> >>BUend<< ;
+  EVALUATE Tend := BUend Fuelpwr / ;
+
+************************************************************************
+*  RECOVER NUMBER DENSITIES FOR THE CURRENT BURNUP STEP                *
+************************************************************************
+  IF istep 1 > THEN
+    LIBEQ := ConcLIBEQ LIBEQ BURN164 :: <<istep>> ;
+    LIBHOM := Homogenize FLUX2 LIBEQ TRACKN2 :: <<NbRegions>> ;
+    LIBEQ := DELETE: LIBEQ ;
+    LIBRARY2 := ConcLIBRARY2 LIBRARY2 LIBHOM :: <<NbRegions>> ;
+    LIBHOM := DELETE: LIBHOM ;
+  ENDIF ;
+
+  ECHO "BURNUP_sortie = " BUend "Next SS = " BUnextSS ;
+
+************************************************************************
+*  TWO-LEVEL FLUX CALCULATION                                          *
+************************************************************************
+  ECHO "call BranchFlux" ;
+  IF istep 1 = THEN
+    LIBRARY2 FLUX1 FLUX2 LIBEQ := BranchFlux LIBRARY2
+    BURN164 LIBRARY TRACKSS TRACKN1 TRACKN2 TRKFILN2
+    :: <<istep>> <<Fuel>> <<NbRegions>> <<BUend>> <<BUnextSS>>
+       <<Fuelpwr>> ;
+  ELSE
+    LIBRARY2 FLUX1 FLUX2 LIBEQ := BranchFlux LIBRARY2 FLUX1 FLUX2
+    BURN164 LIBRARY TRACKSS TRACKN1 TRACKN2 TRKFILN2
+    :: <<istep>> <<Fuel>> <<NbRegions>> <<BUend>> <<BUnextSS>>
+       <<Fuelpwr>> ;
+  ENDIF ;
+  IF BUend BUnextSS - ABS 1E-5 < THEN
+   EVALUATE iautop := iautop 1 + ;
+   IF iautop iAutopMax <= THEN
+      GREP: DONNEES :: GETVAL 'autop' <<iautop>> >>BUnextSS<< ;
+   ENDIF ;
+  ENDIF ;
+
+************************************************************************
+*  2-GROUPS ENERGY CONDENSATION AND HOMOGENISATION                     *
+************************************************************************
+  EDIOBJ := Condense_2gr FLUX2 LIBEQ TRACKN2
+    :: <<Library>> <<TypeCompo>> ;
+
+************************************************************************
+*  MULTICOMPO FEEDING                                                  *
+************************************************************************
+  IF temp_mode temp_mode_0 = THEN
+    ECHO "Duplicate branch calculation at temp_mode=" temp_mode ;
+  ELSEIF TypeCompo "PinByPin" = THEN
+    COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+      EDIT 2
+      STEP UP 'EDI2A'
+      'ppmBore' <<pbore_0>>
+      'DCA' <<dens_mod_0>>
+      SET <<Tend>> DAY ;
+  ELSEIF TypeCompo "Assembly" = THEN
+    COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+      EDIT 2
+      STEP UP 'EDI2B'
+      'ppmBore' <<pbore_0>>
+      'DCA' <<dens_mod_0>>
+      SET <<Tend>> DAY ;
+  ENDIF ;
+  EDIOBJ := DELETE: EDIOBJ ;
+
+ENDWHILE ; ! burnup loop
+
+LIBRARY LIBRARY2 LIBEQ := DELETE: LIBRARY LIBRARY2 LIBEQ ;
+FLUX1 FLUX2 := DELETE: FLUX1 FLUX2 ;
+
+ENDWHILE ; ! moderator temperature loop
+************************************************************************
+*  END OF MODERATOR TEMPERATURE LOOP                                   *
+************************************************************************
+************************************************************************
+************************************************************************
+
+
+************************************************************************
+*  MODERATOR DENSITY LOOP                                              *
+************************************************************************
+ECHO "$$$ Moderator density loop" ;
+INTEGER iDcaStep := 0 ;
+WHILE iDcaStep iDcaMax < DO
+  EVALUATE iDcaStep := iDcaStep 1 + ;
+  ECHO "iDcaStep vaut" iDcaStep "sur" iDcaMax ;
+  GREP: DONNEES :: GETVAL 'dca' <<iDcaStep>> >>dens_mod<< ;
+************************************************************************
+*  BEGIN LIBRARY READING                                               *
+************************************************************************
+IF TypeCal "Public" = THEN
+  IF Fuel "MOX" = THEN
+    LIBRARY := Mix_MOX_32 ::
+    <<Library>> <<dens_mod>> <<pbore_0>> <<N_U5_MOX>> <<N_Pu8>>
+    <<N_Pu9>> <<N_Pu0>> <<N_Pu1>> <<N_Pu2>> <<N_Am1>> <<densU_MOX>>
+    <<densPu_MOX>> <<teneur1_Pu>> <<teneur2_Pu>> <<teneur3_Pu>>
+    <<temp_comb_0>> <<temp_mode_0>> ;
+  ELSEIF Fuel "UOX" = NbRegions 20 = * THEN
+      LIBRARY := Mix_UOX_20 ::
+      <<Library>> <<dens_mod>> <<pbore_0>> <<N_U5_UOX>> <<densU_UOX>>
+      <<temp_comb_0>> <<temp_mode_0>> ;
+  ELSEIF Fuel "UOX" = NbRegions 32 = * THEN
+      LIBRARY := Mix_UOX_32 ::
+      <<Library>> <<dens_mod>> <<pbore_0>> <<N_U5_UOX>> <<densU_UOX>>
+      <<temp_comb_0>> <<temp_mode_0>> ;
+  ELSE
+      ECHO "Probleme dans la lecture des librairies" ;
+      ABORT: ;
+  ENDIF ;
+ENDIF ;
+
+************************************************************************
+*  INITIAL TWO-LEVEL FLUX CALCULATION                                  *
+************************************************************************
+EVALUATE istep iautop := 0 1 ;
+EVALUATE Tend BUend := 0.0 0.0 ;
+GREP: DONNEES :: GETVAL 'autop' <<iautop>> >>BUnextSS<< ;
+ECHO "BUnextSS=" BUnextSS ;
+
+************************************************************************
+*  DEPLETION - HOMOGENISATION                                          *
+************************************************************************
+WHILE istep maxstep < DO
+  EVALUATE istep := istep 1 + ;
+  ECHO "branch istep vaut" istep "sur" maxstep ;
+
+  EVALUATE BUbeg Tbeg := BUend Tend ;
+  GREP: DONNEES :: GETVAL 'burn' <<istep>> >>BUend<< ;
+  EVALUATE Tend := BUend Fuelpwr / ;
+
+************************************************************************
+*  RECOVER NUMBER DENSITIES FOR THE CURRENT BURNUP STEP                *
+************************************************************************
+  IF istep 1 > THEN
+    LIBEQ := ConcLIBEQ LIBEQ BURN164 :: <<istep>> ;
+    LIBHOM := Homogenize FLUX2 LIBEQ TRACKN2 :: <<NbRegions>> ;
+    LIBEQ := DELETE: LIBEQ ;
+    LIBRARY2 := ConcLIBRARY2 LIBRARY2 LIBHOM :: <<NbRegions>> ;
+    LIBHOM := DELETE: LIBHOM ;
+  ENDIF ;
+
+  ECHO "BURNUP_sortie = " BUend "Next SS = " BUnextSS ;
+
+************************************************************************
+*  TWO-LEVEL FLUX CALCULATION                                          *
+************************************************************************
+  ECHO "call BranchFlux" ;
+  IF istep 1 = THEN
+    LIBRARY2 FLUX1 FLUX2 LIBEQ := BranchFlux LIBRARY2
+    BURN164 LIBRARY TRACKSS TRACKN1 TRACKN2 TRKFILN2
+    :: <<istep>> <<Fuel>> <<NbRegions>> <<BUend>> <<BUnextSS>>
+       <<Fuelpwr>> ;
+  ELSE
+    LIBRARY2 FLUX1 FLUX2 LIBEQ := BranchFlux LIBRARY2 FLUX1 FLUX2
+    BURN164 LIBRARY TRACKSS TRACKN1 TRACKN2 TRKFILN2
+    :: <<istep>> <<Fuel>> <<NbRegions>> <<BUend>> <<BUnextSS>>
+       <<Fuelpwr>> ;
+  ENDIF ;
+  IF BUend BUnextSS - ABS 1E-5 < THEN
+   EVALUATE iautop := iautop 1 + ;
+   IF iautop iAutopMax <= THEN
+      GREP: DONNEES :: GETVAL 'autop' <<iautop>> >>BUnextSS<< ;
+   ENDIF ;
+  ENDIF ;
+
+************************************************************************
+*  2-GROUPS ENERGY CONDENSATION AND HOMOGENISATION                     *
+************************************************************************
+  EDIOBJ := Condense_2gr FLUX2 LIBEQ TRACKN2
+    :: <<Library>> <<TypeCompo>> ;
+
+************************************************************************
+*  MULTICOMPO FEEDING                                                  *
+************************************************************************
+  IF dens_mod dens_mod_0 = THEN
+    ECHO "Duplicate branch calculation at dens_mod=" dens_mod ;
+  ELSEIF TypeCompo "PinByPin" = THEN
+    COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+      EDIT 2
+      STEP UP 'EDI2A'
+      'ppmBore' <<pbore_0>>
+      'DCA' <<dens_mod>>
+      SET <<Tend>> DAY ;
+  ELSEIF TypeCompo "Assembly" = THEN
+    COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+      EDIT 2
+      STEP UP 'EDI2B'
+      'ppmBore' <<pbore_0>>
+      'DCA' <<dens_mod>>
+      SET <<Tend>> DAY ;
+  ENDIF ;
+  EDIOBJ := DELETE: EDIOBJ ;
+
+ENDWHILE ; ! burnup loop
+
+LIBRARY LIBRARY2 LIBEQ := DELETE: LIBRARY LIBRARY2 LIBEQ ;
+FLUX1 FLUX2 := DELETE: FLUX1 FLUX2 ;
+
+ENDWHILE ; ! moderator density loop
+************************************************************************
+*  END OF MODERATOR DENSITY LOOP                                       *
+************************************************************************
+************************************************************************
+************************************************************************
+BURN164 := DELETE: BURN164 ;
+
+************************************************************************
+*  EXPORT MULTICOMPO IN ASCII FORMAT                                   *
+************************************************************************
+ACOMPO := COMPO ;
+
+*----
+*  End of calculation - Memory release
+*----
+
+GEOSS GEON1 GEON2 := DELETE: GEOSS GEON1 GEON2 ;
+
+TRACKSS TRACKN1 TRACKN2 TRKFILN2 := DELETE:
+TRACKSS TRACKN1 TRACKN2 TRKFILN2 ;
+
+ECHO "Calcul acheve" ;
+END: ;
+QUIT .

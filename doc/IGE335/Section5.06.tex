@@ -1,0 +1,39 @@
+\subsection{APOLLO-1 microscopic cross-section examples}\label{sect:ExAPOLLO}
+
+The test cases we will consider here use the \moc{LIB:} module to enter
+microscopic cross sections taken from an APOLLO-1 99 groups microscopic
+cross-sections library. We will assume that this library is located in file
+\moc{APOLLIB}. The test cases are numbered successively from
+\tst(TCA01) to \tst(TCA04).
+
+\subsubsection{\tst(TCA01) -- The Mosteller benchmark.} 
+
+  This benchmark is similar to the \tst(TCWW01) test case but uses the APOLLO-1 library. 
+
+\listing{TCA01.c2m}
+
+\subsubsection{\tst(TCA02) -- $17\times 17$ PWR type assembly}
+
+This test case represents a production calculation of a normal PWR assembly with
+cell grouping (\moc{MERGE} and \moc{TURN} options). Its configuration is
+identical to the \tst(TCWW02) test case but uses the APOLLO-1 library.
+
+\listing{TCA02.c2m}
+
+\subsubsection{\tst(TCA03) -- an hexagonal assembly}
+
+This test case represents a production calculation of a typical hexagonal
+control assembly.  This problem is identical to the \tst(TCWW03) test case but
+uses the APOLLO-1 library.
+
+\listing{TCA03.c2m}
+
+\subsubsection{\tst(TCA04) -- Cylindrical cell with isotopic depletion.}
+
+This test case represents a a depletion calculation for the mosteller annular geometry.
+The isotopic depletion chain for the heavy isotopes is the following is given
+in \Fig{TCA04}.
+
+\listing{TCA04.c2m}
+
+\eject

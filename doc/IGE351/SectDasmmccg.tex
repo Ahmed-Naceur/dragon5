@@ -1,0 +1,36 @@
+\subsubsection{The \moc{mccgt} dependent records on a
+\moc{GROUP} directory}\label{sect:mccggrpdiringdir}
+
+If the characteristic method (MCCG) is used, the following records will also be
+found on the \moc{GROUP} directory:
+
+\begin{DescriptionEnregistrement}{MCCG groupwise directories}{7.0cm}
+% ACA
+\OptRealEnr
+  {DIAGF\$MCCG\blank{2}}{$N_{\rm dim}$}{$\mathcal{S}^{t}_{22}>0$}{}
+  {Diagonal elements of the ACA flux matrix.}
+\OptRealEnr
+  {CF\$MCCG\blank{5}}{$\mathcal{S}^{t}_{26}$}{$\mathcal{S}^{t}_{22}>0$}{}
+  {Non-Diagonal elements of the ACA flux matrix.}
+\OptRealEnr
+  {ILUDF\$MCCG\blank{2}}{$N_{\rm dim}$}{$\left\{\hskip -2mm\begin{tabular}{l} $\mathcal{S}^t_{22} > 0$ \\ $\mathcal{S}^t_{23} \ge 2$ \end{tabular}\right.$}{}
+  {Inverse diagonal elements of U from ILU0 decomposition of ACA flux matrix}
+\OptRealEnr
+  {ILUCF\$MCCG\blank{2}}{$\mathcal{S}^{t}_{37}$}{$\left\{\hskip -2mm\begin{tabular}{l} $\mathcal{S}^t_{22} > 0$ \\ $\mathcal{S}^t_{23}\in \{2,3\}$ \end{tabular}\right.$}{}
+  {Non-diagonal elements of U from ILU0 decomposition of ACA flux matrix that differ from CF}
+\OptRealEnr
+  {DIAGQ\$MCCG\blank{2}}{$N_{\rm dim}$}{$\mathcal{S}^{t}_{22}>0$}{}
+  {Diagonal elements of the ACA source matrix.}
+\OptRealEnr
+  {CQ\$MCCG\blank{5}}{$\mathcal{S}^{t}_{26}$}{$\mathcal{S}^{t}_{22}>0$}{}
+  {Non-diagonal elements of the ACA source matrix.}
+% SCR/STIS
+\OptRealEnr
+  {PJJ\$MCCG\blank{4}}{$\mathcal{S}^{t}_{1}\mathcal{S}^{t}_{36}$}{$\mathcal{S}^{t}_{35}=1$}{}
+  {Mode-to-mode self-collision probabilities for SCR or ``STIS=1'' integration strategy.}
+\OptRealEnr
+  {PSJ\$MCCG\blank{4}}{$\mathcal{S}^{t}_{22}$}{$\mathcal{S}^{t}_{21}>0$}{}
+  {Surface-to-volume probabilities for SCR.}
+\end{DescriptionEnregistrement}
+
+\eject

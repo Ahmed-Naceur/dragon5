@@ -1,0 +1,73 @@
+* Regression tests for new geometries in G2S: module.
+* I. Vortisch
+*
+PROCEDURE hex
+	  hex_JST0     hex_JST1     hex_JST2 
+	  hex_P1_JST0  hex_P1_JST1  hex_P1_JST2
+	  hex_P2_JST0  hex_P2_JST1  hex_P2_JST2  
+	  hex_P3_JST0  hex_P3_JST1  hex_P3_JST2
+          hex_P4_JST0  hex_P4_JST1  hex_P4_JST2        
+          car_JST0_IS2 
+          cP1_JST0_IS2 cP1_JST0_IS3 cP1_JST0_IS4 cP1_JST1_IS2
+          cP1_JST1_IS3 cP1_JST1_IS4 cP1_JST2_IS0 cP1_JST2_IS1
+          cP1_JST2_IS2 cP1_JST2_IS3 cP1_JST2_IS4 cP1_JST2_Im1
+          cR2_JST2_IS0 cR2_JST2_IS1 cR2_JST2_IS4 cR2_JST2_Im1
+          cS1_JST0_IS3 cS1_JST1_IS3 cS1_JST2_IS3
+          g2s_pincell g2s_test
+          tst2016_1 tst2016_2 tst2016_3 tst2016_4 tst2016_5 tst2016_6 
+          tst2016_7 tst2019_1 tst2019_2 tst2019_3 tst2019_4
+;
+*
+hex ;
+hex_JST0 ;
+hex_JST1 ;
+hex_JST2 ;
+hex_P1_JST0 ;
+hex_P1_JST1 ;
+* hex_P1_JST2 ;
+hex_P2_JST0 ;
+hex_P2_JST1 ;
+hex_P2_JST2 ;
+hex_P3_JST0 ;
+hex_P3_JST1 ;
+hex_P3_JST2 ;
+hex_P4_JST0 ;
+hex_P4_JST1 ;
+hex_P4_JST2 ;
+*
+car_JST0_IS2 ;
+cP1_JST0_IS2 ;
+cP1_JST0_IS3 ;
+cP1_JST0_IS4 ;
+cP1_JST1_IS2 ;
+cP1_JST1_IS3 ;
+cP1_JST1_IS4 ;
+cP1_JST2_IS0 ;
+cP1_JST2_IS1 ;
+cP1_JST2_IS2 ;
+cP1_JST2_IS3 ;
+*cP1_JST2_IS4 ;
+*cP1_JST2_Im1 ;
+cR2_JST2_IS0 ;
+cR2_JST2_IS1 ;
+cR2_JST2_IS4 ;
+cR2_JST2_Im1 ;
+cS1_JST0_IS3 ;
+cS1_JST1_IS3 ;
+cS1_JST2_IS3 ;
+*
+g2s_pincell ;
+g2s_test ;
+tst2016_1 ;
+tst2016_2 ;
+tst2016_3 ;
+tst2016_4 ;
+tst2016_5 ;
+tst2016_6 ;
+tst2016_7 ;
+tst2019_1 ;
+tst2019_2 ;
+tst2019_3 ;
+tst2019_4 ;
+*
+QUIT "LIST" .

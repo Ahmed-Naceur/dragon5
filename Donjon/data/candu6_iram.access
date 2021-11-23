@@ -1,0 +1,12 @@
+#!/bin/sh
+if [ $# = 0 ]
+   then
+   echo "usage: candu6_iram.access directory" 1>&2
+   exit 1
+fi
+ln -s $1/data/candu6_iram_proc/fnat .
+ln -s $1/data/candu6_iram_proc/rnat .
+ln -s $1/data/candu6_iram_proc/adjnat .
+ln -s $1/data/candu6_iram_proc/zcunat .
+ls -l
+echo "candu6_iram access script terminated"

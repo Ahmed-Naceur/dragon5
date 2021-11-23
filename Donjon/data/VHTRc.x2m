@@ -1,0 +1,423 @@
+***********************************************************
+*                                                         *
+* Input file :  core10.x2m                                *
+* Purpose    :  Full-core calculation for a VHTR          *
+* Author(s)  :  Vincent Descotes (2010)                   *
+*                                                         *
+***********************************************************
+PROCEDURE    Pgeohex assertS ;
+MODULE       DELETE: END: LIB: NCR: MACINI: USPLIT: TRIVAT: TRIVAA:
+             FLUD: FLPOW: RESINI: GREP: ;
+LINKED_LIST  GEOM MATEX MACRO1 MACRO2 CPO1 TRACK SYSTEM FLUX POWER 
+             FLMAP MACFL ;
+REAL         Keff mbp mcp ;
+*--
+* compo files:
+*--
+SEQ_ASCII    Multicompo ;
+
+
+*----------------------------------------------------------
+*
+*                  FULL-CORE  CALCULATION
+*                  ======================
+*****
+* Geometry construction:
+*****
+
+GEOM := Pgeohex ;
+
+*****
+* Reactor material index:
+*****
+
+GEOM MATEX := USPLIT: GEOM :: EDIT 0 NGRP 2 MAXR 728
+              NREFL 1  RMIX 3
+              NFUEL 2  FMIX 1 2 ;
+
+******
+* Fuel Map construction
+******
+
+FLMAP MATEX := RESINI: MATEX ::
+    EDIT 0
+    ::: GEO: HEXZ 91 8
+      Z- REFL Z+ REFL
+      HBC COMPLETE REFL
+      SIDE 1.0854185
+      MIX
+*----
+* 1st floor
+*----
+
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+* Ring 5 : reflector, not in fuel-map.
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+
+*----
+*2nd floor
+*----
+
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+* Ring 5 : reflector, not in fuel-map.
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+
+*----
+*3rd floor
+*----
+
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+* Ring 5 : reflector, not in fuel-map.
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+
+*----
+*4th floor
+*----
+
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+* Ring 5 : reflector, not in fuel-map.
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+
+*----
+*5th floor
+*----
+
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+* Ring 5 : reflector, not in fuel-map.
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+
+*----
+*6th floor
+*----
+
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+* Ring 5 : reflector, not in fuel-map.
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+
+*----
+*7th floor
+*----
+
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+* Ring 5 : reflector, not in fuel-map.
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+
+*----
+*8th floor
+*----
+
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+* Ring 5 : reflector, not in fuel-map.
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+0 0 0 0 0 0
+
+MESHZ 0.0 0.8 1.6 2.4 3.2 4.0 4.8 5.6 6.4
+;
+
+NCOMB ALL
+
+EDIT 0
+BTYPE INST-BURN
+INST-BVAL BUND
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+*10
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+*20
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+*30
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+*40
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+*50
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0
+*60
+          60.0 60.0 60.0 60.0 60.0 60.0 60.0 60.0 
+*61 = ncomb
+
+ADD-PARAM PNAME Temp PARKEY Temp GLOBAL
+SET-PARAM Temp 740.0 ;
+      
+*****
+* Macrolib for the fuel
+*****
+
+*----
+*  Mix number assignments in Multicompo
+*   1 = fuel material (TRISO) 
+*   2 = helium
+*   3 = Fe56 (reflector) 
+* Temp in Multicompo : 700.0 and 750.0 K
+*----
+
+CPO1 := Multicompo ;
+
+*---
+*Fuel-map macrolib
+*---
+MACFL := NCR: CPO1 FLMAP ::
+    EDIT 0 MACRO CUBIC
+    TABLE CPO1 default Combustion
+    MIX 1 FROM 00000001
+    INST-BURN
+     ENDMIX
+    MIX 2 FROM 00000002
+     INST-BURN
+     ENDMIX
+     ;
+*---
+*Reflector macrolib
+*---
+MACRO1 := NCR: CPO1 ::
+    EDIT 0 MACRO CUBIC
+    NMIX 3 COMPO CPO1 default
+    MIX 3 FROM 00000003 
+       SET 'Combustion' 0.0
+       SET 'Temp' 700.0
+    ENDMIX
+    ; 
+
+*---
+* Extended macrolib (=complete because no device)
+*---   
+MACRO2 MATEX := MACINI: MATEX MACRO1 MACFL :: EDIT 0 ;
+
+MACFL := DELETE: MACFL ;
+
+*****
+*Tracking, finite-differences method
+*****
+
+TRACK := TRIVAT: GEOM :: EDIT 0
+          MAXR 5000 MCFD 1 ;
+
+*****
+* Numerical solution
+*****
+
+SYSTEM := TRIVAA: MACRO2 TRACK :: EDIT 0 ;
+
+MACRO2 := DELETE: MACRO2 ;
+
+FLUX := FLUD: SYSTEM TRACK :: EDIT 0
+      ACCE 3 3 EXTE 1000 1E-04 ADI 6 ;
+assertS FLUX :: "K-EFFECTIVE" 1 1.119211 ;
+
+POWER := FLPOW: FLMAP FLUX TRACK MATEX ::
+        EDIT 0 PTOT 600.0 ;
+
+GREP: POWER :: GETVAL "PMAX-BUND" 1 >>mbp<< ;
+assertS POWER :: "PMAX-BUND" 1 1.782570E+03 ;
+
+GREP: POWER :: GETVAL "PMAX-CHAN" 1 >>mcp<< ;
+assertS POWER :: "PMAX-CHAN" 1 1.426045E+04 ;
+
+GREP: POWER :: GETVAL "K-EFFECTIVE" 1 >>Keff<< ;
+assertS POWER :: "K-EFFECTIVE" 1 1.119211 ;
+
+END: ;
+QUIT "LIST" .

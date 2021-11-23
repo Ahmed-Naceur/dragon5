@@ -1,0 +1,151 @@
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST TRACKM GEOM ; 
+SEQ_BINARY TRKFILM ;
+MODULE GEO: G2S: SALT: END: ;
+SEQ_ASCII Fil_ssym_fl Fil_ssym_su ;
+
+INTEGER mixX := 6 ; ! mixture used as void
+REAL side rfuel rclad := 1.636 0.514858 0.602996 ;
+REAL densur := 10.0 ;
+INTEGER an2d := 6 ;
+
+REAL Rcomb4 := rfuel ;
+REAL Rcomb1 := 0.5 SQRT rfuel * ;
+REAL Rcomb2 := 0.8 SQRT rfuel * ;
+REAL Rcomb3 := 0.95 SQRT rfuel * ;
+
+GEOM := GEO: :: CAR2D 47 47 
+  EDIT 0
+  X- SYME X+ ALBE 1
+  Y- SYME Y+ ALBE 1
+  CELL
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      C C C C C W W W W W W 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      C C C C C W W W W W W 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      C C C C C W W W W W W 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      C C C C C W W W W W X 
+W W W W W W W W W W W W W W W W W W W W W W W C C C C C C C C C C C C C
+                                      C C C C C W W W W W X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      C C C C C W W W W W X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      C C C C C W W W W W X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      C C C C C W W W W W X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      C C C C C W W W W W X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      C C C C C W W W W W X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      C C C C C W W W W X X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      W W W W W W W W W X X 
+W W W W W W W W W W W W W W W W W W W W W W W C C C C C C C C C C C C C
+                                      W W W W W W W W W X X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      W W W W W W W W W X X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      W W W W W W W W X X X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      W W W W W W W W X X X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      W W W W W W W W X X X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      W W W W W W W X X X X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      W W W W W W W X X X X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C C C C C C
+                                      W W W W W W X X X X X 
+W W W W W W W W W W W W W W W W W W W W W W W C C C C C C C C C C C C C
+                                      W W W W W W X X X X X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C W W W W W
+                                      W W W W W X X X X X X 
+F F F F W F F F F F F F W F F F F F F F W F F C C C C C C C C W W W W W
+                                      W W W W W X X X X X X 
+C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C W W W W W
+                                      W W W W X X X X X X X 
+C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C W W W W W
+                                      W W W W X X X X X X X 
+C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C W W W W W
+                                      W W W X X X X X X X X 
+C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C W W W W W
+                                      W W X X X X X X X X X 
+C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C W W W W W
+                                      W W X X X X X X X X X 
+C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C W W W W W
+                                      W X X X X X X X X X X 
+C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C W W W W W
+                                      X X X X X X X X X X X 
+C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C W W W W X
+                                      X X X X X X X X X X X 
+C C C C C C C C C C C C C C C C C C C C C W W W W W W W W W W W W W X X
+                                      X X X X X X X X X X X 
+C C C C C C C C C C C C C C C C C C C C C W W W W W W W W W W W W X X X
+                                      X X X X X X X X X X X 
+C C C C C C C C C C C C C C C C C C C C C W W W W W W W W W W W X X X X
+                                      X X X X X X X X X X X 
+C C C C C C C C C C C C C C C C C C C C C W W W W W W W W W W X X X X X
+                                      X X X X X X X X X X X 
+C C C C C C C C C C C C C C C C C C C C C W W W W W W W W W X X X X X X
+                                      X X X X X X X X X X X 
+C C C C C C C C C C C W W W W W W W W W W W W W W W W W W X X X X X X X
+                                      X X X X X X X X X X X 
+C C C C C C C C C C C W W W W W W W W W W W W W W W W W X X X X X X X X
+                                      X X X X X X X X X X X 
+C C C C C C C C C C C W W W W W W W W W W W W W W W X X X X X X X X X X
+                                      X X X X X X X X X X X 
+C C C C C C C C C C C W W W W W W W W W W W W W W X X X X X X X X X X X
+                                      X X X X X X X X X X X 
+C C C C C C C C C C C W W W W W W W W W W W W X X X X X X X X X X X X X
+                                      X X X X X X X X X X X 
+W W W W W W W W W W W W W W W W W W W W W X X X X X X X X X X X X X X X
+                                      X X X X X X X X X X X 
+W W W W W W W W W W W W W W W W W W W X X X X X X X X X X X X X X X X X
+                                      X X X X X X X X X X X 
+W W W W W W W W W W W W W W W W W X X X X X X X X X X X X X X X X X X X
+                                      X X X X X X X X X X X 
+W W W W W W W W W W W W W W X X X X X X X X X X X X X X X X X X X X X X
+                                      X X X X X X X X X X X 
+W W W W W W W W W W X X X X X X X X X X X X X X X X X X X X X X X X X X
+                                      X X X X X X X X X X X 
+W W W X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X
+                                      X X X X X X X X X X X 
+
+  ! Fuel Cell (inner core)
+  ::: F := GEO: CARCEL 5
+        MESHX 0.0 <<side>>
+        MESHY 0.0 <<side>>
+        RADIUS 0.0 <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>> <<rclad>>
+        MIX  1 2 3 4 5 6
+  ;
+  ! Fuel Cell (outer core)
+  ::: C := GEO: F 
+  ;
+  ! Water (inside real tank size)
+  ::: W := GEO: CAR2D 1 1
+        MESHX 0.0 <<side>>
+        MESHY 0.0 <<side>>
+        MIX  6
+        SPLITX 3 SPLITY 3
+  ;
+  ! Water (outside real tank size)
+  ::: X := GEO: W 
+        MIX  <<mixX>> 
+        SPLITX 1 SPLITY 1
+  ;
+;
+
+Fil_ssym_su Fil_ssym_fl := G2S: GEOM ;
+
+TRACKM TRKFILM := SALT: Fil_ssym_su ::
+  EDIT 1
+  TISO <<an2d>> <<densur>> REND LONG
+  TITLE 'TRACKING FOR TISO'
+  ;
+ECHO "test tst2019_4 completed" ;
+END: ;

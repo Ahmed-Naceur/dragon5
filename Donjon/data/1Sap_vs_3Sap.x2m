@@ -1,0 +1,970 @@
+***********************************************************
+*                                                         *
+* Input file :  1Sap_vs_3Sap.x2m                          *
+* Purpose    :  Test-case for micro-depletion with        *
+*               one or three Saphybs using DONJON5        *
+* Author(s)  :  A. Bruneau (2014)                         *
+*                                                         *
+***********************************************************
+LINKED_LIST GeoRes MicroFuel MacroFuel Track System Flux Thermo
+            Matex GeoCoeur MacroRefl MacroAll Fmap Power Burnup ;
+MODULE      TRIVAT: TRIVAA: FLUD: GREP: MACINI: UTL: NCR: ABORT: THM:
+            SCR: RESINI: GEO: USPLIT: MAC: FLPOW: DELETE: END: EVO: ;
+SEQ_ASCII   CpRefl :: FILE './CpRefl' ;
+SEQ_ASCII   Saphyb_as :: FILE './Saphyb_as' ;
+XSM_FILE    Saphyb1 Saphyb2 Saphyb3 CpRefl_xsm ;
+PROCEDURE   assertS ;
+
+*-------------------------------------------------------------------
+* Import Saphybs
+*-------------------------------------------------------------------
+Saphyb1 := Saphyb_as ;
+Saphyb2 := Saphyb_as ;
+Saphyb3 := Saphyb_as ;
+
+*-------------------------------------------------------------------
+* Reflector + local parameters
+*-------------------------------------------------------------------
+CpRefl_xsm := CpRefl ;
+MacroRefl := NCR: CpRefl_xsm :: EDIT 1 MACRO LINEAR 
+  NMIX 3 COMPO CpRefl_xsm default   MIX 1 USE SET 'C-BORE' 0. ENDMIX
+  MIX 2 USE SET 'C-BORE' 0. ENDMIX  MIX 3 USE SET 'C-BORE' 0. ENDMIX
+  ;
+  
+REAL keff1Sap keff3Sap delrho keff1Sap0 keff3Sap0 ;
+
+*-------------------------------------------------------------------
+* Variables related to geometry
+*-------------------------------------------------------------------
+INTEGER Splitx Splitz Splitz_Refl := 2 1 2 ;
+INTEGER MaxR := 1000000 ;
+REAL dx := 21.504 ;
+REAL dz := 11.5 ;
+
+REAL  x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 :=
+  1. dx *  2. dx *  3. dx *  4. dx *  5. dx *  6. dx *
+  7. dx *  8. dx *  9. dx * 10. dx * 11. dx * 12. dx *
+ 13. dx * 14. dx * 15. dx * 16. dx * 17. dx * ;
+
+REAL z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14 z15 z16 z17 z18
+    z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29 z30 z31 z32 z33 z34 :=
+20.  1. dz * 20. +  2. dz * 20. +  3. dz * 20. +
+ 4. dz * 20. +  5. dz * 20. +  6. dz * 20. +  7. dz * 20. +
+ 8. dz * 20. +  9. dz * 20. + 10. dz * 20. + 11. dz * 20. +
+12. dz * 20. + 13. dz * 20. + 14. dz * 20. + 15. dz * 20. +
+16. dz * 20. + 17. dz * 20. + 18. dz * 20. + 19. dz * 20. +
+20. dz * 20. + 21. dz * 20. + 22. dz * 20. + 23. dz * 20. +
+24. dz * 20. + 25. dz * 20. + 26. dz * 20. + 27. dz * 20. +
+28. dz * 20. + 29. dz * 20. + 30. dz * 20. + 31. dz * 20. +
+32. dz * 20. + 32. dz * 40. + ;
+
+*===================================================================
+* Fuel map with 1 Saphyb
+*===================================================================
+ECHO "Fuel map avec 1 Saphyb" ;
+
+*-------------------------------------------------------------------
+* Core geometry
+*-------------------------------------------------------------------
+GeoCoeur := GEO: :: CAR3D 17 17 34
+  EDIT 3
+  X+ ZERO  X- ZERO
+  Y+ ZERO  Y- ZERO
+  Z+ ZERO  Z- ZERO
+  MIX
+
+PLANE 1
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+
+PLANE 2
+  1 1 1 1 1 1 1 1   1   1 1 1 1 1 1 1 1
+  1 1 1 1 1 1 1 4   4   4 1 1 1 1 1 1 1
+  1 1 1 1 1 4 4 4   4   4 4 4 1 1 1 1 1
+  1 1 1 1 4 4 4 4   4   4 4 4 4 1 1 1 1
+  1 1 1 4 4 4 4 4   4   4 4 4 4 4 1 1 1
+  1 1 4 4 4 4 4 4   4   4 4 4 4 4 4 1 1
+  1 1 4 4 4 4 4 4   4   4 4 4 4 4 4 1 1
+  1 4 4 4 4 4 4 4   4   4 4 4 4 4 4 4 1
+
+  1 4 4 4 4 4 4 4   4   4 4 4 4 4 4 4 1
+
+  1 4 4 4 4 4 4 4   4   4 4 4 4 4 4 4 1
+  1 1 4 4 4 4 4 4   4   4 4 4 4 4 4 1 1
+  1 1 4 4 4 4 4 4   4   4 4 4 4 4 4 1 1
+  1 1 1 4 4 4 4 4   4   4 4 4 4 4 1 1 1
+  1 1 1 1 4 4 4 4   4   4 4 4 4 1 1 1 1
+  1 1 1 1 1 4 4 4   4   4 4 4 1 1 1 1 1
+  1 1 1 1 1 1 1 4   4   4 1 1 1 1 1 1 1
+  1 1 1 1 1 1 1 1   1   1 1 1 1 1 1 1 1
+
+PLANE  3 SAME 2
+PLANE  4 SAME 2
+PLANE  5 SAME 2
+PLANE  6 SAME 2
+PLANE  7 SAME 2
+PLANE  8 SAME 2
+PLANE  9 SAME 2
+PLANE 10 SAME 2
+PLANE 11 SAME 2
+PLANE 12 SAME 2
+PLANE 13 SAME 2
+PLANE 14 SAME 2
+PLANE 15 SAME 2
+PLANE 16 SAME 2
+PLANE 17 SAME 2
+PLANE 18 SAME 2
+PLANE 19 SAME 2
+PLANE 20 SAME 2
+PLANE 21 SAME 2
+PLANE 22 SAME 2
+PLANE 23 SAME 2
+PLANE 24 SAME 2
+PLANE 25 SAME 2
+PLANE 26 SAME 2
+PLANE 27 SAME 2
+PLANE 28 SAME 2
+PLANE 29 SAME 2
+PLANE 30 SAME 2
+PLANE 31 SAME 2
+PLANE 32 SAME 2
+PLANE 33 SAME 2
+PLANE 34
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+
+  MESHX  0.      <<x1>>  <<x2>>  <<x3>>  <<x4>>  <<x5>>  <<x6>>
+         <<x7>>  <<x8>>  <<x9>> <<x10>> <<x11>> <<x12>> <<x13>>
+        <<x14>> <<x15>> <<x16>> <<x17>>
+
+  MESHY  0.      <<x1>>  <<x2>>  <<x3>>  <<x4>>  <<x5>>  <<x6>>
+         <<x7>>  <<x8>>  <<x9>> <<x10>> <<x11>> <<x12>> <<x13>>
+        <<x14>> <<x15>> <<x16>> <<x17>>
+
+  MESHZ  0.      <<z1>>  <<z2>>  <<z3>>  <<z4>>  <<z5>>  <<z6>>
+         <<z7>>  <<z8>>  <<z9>> <<z10>> <<z11>> <<z12>> <<z13>>
+        <<z14>> <<z15>> <<z16>> <<z17>> <<z18>> <<z19>> <<z20>>
+        <<z21>> <<z22>> <<z23>> <<z24>> <<z25>> <<z26>> <<z27>>
+        <<z28>> <<z29>> <<z30>> <<z31>> <<z32>> <<z33>> <<z34>>
+
+  SPLITX <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>>
+  SPLITY <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>>
+
+  SPLITZ <<Splitz_Refl>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz_Refl>>
+;
+
+GeoRes Matex := USPLIT: GeoCoeur :: NGRP 2 MAXR <<MaxR>>
+               NREFL 3 RMIX 1 2 3
+               NFUEL 1 FMIX 4
+;
+
+Track := TRIVAT: GeoRes :: MAXR <<MaxR>> DUAL 2 3 ;
+
+*-------------------------------------------------------------------
+* Fuel map and combustion zones defenition
+*-------------------------------------------------------------------
+Fmap Matex := RESINI: Matex ::
+  ::: GEO: CAR3D 17 17 34
+  EDIT 0
+  X- ZERO  X+ ZERO
+  Y- ZERO  Y+ ZERO
+  Z- ZERO  Z+ ZERO
+MIX
+PLANE 1
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+!
+PLANE 2
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 4   4   4 0 0 0 0 0 0 0
+  0 0 0 0 0 4 4 4   4   4 4 4 0 0 0 0 0
+  0 0 0 0 4 4 4 4   4   4 4 4 4 0 0 0 0
+  0 0 0 4 4 4 4 4   4   4 4 4 4 4 0 0 0
+  0 0 4 4 4 4 4 4   4   4 4 4 4 4 4 0 0
+  0 0 4 4 4 4 4 4   4   4 4 4 4 4 4 0 0
+  0 4 4 4 4 4 4 4   4   4 4 4 4 4 4 4 0
+
+  0 4 4 4 4 4 4 4   4   4 4 4 4 4 4 4 0
+
+  0 4 4 4 4 4 4 4   4   4 4 4 4 4 4 4 0
+  0 0 4 4 4 4 4 4   4   4 4 4 4 4 4 0 0
+  0 0 4 4 4 4 4 4   4   4 4 4 4 4 4 0 0
+  0 0 0 4 4 4 4 4   4   4 4 4 4 4 0 0 0
+  0 0 0 0 4 4 4 4   4   4 4 4 4 0 0 0 0
+  0 0 0 0 0 4 4 4   4   4 4 4 0 0 0 0 0
+  0 0 0 0 0 0 0 4   4   4 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+PLANE  3 SAME 2
+PLANE  4 SAME 2
+PLANE  5 SAME 2
+PLANE  6 SAME 2
+PLANE  7 SAME 2
+PLANE  8 SAME 2
+PLANE  9 SAME 2
+PLANE 10 SAME 2
+PLANE 11 SAME 2
+PLANE 12 SAME 2
+PLANE 13 SAME 2
+PLANE 14 SAME 2
+PLANE 15 SAME 2
+PLANE 16 SAME 2
+PLANE 17 SAME 2
+PLANE 18 SAME 2
+PLANE 19 SAME 2
+PLANE 20 SAME 2
+PLANE 21 SAME 2
+PLANE 22 SAME 2
+PLANE 23 SAME 2
+PLANE 24 SAME 2
+PLANE 25 SAME 2
+PLANE 26 SAME 2
+PLANE 27 SAME 2
+PLANE 28 SAME 2
+PLANE 29 SAME 2
+PLANE 30 SAME 2
+PLANE 31 SAME 2
+PLANE 32 SAME 2
+PLANE 33 SAME 2
+PLANE 34 SAME 1
+!
+MESHX 0. <<x1>>  <<x2>>  <<x3>>  <<x4>>  <<x5>>  <<x6>>  <<x7>>
+         <<x8>>  <<x9>> <<x10>> <<x11>> <<x12>> <<x13>> <<x14>>
+        <<x15>> <<x16>> <<x17>>
+
+MESHY 0. <<x1>>  <<x2>>  <<x3>>  <<x4>>  <<x5>>  <<x6>>  <<x7>>
+         <<x8>>  <<x9>> <<x10>> <<x11>> <<x12>> <<x13>> <<x14>>
+        <<x15>> <<x16>> <<x17>>
+
+MESHZ 0. <<z1>>  <<z2>>  <<z3>>  <<z4>>  <<z5>>  <<z6>>  <<z7>>
+         <<z8>>  <<z9>> <<z10>> <<z11>> <<z12>> <<z13>> <<z14>>
+        <<z15>> <<z16>> <<z17>> <<z18>> <<z19>> <<z20>> <<z21>>
+        <<z22>> <<z23>> <<z24>> <<z25>> <<z26>> <<z27>> <<z28>>
+        <<z29>> <<z30>> <<z31>> <<z32>> <<z33>> <<z34>>
+      ;
+!
+NXNAME '-'  'R'  'P'  'N'  'M'  'L'  'K'  'J'  'H'  'G'
+       'F'  'E'  'D'  'C'  'B'  'A'  '-'
+!
+NYNAME '-'  '01' '02' '03' '04' '05' '06' '07' '08' '09'
+       '10' '11' '12' '13' '14' '15' '-'
+!
+NCOMB  157
+B-ZONE
+                         1   2   3
+                 4   5   6   7   8   9  10
+            11  12  13  14  15  16  17  18  19
+        20  21  22  23  24  25  26  27  28  29  30
+    31  32  33  34  35  36  37  38  39  40  41  42  43
+    44  45  46  47  48  49  50  51  52  53  54  55  56
+57  58  59  60  61  62  63  64  65  66  67  68  69  70  71
+72  73  74  75  76  77  78  79  80  81  82  83  84  85  86
+87  88  89  90  91  92  93  94  95  96  97  98  99 100 101
+   102 103 104 105 106 107 108 109 110 111 112 113 114
+   115 116 117 118 119 120 121 122 123 124 125 126 127
+       128 129 130 131 132 133 134 135 136 137 138
+           139 140 141 142 143 144 145 146 147
+               148 149 150 151 152 153 154
+                       155 156 157
+
+ADD-PARAM PNAME 'C-BORE' PARKEY 'CBOR' GLOBAL
+ADD-PARAM PNAME 'T-FUEL' PARKEY 'TCOM' GLOBAL
+ADD-PARAM PNAME 'D-COOL' PARKEY 'DMOD' GLOBAL
+;
+
+Fmap := RESINI: Fmap :: EDIT 2 BTYPE INST-BURN
+INST-BVAL CHAN
+20000. 20000. 20000.     0.     0.     0. 20000.     0.     0.     0.
+20000.     0. 10000. 20000.     0. 20000. 10000.     0. 20000. 20000.
+    0. 20000. 10000. 10000. 20000. 10000. 10000. 20000.     0. 20000.
+    0.     0. 20000. 20000. 20000. 10000. 20000. 10000. 20000. 20000.
+20000.     0.     0.     0. 10000. 10000. 20000. 10000. 20000. 10000.
+20000. 10000. 20000. 10000. 10000.     0. 20000.     0. 20000. 10000.
+10000. 20000. 10000. 20000. 10000. 20000. 10000. 10000. 20000.     0.
+20000. 20000. 20000.     0. 20000. 20000. 10000. 20000. 20000. 20000.
+10000. 20000. 20000.     0. 20000. 20000. 20000.     0. 20000. 10000.
+10000. 20000. 10000. 20000. 10000. 20000. 10000. 10000. 20000.     0.
+20000.     0. 10000. 10000. 20000. 10000. 20000. 10000. 20000. 10000.
+20000. 10000. 10000.     0.     0.     0. 20000. 20000. 20000. 10000.
+20000. 10000. 20000. 20000. 20000.     0.     0. 20000.     0. 20000.
+10000. 10000. 20000. 10000. 10000. 20000.     0. 20000. 20000.     0.
+10000. 20000.     0. 20000. 10000.     0. 20000.     0.     0.     0.
+20000.     0.     0.     0. 20000. 20000. 20000.
+SET-PARAM 'C-BORE' 0.
+SET-PARAM 'T-FUEL' 285.
+SET-PARAM 'D-COOL' .716403
+BUNDLE-POW SAME 17.67515924 ! 2775 / 157
+;
+
+*-------------------------------------------------------------------
+* THM calculation
+*-------------------------------------------------------------------
+Thermo Fmap := THM: Fmap ::
+  EDIT 0 CRITFL 1.80E+6 ASSMB 264 25
+  CWSECT 3.844277 60963. INLET 1.57E+07 559.65
+  RADIUS .004096 .0041785 .00475 .006225
+  POROS .05 FPUISS .95
+  SET-PARAM 'C-BORE' 0. ;
+
+*-------------------------------------------------------------------
+* First SCR calculation with CHAIN
+*-------------------------------------------------------------------
+MicroFuel := SCR: Saphyb1 Fmap ::
+  EDIT 2 MICRO LINEAR
+  TABLE Saphyb1 'BURN'
+  MIX 4
+    INST-BURN
+    SET 'DMOD' .716403
+    SET 'TCOM' 285.
+    SET 'BARR' 1.
+    MICRO ALL
+      'XE135PF'  0.
+      'I135PF'   0.
+      'ND147PF'  0.
+      'PM147PF'  0.
+      'PM148PF'  0.
+      'PM148MPF' 0.
+      'PM149PF'  0.
+      'SM149PF'  0.
+  ENDMIX
+
+  CHAIN
+      B10      STABLE
+      B11      STABLE
+      I135PF   NG    0.
+      XE135PF  NG    0. FROM DECAY 1.0E+00 I135PF
+*-- No Samarium -------------------------------------
+      ND147PF  STABLE
+      PM147PF  STABLE
+      PM148PF  STABLE
+      PM148MPF STABLE
+      PM149PF  STABLE
+      SM149PF  STABLE
+*-- With Samarium -----------------------------------
+*      ND147PF  NG    0.
+*      PM147PF  NG    0. FROM DECAY 1.0E+00 ND147PF
+*      PM148PF  NG    0. FROM NG    5.3E-01 PM147PF
+*      PM148MPF NG    0. FROM NG    4.7E-01 PM147PF
+*      PM149PF  NG    0. FROM NG    1.0E+00 PM148PF
+*                             NG    1.0E+00 PM148MPF
+*      SM149PF  NG    0. FROM DECAY 1.0E+00 PM149PF
+*----------------------------------------------------
+      MACR     NFTOT 0.
+  ENDCHAIN
+  ;
+
+*-------------------------------------------------------------------
+* Flux + power calculation
+*-------------------------------------------------------------------
+MacroFuel := MicroFuel :: STEP UP "MACROLIB" ;
+MacroAll Matex := MACINI: Matex MacroRefl MacroFuel ;
+System := TRIVAA: MacroAll Track ;
+Flux := FLUD: System Track :: EDIT 2 ADI 2 EXTE 200 1.E-05 ;
+Power Fmap := FLPOW: Fmap Flux Track Matex ::
+  EDIT 1 PTOT 2775. PRINT DISTR POWER ;
+
+*-------------------------------------------------------------------
+* Thermalhydraulics and Microlib update using RES keyword
+*-------------------------------------------------------------------
+Thermo Fmap := THM: Thermo Fmap :: EDIT 0 ;
+MicroFuel := SCR: MicroFuel Saphyb1 Fmap ::
+  EDIT 2 RES MICRO LINEAR
+  TABLE Saphyb1 'BURN'
+  MIX 4
+    INST-BURN
+    SET 'DMOD' MAP
+    SET 'TCOM' MAP
+    SET 'BARR' 1.
+    MICRO ALL
+      'XE135PF'  0.
+      'I135PF'   0.
+      'ND147PF'  0.
+      'PM147PF'  0.
+      'PM148PF'  0.
+      'PM148MPF' 0.
+      'PM149PF'  0.
+      'SM149PF'  0.
+  ENDMIX
+  ;
+
+*-------------------------------------------------------------------
+* Micro-depletion with t evol = 100 day
+*-------------------------------------------------------------------
+Burnup MicroFuel := EVO: MicroFuel Power ::
+  EDIT 1 FLUX_POW SAVE 0. DAY KEEP ;
+
+Burnup MicroFuel := EVO: Burnup MicroFuel Power ::
+  EDIT 1 FLUX_POW SATOFF DEPL 100. DAY KEEP ;
+
+*-------------------------------------------------------------------
+* Flux calculation after micro-depletion
+*-------------------------------------------------------------------
+Flux MacroAll MacroFuel System :=
+   DELETE: Flux MacroAll MacroFuel System ;
+MacroFuel := MicroFuel :: STEP UP "MACROLIB" ;
+MacroAll Matex := MACINI: Matex MacroRefl MacroFuel ;
+System := TRIVAA: MacroAll Track ;
+Flux := FLUD: System Track :: EDIT 2 ADI 2 EXTE 200 1.E-05 ;
+GREP: Flux :: GETVAL 'K-EFFECTIVE ' 1 >>keff1Sap0<< ;
+
+*===================================================================
+* Case with 3 identical Saphybs (= fuel map identical to the 1-Saphyb
+* case)
+*===================================================================
+GeoCoeur GeoRes Matex Track Fmap Thermo MicroFuel MacroFuel 
+MacroAll System Flux Power Burnup := DELETE:
+GeoCoeur GeoRes Matex Track Fmap Thermo MicroFuel MacroFuel 
+MacroAll System Flux Power Burnup ;
+ECHO "Fuel map avec 3 Saphyb" ;
+
+*-------------------------------------------------------------------
+* Core geometry
+*-------------------------------------------------------------------
+GeoCoeur := GEO: :: CAR3D 17 17 34
+  EDIT 3
+  X+ ZERO  X- ZERO
+  Y+ ZERO  Y- ZERO
+  Z+ ZERO  Z- ZERO
+  MIX
+
+PLANE 1
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+  2 2 2 2 2 2 2 2   2   2 2 2 2 2 2 2 2
+
+PLANE 2
+  1 1 1 1 1 1 1 1   1   1 1 1 1 1 1 1 1
+  1 1 1 1 1 1 1 4   4   4 1 1 1 1 1 1 1
+  1 1 1 1 1 4 4 4   4   4 4 4 1 1 1 1 1
+  1 1 1 1 4 5 6 4   5   4 6 5 4 1 1 1 1
+  1 1 1 4 4 6 4 4   4   4 4 6 4 4 1 1 1
+  1 1 4 5 6 4 6 6   4   6 6 4 6 5 4 1 1
+  1 1 4 6 4 6 4 4   4   4 4 6 4 6 4 1 1
+  1 4 4 4 4 6 4 4   4   4 4 6 4 4 4 4 1
+
+  1 4 4 5 4 4 4 4   4   4 4 4 4 5 4 4 1
+
+  1 4 4 4 4 6 4 4   4   4 4 6 4 4 4 4 1
+  1 1 4 6 4 6 4 4   4   4 4 6 4 6 4 1 1
+  1 1 4 5 6 4 6 6   4   6 6 4 6 5 4 1 1
+  1 1 1 4 4 6 4 4   4   4 4 6 4 4 1 1 1
+  1 1 1 1 4 5 6 4   5   4 6 5 4 1 1 1 1
+  1 1 1 1 1 4 4 4   4   4 4 4 1 1 1 1 1
+  1 1 1 1 1 1 1 4   4   4 1 1 1 1 1 1 1
+  1 1 1 1 1 1 1 1   1   1 1 1 1 1 1 1 1
+
+PLANE  3 SAME 2
+PLANE  4 SAME 2
+PLANE  5 SAME 2
+PLANE  6 SAME 2
+PLANE  7 SAME 2
+PLANE  8 SAME 2
+PLANE  9 SAME 2
+PLANE 10 SAME 2
+PLANE 11 SAME 2
+PLANE 12 SAME 2
+PLANE 13 SAME 2
+PLANE 14 SAME 2
+PLANE 15 SAME 2
+PLANE 16 SAME 2
+PLANE 17 SAME 2
+PLANE 18 SAME 2
+PLANE 19 SAME 2
+PLANE 20 SAME 2
+PLANE 21 SAME 2
+PLANE 22 SAME 2
+PLANE 23 SAME 2
+PLANE 24 SAME 2
+PLANE 25 SAME 2
+PLANE 26 SAME 2
+PLANE 27 SAME 2
+PLANE 28 SAME 2
+PLANE 29 SAME 2
+PLANE 30 SAME 2
+PLANE 31 SAME 2
+PLANE 32 SAME 2
+PLANE 33 SAME 2
+PLANE 34
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3   3   3 3 3 3 3 3 3 3
+
+  MESHX  0.      <<x1>>  <<x2>>  <<x3>>  <<x4>>  <<x5>>  <<x6>>
+         <<x7>>  <<x8>>  <<x9>> <<x10>> <<x11>> <<x12>> <<x13>>
+        <<x14>> <<x15>> <<x16>> <<x17>>
+
+  MESHY  0.      <<x1>>  <<x2>>  <<x3>>  <<x4>>  <<x5>>  <<x6>>
+         <<x7>>  <<x8>>  <<x9>> <<x10>> <<x11>> <<x12>> <<x13>>
+        <<x14>> <<x15>> <<x16>> <<x17>>
+
+  MESHZ  0.      <<z1>>  <<z2>>  <<z3>>  <<z4>>  <<z5>>  <<z6>>
+         <<z7>>  <<z8>>  <<z9>> <<z10>> <<z11>> <<z12>> <<z13>>
+        <<z14>> <<z15>> <<z16>> <<z17>> <<z18>> <<z19>> <<z20>>
+        <<z21>> <<z22>> <<z23>> <<z24>> <<z25>> <<z26>> <<z27>>
+        <<z28>> <<z29>> <<z30>> <<z31>> <<z32>> <<z33>> <<z34>>
+
+  SPLITX <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>>
+  SPLITY <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>>
+
+  SPLITZ <<Splitz_Refl>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz_Refl>>
+;
+
+GeoRes Matex := USPLIT: GeoCoeur :: NGRP 2 MAXR <<MaxR>>
+               NREFL 3  RMIX 1 2 3
+               NFUEL 3  FMIX 4 5 6
+;
+
+Track := TRIVAT: GeoRes :: MAXR <<MaxR>> DUAL 2 3 ;
+
+*-------------------------------------------------------------------
+* Fuel map and combustion zones defenition
+*-------------------------------------------------------------------
+Fmap Matex := RESINI: Matex ::
+  ::: GEO: CAR3D 17 17 34
+  EDIT 0
+  X- ZERO  X+ ZERO
+  Y- ZERO  Y+ ZERO
+  Z- ZERO  Z+ ZERO
+MIX
+PLANE 1
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+!
+PLANE 2
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 4   4   4 0 0 0 0 0 0 0
+  0 0 0 0 0 4 4 4   4   4 4 4 0 0 0 0 0
+  0 0 0 0 4 5 6 4   5   4 6 5 4 0 0 0 0
+  0 0 0 4 4 6 4 4   4   4 4 6 4 4 0 0 0
+  0 0 4 5 6 4 6 6   4   6 6 4 6 5 4 0 0
+  0 0 4 6 4 6 4 4   4   4 4 6 4 6 4 0 0
+  0 4 4 4 4 6 4 4   4   4 4 6 4 4 4 4 0
+
+  0 4 4 5 4 4 4 4   4   4 4 4 4 5 4 4 0
+
+  0 4 4 4 4 6 4 4   4   4 4 6 4 4 4 4 0
+  0 0 4 6 4 6 4 4   4   4 4 6 4 6 4 0 0
+  0 0 4 5 6 4 6 6   4   6 6 4 6 5 4 0 0
+  0 0 0 4 4 6 4 4   4   4 4 6 4 4 0 0 0
+  0 0 0 0 4 5 6 4   5   4 6 5 4 0 0 0 0
+  0 0 0 0 0 4 4 4   4   4 4 4 0 0 0 0 0
+  0 0 0 0 0 0 0 4   4   4 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+PLANE  3 SAME 2
+PLANE  4 SAME 2
+PLANE  5 SAME 2
+PLANE  6 SAME 2
+PLANE  7 SAME 2
+PLANE  8 SAME 2
+PLANE  9 SAME 2
+PLANE 10 SAME 2
+PLANE 11 SAME 2
+PLANE 12 SAME 2
+PLANE 13 SAME 2
+PLANE 14 SAME 2
+PLANE 15 SAME 2
+PLANE 16 SAME 2
+PLANE 17 SAME 2
+PLANE 18 SAME 2
+PLANE 19 SAME 2
+PLANE 20 SAME 2
+PLANE 21 SAME 2
+PLANE 22 SAME 2
+PLANE 23 SAME 2
+PLANE 24 SAME 2
+PLANE 25 SAME 2
+PLANE 26 SAME 2
+PLANE 27 SAME 2
+PLANE 28 SAME 2
+PLANE 29 SAME 2
+PLANE 30 SAME 2
+PLANE 31 SAME 2
+PLANE 32 SAME 2
+PLANE 33 SAME 2
+PLANE 34 SAME 1
+!
+MESHX 0. <<x1>>  <<x2>>  <<x3>>  <<x4>>  <<x5>>  <<x6>>  <<x7>>
+         <<x8>>  <<x9>> <<x10>> <<x11>> <<x12>> <<x13>> <<x14>>
+        <<x15>> <<x16>> <<x17>>
+
+MESHY 0. <<x1>>  <<x2>>  <<x3>>  <<x4>>  <<x5>>  <<x6>>  <<x7>>
+         <<x8>>  <<x9>> <<x10>> <<x11>> <<x12>> <<x13>> <<x14>>
+        <<x15>> <<x16>> <<x17>>
+
+MESHZ 0. <<z1>>  <<z2>>  <<z3>>  <<z4>>  <<z5>>  <<z6>>  <<z7>>
+         <<z8>>  <<z9>> <<z10>> <<z11>> <<z12>> <<z13>> <<z14>>
+        <<z15>> <<z16>> <<z17>> <<z18>> <<z19>> <<z20>> <<z21>>
+        <<z22>> <<z23>> <<z24>> <<z25>> <<z26>> <<z27>> <<z28>>
+        <<z29>> <<z30>> <<z31>> <<z32>> <<z33>> <<z34>>
+      ;
+!
+NXNAME '-'  'R'  'P'  'N'  'M'  'L'  'K'  'J'  'H'  'G'
+       'F'  'E'  'D'  'C'  'B'  'A'  '-'
+!
+NYNAME '-'  '01' '02' '03' '04' '05' '06' '07' '08' '09'
+       '10' '11' '12' '13' '14' '15' '-'
+!
+NCOMB  157
+B-ZONE
+                         1   2   3
+                 4   5   6   7   8   9  10
+            11  12  13  14  15  16  17  18  19
+        20  21  22  23  24  25  26  27  28  29  30
+    31  32  33  34  35  36  37  38  39  40  41  42  43
+    44  45  46  47  48  49  50  51  52  53  54  55  56
+57  58  59  60  61  62  63  64  65  66  67  68  69  70  71
+72  73  74  75  76  77  78  79  80  81  82  83  84  85  86
+87  88  89  90  91  92  93  94  95  96  97  98  99 100 101
+   102 103 104 105 106 107 108 109 110 111 112 113 114
+   115 116 117 118 119 120 121 122 123 124 125 126 127
+       128 129 130 131 132 133 134 135 136 137 138
+           139 140 141 142 143 144 145 146 147
+               148 149 150 151 152 153 154
+                       155 156 157
+
+ADD-PARAM PNAME 'C-BORE' PARKEY 'CBOR' GLOBAL
+ADD-PARAM PNAME 'T-FUEL' PARKEY 'TCOM' GLOBAL
+ADD-PARAM PNAME 'D-COOL' PARKEY 'DMOD' GLOBAL
+;
+
+Fmap := RESINI: Fmap :: EDIT 2 BTYPE INST-BURN
+INST-BVAL CHAN
+20000. 20000. 20000.     0.     0.     0. 20000.     0.     0.     0.
+20000.     0. 10000. 20000.     0. 20000. 10000.     0. 20000. 20000.
+    0. 20000. 10000. 10000. 20000. 10000. 10000. 20000.     0. 20000.
+    0.     0. 20000. 20000. 20000. 10000. 20000. 10000. 20000. 20000.
+20000.     0.     0.     0. 10000. 10000. 20000. 10000. 20000. 10000.
+20000. 10000. 20000. 10000. 10000.     0. 20000.     0. 20000. 10000.
+10000. 20000. 10000. 20000. 10000. 20000. 10000. 10000. 20000.     0.
+20000. 20000. 20000.     0. 20000. 20000. 10000. 20000. 20000. 20000.
+10000. 20000. 20000.     0. 20000. 20000. 20000.     0. 20000. 10000.
+10000. 20000. 10000. 20000. 10000. 20000. 10000. 10000. 20000.     0.
+20000.     0. 10000. 10000. 20000. 10000. 20000. 10000. 20000. 10000.
+20000. 10000. 10000.     0.     0.     0. 20000. 20000. 20000. 10000.
+20000. 10000. 20000. 20000. 20000.     0.     0. 20000.     0. 20000.
+10000. 10000. 20000. 10000. 10000. 20000.     0. 20000. 20000.     0.
+10000. 20000.     0. 20000. 10000.     0. 20000.     0.     0.     0.
+20000.     0.     0.     0. 20000. 20000. 20000.
+SET-PARAM 'C-BORE' 0.
+SET-PARAM 'T-FUEL' 285.
+SET-PARAM 'D-COOL' .716403
+BUNDLE-POW SAME 17.67515924 ! 2775 / 157
+;
+
+*-------------------------------------------------------------------
+* THM calculation
+*-------------------------------------------------------------------
+Thermo Fmap := THM: Fmap ::
+  EDIT 0 CRITFL 1.80E+6 ASSMB 264 25
+  CWSECT 3.844277 60963. INLET 1.57E+07 559.65
+  RADIUS .004096 .0041785 .00475 .006225
+  POROS .05 FPUISS .95 SET-PARAM 'C-BORE' 0. ;
+
+*-------------------------------------------------------------------
+* First SCR calculation using CHAIN
+*-------------------------------------------------------------------
+MicroFuel := SCR: Saphyb1 Saphyb2 Saphyb3 Fmap ::
+  EDIT 2 MICRO LINEAR
+  TABLE Saphyb1 'BURN'
+  MIX 4
+    INST-BURN
+    SET 'DMOD' .716403
+    SET 'TCOM' 285.
+    SET 'BARR' 1.
+    MICRO ALL
+      'XE135PF'  0.
+      'I135PF'   0.
+      'ND147PF'  0.
+      'PM147PF'  0.
+      'PM148PF'  0.
+      'PM148MPF' 0.
+      'PM149PF'  0.
+      'SM149PF'  0.
+  ENDMIX
+
+  TABLE Saphyb2 'BURN'
+  MIX 5
+    INST-BURN
+    SET 'DMOD' .716403
+    SET 'TCOM' 285.
+    SET 'BARR' 1.
+    MICRO ALL
+      'XE135PF'  0.
+      'I135PF'   0.
+      'ND147PF'  0.
+      'PM147PF'  0.
+      'PM148PF'  0.
+      'PM148MPF' 0.
+      'PM149PF'  0.
+      'SM149PF'  0.
+  ENDMIX
+
+  TABLE Saphyb3 'BURN'
+  MIX 6
+    INST-BURN
+    SET 'DMOD' .716403
+    SET 'TCOM' 285.
+    SET 'BARR' 1.
+    MICRO ALL
+      'XE135PF'  0.
+      'I135PF'   0.
+      'ND147PF'  0.
+      'PM147PF'  0.
+      'PM148PF'  0.
+      'PM148MPF' 0.
+      'PM149PF'  0.
+      'SM149PF'  0.
+  ENDMIX
+
+  CHAIN
+      B10      STABLE
+      B11      STABLE
+      I135PF   NG    0.
+      XE135PF  NG    0. FROM DECAY 1.0E+00 I135PF
+*-- No Samarium -------------------------------------
+      ND147PF  STABLE
+      PM147PF  STABLE
+      PM148PF  STABLE
+      PM148MPF STABLE
+      PM149PF  STABLE
+      SM149PF  STABLE
+*-- With Samarium -----------------------------------
+*      ND147PF  NG    0.
+*      PM147PF  NG    0. FROM DECAY 1.0E+00 ND147PF
+*      PM148PF  NG    0. FROM NG    5.3E-01 PM147PF
+*      PM148MPF NG    0. FROM NG    4.7E-01 PM147PF
+*      PM149PF  NG    0. FROM NG    1.0E+00 PM148PF
+*                             NG    1.0E+00 PM148MPF
+*      SM149PF  NG    0. FROM DECAY 1.0E+00 PM149PF
+*----------------------------------------------------
+      MACR     NFTOT 0.
+  ENDCHAIN
+  ;
+
+*-------------------------------------------------------------------
+* Flux and power calculation
+*-------------------------------------------------------------------
+MacroFuel := MicroFuel :: STEP UP "MACROLIB" ;
+MacroAll Matex := MACINI: Matex MacroRefl MacroFuel ;
+System := TRIVAA: MacroAll Track ;
+Flux := FLUD: System Track :: EDIT 2 ADI 2 EXTE 200 1.E-05 ;
+Power Fmap := FLPOW: Fmap Flux Track Matex ::
+  EDIT 1 PTOT 2775. PRINT DISTR POWER ;
+
+*-------------------------------------------------------------------
+* Thermalhydraulics and Microlib update using RES keyword
+*-------------------------------------------------------------------
+Thermo Fmap := THM: Thermo Fmap :: EDIT 0 ;
+MicroFuel := SCR: MicroFuel Saphyb1 Saphyb2 Saphyb3 Fmap ::
+  EDIT 2 RES MICRO LINEAR
+  TABLE Saphyb1 'BURN'
+  MIX 4
+    INST-BURN
+    SET 'DMOD' MAP
+    SET 'TCOM' MAP
+    SET 'BARR' 1.
+    MICRO ALL
+      'XE135PF'  0.
+      'I135PF'   0.
+      'ND147PF'  0.
+      'PM147PF'  0.
+      'PM148PF'  0.
+      'PM148MPF' 0.
+      'PM149PF'  0.
+      'SM149PF'  0.
+  ENDMIX
+
+  TABLE Saphyb2 'BURN'
+  MIX 5
+    INST-BURN
+    SET 'DMOD' MAP
+    SET 'TCOM' MAP
+    SET 'BARR' 1.
+    MICRO ALL
+      'XE135PF'  0.
+      'I135PF'   0.
+      'ND147PF'  0.
+      'PM147PF'  0.
+      'PM148PF'  0.
+      'PM148MPF' 0.
+      'PM149PF'  0.
+      'SM149PF'  0.
+  ENDMIX
+
+  TABLE Saphyb3 'BURN'
+  MIX 6
+    INST-BURN
+    SET 'DMOD' MAP
+    SET 'TCOM' MAP
+    SET 'BARR' 1.
+    MICRO ALL
+      'XE135PF'  0.
+      'I135PF'   0.
+      'ND147PF'  0.
+      'PM147PF'  0.
+      'PM148PF'  0.
+      'PM148MPF' 0.
+      'PM149PF'  0.
+      'SM149PF'  0.
+  ENDMIX
+  ;
+
+*-------------------------------------------------------------------
+* Micro-depletion with t evol = 100 day
+*-------------------------------------------------------------------
+Burnup MicroFuel := EVO: MicroFuel Power ::
+  EDIT 1 FLUX_POW SAVE 0. DAY KEEP ;
+
+Burnup MicroFuel := EVO: Burnup MicroFuel Power ::
+  EDIT 1 FLUX_POW SATOFF DEPL 100. DAY KEEP ;
+
+*-------------------------------------------------------------------
+* Flux calculation after micro-depletion
+*-------------------------------------------------------------------
+Flux MacroAll MacroFuel System :=
+  DELETE: Flux MacroAll MacroFuel System ;
+MacroFuel := MicroFuel :: STEP UP "MACROLIB" ;
+MacroAll Matex := MACINI: Matex MacroRefl MacroFuel ;
+System := TRIVAA: MacroAll Track ;
+Flux := FLUD: System Track :: EDIT 2 ADI 2 EXTE 200 1.E-05 ;
+GREP: Flux :: GETVAL 'K-EFFECTIVE ' 1 >>keff3Sap0<< ;
+
+*-------------------------------------------------------------------
+* k-eff comparison
+*-------------------------------------------------------------------
+assertS Flux :: K-EFFECTIVE 1 1.175465 ;
+EVALUATE delrho := 1. keff1Sap0 / 1. keff3Sap0 / - 1.E+5 * ;
+IF delrho ABS 1. < THEN
+  ECHO "Normal end: delta rho =" delrho ;
+ELSE
+  ECHO "Probleme de k-eff" ;
+  ECHO "k-eff-0 1 Saphyb :" keff1Sap0 ;
+  ECHO "k-eff-0 3 Saphybs:" keff3Sap0 ;
+  ABORT: ;
+ENDIF ;
+
+END: ;
+QUIT "LIST" .

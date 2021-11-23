@@ -1,0 +1,100 @@
+***********************************************************
+*                                                         *
+* Procedure :  SetDevPro.c2m                              *
+* Purpose   :  Reactor rod-devices specification          *
+* Author(s) :  M. Guyot (2010)                            *
+*                                                         *
+* CALL      :  MACRO := SetDevPro MACRO                   *
+*                   GT ADJ ZCR STRUC ;                    *
+*                                                         *
+***********************************************************
+
+PARAMETER MACRO GT ADJ ZCR STRUC ::
+      ::: LINKED_LIST
+          MACRO GT ADJ ZCR STRUC ; ;
+MODULE CRE: END: ;
+
+INTEGER   mR1  mR2  mR3  mR4
+          mNR1 mNR2 mNR3 mNR4   :=
+          5    6    7    8
+          11   12   13   14     ;
+INTEGER  mRai  mRao  mRbi  mRci  mRco  mRdi
+         mNRai mNRao mNRbi mNRci mNRco mNRdi   :=
+         5     6     7     8     9     10
+         11    12    13    14    15    16      ;
+INTEGER  m23M m23E m23F m12M m12E m12F m01M m01E m01F :=
+         17   18   19   20   21   22   23   24   25   ;
+INTEGER  mGTR  mNGTR  mGTS  mNGTS  mGTZ mNGTZ
+         mGTD  mNGTD  mGTL  mNGTL             :=
+          26     27    28    29     30   31
+          32     33    34    35                       ;
+INTEGER  mSBR  mNSBR  mSCR  mNSCR  mBLR  mNBLR
+         mNTR  mNNTR  mNTZ  mNNTZ  mNTS  mNNTS
+         mTSR  mNTSR  mTSZ  mNTSZ  mTSS  mNTSS        :=
+         36    37     38     39    40     41
+         42    43     44     45    46     47
+         48    49     50     51    52     53          ;
+
+MACRO := CRE: MACRO GT STRUC ZCR ::
+         EDIT 0
+         READ
+
+         COMPO ZCR   MIX <<m23M>>  'NOBL32     1'   ENDMIX
+                     MIX <<m23E>>  'BLIQE32    1'   ENDMIX
+                     MIX <<m23F>>  'BLIQF32    1'   ENDMIX
+                     MIX <<m12M>>  'NOBL21     1'   ENDMIX
+                     MIX <<m12E>>  'BLIQE21    1'   ENDMIX
+                     MIX <<m12F>>  'BLIQF21    1'   ENDMIX
+                     MIX <<m01M>>  'NOBL10     1'   ENDMIX
+                     MIX <<m01E>>  'BLIQE10    1'   ENDMIX
+                     MIX <<m01F>>  'BLIQF10    1'   ENDMIX
+
+         COMPO GT    MIX <<mGTR>>  'ADJGT      1'   ENDMIX
+                     MIX <<mNGTR>> 'ADJGTREF   1'   ENDMIX
+                     MIX <<mGTS>>  'SORGT      1'   ENDMIX
+                     MIX <<mNGTS>> 'SORGTREF   1'   ENDMIX
+                     MIX <<mGTZ>>  'LZCGT      1'   ENDMIX
+                     MIX <<mNGTZ>> 'LZCGTREF   1'   ENDMIX
+                     MIX <<mGTD>>  'HFDGT      1'   ENDMIX
+                     MIX <<mNGTD>> 'HFDGTREF   1'   ENDMIX
+                     MIX <<mGTL>>  'LPIGT      1'   ENDMIX
+                     MIX <<mNGTL>> 'LPIGTREF   1'   ENDMIX
+
+         COMPO STRUC MIX <<mSBR>>  'ADJSB      1'   ENDMIX
+                     MIX <<mNSBR>> 'ADJSBREF   1'   ENDMIX
+                     MIX <<mSCR>>  'ADJSC      1'   ENDMIX
+                     MIX <<mNSCR>> 'ADJSCREF   1'   ENDMIX
+                     MIX <<mBLR>>  'ADJBL      1'   ENDMIX
+                     MIX <<mNBLR>> 'ADJBLREF   1'   ENDMIX
+                     MIX <<mNTR>>  'ADJNT      1'   ENDMIX
+                     MIX <<mNNTR>> 'ADJNTREF   1'   ENDMIX
+                     MIX <<mNTZ>>  'LZCNT      1'   ENDMIX
+                     MIX <<mNNTZ>> 'LZCNTREF   1'   ENDMIX
+                     MIX <<mNTS>>  'SORNT      1'   ENDMIX
+                     MIX <<mNNTS>> 'SORNTREF   1'   ENDMIX
+                     MIX <<mTSR>>  'ADJTS      1'   ENDMIX
+                     MIX <<mNTSR>> 'ADJTSREF   1'   ENDMIX
+                     MIX <<mTSZ>>  'LZCTS      1'   ENDMIX
+                     MIX <<mNTSZ>> 'LZCTSREF   1'   ENDMIX
+                     MIX <<mTSS>>  'SORTS      1'   ENDMIX
+                     MIX <<mNTSS>> 'SORTSREF   1'   ENDMIX  ;
+
+   MACRO := CRE: MACRO ADJ ::
+            EDIT 0
+            READ
+
+            COMPO ADJ MIX <<mRai>>  'BCAINT     1'   ENDMIX
+                      MIX <<mNRai>> 'BCAINTRE   1'   ENDMIX
+                      MIX <<mRao>>  'BCAOUT     1'   ENDMIX
+                      MIX <<mNRao>> 'BCAOUTRE   1'   ENDMIX
+                      MIX <<mRbi>>  'BCBINT     1'   ENDMIX
+                      MIX <<mNRbi>> 'BCBINTRE   1'   ENDMIX
+                      MIX <<mRci>>  'BCCINT     1'   ENDMIX
+                      MIX <<mNRci>> 'BCCINTRE   1'   ENDMIX
+                      MIX <<mRco>>  'BCCOUT     1'   ENDMIX
+                      MIX <<mNRco>> 'BCCOUTRE   1'   ENDMIX
+                      MIX <<mRdi>>  'BCDINT     1'   ENDMIX
+                      MIX <<mNRdi>> 'BCDINTRE   1'   ENDMIX ;
+
+END: ;
+QUIT .

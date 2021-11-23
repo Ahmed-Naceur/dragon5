@@ -1,0 +1,79 @@
+*----
+* TEST CASE TDCM46
+* MACROSCOPIC CROSS SECTIONS
+* ATBR 19 element ThO2 Cluster
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST MACRO ATBRTHS VOLMATF CP PIJ FLUX EDITION ;
+SEQ_BINARY Track ;
+MODULE MAC: GEO: G2S: SALT: ASM: FLU: GREP: EDI: END: ;
+SEQ_ASCII THO2_DAT :: FILE './THO2_DAT_g2s.dat' ;
+SEQ_ASCII Fil_SAL.ps :: FILE './tho2_fig.ps' ;
+REAL Kinf ;
+INTEGER an2d := 8 ;
+REAL densur := 20.0 ;
+PROCEDURE assertS ;
+*----
+* Macroscopic XS
+*----
+MACRO := MAC: ::
+     EDIT 2 NGRO 1 NMIX 8 NIFI 1
+     READ INPUT
+     MIX 1 (*FUEL*)
+        TOTAL 0.3652    SCAT 1 1 0.3234
+        NUSIGF 0.06564      CHI 1.0
+     MIX 2 (*FUEL*)
+        TOTAL 0.3652    SCAT 1 1 0.3234
+        NUSIGF 0.06564      CHI 1.0
+     MIX 3 (*FUEL*)
+        TOTAL 0.3652    SCAT 1 1 0.3234
+        NUSIGF 0.06564      CHI 1.0
+     MIX 4 (*FUEL*)
+        TOTAL 0.3652    SCAT 1 1 0.3234
+        NUSIGF 0.06564      CHI 1.0
+     MIX 5 (*GAINE*)
+        TOTAL 0.4029        SCAT 1 1 0.4000
+     MIX 6 (*H2O*)
+        TOTAL 0.3683        SCAT 1 1 0.3661
+     MIX 7 (*MODERATOR*)
+        TOTAL 0.03683       SCAT 1 1 0.03661
+     MIX 8 (*VOID*)
+        TOTAL 0.001         SCAT 1 1 0.0
+;
+*----
+* Geometry ATBRTHS : ThO2 Cluster
+*----
+ATBRTHS := GEO: :: HEX 1
+  HBC COMPLETE ALBE 1.0
+  CELL  C1 
+  ::: C1 := GEO: HEXCEL 9
+  SIDE 16.16581 
+  RADIUS  0.00 0.50 0.54 7.00 7.15 8.80 9.35 10.20 10.35  10.50 
+  MIX      6    5    5    5    6    5    8    5    7     7
+  CLUSTER ROD1
+  ::: ROD1 := GEO: TUBE 5 MIX 1 2 3 4 5
+    NPIN 30 RPIN 8.0 APIN 0.0
+    RADIUS 0.0 0.44548 0.56349 0.61405 0.63 0.7 ;
+  ;
+;
+THO2_DAT Fil_SAL.ps := G2S: ATBRTHS :: DRAWMIX ;
+VOLMATF Track := SALT: THO2_DAT ::                                       
+     EDIT 3
+     ALLG
+     TISO <<an2d>> <<densur>>
+;                                                                      
+*----
+* Compute  flux
+*----
+PIJ := ASM: MACRO VOLMATF Track ;
+FLUX := FLU: PIJ MACRO VOLMATF ::
+  TYPE K ;
+GREP: FLUX :: GETVAL 'K-INFINITY  ' 1 1 1 >>Kinf<< ;
+ECHO "@@@ Kinf=" Kinf ;
+assertS FLUX :: 'K-EFFECTIVE' 1 1.040651 ;
+EDITION := EDI: FLUX MACRO VOLMATF ::
+  EDIT 3 MERG COMP SAVE ON TEST  ;
+ECHO "test TDCM46 completed" ;
+END: ;
+QUIT "LIST" .

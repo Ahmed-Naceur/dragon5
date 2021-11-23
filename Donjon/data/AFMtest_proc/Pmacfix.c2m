@@ -1,0 +1,85 @@
+!***********************************************************************
+!*                                                                    **
+!* PROCEDURE:  Pmacfix                                                **
+!* USAGE:      Macrolib construction Gentilly2 reactor from DRAGON    **
+!*             properties for fixed material (devices) and reflector  **
+!* AUTHOR:     E. Varin (96/02/12)                                    **
+!* Modified:   W. Shen (97/10/10)                                     **
+!*             B. Dionne (01/03/04) (pour cours ENE6209)              **
+!* CALL:                                                              **
+!*                                                                    **
+!*  MACRO := Pmacfix  ;                                               **
+!*                                                                    **
+!* NOTES:                                                             **
+!*    All the sequential ASCII files are exported COMPO files         **
+!*    and must have the names and directory hierarchy as used         **
+!*    in the calling to CRE: module                                   **
+!*                                                                    **
+!*    Check also mixture numbers with reference to geometry           **
+!*    construction  and device description                            **
+!*                                                                    **
+!***********************************************************************
+
+ PARAMETER MACRO ::
+           ::: LINKED_LIST MACRO ;
+           ;
+
+ MODULE CRE: END: ;
+
+ LINKED_LIST NREFL ZCR ADJ ;
+
+ SEQ_ASCII rnat zcunat adjnat ::
+           FILE 'rnat' 'zcunat' 'adjnat' ;
+
+!* Declaration des variables
+!***************************
+! Numero de melanges associes aux devices
+ INTEGER  m23M m23E m23F m12M m12E m12F m01M m01E m01F :=
+           17   18   19    20   21   22   23   24   25 ;
+ INTEGER  mRai  mRao  mRbi  mRci  mRco  mRdi
+         mNRai mNRao mNRbi mNRci mNRco mNRdi  :=
+           5     6      7     8     9    10
+           11   12     13    14    15    16  ;
+
+!* Importation des fichiers de compositions
+!******************************************
+ ADJ    := adjnat ;
+ ZCR    := zcunat ;
+ NREFL  := rnat   ;
+
+!* Generation des melanges (sections efficaces macroscopiques)
+!*************************************************************
+ MACRO := CRE: NREFL ADJ ZCR ::
+   EDIT 0  NMIX 25
+   READ
+     COMPO NREFL   MIX    2      'MIXTMOD    1'  ENDMIX
+!
+     COMPO ADJ     MIX <<mRai>>  'BCAINT     1'  ENDMIX
+                   MIX <<mNRai>> 'BCAINTRE   1'  ENDMIX
+                   MIX <<mRao>>  'BCAOUT     1'  ENDMIX
+                   MIX <<mNRao>> 'BCAOUTRE   1'  ENDMIX
+                   MIX <<mRbi>>  'BCBINT     1'  ENDMIX
+                   MIX <<mNRbi>> 'BCBINTRE   1'  ENDMIX
+                   MIX <<mRci>>  'BCCINT     1'  ENDMIX
+                   MIX <<mNRci>> 'BCCINTRE   1'  ENDMIX
+                   MIX <<mRco>>  'BCCOUT     1'  ENDMIX
+                   MIX <<mNRco>> 'BCCOUTRE   1'  ENDMIX
+                   MIX <<mRdi>>  'BCDINT     1'  ENDMIX
+                   MIX <<mNRdi>> 'BCDINTRE   1'  ENDMIX
+!
+     COMPO ZCR     MIX <<m23M>>  'NOBL32     1'  ENDMIX
+                   MIX <<m23E>>  'BLIQE32    1'  ENDMIX
+                   MIX <<m23F>>  'BLIQF32    1'  ENDMIX
+                   MIX <<m12M>>  'NOBL21     1'  ENDMIX
+                   MIX <<m12E>>  'BLIQE21    1'  ENDMIX
+                   MIX <<m12F>>  'BLIQF21    1'  ENDMIX
+                   MIX <<m01M>>  'NOBL10     1'  ENDMIX
+                   MIX <<m01E>>  'BLIQE10    1'  ENDMIX
+                   MIX <<m01F>>  'BLIQF10    1'  ENDMIX
+ ;
+
+ ECHO "RECOVER DEVICE MACROLIB" ;
+
+ END: ;
+
+QUIT .

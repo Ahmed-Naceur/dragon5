@@ -1,0 +1,71 @@
+*----
+*  TEST CASE TDCM52
+*  MACROSCOPIC CROSS SECTIONS
+*  Benchmark VV1K3D WITH MOC
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST GEOM TRACK MACRO PIJ FLUX ; 
+MODULE GEO: G2S: SALT: MCCGT: MAC: ASM: FLU: GREP: END: ;
+SEQ_ASCII Fic_SAL ;             
+SEQ_ASCII VV1K2D.ps :: FILE './VV1K2D.ps' ;             
+SEQ_BINARY TRACK_FIL ;
+REAL Kinf ;
+INTEGER an2d := 6 ;
+REAL densur := 15.0 ;
+PROCEDURE assertS ;
+
+GEOM := GEO: :: 
+   HEX 169
+   EDIT 2
+   HBC COMPLETE ALBE 0.0
+   SIDE 13.6255 
+   MIX 
+   2 1 1 1 1 1 1 1 4 1 4 1 4 1 4 1 4 1 4 3 1 1
+   3 1 1 3 1 1 3 1 1 3 1 1 3 1 1 1 1 1 1 1 1
+   1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 3 2 1 4 1 4
+   1 2 3 1 4 1 2 3 1 3 2 1 4 1 4 1 2 3 1 3 2 1 4
+   5 4 1 3 1 3 5 3 1 3 1 4 5 3 1 3 1 4 5 4 1 3 1 3 
+   5 3 1 3 1 4 5 4 1 3 1 3 5 5 5 5 5 5 5 5 5 5
+   5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 
+   5 5 5 5 5 5 5 5
+;
+Fic_SAL VV1K2D.ps := G2S: GEOM :: DRAWMIX ;
+*----
+* Macroscopic XS
+*----
+MACRO := MAC: ::
+     EDIT 2 NGRO 1 NMIX 21 NIFI 1
+     READ INPUT
+     MIX 1 (*FUEL*)
+        TOTAL 0.3652        SCAT 1 1 0.3234
+        NUSIGF 0.045        CHI 1.0
+     MIX 2 (*PRESSURE TUBE*)
+        TOTAL 0.4029        SCAT 1 1 0.4000
+     MIX 3 (*FUEL*)
+        TOTAL 0.3552        SCAT 1 1 0.3100
+        NUSIGF 0.041        CHI 1.0
+     MIX 4 (*PRESSURE TUBE*)
+        TOTAL 0.4029        SCAT 1 1 0.4000
+     MIX 5 (*H2O*)
+        TOTAL 0.3683        SCAT 1 1 0.3661
+;
+*----
+* Perform tracking
+*----
+TRACK TRACK_FIL := SALT: Fic_SAL ::
+     EDIT 1
+     TISO <<an2d>> <<densur>> LONG ;
+TRACK := MCCGT: TRACK TRACK_FIL ::
+  CACB 4 AAC 80 TMT EPSI 1E-5 MCU 100000 ;
+*----
+* Compute  flux
+*----
+PIJ := ASM: MACRO TRACK TRACK_FIL :: ARM ;
+FLUX := FLU: PIJ MACRO TRACK TRACK_FIL ::
+  TYPE K ;
+GREP: FLUX :: GETVAL 'K-INFINITY  ' 1 1 1 >>Kinf<< ;
+ECHO "@@@ Kinf=" Kinf ;
+assertS FLUX :: 'K-EFFECTIVE' 1 1.000605 ;
+ECHO "test TDCM52 completed" ;
+END: ;

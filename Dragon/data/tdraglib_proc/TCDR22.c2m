@@ -1,0 +1,208 @@
+*----
+*  TEST CASE TRDR22
+*  17 X 17 PWR VOIDED ASSEMBLY
+*  172-GROUP JEF2.2 DRAGLIB
+*  Author        : Alain Hebert (2019)
+*
+*  REF: none
+*
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  ASSMB DISCR LIBRARY CP CALC OUT SPHGEOM MTRACK MACRO MACRO2 SYS FLUX
+  EDIT ;
+MODULE
+  LIB: GEO: SYBILT: SHI: ASM: FLU: EDI: FLUD: MAC: DELETE: UTL: BIVACT:
+  BIVACA: SPH: OUT: ERROR: END: ;
+PROCEDURE assertS ;
+*----
+*  Microscopic cross sections from Jef 2.2 Draglib
+*----
+LIBRARY := LIB: ::
+  NMIX 8 CTRA WIMS ANIS 2
+  MIXS LIB: DRAGON FIL: DLIB_J2
+  MIX 1 579.9
+    H1H2O    = H1_H2O   4.76690E-2   O16H2O   = O16      2.38345E-2
+    B10      = B10      4.71444E-4   B11      = B11      1.90959E-3
+  MIX 2 579.9                        O16      = O16      3.06711E-4
+    Cr52     = Cr52     7.54987E-5   Fe56     = Fe56     1.47624E-4
+    Zr91     = Zr0      4.18621E-2
+  MIX 3 579.9
+    H1H2O    = H1_H2O   4.65292E-2   O16H2O   = O16      2.32646E-2
+                                     Cr52     = Cr52     4.79927E-5
+    Fe56     = Fe56     4.45845E-5   Ni58     = Ni58     1.13521E-4
+                                     MoNat    = Mo95     4.03755E-6
+                                     Al27     = Al27     2.35231E-6
+    Mn55     = Mn55     4.15901E-7
+    B10      = B10      4.60867E-6   B11      = B11      1.86674E-5
+    Zr91     = Zr0      8.92427E-4
+  MIX 4 579.9                        O16      = O16      2.87335E-4
+    Cr52     = Cr52     7.07291E-5   Fe56     = Fe56     1.38298E-4
+    Zr91     = Zr0      3.92175E-2
+  MIX 5 579.9
+    H1H2O    = H1_H2O   4.71346E-2   O16H2O   = O16      2.35673E-2
+                                     Cr52     = Cr52     2.24991E-5
+    Fe56     = Fe56     2.09013E-5   Ni58     = Ni58     5.32188E-5
+                                     MoNat    = Mo95     1.89281E-6
+                                     Al27     = Al27     1.10277E-6
+    Mn55     = Mn55     1.94976E-7
+    B10      = B10      4.66484E-6   B11      = B11      1.88950E-5
+    Zr91     = Zr0      4.18372E-4
+  MIX 6 579.9
+    H1H2O    = H1_H2O   4.71676E-2   O16H2O   = O16      2.35838E-2
+                                     Cr52     = Cr52     2.11122E-5
+    Fe56     = Fe56     1.96130E-5   Ni58     = Ni58     4.99383E-5
+                                     MoNat    = Mo95     1.77614E-6
+                                     Al27     = Al27     1.03479E-6
+    Mn55     = Mn55     1.82957E-7
+    B10      = B10      4.66791E-6   B11      = B11      1.89074E-5
+    Zr91     = Zr0      3.92583E-4
+  MIX 7 579.9
+    H1H2O    = H1_H2O   4.72020E-2   O16H2O   = O16      2.36010E-2
+                                     Cr52     = Cr52     1.96591E-5
+    Fe56     = Fe56     1.82630E-5   Ni58     = Ni58     4.65011E-5
+                                     MoNat    = Mo95     1.65389E-6
+                                     Al27     = Al27     9.63569E-7
+    Mn55     = Mn55     1.70365E-7
+    B10      = B10      4.67110E-6   B10      = B10      1.89203E-5
+    Zr91     = Zr0      3.65562E-4
+  MIX 8 933.6                        O16      = O16      4.49355E-2
+    U235     = U235     7.39237E-4 1 
+    U238     = U238     2.17285E-2 1 
+  ;
+*----
+*  Geometry ASSMB : a 17 X 17 normal PWR assembly
+*  contains  C1 : cell without fuel
+*            C2 : normal fuel cell
+*            C3 : peripheral cell
+*            C4 : corner cell
+*----
+ASSMB := GEO: :: CAR2D 9 9
+  X- DIAG X+ REFL Y- SYME Y+ DIAG
+  CELL C1 C2 C2 C1 C2 C2 C1 C2 C3
+          C2 C2 C2 C2 C2 C2 C2 C3
+             C2 C2 C2 C2 C2 C2 C3
+                C1 C2 C2 C1 C2 C3
+                   C2 C2 C2 C2 C3
+                      C1 C2 C2 C3
+                         C2 C2 C3
+                            C2 C3
+                               C4
+  MERGE 1  3 12 11 12 12 11 12 15
+           4  6  5  6  6  5  6  8
+             13  5  6  6  5  6  8
+                 2  5  5 10  5  8
+                   13  5  5  6  8
+                       2  5  7  8
+                         13  7  8
+                            14  8
+                                9
+  TURN  H  H  B  H  H  B  H  H  A
+           H  G  G  H  G  G  H  A
+              A  E  E  F  E  E  A
+                 H  H  F  H  H  A
+                    H  E  G  H  A
+                       H  H  A  A
+                          H  A  A
+                             A  A
+                                A
+  ::: C1 := GEO: CARCEL 2
+    MESHX 0.0 1.26472 MESHY 0.0 1.26472
+    RADIUS 0.0 0.572435 0.613142  MIX 1 2 3 ;
+  ::: C2 := GEO: C1  RADIUS 0.0 0.412660 0.474364  MIX 8 4 5 ;
+  ::: C3 := GEO: C2  MESHX 0.0 1.31472 MIX 8 4 6 ;
+  ::: C4 := GEO: C3  MESHY 0.0 1.31472  MIX 8 4 7 ;
+  ;
+*----
+*  Self-Shielding calculation SYBIL
+*  Transport calculation      SYBIL
+*  Flux calculation for P1 homogeneous leakage
+*----
+DISCR := SYBILT: ASSMB ::
+  TITLE 'TCDR02: 17 X 17 MULTICELL PWR BENCHMARK WITHOUT POISON'
+  MAXR 400 QUA2 6 3 ;
+LIBRARY := SHI: LIBRARY DISCR :: LJ ;
+ASSMB DISCR := DELETE: ASSMB DISCR ;
+*----
+*  New lattice geometry with VOID boundary condition
+*----
+ASSMB := GEO: :: CAR2D 9 9
+  X- DIAG X+ VOID Y- SYME Y+ DIAG
+  CELL C1 C2 C2 C1 C2 C2 C1 C2 C3
+          C2 C2 C2 C2 C2 C2 C2 C3
+             C2 C2 C2 C2 C2 C2 C3
+                C1 C2 C2 C1 C2 C3
+                   C2 C2 C2 C2 C3
+                      C1 C2 C2 C3
+                         C2 C2 C3
+                            C2 C3
+                               C4
+  ::: C1 := GEO: CARCEL 2
+    MESHX 0.0 1.26472 MESHY 0.0 1.26472
+    RADIUS 0.0 0.572435 0.613142  MIX 1 2 3 ;
+  ::: C2 := GEO: C1  RADIUS 0.0 0.412660 0.474364  MIX 8 4 5 ;
+  ::: C3 := GEO: C2  MESHX 0.0 1.31472 MIX 8 4 6 ;
+  ::: C4 := GEO: C3  MESHY 0.0 1.31472  MIX 8 4 7 ;
+  ;
+DISCR := SYBILT: ASSMB ::
+  TITLE 'TCDR02: 17 X 17 MULTICELL PWR BENCHMARK WITHOUT POISON'
+  MAXR 400 QUA2 6 3 ;
+CP := ASM: LIBRARY DISCR :: ARM ;
+CALC := FLU: CP LIBRARY DISCR ::
+  TYPE K P1 SIGS ;
+assertS CALC :: 'K-EFFECTIVE' 1 0.4551677 ;
+
+*----
+*  Editing using SPH model for transport-diffusion with flux-volume
+*  normalization
+*----
+OUT := EDI: LIBRARY DISCR CALC ASSMB ::
+  EDIT 4 UPS SAVE MICR RES MERGE CELL COND 4.0
+  ;
+
+*----
+* TRANSPORT-DIFFUSION SPH EQUIVALENCE IN NON-FUNDAMENTAL MODE
+*----
+SPHGEOM := GEO: :: CAR2D 9 9
+  X- DIAG X+ ALBE 1 Y- SYME Y+ DIAG
+  MIX   1  2  3  4  5  6  7  8  9
+          10 11 12 13 14 15 16 17
+             18 19 20 21 22 23 24
+                25 26 27 28 29 30
+                   31 32 33 34 35
+                      36 37 38 39
+                         40 41 42
+                            43 44
+                               45
+  MESHX 0.0 1.26471996 2.52943993 3.79415989 5.05887985
+        6.32359982 7.58831978 8.85303974 10.1177597 11.4324799
+  MESHY 0.0 1.26471996 2.52943993 3.79415989 5.05887985
+        6.32359982 7.58831978 8.85303974 10.1177597 11.4324799
+;
+MTRACK := BIVACT: SPHGEOM :: DUAL (*IELEM=*) 1 (*ICOL=*) 1 ;
+MACRO := OUT :: STEP UP 'REF-CASE0001' STEP UP 'MACROLIB' ;
+*----
+* Set physical albedos
+*----
+MACRO := MAC: MACRO :: ALBP 1 0.0 0.0 ;
+*----
+* Perform SPH equivalence
+*----
+MACRO2 := SPH: MACRO MTRACK :: EDIT 2 ITER 1.0E-7 ;
+*----
+* Verification calculation
+*----
+SYS := BIVACA: MACRO2 MTRACK ;
+FLUX := FLUD: SYS MTRACK :: EDIT 2 ADI 20 ACCE 5 3 ;
+EDIT := OUT: FLUX SPHGEOM MACRO2 MTRACK ::
+      EDIT 0 INTG MIX ;
+
+ECHO "Error statistics after correction" ;
+ERROR: MACRO EDIT :: HREA 'NFTOT' ;
+
+assertS FLUX :: K-EFFECTIVE 1 0.4551687 ;
+
+ECHO "test TCDR22 completed" ;
+END: ; 
+QUIT "LIST" .

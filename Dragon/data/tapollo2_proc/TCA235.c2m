@@ -1,0 +1,322 @@
+*----
+*
+*  TEST CASE TCA235
+*  SIMPLE 5 X 5 PWR ASSEMBLY WITH SYBIL
+*  CEA93V4 LIBRARY APOLIB-2 FORMAT
+*  MULTI-PARAMETER SAPHYB GENERATION FOR COCAGNE
+*
+*  Author: A. Hebert
+*
+*----
+*  Define STRUCTURES and MODULES used
+*----
+PARAMETER  SAPOBJ :: ::: XSM_FILE SAPOBJ ; ;
+REAL POW := 2.7236364E16 ;
+REAL COTE := 1.26518 ;
+REAL LAME := 1.31518 ;
+REAL evobeg evoend VOL_ASS NORM_FCT1 NORM_FCT2 ;
+REAL step2 step3 step4 step5 := 9.375 18.75 37.5 75.0 ;
+REAL BoronCont := 600.0E-6 ;
+INTEGER istep ;
+LINKED_LIST LIBRARY LIBRARY2 ASSMB TRACK SYS FLUX BURNUP EDIT SAPMIL
+            SPHGEOM MTRACK MACROLIB FLUX1 ;
+MODULE LIB: GEO: SYBILT: BIVACT: USS: ASM: FLU: EDI: DELETE: EVO: SAP:
+       SPH: UTL: MODUL1: END: ;
+PROCEDURE assertS ;
+*
+LIBRARY := LIB: ::
+ EDIT 3
+ DEPL LIB: APLIB2 FIL: CEA93V4 CHAIN
+ U234     FROM N2N      1.0000E+00 U235
+ U235     FROM NG       1.0000E+00 U234
+ U236     FROM NG       1.0000E+00 U235
+ U238
+ NP237    FROM NG       1.0000E+00 U236
+ PU238    FROM NG       1.0000E+00 NP237    DECAY    1.0000E+00 CM242
+ PU239    FROM NG       1.0000E+00 PU238
+               DECAY    1.0000E+00 CM243    NG       1.0000E+00 U238
+ PU240    FROM NG       1.0000E+00 PU239    DECAY    1.0000E+00 CM244
+ PU241    FROM NG       1.0000E+00 PU240
+ PU242    FROM NG       1.0000E+00 PU241    NG       1.4160E-01 AM241
+ AM241    FROM DECAY    1.0000E+00 PU241
+ AM242M   FROM NG       1.1500E-01 AM241
+ AM243    FROM NG       1.0000E+00 PU242
+ CM242    FROM NG       7.4340E-01 AM241
+ CM243    FROM NG       1.0000E+00 CM242
+ CM244    FROM NG       1.0000E+00 CM243    NG       1.0000E+00 AM243
+
+ I135PF
+ XE135PF  FROM DECAY    1.0000E+00 I135PF
+ ND143PF
+ ND144PF  FROM NG       1.0000E+00 ND143PF
+ ND145PF  FROM NG       1.0000E+00 ND144PF
+ ND146PF  FROM NG       1.0000E+00 ND145PF
+ ND147PF  FROM NG       1.0000E+00 ND146PF
+ ND148PF  FROM NG       1.0000E+00 ND147PF
+ PM147PF  FROM DECAY    1.0000E+00 ND147PF
+ PM148PF  FROM NG       5.3000E-01 PM147PF
+ PM148MPF FROM NG       4.7000E-01 PM147PF
+ PM149PF  FROM NG       1.0000E+00 PM148PF  NG       1.0000E+00 PM148MPF
+ SM149PF  FROM DECAY    1.0000E+00 PM149PF
+ SM150PF  FROM NG       1.0000E+00 SM149PF
+ SM151PF  FROM NG       1.0000E+00 SM150PF
+ SM152PF  FROM NG       1.0000E+00 SM151PF
+ EU153PF  FROM NG       1.0000E+00 SM152PF
+ EU154PF  FROM NG       1.0000E+00 EU153PF
+ EU155PF  FROM NG       1.0000E+00 EU154PF
+ MO95PF TC99PF RH103PF RH105PF
+ AG109PF XE131PF CS133PF
+ PSU5U PSU8U PSP9U PSP0U PSP1U PSP2U
+ ENDCHAIN
+*
+ NMIX 10   (*MAXIMUM OF MATERIAL MIXTURES*)
+ CTRA APOL (*APOLLO TYPE TRANSPORT CORRECTION*)
+ SUBG      (*COMPUTE PHYSICAL PROBABILITY TABLES*)
+*
+ MIXS LIB: APLIB2 FIL: CEA93V4
+ MIX 1 579.16 (*Water*)
+  H2O      = H2O_3_P5 2.3840E-02
+  B10      = B10_3    4.7664E-06
+  B11      = B11_3    1.9065E-05
+ MIX 2 579.16 (*Tube*)
+  FE54     = FE54_3 8.5594E-06
+  FE56     = FE56_4 1.3536E-04
+  FE57     = FE57_3 3.2467E-06
+  FE58     = FE58_3 4.1321E-07
+  CR50     = CR50_3 3.2834E-06
+  CR52     = CR52_3 6.3244E-05
+  CR53     = CR53_3 7.1706E-06
+  CR54     = CR54_3 1.7813E-06
+  O16      = O16_6  3.0671E-04
+  ZR       = ZR_4   4.2211E-02 2 SHIB ZRSS_4
+ MIX 3 579.16 (*TubeMode*)
+  H2O      = H2O_3_P5 2.2796E-02
+  B10      = B10_3    4.5913E-06
+  B11      = B11_3    1.8365E-05
+  FE54     = FE54_3   1.1921E-04
+  FE56     = FE56_4   1.8852E-03
+  FE57     = FE57_3   4.5218E-05
+  FE58     = FE58_3   5.7550E-06
+  NI58     = NI58_3   5.4208E-04
+  NI60     = NI60_3   2.0724E-04
+  NI61     = NI61_3   8.9725E-06
+  NI62     = NI62_3   2.8506E-05
+  NI64     = NI64_3   7.2256E-06
+  CR50     = CR50_3   3.1782E-05
+  CR52     = CR52_3   6.1219E-04
+  CR53     = CR53_3   6.9409E-05
+  CR54     = CR54_3   1.7243E-05
+  MN55     = MN55_3   2.8729E-05
+  SI       = SI_3     2.4816E-05
+  AL27     = AL27_4   1.1264E-05
+  MO95     = MO95_4   1.9533E-05
+  TI       = TI_2     1.1174E-05
+  CO59     = CO59_2   5.1569E-07
+  NB93     = NB93_2   3.3858E-05
+ MIX 4 923.16 (*FuelMed*)
+  U238     = U238_4 2.1779E-02 1 SHIB U238SS_3 IRSET 0.0 38
+  U236     = U236_2 4.3339E-06 1 SHIB U236SS_3 IRSET 0.0 38
+  U235     = U235_4 7.0598E-04 1 SHIB U235SS_4 IRSET 0.0 38
+  U234     = U234_2 5.4335E-06
+  O16      = O16_6  4.4990E-02
+  I135     = I135PF_1  0.0
+  XE135    = XE135PF_1 0.0
+  PM147    = PM147PF_1 0.0
+  PM148    = PM148PF_1 0.0
+  PM148M   = PM148MPF_1 0.0
+  PM149    = PM149PF_1 0.0
+  SM149    = SM149PF_1 0.0
+ MIX 5 608.16 (*CladMed*)
+  FE54     = FE54_3 7.7670E-06
+  FE56     = FE56_4 1.2283E-04
+  FE57     = FE57_3 2.9461E-06
+  FE58     = FE58_3 3.7496E-07
+  CR50     = CR50_3 2.9794E-06
+  CR52     = CR52_3 5.7389E-05
+  CR53     = CR53_3 6.5067E-06
+  CR54     = CR54_3 1.6164E-06
+  O16      = O16_6  2.7831E-04
+  ZR       = ZR_4   3.8303E-02 3 SHIB ZRSS_4
+ MIX 6 579.16 (*WaterMed*)
+  H2O      = H2O_3_P5 2.3700E-02
+  B10      = B10_3    4.7543E-06
+  B11      = B11_3    1.9017E-05
+  FE54     = FE54_3   5.4285E-06
+  FE56     = FE56_4   8.5845E-05
+  FE57     = FE57_3   2.0591E-06
+  FE58     = FE58_3   2.6206E-07
+  NI58     = NI58_3   1.7511E-04
+  NI60     = NI60_3   6.6944E-05
+  NI61     = NI61_3   2.8983E-06
+  NI62     = NI62_3   9.2080E-06
+  NI64     = NI64_3   2.3341E-06
+  CR50     = CR50_3   4.5576E-06
+  CR52     = CR52_3   8.7790E-05
+  CR53     = CR53_3   9.9535E-06
+  CR54     = CR54_3   2.4726E-06
+  MN55     = MN55_3   9.3942E-07
+  SI       = SI_3     1.8376E-06
+  AL27     = AL27_4   5.3133E-06
+  MO95     = MO95_4   9.2140E-06
+  TI       = TI_2     5.2710E-06
+  CO59     = CO59_2   2.4326E-07
+  NB93     = NB93_2   1.5971E-05
+ MIX 7 COMB 4 1.0 (*COMB02*)
+ MIX 8 COMB 4 1.0 (*COMB03*)
+ MIX 9 COMB 4 1.0 (*COMB04*)
+ MIX 10 COMB 4 1.0 (*COMB05*)
+;
+ASSMB := GEO: :: CAR2D 3 3 (*ASSEMBLAGE 5 X 5*)
+          X- DIAG X+ REFL
+          Y- SYME Y+ DIAG
+          MIX C1 C2 C4
+                 C3 C5
+                    C6
+          ::: C1 := GEO: CARCEL 2 (*CELLULE SANS COMBUSTIBLE*)
+                MESHX 0.0 <<COTE>>
+                MESHY 0.0 <<COTE>>
+                RADIUS 0.0 5.72460E-01 6.13180E-01
+                MIX 1 2 3
+          ;
+          ::: C2 := GEO: C1 (*CELLULE AVEC COMBUSTIBLE*)
+                RADIUS 0.0 4.12360E-01 4.75880E-01
+                MIX 4 5 6
+          ;
+          ::: C3 := GEO: C2 (*CELLULE AVEC COMBUSTIBLE*)
+                MIX 8 5 6
+          ;
+          ::: C4 := GEO: C2 (*CELLULE AVEC COMBUSTIBLE*)
+                MIX 7 5 6
+                MESHX 0.0 <<LAME>>
+          ;
+          ::: C5 := GEO: C2 (*CELLULE AVEC COMBUSTIBLE*)
+                MIX 9 5 6
+                MESHX 0.0 <<LAME>>
+          ;
+          ::: C6 := GEO: C2 (*CELLULE AVEC COMBUSTIBLE*)
+                MIX 10 5 6
+                MESHX 0.0 <<LAME>>
+                MESHY 0.0 <<LAME>>
+          ;
+;
+TRACK := SYBILT: ASSMB ::
+     EDIT 1
+     MAXR 40  (*MAXIMUM OF 40 REGIONS*)
+     MAXZ 100000
+     TITLE 'SMALL SAPHYB CONSTRUCTION'
+     QUA2 6 6
+     DP00 ;
+*
+SAPOBJ := SAP: LIBRARY ::
+     EDIT 3
+     COMM  'First line of comment'
+           'Second line of comment'
+     ENDC
+     NOML  'Test saphyb library'
+     PARA  'BORON CONC.'      'BCON' VALE FLOT
+     PARA  'FUEL TEMP.'       'FTMP' TEMP LIBRARY2 4
+     PARA  'WATER TEMP.'      'WTMP' TEMP LIBRARY2 6
+     PARA  'BURNUP'           'BURN' IRRA
+     PARA  'FLUENCE'          'FLUB' FLUB
+     PARA  'GLOBAL_POWER'     'PUIS' PUIS
+     ISOT  FISS I135 XE135 PM147 PM148 PM148M PM149 SM149
+     MACR  'MACR' TOUT
+     MACR  'MACT' REST
+     REAC  TOTA ABSO SNNN FISS CHI NUFI ENER FUIT DIFF SELF PROF TRAN
+     LOCA  'BURN_LOCAL'         'BURN' IRRA
+     LOCA  'FLUE_LOCAL'         'FLUB' FLUB
+     LOCA  'DENS_NOYAUX_LOURDS' 'MASS' MASL
+     LOCA  'XENON'              'XE'   CONC XE135
+     LOCA  'EQUIVALENCE'        'SPH'  EQUI
+     LOCA  'TEMPERATURE'        'MTMP' TEMP
+     NAME  ECell11 ECell21 ECell31 ECell22 ECell32 ECell33
+;
+*
+LIBRARY2 := USS: LIBRARY TRACK :: EDIT 2 ;
+*
+SYS := ASM: LIBRARY2 TRACK :: PIJ ;
+FLUX := FLU: LIBRARY2 TRACK SYS :: TYPE B B1 SIGS ;
+SYS := DELETE: SYS ;
+
+EVALUATE VOL_ASS := COTE 5.0 * ;
+EVALUATE VOL_ASS := VOL_ASS VOL_ASS * ;
+EVALUATE NORM_FCT1 := POW 1.60207E-13 * VOL_ASS / ;
+
+EVALUATE NORM_FCT2 := NORM_FCT1 2.8473 / 1.00336 / ;
+PRINT 'volume_assemblage=' VOL_ASS 'cm**3  in-fuel power=' NORM_FCT2
+      'MW/tonne=' ;
+PRINT 'normalization power=' NORM_FCT1 'W/CC' ;
+EVALUATE evoend := 0.0 ;
+EVALUATE istep := 1 ;
+WHILE evoend step2 NORM_FCT2 / < DO
+
+  EVALUATE evobeg := evoend ;
+  EVALUATE evoend := step2 NORM_FCT2 / ;
+  PRINT 'Burnup step' istep 'between' evobeg 'and' evoend 'day:' ;
+  IF istep 1 = THEN
+    BURNUP LIBRARY2 := EVO: LIBRARY2 TRACK FLUX :: EDIT 3 RUNG
+         DEPL <<evobeg>> <<evoend>> DAY W/CC <<NORM_FCT1>>
+         RUNG EPS2 100.0 EXPM 1.0E15 ;
+  ELSE
+    BURNUP LIBRARY2 := EVO: BURNUP LIBRARY2 TRACK FLUX :: EDIT 3
+      DEPL <<evobeg>> <<evoend>> DAY W/CC <<NORM_FCT1>>
+      RUNG EXTR EPS2 100.0 EXPM 1.0E15 ;
+  ENDIF ;
+
+  SYS := ASM: LIBRARY2 TRACK :: PIJ ;
+  FLUX := FLU: FLUX LIBRARY2 TRACK SYS :: TYPE B B1 SIGS ;
+  SYS := DELETE: SYS ;
+
+  PRINT 'Edition at' evoend 'DAY  burnup=' step2 'MWday/tonne=' ;
+
+    EDIT := EDI: LIBRARY2 TRACK FLUX ASSMB :: EDIT 0
+      COND 4.0
+      MERGE CELL
+      MICR ALL
+      SAVE ON 'EDITCDAT   1'
+      ;
+    IF istep 1 = THEN
+      SPHGEOM := EDIT :: STEP UP 'MACRO-GEOM' ;
+      MTRACK := BIVACT: SPHGEOM :: DUAL (*IELEM=*) 1 (*ICOL=*) 3 ;
+    ENDIF ;
+    EDIT := SPH: EDIT MTRACK :: EDIT 3 ;
+
+    BURNUP LIBRARY2 := EVO: BURNUP LIBRARY2 TRACK FLUX :: EDIT 3
+                       SAVE <<evoend>> DAY W/CC <<NORM_FCT1>> ;
+
+    SAPOBJ := SAP: SAPOBJ EDIT BURNUP LIBRARY2 FLUX ::
+      EDIT 3
+      SET <<evoend>> DAY
+      BCON <<BoronCont>>
+      ;
+
+    EDIT := DELETE: EDIT ;
+
+  EVALUATE step2 step3 step4 step5 := step3 step4 step5 step2 ;
+
+  EVALUATE istep := istep 1 + ;
+
+ENDWHILE ;
+
+BURNUP LIBRARY2 := EVO: BURNUP LIBRARY2 TRACK FLUX :: EDIT 2
+        SAVE <<evoend>> DAY W/CC <<NORM_FCT1>> ;
+
+assertS FLUX :: K-INFINITY 1 1.200448 ;
+SAPMIL := SAPOBJ :: STEP UP 'calc       3' STEP UP 'mili       4' ;
+
+UTL: SAPOBJ :: DIR ;
+*
+*************************************************
+* Verification calculation at 38.681076 MWd/tonne
+*************************************************
+*
+*MACROLIB := MODUL1: SAPOBJ :: EDIT 3 CALC 3 ;
+MACROLIB := SPH: SAPOBJ :: EDIT 3 MACRO
+                 SPRD EQUI 'SPH' STEP AT 3 ;
+SYS := ASM: MACROLIB MTRACK :: ARM ;
+FLUX1 := FLU: MACROLIB MTRACK SYS ::
+         TYPE K LKRD IDEM EXTE 100 5.0E-8 ;
+assertS FLUX1 :: 'K-EFFECTIVE' 1 1.0 ;
+SPHGEOM MTRACK SYS FLUX1 := DELETE: SPHGEOM MTRACK SYS FLUX1 ;
+
+END: ;

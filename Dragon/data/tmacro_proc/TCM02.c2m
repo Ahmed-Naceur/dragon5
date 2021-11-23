@@ -1,0 +1,78 @@
+*----
+*  TEST CASE TCM02
+*  MACROSCOPIC CROSS SECTIONS
+*  FIXED SOURCE PROBLEM
+*  FOR 1/8 7X7 PWR ASSEMBLY
+*
+*  REF: Z. Stankovski, Nucl. Sci. Eng. 92, 255 (1986)
+*       R. Roy et al. Advances in Mathematics, Computation
+*       and Reactor Physics, April 28 - May 2 1991, Pittsburgh
+*
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST 
+  PWR TRACK MACRO SYS FLUX EDITION ;
+SEQ_BINARY 
+  PWRTRK ;
+MODULE 
+  GEO: EXCELT: MAC: ASM: FLU: EDI: END: DELETE: ;
+PROCEDURE assertV ;
+*----
+* Macroscopic XS
+*----
+MACRO := MAC: ::
+  NGRO 1 NMIX 3
+  READ INPUT
+  MIX 1 TOTAL  1.250  SCAT 1 1  1.242  FIXE 1.000
+  MIX 2 TOTAL  0.625  SCAT 1 1  0.355  FIXE 0.000
+  MIX 3 TOTAL 14.000  SCAT 1 1  0.000  FIXE 0.000
+  ;
+*----
+*  Geometry : PWR - Cartesian 4X4
+*  Tracking : EXCELT
+*----
+PWR := GEO: :: CAR2D 4 4
+  X- DIAG  X+ REFL Y- SYME  Y+ DIAG
+  CELL   P F F F
+           F F F
+             F F
+               F 
+  ::: F := GEO: CARCEL 1
+    RADIUS 0.000 0.450 MIX 2  1
+    MESHX -0.625  0.625 SPLITX 2
+    MESHY -0.625  0.625 SPLITY 2               
+    ;
+  ::: P := GEO: F
+    MIX  3  1  SPLITR 3 
+    ;
+  ;
+TRACK PWRTRK := EXCELT: PWR ::
+  TITLE 'TCM02: STANKOVSKI PWR ASSEMBLY'
+  MAXR 58 CUT 1.E-4 TRAK TSPC 12 8.0
+  ;
+*---- 
+*  Solution : FIXED SOURCE PROBLEM
+*  Editing  : Absorption rates taken from STANKOVSKI
+*    cell 1 = 0.83799 0.00689 cell 2 = 0.73979 0.03571
+*    cell 3 = 0.82218 0.03991 cell 4 = 0.85166 0.04104
+*    cell 5 = 0.78722 0.03824 cell 6 = 1.67049 0.08092
+*    cell 7 = 1.71199 0.08252 cell 8 = 0.85350 0.04120
+*    cell 9 = 1.72122 0.08328 cell 10= 0.86023 0.04174
+*    NOTE: There is a factor 4.0 with the EDI: results of DRAGON
+*----
+SYS := ASM: MACRO TRACK PWRTRK ;
+FLUX := FLU:       SYS MACRO TRACK ::
+  TYPE S ;
+assertV FLUX :: 'FLUX' (*GROUP*) 1 (*REGION*) 10 5.300486 ;
+EDITION := EDI: MACRO TRACK FLUX ::
+  EDIT 2 SAVE
+  MERGE REGION  1  1  1  2  3  4  3  4  5  6  5  6  7  8  7  8
+  9 10  9 10  9 10 11 12 11 12 11 12 11 12 13 14 13 14 13 14 13 14
+  15 16 15 16 15 16 17 18 17 18 17 18 17 18
+  19 20 19 20 19 20
+  ;
+PWRTRK := DELETE: PWRTRK ;
+ECHO "test TCM02 completed" ;
+END: ;
+QUIT "LIST" .

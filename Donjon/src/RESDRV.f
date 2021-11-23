@@ -1,0 +1,375 @@
+*DECK RESDRV
+      SUBROUTINE RESDRV(IPMAP,IPMTX,NFUEL,LX,LY,LZ,IMPX,IGEO,NCH,NB,
+     1 NTOT,NCOMB,NSIMS,NASB,NAX,NAY,NIS,IPCPO)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Read and validate the fuel-map specification from the input file.
+*
+*Copyright:
+* Copyright (C) 2007 Ecole Polytechnique de Montreal.
+*
+*Author(s): 
+* D. Sekki and V. Descotes
+*
+*Update(s):
+* R. Chambon (may 2014)
+*
+*Parameters: input
+* IPMAP  pointer to fuel-map information.
+* IPMTX  pointer to matex information.
+* NFUEL  number of fuel types.
+* LX     number of elements along x-axis in geometry.
+* LY     number of elements along y-axis in geometry.
+* LZ     number of elements along z-axis in geometry.
+* IMPX   printing index (=0 for no print).
+* IGEO   type of geometry (CAR3D=7 or HEXZ=9)
+*
+*Parameters: output
+* NCH    number of reactor channels.
+* NB     number of fuel bundles per channel.
+* NTOT   total number of fuel bundles.
+* NCOMB  number of combustion zones.
+* NSIMS  assembly layout in SIM: module
+* NASB   total number of assembly
+* NAX    number of assembly along x-direction
+* NAY    number of assembly along y-direction
+* NIS    number of particularized isotopes
+* IPCPO  pointer to multicompo information
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      TYPE(C_PTR) IPMAP,IPMTX,IPCPO
+      INTEGER NFUEL,LX,LY,LZ,IMPX,IGEO,NCH,NB,NTOT,NCOMB,NSIMS,NASB,NAX,
+     1 NAY,NIS
+*----
+*  LOCAL VARIABLES
+*----
+      CHARACTER TEXT*12,TEXT4*4,TEXT8*8
+      LOGICAL LGEOM,LXNAME,LYNAME,LASBL,LCPO,LNAP
+      DOUBLE PRECISION DFLOT
+      REAL WEIGHT
+*----
+*  ALLOCATABLE ARRAYS
+*----
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: INX,INY,IZONE,IFMIX,
+     1 IASBL,IANX,IANY,NBAX,IBAX
+      INTEGER, ALLOCATABLE, DIMENSION(:,:) :: INH
+      CHARACTER(LEN=8), ALLOCATABLE, DIMENSION(:) :: HFOLLO
+*
+      IMPX=0
+      LGEOM=.TRUE.
+      LASBL=.FALSE.
+      LCPO=.FALSE.
+      IF(C_ASSOCIATED(IPCPO)) LCPO=.TRUE.
+      NCH=0
+      NB=0
+      NCOMB=0
+      NSIMS=0
+      NASB=0
+      NAX=0
+      NAY=0
+      NIS=0
+*----
+*  TYPE OF GEOMETRY
+*----
+      LXNAME=.TRUE.
+      LYNAME=.TRUE.
+      IF (IGEO.EQ.7) THEN
+        LXNAME=.TRUE.
+        LYNAME=.TRUE.
+      ELSEIF (IGEO.EQ.9) THEN
+        LXNAME=.FALSE.
+        LYNAME=.FALSE.
+      ELSE
+        CALL XABORT('@RESDRV: ONLY 3D-CARTESIAN OR 3D HEXAGONAL' 
+     1 //' GEOMETRY EXPECTED')
+      ENDIF
+   10 CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+      IF(ITYP.NE.3)CALL XABORT('@RESDRV: CHARACTER DATA EXPECTED.')
+      IF(IMPX.GE.100) WRITE(6,*)'@RESDRV: Reading Keyword:',TEXT
+      IF(TEXT.EQ.'EDIT')THEN
+*----
+*  PRINTING INDEX
+*----
+        CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+        IF(ITYP.NE.1)CALL XABORT('@RESDRV: INTEGER DATA EXPECTED(1).')
+        IMPX=MAX(0,NITMA)
+        IF(IMPX.GT.4)CALL LCMLIB(IPMTX)
+      ELSE IF(TEXT.EQ.'WEIGHT') THEN
+*----
+*  FUEL WEIGHT
+*----
+        CALL REDGET(ITYP,NB,WEIGHT,TEXT,DFLOT)
+        IF(ITYP.NE.2) CALL XABORT('@RESDRV : REAL DATA '
+     +          //'EXPECTED(1).')
+        IF(WEIGHT.EQ.0.0 ) CALL XABORT('@RESDRV: INVALID'
+     +       //'VALUE FOR FUEL WEIGHT')
+        CALL LCMPUT(IPMAP,'FUEL-WEIGHT',1,2,WEIGHT)
+      ELSE IF(TEXT.EQ.':::') THEN
+*----
+*  FUEL-MAP GEOMETRY
+*----
+        LGEOM=.FALSE.
+        LNAP=.FALSE.
+        CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+        IF(ITYP.NE.3)CALL XABORT('@RESDRV: CHARACTER DATA EXPECTED(5).')
+        IF(TEXT.EQ.'SPLIT-NAP:') THEN
+          LNAP=.TRUE.
+          CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+          IF(ITYP.NE.3)CALL XABORT('@RESDRV: CHARACTER DATA '
+     1    //'EXPECTED(6).')
+        ENDIF   
+        IF(TEXT.NE.'GEO:') CALL XABORT('@RESDRV: EMBEDDED GEO: MODULE '
+     1    //'EXPECTED.')
+*----
+*  CHECK GEOMETRY
+*----
+        CALL RESGEO(IPMAP,IPMTX,LX,LY,LZ,NFUEL,IMPX,IGEO,NX,NY,NZ,NCH,
+     1  NB,NTOT,LNAP,IPCPO)
+      ELSEIF(TEXT.EQ.'NXNAME') THEN
+*----
+*  CHANNEL X-NAMES
+*----
+        IF(IGEO.NE.7) CALL XABORT('RESDRV: CARTESIAN GEOM EXPECTED.')
+        LXNAME=.FALSE.
+        ALLOCATE(INX(NX))
+        DO I=1,NX
+          CALL REDGET(ITYP,NITMA,FLOT,TEXT4,DFLOT)
+          IF(ITYP.NE.3)CALL XABORT('@RESDRV: CHARACTER DATA FOR NXNAME'
+     1    //' EXPECTED.')
+          READ(TEXT4,'(A4)') INX(I)
+        ENDDO
+        CALL LCMPUT(IPMAP,'XNAME',NX,3,INX)
+        DEALLOCATE(INX)
+      ELSE IF(TEXT.EQ.'NYNAME') THEN
+*----
+*  CHANNEL Y-NAMES
+*----
+        IF(IGEO.NE.7) CALL XABORT('RESDRV: CARTESIAN GEOM EXPECTED.')
+        LYNAME=.FALSE.
+        ALLOCATE(INY(NY))
+        DO I=1,NY
+          CALL REDGET(ITYP,NITMA,FLOT,TEXT4,DFLOT)
+          IF(ITYP.NE.3)CALL XABORT('@RESDRV: CHARACTER DATA FOR NYNAME'
+     1    //' EXPECTED.')
+          READ(TEXT4,'(A4)') INY(I)
+        ENDDO
+        CALL LCMPUT(IPMAP,'YNAME',NY,3,INY)
+        DEALLOCATE(INY)
+      ELSE IF(TEXT.EQ.'NHNAME') THEN
+*----
+*  CHANNEL H-NAMES
+*----
+        IF(IGEO.NE.9) CALL XABORT('RESDRV: HEXAGONAL GEOM EXPECTED.')
+        ALLOCATE(INH(2,NX))
+        DO I=1,NX
+          CALL REDGET(ITYP,NITMA,FLOT,TEXT8,DFLOT)
+          IF(ITYP.NE.3)CALL XABORT('@RESDRV: CHARACTER DATA FOR NHNAME'
+     1    //' EXPECTED.')
+          READ(TEXT8,'(2A4)') INH(1,I),INH(2,I)
+        ENDDO
+        CALL LCMPUT(IPMAP,'HNAME',2*NX,3,INH)
+        DEALLOCATE(INH)
+      ELSE IF(TEXT.EQ.'SIM') THEN
+*----
+*  DATA FOR SIM: MODULE
+*----
+        IF(NCH.EQ.0)CALL XABORT('@RESDRV: NO FUEL CHANNELS DEFINED')
+        ALLOCATE(IZONE(NCH))
+        CALL XDISET(IZONE,NCH,0)
+        CALL REDGET(ITYP,LX,FLOT,TEXT,DFLOT)
+        IF(ITYP.NE.1)CALL XABORT('@RESDRV: INTEGER EXPECTED')
+        IF((LX.LE.0).OR.(LX.GE.31))CALL XABORT('@RESDRV: 0<LX<31')
+        CALL REDGET(ITYP,LY,FLOT,TEXT,DFLOT)
+        IF(ITYP.NE.1)CALL XABORT('@RESDRV: INTEGER EXPECTED')
+        IF((LY.LE.0).OR.(LY.GE.31))CALL XABORT('@RESDRV: 0<LY<31')
+        NSIMS=100*LX+LY
+        DO 20 ICH=1,NCH
+        CALL REDGET(ITYP,NITMA,FLOT,TEXT4,DFLOT)
+        IF(ITYP.NE.3)CALL XABORT('@RESDRV: CHARACTER EXPECTED')
+        READ(TEXT4,'(A3)') IZONE(ICH)
+        READ(TEXT4,'(1X,I2,1X)') IND
+        IF((IND.LE.0).OR.(IND.GT.LY))CALL XABORT('@RESDRV: 0<IND<=LY')
+   20   CONTINUE
+        CALL LCMPUT(IPMAP,'S-ZONE',NCH,3,IZONE)
+        DEALLOCATE(IZONE)
+        CALL LCMLEN(IPMAP,'FLMIX',ILONG,ITYLCM)
+        IF(ILONG.EQ.0)CALL XABORT('@RESDRV: MUST DEFINE ::: GEO: BEFOR'
+     >  //'E SIM.')
+        ALLOCATE(IFMIX(NCH*NB))
+        CALL LCMGET(IPMAP,'FLMIX',IFMIX)
+        CALL LCMPUT(IPMAP,'FLMIX-INI',NCH*NB,1,IFMIX)
+        DEALLOCATE(IFMIX)
+      ELSE IF(TEXT.EQ.'ASSEMBLY') THEN
+*----
+*  DATA FOR NAP: MODULE
+*----
+        LASBL=.TRUE.
+        IF(NCH.EQ.0)CALL XABORT('@RESDRV: NO FUEL CHANNELS DEFINED')
+        CALL REDGET(ITYP,NASB,FLOT,TEXT,DFLOT)
+        IF(ITYP.NE.1)CALL XABORT('@RESDRV: INTEGER EXPECTED')
+        CALL REDGET(ITYP,NAX,FLOT,TEXT,DFLOT)
+        IF(ITYP.NE.1)CALL XABORT('@RESDRV: INTEGER EXPECTED')
+        CALL REDGET(ITYP,NAY,FLOT,TEXT,DFLOT)
+        IF(ITYP.NE.1)CALL XABORT('@RESDRV: INTEGER EXPECTED')
+* A-ZONE
+        ALLOCATE(IASBL(NCH))
+        CALL XDISET(IASBL,NCH,0)
+        CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+        IF(TEXT.NE.'A-ZONE')CALL XABORT('@RESDRV: KEYWORD A-ZONE'
+     1    //' EXPECTED.')
+        CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+*       automatic definition
+        IF((ITYP.EQ.3).AND.(TEXT.EQ.'ASBLY')) THEN
+          CALL LCMSIX(IPMAP,'GEOMAP',1)
+          CALL LCMLEN(IPMAP,'A-ZONE',LENGTH,ITYP)
+          IF(NCH.NE.LENGTH) THEN
+            WRITE(6,'(22H @RESDRV: len(A-ZONE)=,I6,5H NCH=,I6)') LENGTH,
+     1      NCH
+            CALL XABORT('@RESDRV: number of ASSEMBLY automaticaly gene'
+     1      //'rated is not equal to NCH')
+          ENDIF
+          CALL LCMGET(IPMAP,'A-ZONE',IASBL)
+          CALL LCMSIX(IPMAP,'GEOMAP',0)
+          CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+*       manual definition
+        ELSEIF(ITYP.EQ.1) THEN
+          DO 30 ICH=1,NCH
+            IF(NITMA.LT.1)CALL XABORT('@RESDRV: INVALID ASSEMBLY'
+     1      //'-ZONE INDEX < 1')
+            IF(NITMA.GT.NASB)CALL XABORT('@RESDRV: INVALID ASSEMBLY'
+     1      //'-ZONE INDEX > NASB')
+            IASBL(ICH)=NITMA
+            CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+   30       CONTINUE
+          IF((ITYP.NE.3).AND.(TEXT.NE.'A-NX')) CALL XABORT('@RESDRV:'
+     1      //'number of ASSEMBLY per row required: A-NX keyword')
+          ALLOCATE(NBAX(NAY))
+          ALLOCATE(IBAX(NAY))
+          DO I=1,NAY
+            CALL REDGET(ITYP,NBAX(I),FLOT,TEXT,DFLOT)
+            IF(ITYP.NE.1) CALL XABORT('@RESDRV: NAY '
+     1      //'integers required after A-NX CARD')
+          ENDDO
+          CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+          IF((ITYP.NE.3).AND.(TEXT.NE.'A-IBX')) CALL XABORT('@RESDRV:'
+     1      //'first column of ASSEMBLY per row required: A-IBX '
+     2      //'keyword')
+          DO I=1,NAY
+            CALL REDGET(ITYP,IBAX(I),FLOT,TEXT,DFLOT)
+            IF(ITYP.NE.1) CALL XABORT('@RESDRV: NAY '
+     1      //'integers required after A-IBX CARD')
+          ENDDO
+          CALL LCMSIX(IPMAP,'GEOMAP',1)
+          CALL LCMPUT(IPMAP,'A-NX',NAY,1,NBAX)
+          CALL LCMPUT(IPMAP,'A-IBX',NAY,1,IBAX)
+          CALL LCMSIX(IPMAP,'GEOMAP',0)
+          DEALLOCATE(NBAX,IBAX)
+          CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+        ELSE
+          CALL XABORT('@RESDRV: INTEGER ASSEMBLY-ZONE INDEX or '
+     1      //'ASBLY keyword EXPECTED.')
+        ENDIF
+        CALL LCMPUT(IPMAP,'A-ZONE',NCH,1,IASBL)
+        DEALLOCATE(IASBL)
+* AXNAME
+        IF(TEXT.NE.'AXNAME')CALL XABORT('@RESDRV: KEYWORD AXNAME'
+     1    //' EXPECTED.')
+        ALLOCATE(IANX(NAX))
+        DO I=1,NAX
+          CALL REDGET(ITYP,NITMA,FLOT,TEXT4,DFLOT)
+          IF(ITYP.NE.3)CALL XABORT('@RESDRV: CHARACTER DATA FOR AXNAME'
+     1    //' EXPECTED.')
+          READ(TEXT4,'(A4)') IANX(I)
+        ENDDO
+        CALL LCMPUT(IPMAP,'AXNAME',NAY,3,IANX)
+        DEALLOCATE(IANX)
+* AYNAME
+        CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+        IF(TEXT.NE.'AYNAME')CALL XABORT('@RESDRV: KEYWORD AYNAME'
+     1    //' EXPECTED.')
+        ALLOCATE(IANY(NAY))
+        DO I=1,NAY
+          CALL REDGET(ITYP,NITMA,FLOT,TEXT4,DFLOT)
+          IF(ITYP.NE.3)CALL XABORT('@RESDRV: CHARACTER DATA FOR AYNAME'
+     1    //' EXPECTED.')
+          READ(TEXT4,'(A4)') IANY(I)
+        ENDDO
+        CALL LCMPUT(IPMAP,'AYNAME',NAY,3,IANY)
+        DEALLOCATE(IANY)
+      ELSE IF(TEXT.EQ.'FOLLOW') THEN
+        CALL REDGET(ITYP,NIS,FLOT,TEXT,DFLOT)
+        IF(ITYP.NE.1) CALL XABORT('@RESDRV: INTEGER EXPECTED')
+        ALLOCATE(HFOLLO(NIS))
+        DO 40 ICH=1,NIS
+        CALL REDGET(ITYP,NITMA,FLOT,HFOLLO(ICH),DFLOT)
+        IF(ITYP.NE.3) CALL XABORT('@RESDRV: CHARACTER EXPECTED')
+   40   CONTINUE
+        CALL LCMPTC(IPMAP,'HFOLLOW',8,NIS,HFOLLO)
+        DEALLOCATE(HFOLLO)
+      ELSE IF(TEXT.EQ.'NCOMB') THEN
+*----
+*  NUMBER OF COMBUSTION ZONES
+*----
+        IF(NCH.EQ.0) CALL XABORT('@RESDRV: NO FUEL CHANNELS DEFINED')
+        ALLOCATE(IZONE(NCH))
+        CALL XDISET(IZONE,NCH,0)
+        CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+        IF((ITYP.EQ.3).AND.(TEXT.EQ.'ALL'))THEN
+          NCOMB=NCH
+          DO 50 ICH=1,NCH
+          IZONE(ICH)=ICH
+   50     CONTINUE
+        ELSEIF((ITYP.EQ.3).AND.(TEXT.EQ.'ASBLY'))THEN
+          IF(.NOT.LASBL) CALL XABORT('@RESDRV: NO ASSEMBLY DEFINED')
+          NCOMB=NASB
+          ALLOCATE(IASBL(NCH))
+          CALL LCMGET(IPMAP,'A-ZONE',IASBL)
+          DO 60 ICH=1,NCH
+          IZONE(ICH)=IASBL(ICH)
+   60     CONTINUE
+          DEALLOCATE(IASBL)
+        ELSEIF(ITYP.EQ.1)THEN
+          IF(NITMA.LT.1)CALL XABORT('@RESDRV: INVALID NCOMB < 1')
+          IF(NITMA.GT.NCH)CALL XABORT('@RESDRV: INVALID NCOMB > NCH')
+          NCOMB=NITMA
+*----
+*  COMBUSTION-ZONE INDICES
+*----
+          CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+          IF(TEXT.NE.'B-ZONE')CALL XABORT('@RESDRV: KEYWORD B-ZONE'
+     1    //' EXPECTED.')
+          DO 70 ICH=1,NCH
+          CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+          IF(ITYP.NE.1)CALL XABORT('@RESDRV: INTEGER COMBUSTION'
+     1    //'-ZONE INDEX EXPECTED.')
+          IF(NITMA.LT.1)CALL XABORT('@RESDRV: INVALID COMBUSTION'
+     1    //'-ZONE INDEX < 1')
+          IF(NITMA.GT.NCOMB)CALL XABORT('@RESDRV: INVALID COMBUSTION'
+     1    //'-ZONE INDEX > NCOMB')
+          IZONE(ICH)=NITMA
+   70     CONTINUE
+        ELSE
+          CALL XABORT('@RESDRV: INVALID INPUT FOR NCOMB.')
+        ENDIF
+        CALL LCMPUT(IPMAP,'B-ZONE',NCH,1,IZONE)
+        DEALLOCATE(IZONE)
+        GO TO 80
+      ELSE
+        CALL XABORT('@RESDRV: INVALID KEYWORD ('//TEXT//').')
+      ENDIF
+      GO TO 10
+*
+   80 IF(NCH.EQ.0) CALL XABORT('@RESDRV: NO FUEL CHANNELS DEFINED.')
+      IF(NB.EQ.0) CALL XABORT('@RESDRV: NO FUEL BUNDLES DEFINED.')
+      IF(LGEOM) CALL XABORT('@RESDRV: OPERATOR ::: EXPECTED.')
+      IF(LXNAME) CALL XABORT('@RESDRV: KEYWORD NXNAME EXPECTED.')
+      IF(LYNAME) CALL XABORT('@RESDRV: KEYWORD NYNAME EXPECTED.')
+      RETURN
+      END

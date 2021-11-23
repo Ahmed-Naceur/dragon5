@@ -1,0 +1,278 @@
+!*****************************************************************
+!* Test for AFM module development in DONJON4                   **
+!*****************************************************************
+!* Calcul DONJON a l'equilibre du rechargement a deux (2) zones **
+!*                                                              **
+!* Determination du burnup moyen de sortie pour un coeur        **
+!* avec des grappes quelconques provenant de FBMDT0             **
+!*                                                              **
+!* COURS ENE6209                                                **
+!*                                                              **
+!* Options:                                                     **
+!*   1- Rapport B1/B2 (B1 zone centrale, B2 zone peripherique)  **
+!*   2- Position des BC                                         **
+!*****************************************************************
+!* B. Dionne (03/04/2001)                                       **
+!* E. Varin (23/02/2004)                                        **
+!* R. Chambon (18/10/2007)                                      **
+!* A. Landry (13/09/2011)                                       **
+!* A. Hebert (11/11/2011) (pour DONJON4)                        **
+!*****************************************************************
+ PROCEDURE  Pburncal Pcalflu ;
+ PROCEDURE  assertS ;
+
+ MODULE       RESINI: MACINI: POWER: AFM: DELETE: NEWMAC: INIKIN:
+              KINSOL: TRIVAA: DMAC: GREP: DSET: FLPOW: ABORT: END: ;
+
+ SEQ_ASCII FBMDT0 ;
+
+ LINKED_LIST  G23D2 INDEX MACRO DEVICE RESEAU ;
+ LINKED_LIST  MACRO2 MACRES FLUX TRACK MACOLD DBASE SYSOLD ;
+ LINKED_LIST  MACRO3 MACRES2 KINET SYSTEMP MACOLDP POWER ;
+
+ INTEGER TPS ;
+
+!* Base de donnees AFM
+!**********************
+ DBASE := FBMDT0 ;
+
+!* Declaration des variables neutronique
+!***************************************
+ REAL Rapport BCinout ;
+ INTEGER Maxreg  ;
+ REAL B1 B2     ;
+ STRING       Refl ;
+ REAL         Xfacc Xfacp ;
+ REAL         Keff ;
+ INTEGER      iter := 1 ;
+ REAL         Precf := 1.0E-7 ;
+ STRING    NamCpo1 ;
+ EVALUATE NamCpo1 := "FULFBMDATA" ;
+ REAL Powi Powf ;
+ EVALUATE Powi := 2061.4 ;
+ REAL REFVALUE DELTA ;
+
+!* Parametres de controle de la simulation
+!*****************************************
+ EVALUATE Rapport := 0.8 ; ! Rapport B1 / B2
+ EVALUATE BCinout := 1.0 ; ! BC entrees = 1.0, BC sorties = 0.0
+ EVALUATE Maxreg  := 27700 ; ! nombre de regions dans la geometrie
+
+!* Appel de la procedure principale
+!**********************************
+G23D2 INDEX MACRO DEVICE RESEAU
+           := Pburncal DBASE :: <<Rapport>> <<BCinout>> <<Maxreg>> ;
+
+ ECHO 'START TRANSIENT CALCULATION' ;
+
+ EVALUATE  Refl  := "REFL-SIGF" ;
+ EVALUATE  Xfacp := 1. ;
+ EVALUATE  Xfacc := 2. ;
+
+!*Age pattern (TA -> Instantaneous)
+  RESEAU := RESINI: RESEAU ::
+      CELL
+                               358  91  39
+  67 162 234
+                   315 113 294 196 248 366
+ 309 109 287 191 245 363
+                59  33 208 346  19 219  61
+  25 202 340  14 213  55  31
+           271 322 123 261 103 156 273 323
+ 118 254  97 149 265 318 122 260
+       333   7 184  51 377 135 334   8 185
+  44 371 127 327   1 179  50 376 133
+        176 145 283 226 301  79 173 142 279
+ 232 307  86 177 147 285 228 303  81
+    241 360  93  40  69 164 236 353  88  37
+  76 171 243 361  95  42  71 166 238 355
+    296 198 250 367 311 110 289 193 246 364
+ 316 116 298 200 252 369 313 112 291 195
+210 348  21 221  63  27 204 342  16 215  57
+  35 211 350  23 223  65  29 206 344  18 217
+262 105 158 275 324 119 256  99 151 267 319
+ 125 263 107 160 276 325 121 258 101 153 269
+378 137 336  10 187  46 372 129 329   3 181
+  53 379 139 338  12 189  48 374 131 331   5
+292  72 167 132 270 224 299  77 172 140 277
+ 216 290  70 165 130 268 222 297  75 170 138
+154 229 345  82  30  66 161 233 351  87  36
+  58 152 227 343  80  28  64 159 231 349  85
+102 281 183 239 356 308 108 286 190 244 362
+ 302 100 280 182 237 354 306 106 284 188 242
+    332   6 207  49  24 201 339  13 212  54
+  17 194 330   4 205  47  22 199 337  11
+     90 144 259 314 117 253  96 148 264 317
+ 111 247  89 143 257 312 115 251  94 146
+        321 375 175  43 370 126 326 380 178
+  38 365 120 320 373 174  41 368 124
+        168 134 272 214 288  68 163 128 266
+ 220 295  74 169 136 274 218 293  73
+             83  32  56 150 225 341  78  26
+  62 157 230 347  84  34  60 155
+                357 300  98 278 180 235 352
+ 305 104 282 186 240 359 304
+                     15 192 328   2 203  45
+  20 197 335   9 209  52
+                                141 255 310
+ 114 249  92
+;
+
+  ECHO " +++++++++++++++++++++++++++++++++++++++ " ;
+  ECHO " +++++++++++++++++++++++++++++++++++++++ " ;
+  ECHO " +++ CONDITION INITIALE INSTANTANNEE +++ " ;
+  ECHO " +++++++++++++++++++++++++++++++++++++++ " ;
+  ECHO " +++++++++++++++++++++++++++++++++++++++ " ;
+
+!* Calcul des sections efficaces
+!***************************************************
+
+  MACRES := AFM: DBASE RESEAU  ::
+   MAP
+   INFOR C6_FBM_CRP0
+   DNAME 1 <<NamCpo1>>
+   EDIT 1
+   NPWF
+   REFT 1 <<NamCpo1>> ;
+
+  ECHO "RECOVER FUEL AFM MACROLIB" ;
+
+  MACRO2 INDEX := MACINI: INDEX MACRO MACRES ;
+
+!* Calcul du flux pour la repartition convergee du burnup
+!********************************************************
+  FLUX MACOLD TRACK SYSOLD INDEX := Pcalflu INDEX MACRO2 DEVICE G23D2 ::
+    <<iter>>  <<Maxreg>> <<Refl>> <<Xfacc>> <<Xfacp>> <<Precf>> ;
+  assertS FLUX :: "K-EFFECTIVE" 1 1.000627 ;
+
+!* Calcul des puissances (normalisees) de canal et de grappe
+!***********************************************************
+  POWER RESEAU := FLPOW: RESEAU FLUX TRACK INDEX
+                  :: EDIT 0 PTOT <<Powi>> ;
+
+  ECHO " +++++++++++++++++++++++++++++++++++++++ " ;
+  ECHO " +++++++++++++++++++++++++++++++++++++++ " ;
+  ECHO " ++ CINETIQUE ++++++++++++++++++++++++++ " ;
+  ECHO " +++++++++++++++++++++++++++++++++++++++ " ;
+  ECHO " +++++++++++++++++++++++++++++++++++++++ " ;
+
+KINET := INIKIN: MACOLD TRACK SYSOLD FLUX ::
+  EDIT 1
+  NDEL 6
+  BETA 0.000250 0.001562 0.001505 0.002755 0.000830 0.000317
+  LAMBDA 0.0129 0.0311 0.134 0.331 1.26 3.21
+  CHID 1.0 1.0 1.0 1.0 1.0 1.0
+       0.0 0.0 0.0 0.0 0.0 0.0
+  NORM POWER-INI <<Powi>>
+;
+
+EVALUATE TPS := 1 ;
+
+REAL TEMPS := 0.0 ;
+REAL LEVEL := 0.5 ;
+REAL ADJPOS := 1.0 ;
+REAL ADJPOSVAR ;
+REAL TEXIT := 1.0 ;
+REAL DT := 0.1 ;
+EVALUATE ADJPOSVAR := DT TEXIT / ;
+
+!* Boucle de temps
+!************************************************************
+REPEAT
+
+ EVALUATE TEMPS := TEMPS DT + ;
+!*mettre a jour les devices: POSITION DE BC #11 ET DE BL
+ IF TEMPS TEXIT < THEN
+    EVALUATE ADJPOS := ADJPOS ADJPOSVAR - ;
+    EVALUATE LEVEL := 0.5 ;
+ ELSE
+    EVALUATE ADJPOS := 0.0 ;
+    EVALUATE LEVEL := 0.5 ;
+ ENDIF ;
+
+ ECHO " +++++++++++++++++++++++++++++++++++++++ " ;
+ ECHO " CINETIQUE AU TEMPS: " TPS ;
+ ECHO " TEMPS: " TEMPS ;
+ ECHO " ADJUSTER #11 LEVEL:" ADJPOS ;
+ ECHO " +++++++++++++++++++++++++++++++++++++++ " ;
+
+ MACRES2 := AFM: DBASE RESEAU  ::
+   MAP
+   INFOR C6_FBM_CRP0
+   DNAME 1 <<NamCpo1>>
+   EDIT 1
+   NPWF
+   REFT 1 <<NamCpo1>> ;
+
+*   ADJUST DEVICE ADJUSTER AND LZC POSITION            *
+********************************************************
+DEVICE := DSET: DEVICE ::
+  EDIT 1
+  ROD-GROUP 1 LEVEL 1.0 END
+  ROD 11 LEVEL <<ADJPOS>> END
+
+  LZC 1 LEVEL <<LEVEL>> END
+  LZC 2 LEVEL <<LEVEL>> END
+  LZC 3 LEVEL <<LEVEL>> END
+  LZC 4 LEVEL <<LEVEL>> END
+  LZC 5 LEVEL <<LEVEL>> END
+  LZC 6 LEVEL <<LEVEL>> END
+  LZC 7 LEVEL <<LEVEL>> END
+  LZC 8 LEVEL <<LEVEL>> END
+  LZC 9 LEVEL <<LEVEL>> END
+  LZC 10 LEVEL <<LEVEL>> END
+  LZC 11 LEVEL <<LEVEL>> END
+  LZC 12 LEVEL <<LEVEL>> END
+  LZC 13 LEVEL <<LEVEL>> END
+  LZC 14 LEVEL <<LEVEL>> END
+ ;
+
+ MACRO3 INDEX := MACINI: INDEX MACRO MACRES2 ;
+
+ MACOLDP INDEX := NEWMAC: INDEX MACRO3 DEVICE ::
+    EDIT 1  XFAC  <<Xfacc>> ;
+
+ MACRES2 MACRO3 := DELETE: MACRES2 MACRO3 ;
+
+ SYSTEMP := TRIVAA: MACOLDP TRACK :: UNIT ;
+
+ KINET := KINSOL: KINET MACOLDP TRACK SYSTEMP MACOLD SYSOLD ::
+   EDIT 1
+   DELTA <<DT>>
+   SCHEME FLUX THETA 0.8
+   PREC THETA 0.8
+  ;
+
+ !* Calcul des puissances (normalisees) de canal et de grappe
+ !***********************************************************
+ POWER := DELETE: POWER ;
+ POWER RESEAU := FLPOW: RESEAU KINET TRACK INDEX ;
+
+ EVALUATE TPS := TPS 1 + ;
+
+ MACOLD SYSOLD := DELETE: MACOLD SYSOLD ;
+ MACOLD := MACOLDP ;
+ SYSOLD := SYSTEMP ;
+ MACOLDP SYSTEMP := DELETE: MACOLDP SYSTEMP ;
+
+UNTIL TPS 10 > ;
+
+!* Fichier de sortie
+!*******************
+GREP: KINET :: GETVAL E-POW 1 >>Powf<< ;
+EVALUATE REFVALUE := 2.357928E3 ;
+EVALUATE DELTA := Powf REFVALUE - REFVALUE / ABS ;
+IF DELTA 1.0E-3 < THEN
+  PRINT "TEST SUCCESSFUL; DELTA=" DELTA ;
+ELSE
+  PRINT "------------" ;
+  PRINT "TEST FAILURE" ;
+  PRINT "------------" ;
+  PRINT "REFERENCE=" REFVALUE " CALCULATED=" Powf ;
+  ABORT: ;
+ENDIF ;
+ECHO "Initial power=" Powi " Final power=" Powf ;
+ECHO "Successful end of AFMtest." ;
+END: ;
+
+QUIT .

@@ -1,0 +1,424 @@
+DEVICE INDEX := DEVINI: INDEX ::
+      EDIT 2 NUM-ROD 39
+*
+ROD 1
+  ROD-NAME BC#1B
+  MAXPOS  <<Am1>> <<Ap1>>  325.700   440.000   196.3600  245.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRdi>> <<mNdi>>
+*
+ROD 2
+  ROD-NAME BC#2C
+  MAXPOS  <<Am2>> <<Ap2>>  211.400  297.125  196.3600  245.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRco>> <<mNco>>
+*
+ROD 3
+  ROD-NAME BC#2B
+  MAXPOS  <<Am2>> <<Ap2>>  297.125  468.575  196.3600  245.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRci>> <<mNci>>
+*
+ROD 4
+  ROD-NAME BC#2A
+  MAXPOS  <<Am2>> <<Ap2>>  468.575  554.300  196.3600  245.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRco>> <<mNco>>
+*
+ROD 5
+  ROD-NAME BC#3C-B-A
+  MAXPOS  <<Am3>> <<Ap3>>   211.400  554.300   196.3600  245.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRbi>> <<mNbi>>
+*
+ROD 6
+  ROD-NAME BC#4C
+  MAXPOS  <<Am4>> <<Ap4>>  211.400  297.125   196.3600  245.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRao>> <<mNao>>
+*
+ROD 7
+  ROD-NAME BC#4B
+  MAXPOS  <<Am4>> <<Ap4>>  297.125  468.575   196.3600  245.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRai>> <<mNai>>
+*
+ROD 8
+  ROD-NAME BC#4A
+  MAXPOS  <<Am4>> <<Ap4>>  468.575  554.300   196.3600  245.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRao>> <<mNao>>
+*
+ROD 9
+  ROD-NAME BC#5C-B-A
+  MAXPOS  <<Am5>> <<Ap5>>  211.400  554.300   196.3600  245.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRbi>> <<mNbi>>
+*
+ROD 10
+  ROD-NAME BC#6C
+  MAXPOS  <<Am6>> <<Ap6>>  211.400  297.125   196.3600  245.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRco>> <<mNco>>
+*
+ROD 11
+  ROD-NAME BC#6B
+  MAXPOS  <<Am6>> <<Ap6>>  297.125  468.575   196.3600  245.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRci>> <<mNci>>
+*
+ROD 12
+  ROD-NAME BC#6A
+  MAXPOS  <<Am6>> <<Ap6>>  468.575  554.300   196.3600  245.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRco>> <<mNco>>
+*
+ROD 13
+  ROD-NAME BC#7B
+  MAXPOS  <<Am7>> <<Ap7>>  325.700  440.000   196.3600  245.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRdi>> <<mNdi>>
+*
+ROD 14
+  ROD-NAME BC#8B
+  MAXPOS  <<Am1>> <<Ap1>>  325.700   440.000   276.3600  325.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRdi>> <<mNdi>>
+*
+ROD 15
+  ROD-NAME BC#9C
+  MAXPOS  <<Am2>> <<Ap2>>  211.400  297.125   276.3600  325.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRco>> <<mNco>>
+*
+ROD 16
+  ROD-NAME BC#9B
+  MAXPOS  <<Am2>> <<Ap2>>  297.125  468.575   276.3600  325.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRci>> <<mNci>>
+*
+ROD 17
+  ROD-NAME BC#9A
+  MAXPOS  <<Am2>> <<Ap2>>  468.575  554.300   276.3600  325.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRco>> <<mNco>>
+*
+ROD 18
+  ROD-NAME BC#10C-B-A
+  MAXPOS  <<Am3>> <<Ap3>>  211.400  554.300   276.3600  325.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRbi>> <<mNbi>>
+*
+ROD 19
+  ROD-NAME BC#11C
+  MAXPOS  <<Am4>> <<Ap4>>  211.400  297.125   276.3600  325.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRao>> <<mNao>>
+*
+ROD 20
+  ROD-NAME BC#11B
+  MAXPOS  <<Am4>> <<Ap4>>  297.125  468.575   276.3600  325.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRai>> <<mNai>>
+*
+ROD 21
+  ROD-NAME BC#11A
+  MAXPOS  <<Am4>> <<Ap4>>  468.575  554.300   276.3600  325.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRao>> <<mNao>>
+*
+ROD 22
+  ROD-NAME BC#12C-B-A
+  MAXPOS  <<Am5>> <<Ap5>>  211.400  554.300   276.3600  325.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRbi>> <<mNbi>>
+*
+ROD 23
+  ROD-NAME BC#13C
+  MAXPOS  <<Am6>> <<Ap6>>  211.400  297.125   276.3600  325.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRco>> <<mNco>>
+*
+ROD 24
+  ROD-NAME BC#13B
+  MAXPOS  <<Am6>> <<Ap6>>  297.125  468.575   276.3600  325.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRci>> <<mNci>>
+*
+ROD 25
+  ROD-NAME BC#13A
+  MAXPOS  <<Am6>> <<Ap6>>  468.575  554.300   276.3600  325.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRco>> <<mNco>>
+*
+ROD 26
+  ROD-NAME BC#14B
+  MAXPOS  <<Am7>> <<Ap7>>  325.700  440.000   276.3600  325.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRdi>> <<mNdi>>
+*
+ROD 27
+  ROD-NAME BC#15B
+  MAXPOS  <<Am1>> <<Ap1>>  325.700   440.000   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRdi>> <<mNdi>>
+*
+ROD 28
+  ROD-NAME BC#16C
+  MAXPOS  <<Am2>> <<Ap2>>  211.400  297.125   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRco>> <<mNco>>
+*
+ROD 29
+  ROD-NAME BC#16B
+  MAXPOS  <<Am2>> <<Ap2>>  297.125  468.575   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRci>> <<mNci>>
+*
+ROD 30
+  ROD-NAME BC#16A
+  MAXPOS  <<Am2>> <<Ap2>>  468.575  554.300   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRco>> <<mNco>>
+*
+ROD 31
+  ROD-NAME BC#17C-B-A
+  MAXPOS  <<Am3>> <<Ap3>>  211.400  554.300   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRbi>> <<mNbi>>
+*
+ROD 32
+  ROD-NAME BC#18C
+  MAXPOS  <<Am4>> <<Ap4>>  211.400  297.125   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRao>> <<mNao>>
+*
+ROD 33
+  ROD-NAME BC#18B
+  MAXPOS  <<Am4>> <<Ap4>>  297.125  468.575   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRai>> <<mNai>>
+*
+ROD 34
+  ROD-NAME BC#18A
+  MAXPOS  <<Am4>> <<Ap4>>  468.575  554.300   356.3600  405.8900 
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRao>> <<mNao>>
+*
+ROD 31
+  ROD-NAME BC#17C-B-A
+  MAXPOS  <<Am3>> <<Ap3>>  211.400  554.300   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRbi>> <<mNbi>>
+*
+ROD 32
+  ROD-NAME BC#18C
+  MAXPOS  <<Am4>> <<Ap4>>  211.400  297.125   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRao>> <<mNao>>
+*
+ROD 33
+  ROD-NAME BC#18B
+  MAXPOS  <<Am4>> <<Ap4>>  297.125  468.575   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRai>> <<mNai>>
+*
+ROD 34
+  ROD-NAME BC#18A
+  MAXPOS  <<Am4>> <<Ap4>>  468.575  554.300   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRao>> <<mNao>>
+*
+ROD 35
+  ROD-NAME BC#19C-B-A
+  MAXPOS  <<Am5>> <<Ap5>>  211.400  554.300   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRbi>> <<mNbi>>
+*
+ROD 36
+  ROD-NAME BC#20C
+  MAXPOS  <<Am6>> <<Ap6>>  211.400  297.125   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRco>> <<mNco>>
+*
+ROD 37
+  ROD-NAME BC#20B
+  MAXPOS  <<Am6>> <<Ap6>>  297.125  468.575   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRci>> <<mNci>>
+*
+ROD 38
+  ROD-NAME BC#20A
+  MAXPOS  <<Am6>> <<Ap6>>  468.575  554.300   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRco>> <<mNco>>
+*
+ROD 39
+  ROD-NAME BC#21B
+  MAXPOS  <<Am7>> <<Ap7>>  325.700  440.000   356.3600  405.8900
+  LEVEL 1.0
+  AXIS Y FROM H+
+  DMIX <<mRdi>> <<mNdi>>
+
+;
+
+DEVICE INDEX := LZC: DEVICE INDEX ::
+  EDIT 1 NUM-LZC 14
+*
+LZC 1 
+  MAXPOS <<LmU12>> <<LpU12>>  <<yM01>> <<yP01>>  146.3600  195.8900
+  MAX-FULL <<yO01>>
+  AXIS Y
+  LEVEL 1.0
+  EMPTY-MIX <<m12E>> <<m12M>>
+  FULL-MIX <<m12F>> <<m12M>>
+*
+LZC 2
+  MAXPOS <<LmU12>> <<LpU12>>  <<yM02>> <<yP02>>  146.3600  195.8900
+  MAX-FULL <<yO02>>
+  AXIS Y
+  LEVEL 1.0
+  EMPTY-MIX <<m01E>> <<m01M>>
+  FULL-MIX <<m01F>> <<m01M>>
+*
+LZC 3
+  MAXPOS <<LmU34>> <<LpU34>>  <<yM03>> <<yP03>>  146.3600  195.8900
+  MAX-FULL <<yO03>>  
+  AXIS Y
+  LEVEL 1.0
+  EMPTY-MIX  <<m23E>> <<m23M>>
+  FULL-MIX <<m23F>> <<m23M>>
+*
+LZC 4 
+  MAXPOS <<LmU34>> <<LpU34>>  <<yM04>> <<yP04>>  146.3600  195.8900
+  MAX-FULL <<yO04>>
+  AXIS Y
+  LEVEL 1.0
+  EMPTY-MIX <<m12E>> <<m12M>>
+  FULL-MIX <<m12F>> <<m12M>>
+*
+LZC 5
+  MAXPOS <<LmU34>> <<LpU34>>  <<yM05>> <<yP05>>  152.535  202.065
+  MAX-FULL <<yO05>>
+  AXIS Y
+  LEVEL 1.0
+  EMPTY-MIX <<m01E>> <<m01M>>
+  FULL-MIX <<m01F>> <<m01M>>
+*
+LZC 6
+  MAXPOS <<LmU56>> <<LpU56>>  <<yM06>> <<yP06>>  146.3600  195.8900
+  MAX-FULL <<yO06>>
+  AXIS Y
+  LEVEL 1.0
+  EMPTY-MIX <<m12E>> <<m12M>>
+  FULL-MIX <<m12F>> <<m12M>>
+*
+LZC 7
+  MAXPOS <<LmU56>> <<LpU56>>  <<yM07>> <<yP07>>  146.3600  195.8900
+  MAX-FULL <<yO07>>
+  AXIS Y
+  LEVEL 1.0
+  EMPTY-MIX <<m01E>> <<m01M>>
+  FULL-MIX <<m01F>> <<m01M>>
+*
+LZC 8
+  MAXPOS <<LmU12>>  <<LpU12>>  <<yM08>> <<yP08>>  406.3600  455.8900
+  MAX-FULL <<yO08>>
+  AXIS Y
+  LEVEL 1.0
+  EMPTY-MIX <<m12E>> <<m12M>>
+  FULL-MIX <<m12F>> <<m12M>>
+*
+LZC 9
+  MAXPOS <<LmU12>> <<LpU12>>  <<yM09>> <<yP09>>  406.3600  455.8900
+  MAX-FULL <<yO09>>
+  AXIS Y
+  LEVEL 1.0
+  EMPTY-MIX <<m01E>> <<m01M>>
+  FULL-MIX <<m01F>> <<m01M>>
+*
+LZC 10
+  MAXPOS <<LmU34>> <<LpU34>>  <<yM10>> <<yP10>>  406.3600  455.8900
+  MAX-FULL <<yO10>>
+  AXIS Y
+  LEVEL 1.0
+  EMPTY-MIX <<m23E>> <<m23M>>
+  FULL-MIX <<m23F>> <<m23M>>
+*
+LZC 11
+  MAXPOS <<LmU34>> <<LpU34>>  <<yM11>> <<yP11>>  406.3600  455.8900
+  MAX-FULL <<yO11>>
+  AXIS Y
+  LEVEL 1.0
+  EMPTY-MIX <<m12E>> <<m12M>>
+  FULL-MIX <<m12F>> <<m12M>>
+*
+LZC 12
+  MAXPOS <<LmU34>> <<LpU34>>  <<yM12>> <<yP12>>  406.3600  455.8900
+  MAX-FULL <<yO12>>
+  AXIS Y
+  LEVEL 1.0
+  EMPTY-MIX <<m01E>> <<m01M>>
+  FULL-MIX <<m01F>> <<m01M>>
+*
+LZC 13
+  MAXPOS <<LmU56>>  <<LpU56>>  <<yM13>> <<yP13>>  406.3600  455.8900
+  MAX-FULL <<yO13>>
+  AXIS Y
+  LEVEL 1.0
+  EMPTY-MIX <<m12E>> <<m12M>>
+  FULL-MIX <<m12F>> <<m12M>>
+*
+LZC 14
+  MAXPOS <<LmU56>> <<LpU56>>  <<yM14>> <<yP14>>  406.3600  455.8900
+  MAX-FULL <<yO14>>
+  AXIS Y
+  LEVEL 1.0
+  EMPTY-MIX <<m01E>> <<m01M>>
+  FULL-MIX <<m01F>> <<m01M>>
+;
+
+END: ;
+QUIT .

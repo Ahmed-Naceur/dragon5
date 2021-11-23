@@ -1,0 +1,568 @@
+\subsection{Contents of \dir{fmap} data structure}\label{sect:resinidat}
+
+\vskip 0.2cm
+A \dir{fmap} data structure is used to store fuel assembly (or bundle) map and 
+fuel information such as powers, average fluxes, control zones, burnup
+or refueling scheme. The fuel bundle location are given in an
+embedded sub-directory which contains the records as a \dir{geometry}
+data structure. This object has a signature {\tt L\_MAP};
+it is created using the \moc{RESINI:} module.
+
+\subsubsection{The state-vector content}\label{sect:fmapstate}
+
+\noindent
+The dimensioning parameters $\mathcal{S}_i$, which are stored in the state
+vector for this data structure, represent:
+
+\begin{itemize}
+
+\item The number of fuel bundles per channel $N_{\rm b} = \mathcal{S}_1$
+
+\item The number of fuel channels $N_{\rm ch} = \mathcal{S}_2$
+
+\item The number of combustion zones $N_{\rm comb} = \mathcal{S}_3$
+
+\item The number of energy groups $N_{\rm gr} = \mathcal{S}_4$
+
+\item The type of interpolation with respect to burnup $I_{\rm btyp}$ = $\mathcal{S}_5$
+
+\begin{displaymath} I_{\rm btyp} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{interpolation type is not provided} \\
+ 1 & \textrm{according to the time-average model} \\
+ 2 & \textrm{according to the instantaneous model} \\
+\end{array} \right.
+\end{displaymath}
+
+\item The number of bundle shift. $N_{\rm sht} = \mathcal{S}_{6}$
+
+\item The number of fuel types $N_{\rm fuel} = \mathcal{S}_7$
+
+\item The number of recorded parameters $N_{\rm parm} = \mathcal{S}_8$
+
+\item The total number of fuel bundles $N_{\rm tot} = \mathcal{S}_9$
+
+\item The number of voided reactor channels $N_{\rm void} = \mathcal{S}_{10}$
+
+\item The option with respect to the core-voiding pattern $I_{\rm void}$ = $\mathcal{S}_{11}$
+
+\begin{displaymath} I_{\rm void} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{voiding pattern not provided} \\
+ 1 & \textrm{full-core voiding pattern} \\
+ 2 & \textrm{half-core voiding pattern} \\
+ 3 & \textrm{quarter-core voiding pattern} \\
+ 4 & \textrm{checkerboard-full voiding pattern} \\
+ 5 & \textrm{checkerboard-half voiding pattern} \\
+ 6 & \textrm{checkerboard-quarter voiding pattern} \\
+ 7 & \textrm{user-defined voiding pattern} \\
+\end{array} \right.
+\end{displaymath}
+
+\item The type of the geometry $F_{\rm t}$ = $\mathcal{S}_{12}$
+
+\begin{displaymath} F_{\rm t} = \left\{
+\begin{array}{rl}
+ 7 & \textrm{Cartesian \dusa{3-D} geometry} \\
+ 9 & \textrm{Hexagonal \dusa{3-D} geometry} \\
+\end{array} \right.
+\end{displaymath}
+
+\item The naval-coordinate layout used by the {\tt SIM:} module $I_{\rm sim}$ = $\mathcal{S}_{13}$.
+
+\vskip 0.08cm
+
+The number of assemblies along $X$ and $Y$ axis are given using
+$$
+L_{\rm x}={I_{\rm sim}\over 100} \ \ \ {\rm and} \ \ \ L_{\rm y}={\rm mod}(I_{\rm sim},100)
+$$
+
+\item The total number of assemblies $N_{\rm ass} = \mathcal{S}_{14}$
+
+\item The number of assemblies along $X$ direction in Cartesian geometry.  The number of assemblies in the radial plane in hexagonal geometry. $N_{\rm xa} = \mathcal{S}_{15}$
+
+\item The number of assemblies along $Y$ direction in Cartesian geometry $N_{\rm ya} = \mathcal{S}_{16}$
+
+\item The number of plane of the mesh along $Z$ direction where assemblies are located $N_{\rm z,ass} = \mathcal{S}_{17}$
+
+\item The number of particularized isotopes to store in \{hcycle\} sub-directories $N_{\rm is} = \mathcal{S}_{18}$
+
+\item The number of \{hcycle\} sub-directories $N_{\rm cy} = \mathcal{S}_{19}$
+
+\end{itemize}
+
+\subsubsection{The main \dir{fmap} directory}\label{sect:fmapdir}
+
+\noindent
+The following records and sub-directories will be found on the first level of \dir{fmap}
+directory:
+
+\begin{DescriptionEnregistrement}{Records and sub-directories
+ in \dir{fmap} data structure}{7.0cm} \label{tabl:tabfmap}
+
+\CharEnr
+ {SIGNATURE\blank{3}}{$*12$}
+ {Signature of the \dir{fmap} data structure ($\mathsf{SIGNA}=${\tt L\_MAP\blank{7}}).}
+
+\IntEnr
+  {STATE-VECTOR}{$40$}
+  {Vector describing the various parameters associated with this data structure
+  $\mathcal{S}_i$}
+
+\IntEnr
+ {FLMIX\blank{7}}{$N_{\rm ch}, N_{\rm b}$}
+ {Fuel type indices per bundle or assembly subdivisions for each reactor channel.}
+
+\OptIntEnr
+ {FLMIX-INI\blank{3}}{$N_{\rm ch}, N_{\rm b}$}{$I_{\rm sim}\ne 0$}
+ {Fuel type indices per bundle or assembly subdivisions for each reactor channel, as defined by user
+ in {\tt RESINI:} module.}
+
+\OptCharEnr
+ {S-ZONE\blank{6}}{$(N_{\rm ch})*4$}{$I_{\rm sim}\ne 0$}
+ {identification name corresponding to the basic naval-coordinate position of an assembly, as defined by user
+ in {\tt RESINI:} module..}
+
+\IntEnr
+ {BMIX\blank{8}}{$N_x$, $N_y$, $N_z$}
+ {Renumbered mixture indices per each fuel region over the fuel-map
+  geometry; for the non-fuel regions these indices are set to 0.}
+
+\OptCharEnr
+ {XNAME\blank{7}}{$(N_x)*4$}{$F_{\rm t}=7$}
+ {Channel identification names with respect to their horizontal position in Cartesian geometry.}
+
+\OptCharEnr
+ {YNAME\blank{7}}{$(N_y)*4$}{$F_{\rm t}=7$}
+ {Channel identification names with respect to their vertical position in Cartesian geometry.}
+
+\OptCharEnr
+ {HNAME\blank{7}}{$(N_x)*8$}{$F_{\rm t}=9$}
+ {Channel identification names with respect to their radial position in hexagonal geometry.}
+
+\OptCharEnr
+ {AXNAME\blank{6}}{$(N_{\rm xa})*4$}{$F_{\rm t}=7$}
+ {Name of the assembly on X-direction (4 character name per assembly) in Cartesian geometry}
+
+\OptCharEnr
+ {AYNAME\blank{6}}{$(N_{\rm ya})*4$}{$F_{\rm t}=7$}
+ {Name of the assembly on Y-direction (4 character name per assembly) in Cartesian geometry}
+
+\OptDirlEnr
+ {ASSEMBLY\blank{4}}{$N_{\rm ass}$}{}
+ {List of {\sl assembly} directories. Each component of this list follows the specification
+  presented in \Sect{fmapdirass}.}
+
+\OptIntEnr
+ {B-ZONE\blank{6}}{$N_{\rm ch}$}{$N_{\rm comb}\geq1$}
+ {Combustion-zone indices per channel.}
+
+\RealEnr
+ {BURN-AVG\blank{4}}{$N_{\rm comb}$}{MW d t$^{-1}$}
+ {Average exit burnups per combustion zone.}
+
+\OptRealEnr
+ {BURN-INST\blank{3}}{$N_{\rm ch}, N_{\rm b}$}{$I_{\rm btyp}=2$}{MW d t$^{-1}$}
+ {Instantaneous burnups per bundle or assembly subdivisions for each channel.}
+
+\OptRealEnr
+ {BURN-BEG\blank{4}}{$N_{\rm ch}, N_{\rm b}$}{$I_{\rm btyp}=1$}{MW d t$^{-1}$}
+ {Low burnup integration limits according to the time-average model.}
+
+\OptRealEnr
+ {BURN-END\blank{4}}{$N_{\rm ch}, N_{\rm b}$}{$I_{\rm btyp}=1$}{MW d t$^{-1}$}
+ {Upper burnup integration limits according to the time-average model.}
+
+\OptRealEnr
+ {BUND-PW\blank{5}}{$N_{\rm ch}, N_{\rm b}$}{*}{kW}
+ {Bundle-powers set in \moc{RESINI:} module or recovered from \moc{L\_POWER} object.}
+
+\OptRealEnr
+ {BUND-PW-INI\blank{1}}{$N_{\rm ch}, N_{\rm b}$}{*}{kW}
+ {Beginning-of-transient bundle-powers recovered from \moc{L\_POWER} object.}
+
+\OptRealEnr
+ {FLUX-AV\blank{5}}{$N_{\rm ch}, N_{\rm b}, N_{\rm gr}$}{*}{cm$^{-2}$ s$^{-1}$}
+ {The normalized average fluxes recorded per each fuel bundle and for
+  each energy group, recovered from \moc{L\_POWER} object.}
+
+\OptRealEnr
+ {REACTOR-PW\blank{2}}{$1$}{*}{MW}
+ {Full reactor power set in \moc{RESINI:} module or recovered from \moc{L\_POWER} object.}
+
+\OptRealEnr
+ {AXIAL-FPW\blank{3}}{$N_{\rm b}$}{*}{1}
+ {Axial power form factor set in \moc{RESINI:} module.}
+
+\RealEnr
+ {B-EXIT\blank{6}}{$1$}{MW d t$^{-1}$}
+ {Core-average discharge burnup.}
+
+\IntEnr
+ {REF-SHIFT\blank{3}}{$N_{\rm comb}$}
+ {Bundle-shifts per combustion zone. A bundle-shift corresponds to the 
+  number of displaced fuel bundles during the refueling operation.}
+
+\IntEnr
+ {REF-VECTOR\blank{2}}{$N_{\rm comb}, N_{\rm b}$}
+ {Refueling pattern vector per combustion zone.}
+
+\IntEnr
+ {REF-SCHEME\blank{2}}{$N_{\rm ch}$}
+ {Refueling scheme of each channel; it corresponds to the positive
+  or negative bundle-shift number according to the flow direction. }
+
+\RealEnr
+ {REF-RATE\blank{4}}{$N_{\rm ch}$}{kg d$^{-1}$}
+ {Channel refueling rates.}
+
+\OptRealEnr
+ {REF-CHAN\blank{4}}{$N_{\rm ch}$}{}{d}
+ {Time values at which channels are refueled inside a refueling time 
+ period.}
+
+\OptRealEnr
+ {DEPL-TIME\blank{3}}{$1$}{}{d}
+ {Refueling time period in days.}
+
+\OptRealVar
+ {\{pshift\}}{$N_{\rm ch}, N_{\rm b}$}{$N_{\rm sht}\ge 1$}{$kW$}
+ {The power of the bundles shifted the $i$-th time.}
+            
+\OptRealVar
+ {\{bshift\}}{$N_{\rm ch}, N_{\rm b}$}{$N_{\rm sht} \ge 1$}{$MW d T^{-1}$}
+ {The burnup of the bundles shifted the $i$-th time.}
+            
+\OptIntVar
+ {\{ishift\}}{$N_{\rm ch},N_{\rm b}$}{$N_{\rm sht} \ge 1$}
+ {The number of  shifts per bundle during refueling.}
+
+\OptRealEnr
+ {AX-SHAPE\blank{4}}{$N_{\rm ch}, N_{\rm b}$}{$I_{\rm btyp}=1$}{}
+ {Normalized axial power-shape values over the fuel bundles. Equal to
+ fuel-bundle powers divided by channel powers.}
+
+\OptRealEnr
+ {EPS-AX\blank{6}}{$1$}{$I_{\rm btyp}=1$}{}
+ {Convergence factor for the axial power-shape calculation; it is
+  defined as a relative error between the two successives calculations.}
+
+\OptRealEnr
+ {FQ\blank{10}}{$1$}{}{}
+ {Hot spot factor: power of the hottest 3D Cartesian pin spot 
+  normalized to the mean power of a 3D Cartesian pin spot.
+  $$
+  FQ={P_{\rm \overset{max}{x,y,z}}(x,y,z)\over P_{\rm \overset{moy}{x,y,z}}(x,y,z)}
+  $$
+  where P(x,y,z) is the power of an axial part of a pin located at the coordinates 
+  (x,y,z).
+  }
+
+\OptRealEnr
+ {FXY\blank{9}}{$1$}{}{}
+ {Radial hot spot factor: power of the hottest pin normalized to the mean power of a pin.
+  $$
+  Fxy={P_{\rm \overset{max}{x,y}}(x,y)\over P_{\rm \overset{moy}{x,y}}(x,y)}
+  $$
+  with $$P(x,y)=\displaystyle \int_{0}^{zmax} 
+  P(x,y,z) \, \mathrm{d}z$$
+  }
+
+\OptRealEnr
+ {FXYZ\blank{8}}{$N_{\rm z,ass}$}{}{}
+ {For each axial mesh, power of the hottest 2D Cartesian pin spot normalized to the mean 
+  power of a 3D Cartesian pin spot.
+  $$
+  Fxy(z)={P_{\rm \overset{max}{x,y}}(x,y,z)\over P_{\rm \overset{moy}{x,y,z}}(x,y,z)}
+  $$
+  }
+
+\OptRealEnr
+ {FXYASS\blank{6}}{$N_{\rm ass}$}{}{}
+ {For each assembly, power of the hottest pin normalized to the mean power of a pin.
+  $$
+  Fxy(iass)={P_{\rm \overset{max}{x,y}}(x,y,iass)\over P_{\rm \overset{moy}{x,y}}(x,y)}
+  $$
+  with $$P(x,y,iass)=\displaystyle \int_{0}^{zmax} 
+  P(x,y,z,iass) \, \mathrm{d}z$$
+  }
+       
+\OptCharEnr
+  {HFOLLOW\blank{5}}{$(N_{\rm is})*8$}{$N_{\rm is}>0$}
+  {Name of the particularized isotopes to store in \{hcycle\} directory.}
+   
+\DirEnr
+ {GEOMAP\blank{6}}
+ {Sub-directory containing the embedded \dusa{3D}-Cartesian \dir{geometry} of the fuel lattice.}
+
+\DirlEnr
+  {FUEL\blank{8}}{$N_{\rm fuel}$}
+  {List of fuel--type sub-directories. Each component of the list is a directory containing
+   the information relative to a single fuel type.}
+   
+\OptDirEnr
+ {ROD-INFO\blank{4}}{*}
+ {Sub-directory containing the information corresponding to the local rod insertion for PWR.
+  This sub-directory follows the specification presented in \Sect{dirrodinfo}.}
+          
+\OptDirlEnr
+ {\{hcycle\}}{$N_{\rm burn}$}{$N_{\rm cy}> 0$}
+ {Sub-directory containing information related to a fuel cycle in a PWR. $N_{\rm burn}$ is the number of burnup steps used during
+ the simulation of the cycle. These burnup steps may not be of increasing values. If module {\tt TINST:} was used to burn fuel, the
+ name of the \dusa{hcycle} directory is ``{\tt \_TINST}''.}
+
+\OptCharEnr
+ {CYCLE-NAMES\blank{1}}{$(N_{\rm cy})*12$}{$N_{\rm cy}>0$}
+ {Names of fuel cycle sub-directories \{hcycle\}.}
+
+\OptDirlEnr
+  {PARAM\blank{7}}{$N_{\rm parm}$}{$N_{\rm parm}>0$}
+  {List of parameter--type sub-directories corresponding to actual time. Each component of the list is a directory
+   containing the information relative to a single parameter (see Sect.~\ref{sect:dirparam}). The total number of sub-directories
+   corresponds to the total number of recorded parameters $N_{\rm parm}$ (excluding  burnups).}
+
+\end{DescriptionEnregistrement}
+
+\noindent The contents of the \moc{GEOMAP} sub-directory correspond to the typical
+contents of the \dir{geometry} data structure.
+The dimensioning parameters $N_x$, $N_y$, and $N_z$ represent the number
+of volumes along the corresponding axis in the fuel-map geometry.\\
+
+%\eject
+The shifting information records \{pshift\}, \{bshift\} and \{ishift\}
+will be composed using the following FORTRAN instructions, respectively, as 
+  \begin{displaymath}
+    \mathtt{WRITE(}\mathsf{pshift}\mathtt{,'(A6,I2)')} \ 
+   \mathtt{'PSHIFT'},ell
+  \end{displaymath}
+  \begin{displaymath}
+    \mathtt{WRITE(}\mathsf{bshift}\mathtt{,'(A6,I2)')} \ 
+   \mathtt{'BSHIFT'},ell
+  \end{displaymath}
+  \begin{displaymath}
+    \mathtt{WRITE(}\mathsf{ishift}\mathtt{,'(A6,I2)')} \ 
+   \mathtt{'ISHIFT'},ell
+  \end{displaymath}
+for $1\leq ell \leq N_{\rm sht}$. \\
+
+Each time a bundle is shifted and stay in the reactor, its burnup and power will be saved
+in the records \{bshift\} and \{pshift\}. For example, \{bshift i\} and \{pshift i\} will
+contain all the burnups and powers of bundles that have been shifted $i$-th time.
+
+\subsubsection{The \moc{FUEL} sub-directories}\label{sect:dirfuel}
+
+Each \moc{FUEL} sub-directory contains the information corresponding
+to a single fuel type. Inside each sub-directory, the following records
+will be found:
+
+\begin{DescriptionEnregistrement}{Records in \moc{FUEL} sub-directories}
+{7.0cm} \label{tabl:tabfuel}
+
+\IntEnr
+ {MIX\blank{9}}{$1$} {Fuel-type mixture number.}
+
+\IntEnr
+ {TOT\blank{9}}{$1$} {Total number of fuel bundles for this fuel type.}
+
+\IntEnr
+ {MIX-VOID\blank{4}}{$1$} {Voided-cell mixture number for this fuel type.}
+
+\RealEnr
+{WEIGHT\blank{6}}{$1$}{kg}
+{Fuel weight in a bundle for this fuel type.}
+
+\RealEnr
+{ENRICH\blank{6}}{$1$}{wt\%}
+{Fuel enrichment for this fuel type.}
+
+\RealEnr
+{POISON\blank{6}}{$1$}{}
+{Poison load for this fuel type.}
+
+\end{DescriptionEnregistrement}
+
+\subsubsection{The \{hcycle\} sub-directories}\label{sect:dirhcycle}
+
+Each \{hcycle\} sub-directory contains the information corresponding
+to a single PWR fuel cycle. Inside each sub-directory, the following records
+will be found:
+
+\begin{DescriptionEnregistrement}{Records in \{hcycle\} sub-directories}
+{7.0cm} \label{tabl:tabhcycle}
+
+\CharEnr
+ {ALIAS\blank{7}}{$(*12$}
+ {Name of the cycle sub-directory.}
+
+\RealEnr
+ {TIME\blank{8}}{$1$}{d}
+ {Depletion time corresponding to instantaneous burnup values.}
+
+\OptDirlEnr
+  {PARAM\blank{7}}{$N_{\rm parm}$}{$N_{\rm parm}>0$}
+  {List of parameter--type sub-directories corresponding to refuelling time. Each component of the list is a directory
+   containing the information relative to a single parameter (see Sect.~\ref{sect:dirparam}). The total number of sub-directories
+   corresponds to the total number of recorded parameters $N_{\rm parm}$ (excluding  burnups).}
+
+\RealEnr
+ {BURNAVG\blank{5}}{$1$}{MW d t$^{-1}$}
+ {Average burnup of the assembly.}
+
+\CharEnr
+ {NAME\blank{8}}{$(N_{\rm ch})*12$}
+ {Names of each assembly or of each quart-of assembly during a refuelling cycle. All
+ quart-of-assembly belonging to the same assembly have the same name.}
+
+\CharEnr
+ {CYCLE\blank{7}}{$(L_{\rm x}\times L_{\rm y})*4$}
+ {Shuffling matrix for refuelling as provided by the plant operator. The name "$|$"
+ is reserved for empty locations.}
+
+\IntEnr
+ {FLMIX\blank{7}}{$N_{\rm ch}, N_{\rm b}$}
+ {Fuel type indices per assembly subdivisions for each reactor channel.}
+
+\RealEnr
+ {BURN-INST\blank{3}}{$N_{\rm ch}, N_{\rm b}$}{MW d t$^{-1}$}
+ {Instantaneous burnups per assembly subdivisions for each channel.}
+
+\RealEnr
+ {POWER-BUND\blank{2}}{$N_{\rm ch}, N_{\rm b}$}{kW}
+ {Powers per assembly subdivisions for each channel.}
+
+\RealEnr
+ {K-EFFECTIVE\blank{1}}{$1$}{}
+ {Effective multiplication factor $k_{\mathrm{eff}}$.}
+
+\OptRealEnr
+ {FOLLOW\blank{6}}{$N_{\rm ch}, N_{\rm b}, N_{\rm is}$}{$N_{\rm is}>0$}{(cm b)$^{-1}$}
+ {Number densities of the particularized isotopes.}
+
+\end{DescriptionEnregistrement}
+
+\clearpage
+
+\subsubsection{The \moc{PARAM} sub-directories}\label{sect:dirparam}
+
+Each \moc{PARAM} sub-directory contains the information corresponding
+to a single local or global parameter (excluding  burnups). Inside a such sub-directory,
+the following records will be found:
+
+\begin{DescriptionEnregistrement}{Records in \moc{PARAM} sub-directories}
+{7.0cm} \label{tabl:tabparam}
+
+\CharEnr
+ {P-NAME\blank{6}}{$*12$} {Unique identification name of this parameter. This
+ name is user-defined; however, it is recommended to use the following pre-defined
+ values:
+
+\begin{tabular}{|c|l|}
+\hline
+{\tt C-BORE} & Boron concentration \\
+{\tt T-FUEL} & Averaged fuel temperature \\
+{\tt T-SURF} & Surfacic fuel temperature \\
+{\tt T-COOL} & Averaged coolant temperature \\
+{\tt D-COOL} & Averaged coolant density \\
+\hline
+\multicolumn{2}{|l|}{CANDU-only parameters:} \\
+\hline
+{\tt T-MODE} & Averaged moderator temperature\\
+{\tt D-MODE} & Averaged moderator density \\
+\hline
+\end{tabular}
+ }
+
+\CharEnr
+ {PARKEY\blank{6}}{$*12$} {Corresponding name of this parameter as recorded
+  in a multi-parameter Compo file.}
+
+\IntEnr
+ {P-TYPE\blank{6}}{$1$} {Number associated to the type of recorded parameter:
+ $ptype=1$ for global parameter; $ptype=2$ for local parameter.}
+
+\OptRealEnr
+ {P-VALUE\blank{5}}{$1$}{$ptype=1$}{}{Recorded single value for global parameter. Temperatures are given in K and densities are given in g/cc.}
+
+\OptRealEnr
+  {}{$N_{\rm ch}, N_{\rm b}$}{$ptype=2$}{}{Recorded values for local parameter per each fuel
+  bundle for every channel. Temperatures are given in K and densities are given in g/cc.}
+
+\end{DescriptionEnregistrement}
+
+\subsubsection{The \moc{ROD-INFO} sub-directory}\label{sect:dirrodinfo}
+
+The \moc{ROD-INFO} sub-directory contains the information corresponding
+to the local rod insertion for PWR. This sub-directory is created after the first calling to the \moc{ROD:} module. Inside this sub-directory,
+the following records will be found:
+
+\begin{DescriptionEnregistrement}{Records in \moc{ROD-INFO} sub-directories}
+{7.0cm} \label{tabl:tabrodinfo}
+
+\RealEnr
+ {ROD-INIT\blank{4}}{$1$}{} {Default value for the rod field. This value corresponds to no rod inserted.}
+
+\IntEnr
+ {INS-MAX\blank{5}}{$1$} {Number associated to the maximum of rod insertion steps possible.}
+
+\RealEnr
+ {STEP-CM\blank{5}}{$1$}{} {Length of one rod insertion step (in cm).}
+
+\IntEnr
+ {REFL-BOTTOM\blank{1}}{$1$} {Number of bottom reflective axial-planes.}
+
+\IntEnr
+ {NB-GROUP\blank{4}}{$1$} {Number of rod groups.}
+
+\IntEnr
+ {MAX-MIX\blank{5}}{$1$} {Maximum number of rod zones for all the rods defined.}
+
+\OptCharEnr
+ {ROD-NAME\blank{4}}{$(N_{\rm gr})*3$}{}
+ {Name of each rod group defined by user in {\tt ROD:} module.}
+
+\IntEnr
+ {ROD-INSERT\blank{2}}{$N_{gr}$} {Insertion of each rod group defined by user in {\tt ROD:} module.}
+
+\RealEnr
+ {ROD-RIN\blank{5}}{$N_{gr}, N_{mmix}$}{} {Rod identification numbers (RIN) for each rod group defined by user in {\tt ROD:} module.}
+
+\IntEnr
+ {ROD-NBZONE\blank{2}}{$N_{gr}$} {Number of RIN zones for each rod group defined by user in {\tt ROD:} module.}
+
+\RealEnr
+ {ROD-HEIGHT\blank{2}}{$N_{gr}, N_{mmix}$}{}
+ {Height between the bottom of the rod and the beginning of the RIN zone for each rod group and each RIN zone defined by user in {\tt ROD:} module.}
+
+\OptCharEnr
+ {ROD-MAP\blank{5}}{$(N_{\rm ch})*3$}{}
+ {Identification name corresponding to the rod map as defined by user
+ in {\tt ROD:} module.}
+
+\end{DescriptionEnregistrement}
+
+\subsubsection{The ASSEMBLY sub-directory}\label{sect:fmapdirass}
+
+\begin{DescriptionEnregistrement}{Assembly type sub-directory}{7.0cm}
+\CharEnr
+  {LABEL\blank{7}}{$*8$}
+  {Label of the assembly. It consists a 8 character name composed of the AYNAME and AXNAME}
+
+\RealEnr
+  {PIN-POWER\blank{3}}{$N_{pin}^2*N_{\rm z,ass}$}{}
+  {array containing the pin power for each pin on each mesh plane of the assembly.}
+
+\RealEnr
+  {ASS-POWER\blank{3}}{1}{}
+  {total assembly power.}
+
+\RealEnr
+  {SIG\_F*PHI\blank{3}}{$N_{pin}^2*N_{\rm z,ass}$}{}
+  {array containing the integral of $\Sigma_f$  times the flux for each pin on each mesh plane of the assembly.}
+
+\RealEnr
+  {FLUX\blank{8}}{$N_{pin}^2*N_{\rm z,ass}*N_g$}{}
+  {array containing the flux of each group for each pin on each mesh plane of the assembly.}
+
+\end{DescriptionEnregistrement}
+
+\clearpage

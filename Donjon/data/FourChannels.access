@@ -1,0 +1,11 @@
+#!/bin/sh
+if [ $# = 0 ]
+   then
+   echo "usage: FourChannels.access directory" 1>&2
+   exit 1
+fi
+ln -s "$1"/data/FourChannels_proc/macfme5 .
+ln -s "$1"/data/FourChannels_proc/fnat .
+ln -s "$1"/data/FourChannels_proc/rnat .
+ls -l
+echo "FourChannels access script terminated"

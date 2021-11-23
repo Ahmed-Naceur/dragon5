@@ -1,0 +1,320 @@
+*DECK MultLIBRARY2_32
+*----
+*  Name          : MultLIBRARY2_32.c2m
+*  Type          : DRAGON procedure
+*  Use           : Increase the number of mixes in the microlib
+*  Author        : R. Vallerent
+*
+*  Procedure called as: 
+*
+*  LIBRARY2 := MultLIBRARY2_32 LIBRARY2 ;
+*
+*  Input data  :
+*    LIBRARY2     : Microlib with the number of mixs of the self shielding
+*                calculation
+*
+*  Output data :
+*    LIBRARY2     : Microlib with the number of mixs of the Salome geometry
+
+
+PARAMETER  LIBRARY2  ::  
+       EDIT 0 
+           ::: LINKED_LIST LIBRARY2  ; 
+   ;
+*                                                                      ;
+MODULE LIB: END: ;
+
+LIBRARY2 := LIB: LIBRARY2 ::
+  EDIT 1
+  SKIP MACR
+  NMIX 161
+  
+  MIXS LIB: MICROLIB FIL: LIBRARY2
+
+* Multiplication pour C1
+MIX 13
+    COMB 3 1.0
+MIX 14
+    COMB 4 1.0
+MIX 15
+    COMB 5 1.0
+MIX 16
+    COMB 6 1.0
+    
+MIX 26
+    COMB 3 1.0
+MIX 27
+    COMB 4 1.0
+MIX 28
+    COMB 5 1.0
+MIX 29
+    COMB 6 1.0
+
+MIX 30
+    COMB 3 1.0
+MIX 31
+    COMB 4 1.0
+MIX 32
+    COMB 5 1.0
+MIX 33
+    COMB 6 1.0
+
+MIX 34
+    COMB 3 1.0
+MIX 35
+    COMB 4 1.0
+MIX 36
+    COMB 5 1.0
+MIX 37
+    COMB 6 1.0
+
+MIX 46
+    COMB 3 1.0
+MIX 47
+    COMB 4 1.0
+MIX 48
+    COMB 5 1.0
+MIX 49
+    COMB 6 1.0
+
+MIX 54
+    COMB 3 1.0
+MIX 55
+    COMB 4 1.0
+MIX 56
+    COMB 5 1.0
+MIX 57
+    COMB 6 1.0
+
+MIX 66
+    COMB 3 1.0
+MIX 67
+    COMB 4 1.0
+MIX 68
+    COMB 5 1.0
+MIX 69
+    COMB 6 1.0
+
+MIX 70
+    COMB 3 1.0
+MIX 71
+    COMB 4 1.0
+MIX 72
+    COMB 5 1.0
+MIX 73
+    COMB 6 1.0
+
+MIX 74
+    COMB 3 1.0
+MIX 75
+    COMB 4 1.0
+MIX 76
+    COMB 5 1.0
+MIX 77
+    COMB 6 1.0
+
+MIX 78
+    COMB 3 1.0
+MIX 79
+    COMB 4 1.0
+MIX 80
+    COMB 5 1.0
+MIX 81
+    COMB 6 1.0
+
+MIX 82
+    COMB 3 1.0
+MIX 83
+    COMB 4 1.0
+MIX 84
+    COMB 5 1.0
+MIX 85
+    COMB 6 1.0
+
+MIX 86
+    COMB 3 1.0
+MIX 87
+    COMB 4 1.0
+MIX 88
+    COMB 5 1.0
+MIX 89
+    COMB 6 1.0
+
+* Multiplication pour C2
+MIX 17
+    COMB 9 1.0
+MIX 18
+    COMB 10 1.0
+MIX 19
+    COMB 11 1.0
+MIX 20
+    COMB 12 1.0
+
+MIX 21
+    COMB 9 1.0
+MIX 22
+    COMB 10 1.0
+MIX 23
+    COMB 11 1.0
+MIX 24
+    COMB 12 1.0
+
+MIX 38
+    COMB 9 1.0
+MIX 39
+    COMB 10 1.0
+MIX 40
+    COMB 11 1.0
+MIX 41
+    COMB 12 1.0
+
+MIX 42
+    COMB 9 1.0
+MIX 43
+    COMB 10 1.0
+MIX 44
+    COMB 11 1.0
+MIX 45
+    COMB 12 1.0
+
+MIX 50
+    COMB 9 1.0
+MIX 51
+    COMB 10 1.0
+MIX 52
+    COMB 11 1.0
+MIX 53
+    COMB 12 1.0
+
+MIX 58
+    COMB 9 1.0
+MIX 59
+    COMB 10 1.0
+MIX 60
+    COMB 11 1.0
+MIX 61
+    COMB 12 1.0
+
+MIX 62
+    COMB 9 1.0
+MIX 63
+    COMB 10 1.0
+MIX 64
+    COMB 11 1.0
+MIX 65
+    COMB 12 1.0
+
+MIX 90
+    COMB 9 1.0
+MIX 91
+    COMB 10 1.0
+MIX 92
+    COMB 11 1.0
+MIX 93
+    COMB 12 1.0
+
+MIX 98
+    COMB 9 1.0
+MIX 99
+    COMB 10 1.0
+MIX 100
+    COMB 11 1.0
+MIX 101
+    COMB 12 1.0
+
+MIX 102
+    COMB 9 1.0
+MIX 103
+    COMB 10 1.0
+MIX 104
+    COMB 11 1.0
+MIX 105
+    COMB 12 1.0
+
+MIX 110
+    COMB 9 1.0
+MIX 111
+    COMB 10 1.0
+MIX 112
+    COMB 11 1.0
+MIX 113
+    COMB 12 1.0
+
+* Multiplication pour C3
+MIX 118
+    COMB 114 1.0
+MIX 119
+    COMB 115 1.0
+MIX 120
+    COMB 116 1.0
+MIX 121
+    COMB 117 1.0
+
+* Multiplication pour C4
+MIX 106
+    COMB 94 1.0
+MIX 107
+    COMB 95 1.0
+MIX 108
+    COMB 96 1.0
+MIX 109
+    COMB 97 1.0
+
+* Multiplication pour C6
+MIX 130
+    COMB 126 1.0
+MIX 131
+    COMB 127 1.0
+MIX 132
+    COMB 128 1.0
+MIX 133
+    COMB 129 1.0
+
+MIX 134
+    COMB 126 1.0
+MIX 135
+    COMB 127 1.0
+MIX 136
+    COMB 128 1.0
+MIX 137
+    COMB 129 1.0
+
+MIX 138
+    COMB 126 1.0
+MIX 139
+    COMB 127 1.0
+MIX 140
+    COMB 128 1.0
+MIX 141
+    COMB 129 1.0
+
+MIX 142
+    COMB 126 1.0
+MIX 143
+    COMB 127 1.0
+MIX 144
+    COMB 128 1.0
+MIX 145
+    COMB 129 1.0
+
+MIX 146
+    COMB 126 1.0
+MIX 147
+    COMB 127 1.0
+MIX 148
+    COMB 128 1.0
+MIX 149
+    COMB 129 1.0
+
+MIX 150
+    COMB 126 1.0
+MIX 151
+    COMB 127 1.0
+MIX 152
+    COMB 128 1.0
+MIX 153
+    COMB 129 1.0
+;
+
+END: ;
+QUIT .

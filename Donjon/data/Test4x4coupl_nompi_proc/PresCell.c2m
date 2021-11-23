@@ -1,0 +1,51 @@
+!
+! PROCEDURE:  PresCell
+! USAGE:      Fuel map description for 6*6 Cell
+! AUTHOR:     E.Varin (97/08/11)
+! CALL:
+!
+!  RESEAU INDEX := PresCell INDEX :: B1    ;
+!
+! NOTES:
+!         B1 = average exit burnup                                   
+!                                                                    
+ PARAMETER   RESEAU INDEX :: 
+  ::: LINKED_LIST RESEAU INDEX ; ;
+ MODULE      END: RESINI:  ;
+ REAL        B1  ;
+
+ :: >>B1<<   ;
+
+ RESEAU INDEX := RESINI: INDEX ::
+     ::: GEO:  CAR3D 4 4 4
+        EDIT  5
+                X- VOID      X+ VOID                                      
+                Y- VOID      Y+ VOID
+                Z- VOID      Z+ VOID
+        MIX
+           PLANE    1 
+
+               1 1 1 1 
+               1 1 1 1
+               1 1 1 1
+               1 1 1 1
+
+            PLANE 2  SAME 1
+            PLANE 3  SAME 1
+            PLANE 4  SAME 1
+
+             MESHX  0.0   28.575 57.15  85.725  114.3
+             MESHY  0.0   28.575 57.15  85.725  114.3
+             MESHZ  0.0   49.53  99.06 148.59  198.12 ;
+             NXNAME  '1' '2' '3' '4'
+             NYNAME  'A' 'B' 'C' 'D'
+             NCOMB 1
+             B-ZONE 
+               1 1 1 1 
+               1 1 1 1
+               1 1 1 1
+               1 1 1 1
+             BTYPE INST-BURN
+             INST-BVAL SAME <<B1>>
+  ;
+END: ;

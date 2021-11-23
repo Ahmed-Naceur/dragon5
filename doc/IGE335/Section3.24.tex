@@ -1,0 +1,32 @@
+\subsection{The \moc{T:} module}\label{sect:TData}
+
+A \dds{macrolib}  object can be defined directly using module \moc{MAC:} (see \Sect{MACData})
+or as part of a \dds{microlib} object using module \moc{LIB:} (see \Sect{LIBData}). It is possible to
+transpose a \dds{macrolib}  using the module \moc{T:}. Transposition consists in
+\begin{itemize}
+\item renumbering the energy groups from thermal to fast
+\item transposing the transfer matrices (\moc{SCAT}) so that the primary and secondary energy group indices are permuted
+\item storing \moc{NUSIGF} information in \moc{CHI} and storing \moc{CHI} infomation in \moc{NUSIGF}.
+\end{itemize}
+
+A transposed \dds{macrolib}  object permits to make adjoint flux calculations.
+
+\vskip 0.08cm
+
+The general format of the data for the \moc{T:} module is the following:
+
+\begin{DataStructure}{Structure \dstr{T:}} 
+\dusa{MACLIB1} \moc{:=} \moc{T:} $\{$ \dusa{MACLIB2} $|$ \dusa{LIBRARY} $\}$ \moc{;}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dusa{MACLIB1}] {\tt character*12} name of a the transposed \dds{macrolib}
+
+\item[\dusa{MACLIB2}] {\tt character*12} name of a the original \dds{macrolib}
+
+\item[\dusa{LIBRARY}] {\tt character*12} name of a the original \dds{microlib} containing an embedded \dds{macrolib}.
+
+\end{ListeDeDescription}
+\eject

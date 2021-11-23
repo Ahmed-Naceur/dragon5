@@ -1,0 +1,161 @@
+\subsection{Modules}\label{sect:mod}
+
+\vskip 0.2cm
+Reactor calculations using DONJON are performed by means of
+sequential execution of several user-selected modules, according to the
+user-defined computing scheme.
+Each module is designed to perform some particular tasks.
+The detailed description of DONJON modules is given in \Sect{modesc1}
+to \Sect{modesc4}.
+In order to perform the reactor calculations, it is also
+required to use some DRAGON and TRIVAC modules.
+For more details on DRAGON modules specification, refer to its user
+guide\cite{dragon}; for more details on TRIVAC modules
+specification, refer to its user guide\cite{trivac}.
+Because the code execution is controlled by the GAN generalized driver,
+it is also possible to use its utility modules\cite{gan1,dragon}.
+A brief description
+of each module that can be executed using DONJON is given below.
+A short description of each data structure that can be used in DONJON
+is given in \Sect{dat}.\\
+
+\vskip 0.2cm
+\begin{itemize}
+\item  The following DRAGON modules can be executed using DONJON:
+\end{itemize}
+
+\vskip 0.2cm
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{GEO:}] module used to create or modify a reactor geometry.
+The spatial locations of the reactor material mixtures must also be defined
+using the \moc{GEO:} module. Only \dusa{3-D} Cartesian reactor geometries
+are allowed with DONJON.
+
+\item[\moc{MAC:}] module used to create or modify a \dds{macrolib}
+containing the material properties, by directly specifying the group-ordered
+macroscopic cross-sections for each selected material mixture.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+\begin{itemize}
+\item  The following TRIVAC modules can be executed using DONJON:
+\end{itemize}
+
+\vskip 0.2cm
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{TRIVAT:}] module used to perform a \dusa{3-D}
+numerical discretization or ``tracking" of the reactor geometry.
+
+\item[\moc{TRIVAA:}] module used to compute the set of system
+matrices with respect to the previously obtained "tracking" information.
+
+\item[\moc{FLUD:}] module used to compute the numerical solution
+to an eigenvalue problem, corresponding to a previously obtained
+set of system matrices.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+\begin{itemize}
+\item  The following are short descriptions of utility modules that
+can be executed using DONJON:
+\end{itemize}
+
+\vskip 0.2cm
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{UTL:}] module used to perform several utility actions
+on a data structure.
+
+\item[\moc{DELETE:}] module used to delete one or many data structures.
+
+\item[\moc{GREP:}] module used to extract a single value from a data structure.
+
+\item[\moc{END:}] module used to delete all the local linked lists, to close
+all the remaining local files and to return from a procedure; or to terminate
+the overall DONJON execution controlled by the GAN generalized driver.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+\begin{itemize}
+\item  The following are short descriptions of DONJON modules:
+\end{itemize}
+
+\vskip 0.2cm
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{CRE:}] module used to  create a \dds{macrolib} containing
+the material properties, by interpolating the nuclear properties from a
+mono-parameter database, previously generated in the lattice code.
+
+\item[\moc{NCR:}] module used to create a \dds{microlib} or a \dds{macrolib} containing
+the material properties, by interpolating the nuclear properties from a
+multi-parameter database, previously generated in the lattice code.
+
+\item[\moc{AFM:}] module used to create a \dds{macrolib} containing
+the material properties, by interpolating the nuclear properties from a
+multi-parameter feedback model database, previously generated in the lattice code.
+
+\item[\moc{USPLIT:}] module used to create an extended reactor
+material index over the whole mesh-splitted reactor geometry.
+
+\item[\moc{RESINI:}] module used to define the fuel lattice, to create
+the fuel-map geometry and to specify the global and local parameters.
+
+\item[\moc{MACINI:}] module used to create an extended \dds{macrolib},
+in which the properties are stored per each material region, over the
+whole mesh-splitted reactor geometry.
+
+\item[\moc{DEVINI:}] module used for \dusa{3-D} modeling of rod-type
+devices in the reactor core.
+
+\item[\moc{DETINI:}] module used to read and store detector information.
+
+\item[\moc{LZC:}] module used for \dusa{3-D} modeling of liquid zone
+controllers in the reactor core.
+
+\item[\moc{DSET:}] module used to set the new devices parameters,
+that can be used for the reactivity worth studies.
+
+\item[\moc{MCC:}] module used to modify the fuel map in order to compute a Doppler
+or general reactivity coefficient.
+
+\item[\moc{MOVDEV:}] module used to compute the time-dependent
+positions of the moving rod-type devices.
+
+\item[\moc{NEWMAC:}] module used to create an extended \dds{macrolib},
+that will contain the updated material properties, computed with respect to
+the actual devices positions.
+
+\item[\moc{FLPOW:}] module used to compute and print powers
+and normalized fluxes over the reactor core.
+
+\item[\moc{TAVG:}] module used to perform burnups calculation
+according to the time-average model, compute burnups integration
+limits, core-average exit burnup, axial power-shapes and channel
+refuelling rates.
+
+\item[\moc{TINST:}] module used to perform burnups calculation
+according to the time-linear model and compute instantaneous burnups
+values. This module is specific to Candu reactor refuelling.
+
+\item[\moc{SIM:}] module used to perform burnups calculation
+according to the time-linear model and compute instantaneous burnups
+values. This module is specific to PWR reactor refuelling.
+
+\item[\moc{DETECT:}]  module used to compute the mean flux at each detector site
+and the response of each detector according to different types of
+interpolation.
+
+\item[\moc{CVR:}] module used for the core-voiding simulations.
+
+\item[\moc{HST:}]  module used to manage a full reactor execution in DONJON using explicit DRAGON
+calculations for each cell (see \Sect{HSTData}).\cite{hst}
+
+\item[\moc{NAP:}] pin power reconstruction module.\cite{Chambon2014,Fliscounakis2011}
+
+\end{ListeDeDescription}

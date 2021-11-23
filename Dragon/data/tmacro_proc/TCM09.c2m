@@ -1,0 +1,117 @@
+*----                                                              
+* TEST CASE TCM09                                              
+* MACROSCOPIC CROSS SECTIONS                                   
+* FIXED SOURCE PROBLEM                                         
+* CARTESIAN 3 X 3 ASSEMBLY                                     
+* WATANABE-MAYNARD PROBLEM SIMILAR TO TCM09                    
+*                                                              
+* REF: R. Roy, "The Cyclic Characteristics Method,"            
+*      Int. Conf. Physics of Nuclear Science and Technology,   
+*      Long Island, NY, October 1998, pp. 407-414.             
+*----
+*                                                              
+LINKED_LIST WATA WAT24 TRACK MACRO SYS FLUX EDITION ;
+SEQ_BINARY WATATRK ;
+STRING  PolarAng := "CACB" ;
+MODULE GEO: EXCELT: MCCGT: MAC: ASM: FLU: EDI: DELETE: END: ;
+PROCEDURE assertV ;
+*
+* MACROSCOPIC CROSS SECTIONS                                   
+MACRO := MAC: ::
+ NGRO 1 NMIX 3
+ READ INPUT 
+   MIX 1 TOTAL 0.2 SCAT 1 1 0.19 FIXE 6.4
+   MIX 2 TOTAL 0.2 SCAT 1 1 0.19
+   MIX 3 TOTAL 0.0 SCAT 1 1 0.00 ;
+* GEOMETRIES  ENTERED WITH SYMMETRIES                     
+* WAT24  - 24 X 24 REGIONS                                  
+WATA := GEO: :: CAR2D 3 3
+      X- DIAG X+ VOID
+      MESHX 0.00 1.25 5.00 10.00 
+      Y- REFL Y+ DIAG
+      MESHY 0.00 1.25 5.00 10.00 
+      MIX     1    3    2
+                   3    2
+                        2         ;
+WAT24 := GEO: WATA ::
+      SPLITX  3  9 12 
+      SPLITY  3  9 12       ;
+* SOLUTION FOR WAT24                                      
+TRACK WATATRK := EXCELT: WAT24 ::
+     TITLE 'TCM09: WATANABE-MAYNARD 24X24 '
+     MAXR 300 
+     TRAK TSPC 12 12.0 ;
+TRACK := MCCGT: TRACK WATATRK ::
+  EDIT 1 <<PolarAng>> 4
+  AAC 80 TMT EPSI 1E-5 MCU 2500
+  MAXI 1 KRYL 0 SCR 0 HDD 0.0 ;
+SYS := ASM: MACRO TRACK WATATRK :: 
+  EDIT 2 ARM ;
+FLUX := FLU: MACRO TRACK SYS WATATRK :: 
+  TYPE S THER 1.E-6 100 EXTE 1.E-6 100 ;
+* UPPER QUADRANT FLUX FOR 24X24                              
+* RESULTS GIVEN IN TABLE 1. (ref. p. 411 )                  
+EDITION := EDI: FLUX MACRO TRACK ::
+  EDIT 2 SAVE
+  MERGE REGION 
+  0 0 0 0 0 0 0 0 0 0 0 0   0  0  0  0  0  0  0  0  0  0  0  0
+    0 0 0 0 0 0 0 0 0 0 0   0  0  0  0  0  0  0  0  0  0  0  0
+      0 0 0 0 0 0 0 0 0 0   0  0  0  0  0  0  0  0  0  0  0  0
+        0 0 0 0 0 0 0 0 0   0  0  0  0  0  0  0  0  0  0  0  0
+          0 0 0 0 0 0 0 0   0  0  0  0  0  0  0  0  0  0  0  0
+            0 0 0 0 0 0 0   0  0  0  0  0  0  0  0  0  0  0  0
+              0 0 0 0 0 0   0  0  0  0  0  0  0  0  0  0  0  0
+                0 0 0 0 0   0  0  0  0  0  0  0  0  0  0  0  0
+                  0 0 0 0   0  0  0  0  0  0  0  0  0  0  0  0
+                    0 0 0   0  0  0  0  0  0  0  0  0  0  0  0
+                      0 0   0  0  0  0  0  0  0  0  0  0  0  0
+                        0   0  0  0  0  0  0  0  0  0  0  0  0
+
+                            0  0  0  0  0  0  0  0  0  0  0  0
+                               1  0  0  2  0  0  3  0  0  4  0
+                                  0  0  0  0  0  0  0  0  0  0
+                                     0  0  0  0  0  0  0  0  0
+                                        5  0  0  6  0  0  7  0
+                                           0  0  0  0  0  0  0
+                                              0  0  0  0  0  0
+                                                 8  0  0  9  0
+                                                    0  0  0  0
+                                                       0  0  0
+                                                         10  0
+                                                             0
+  ;
+* FLUX AT X=5.625CM FOR 24X24
+EDITION := EDI: EDITION  FLUX MACRO TRACK ::
+  EDIT 2 SAVE
+  MERGE REGION 
+  0 0 0 0 0 0 0 0 0 0 0 0   0  1  0  0  0  0  0  0  0  0  0  0
+    0 0 0 0 0 0 0 0 0 0 0   0  2  0  0  0  0  0  0  0  0  0  0
+      0 0 0 0 0 0 0 0 0 0   0  3  0  0  0  0  0  0  0  0  0  0
+        0 0 0 0 0 0 0 0 0   0  4  0  0  0  0  0  0  0  0  0  0
+          0 0 0 0 0 0 0 0   0  5  0  0  0  0  0  0  0  0  0  0
+            0 0 0 0 0 0 0   0  6  0  0  0  0  0  0  0  0  0  0
+              0 0 0 0 0 0   0  7  0  0  0  0  0  0  0  0  0  0
+                0 0 0 0 0   0  8  0  0  0  0  0  0  0  0  0  0
+                  0 0 0 0   0  9  0  0  0  0  0  0  0  0  0  0
+                    0 0 0   0 10  0  0  0  0  0  0  0  0  0  0
+                      0 0   0 11  0  0  0  0  0  0  0  0  0  0
+                        0   0 12  0  0  0  0  0  0  0  0  0  0
+
+                            0 13  0  0  0  0  0  0  0  0  0  0
+                              14 15 16 17 18 19 20 21 22 23 24
+                                  0  0  0  0  0  0  0  0  0  0
+                                     0  0  0  0  0  0  0  0  0
+                                        0  0  0  0  0  0  0  0
+                                           0  0  0  0  0  0  0
+                                              0  0  0  0  0  0
+                                                 0  0  0  0  0
+                                                    0  0  0  0
+                                                       0  0  0
+                                                          0  0
+                                                             0
+  ;
+WATATRK := DELETE: WATATRK ;
+assertV FLUX :: 'FLUX' (*GROUP*) 1 (*REGION*) 30 4.896158 ;
+ECHO "test TCM09 completed" ;
+END: ;
+QUIT "LIST" .

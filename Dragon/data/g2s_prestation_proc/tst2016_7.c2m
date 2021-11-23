@@ -1,0 +1,72 @@
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  MACRO GEOM TRACK SYS FLUX ;
+SEQ_BINARY
+  SEQTRK ;
+MODULE
+  GEO: G2S: SALT: MAC: ASM: FLU: TLM: END: ;
+SEQ_ASCII Fil_SAL.tdt :: FILE './d77_SAL_g2s.tdt' ;
+SEQ_ASCII Fil_SAL.ps :: FILE './d77_SAL_g2s.ps' ;
+INTEGER an2d := 8 ;
+REAL densur := 20.0 ;
+PROCEDURE assertS ;
+*----
+* Macroscopic XS
+*----
+MACRO :=  MAC: ::
+  NGRO 1 NMIX 2 NIFI 1
+  READ INPUT
+  MIX 1 TOTAL  1.250  SCAT 1 1  1.242  
+        NUSIGF 0.37  CHI 1.0
+  MIX 2 TOTAL  0.625  SCAT 1 1  0.355
+  ;
+*----
+GEOM := GEO: :: CAR2D 4 4 (*7 X 7 ASSEMBLY*)
+          X- DIAG X+ REFL
+          Y- SYME Y+ DIAG
+          CELL C1 C3 C1 C3
+                  C2 C1 C1
+                     C3 C1
+                        C4
+          ::: C1 := GEO: CARCEL 2
+              RADIUS 0.000 0.3 0.650
+              MIX 1  2  2
+              MESHX -0.625  0.625
+              MESHY -0.625  0.625 ;
+          ::: C2 := GEO: CARCEL 1
+              SECT 4 1
+              RADIUS 0.000 0.450
+              MIX 1  2 2 2 2 2 2 2 2 2 2 2 2
+              MESHX -0.625  0.625
+              MESHY -0.625  0.625 ;
+          ::: C3 := GEO: CARCEL 0
+              SECT 4 0
+              MIX 2 2 2 2 2 2 2 2 2 2 2 2
+              MESHX -0.625  0.625
+              MESHY -0.625  0.625 ;
+          ::: C4 := GEO: CARCEL 2
+              SECT 3 1
+              RADIUS 0.000 0.3 0.650
+              MIX 1  1 1 1 1 1 1 1 1  2 2 2 2 2 2 2 2
+              MESHX -0.625  0.625
+              MESHY -0.625  0.625 ;
+          ;
+
+Fil_SAL.tdt Fil_SAL.ps := G2S: GEOM :: DRAWNOD ;
+TRACK SEQTRK := SALT: Fil_SAL.tdt ::
+  EDIT 10
+  TSPC <<an2d>> <<densur>> REND ;
+
+SYS := ASM: MACRO TRACK SEQTRK ;
+*---- 
+*  Solution : K-EFFECTIVE
+*----
+FLUX := FLU: SYS MACRO TRACK ::
+  TYPE K
+  ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9003599 ;
+ECHO "test tst2016_7 completed" ;
+END: ;
+QUIT "LIST" .

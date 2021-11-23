@@ -1,0 +1,429 @@
+\subsection{The {\tt COMPO:} module}\label{sect:COMPOData}
+
+This component of the lattice code is dedicated to the constitution of the
+reactor database intended to store {\sl all} the nuclear data, produced in
+the lattice code, that is useful
+in reactor calculations including fuel management and space-time kinetics.
+Multigroup lattice calculations are too expensive to be executed dynamically
+from the driver of the global reactor calculation. A more feasible
+approach is to create a reactor database where a finite number of lattice
+calculation results are tabulated against selected {\sl global} and/or {\sl local parameters}
+chosen so as to represent expected operating conditions of the reactor.
+
+\vskip 0.1cm
+
+The {\tt COMPO:} module is used to create and construct a {\sc multicompo} object.
+This object is generally {\sl persistent} and used to collect information gathered
+from many DRAGON {\sl elementary calculations} performed under various conditions.
+
+\vskip 0.1cm
+
+For each elementary calculation, the results are recovered from the output of the
+{\tt EDI:} module and stored in a list of {\sl homogenized mixture}
+directories. The {\tt EDI:} module is responsible for performing condensation
+in energy, homogenization in space of the microscopic cross sections and constitution
+of {\sl macroscopic sets} for collecting together many isotopes. All the elementary
+calculations gathered in a single {\sc multicompo} object are characterized by the same
+number of {\sl homogenized mixtures} and by a specific output energy-group structure.
+
+\vskip 0.1cm
+
+\begin{figure}[h!]
+\begin{center} 
+\epsfxsize=9cm
+\centerline{ \epsffile{compo.eps}}
+\parbox{15cm}{\caption{Organization of a {\tt multicompo} 
+object.}\label{fig:compo}}   
+\end{center}  
+\end{figure}
+
+Each elementary calculation is characterized by a tuple of {\sl global} and/or {\sl local parameters}
+Global parameters are characteristics of the complete lattice, while local parameters
+are characteristics of each homogenized mixture. These parameters are of different types,
+depending on the nature of the
+study under consideration: type of assembly, power, temperature in a mixture,
+concentration of an isotope, time, burnup or exposure rate in a depletion calculation,
+etc. Each step of a depletion calculation represents an elementay calculation.
+The {\sc multicompo} object is often presented as a {\sl multi-parameter reactor database}.
+
+\vskip 0.1cm
+
+\begin{figure}[h!]  
+\begin{center} 
+\epsfxsize=9.5cm
+\centerline{ \epsffile{tree.eps}}
+\parbox{14cm}{\caption{Parameter tree in a {\sc multicompo} object}\label{fig:ctree}}   
+\end{center}  
+\end{figure}
+
+The {\sc multicompo} object is organized as shown in \Fig{compo}. The root of the object contains
+table--of--content information for global and local parameters and two lists of
+directories. Each component of the first list ({\tt 'MIXTURES'})
+contains the directory {\tt 'TREE'} (the parameter tree) and the list ({\tt 'CALCULATIONS'})
+made of {\sc microlib} objects. Each component of the second list ({\tt 'GEOMETRIES'}) contains the homogenized
+geometry of an elementary calculation.
+
+\vskip 0.1cm
+
+The localization of an elementary calculation is done using
+a tuple of global and/or local parameters. The elementary calculation indices are
+stored in a tree with the number of levels equal to the number of global and local parameters.
+An example of a tree with three parameters is shown in \Fig{ctree}. Each node
+of this tree is associated with the index of the corresponding parameter and with the
+reference to the daughter nodes if they exist. The number if leafs is equal to the number
+of nodes for the last (third) parameter and is equal to the number of elementary
+calculations stored in the {\sc multicompo} object. The index of each elementary calculation is
+therefore an attribute of each leaf.
+
+\vskip 0.1cm
+
+In each homogenized mixture component, the {\tt COMPO:} module recover
+cross sections for a number of {\sl particularized isotopes} and of a single {\sl macroscopic
+set}, a collection of the remaining isotopic cross sections weighted by isotopic number densities.
+Other information is also recovered: multigroup neutron
+fluxes, isotopic number densities, fission spectrum, delayed neutron data, etc.
+
+\vskip 0.1cm
+
+A different specification of the \moc{COMPO:} function call is used for
+creation and construction of the {\sc multicompo} object.
+\begin{itemize}
+\item The first specification is used to initialize the {\sc multicompo} data structure
+and to set the choice of global and local parameters.
+\item A modification call to the \moc{COMPO:} function is performed after each
+elementary calculation in order to recover output information processed by \moc{EDI:}
+(condensed and homogenized cross sections) and \moc{EVO:} (burnup dependant values).
+Global and local parameters can optionnally be recovered from \dds{microlib}
+objects.
+\item Another modification call to the \moc{COMPO:} function is used to
+catenate a {\sl read-only} {\sc multicompo} object into a {\sl master} {\sc multicompo} object.
+\end{itemize}
+
+The calling specifications are:
+
+\begin{DataStructure}{Structure \dstr{COMPO:}}
+$\{$~~\dusa{CPONAM} \moc{:=} \moc{COMPO:} $[$ \dusa{CPONAM} $]$ \moc{::} \dstr{compo\_data1} \\
+$|$~~\dusa{CPONAM} \moc{:=} \moc{COMPO:} \dusa{CPONAM}~\dusa{EDINAM}~$[$ \dusa{EDINA2} $]~[$ \dusa{BRNNAM} $]~[$~\dusa{HMIC1}~$[$~\dusa{HMIC2} $]~]$ \\
+~~~~~~~~~~~~~~ \moc{::} \dstr{compo\_data2} \\
+$|$~~\dusa{CPONAM} \moc{:=} \moc{COMPO:} \dusa{CPONAM} \dusa{CPORHS} \moc{::} \dstr{compo\_data3} \\
+$|$~~\moc{COMPO:} \dusa{CPONAM} \moc{::} \dstr{compo\_data4}~~$\}$ \\
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\dusa{CPONAM}] {\tt character*12} name of the {\sc lcm} object containing the
+{\sl master} {\sc multicompo} data structure.
+
+\item[\dusa{EDINAM}] {\tt character*12} name of the {\sc lcm} object (type {\tt
+L\_EDIT}) containing the {\sc edition} data structure corresponding to an elementary
+calculation. This {\sc edition} data structure is containing homogenized and
+condensed cross-section information. The {\sc edition} data produced by the last call
+to the {\tt EDI:} module is used. It is possible to provide a {\sc macrolib} data structure
+as replacement for the {\sc edition} data structure. In this case, the \moc{MACRO} keyword
+is automatically set.
+
+\item[\dusa{EDINA2}] {\tt character*12} name of an optional {\sc lcm} object (type {\tt
+L\_EDIT}) containing the {\sc edition} data structure corresponding to an elementary
+calculation. This {\sc edition} data structure is containing {\sl group form factor}
+information. The {\sc edition} data produced by the last call to the {\tt EDI:} module
+is used.
+
+\item[\dusa{BRNNAM}] {\tt character*12} name of the {\sc lcm} object (type {\tt
+L\_BURNUP}) containing the {\sc burnup} data structure.
+
+\item[\dusa{HMIC1}] {\tt character*12} name of a \dds{microlib} (type {\tt
+L\_LIBRARY}) containing global parameter information.
+
+\item[\dusa{HMIC2}] {\tt character*12} name of a \dds{microlib} (type {\tt
+L\_LIBRARY}) containing global parameter information.
+
+\item[\dusa{CPORHS}] {\tt character*12} name of the {\sl read-only} {\sc multicompo} data structure. This
+data structure is concatenated to \dusa{CPONAM} using the \dusa{compo\_data3} data structure,
+as presented in \Sect{desccpo3}. \dusa{CPORHS} must be defined with the same number of energy
+groups and the same number of homogeneous regions as \dusa{CPONAM}. Moreover, all the
+global and local parameters of \dusa{CPORHS} must be defined in \dusa{CPONAM}. \dusa{CPONAM}
+may be defined with {\sl global} parameters not defined in \dusa{CPORHS}.
+
+\item[\dusa{compo\_data1}] input data structure containing initialization information (see \Sect{desccpo1}).
+
+\item[\dusa{compo\_data2}] input data structure containing information related to the recovery of an
+elementary calculation (see \Sect{desccpo2}).
+
+\item[\dusa{compo\_data3}] input data structure containing information related to the catenation of a
+{\sl read-only} {\sc multicompo} (see \Sect{desccpo3}).
+
+\item[\dusa{compo\_data4}] input data structure containing information related to the display of a
+{\sl read-only} {\sc multicompo} (see \Sect{desccpo4}).
+
+\end{ListeDeDescription}
+
+\subsubsection{Initialization data input for module {\tt COMPO:}}\label{sect:desccpo1}
+
+\vskip -0.5cm
+
+\begin{DataStructure}{Structure \dstr{compo\_data1}}
+$[$~\moc{EDIT} \dusa{iprint}~$]$ \\
+$[[~[$ \moc{STEP} \moc{UP} \dusa{NAMDIR} $]$ \\
+~~~$[$~\moc{MAXCAL} \dusa{maxcal}~$]$ \\
+~~~$[$~\moc{COMM}~$[[$~\dusa{HCOM}~$]]$~\moc{ENDC}~$]$ \\
+~~~$[[$~\moc{PARA}~\dusa{PARKEY} \\
+~~~~~~\{~\moc{TEMP}~\dusa{HMIC}~\dusa{imix}~$|$~\moc{CONC}~\dusa{HISO1}~\dusa{HMIC}~\dusa{imix}~$|$~\moc{IRRA}~$|$~\moc{FLUB}~$|$ \\
+~~~~~~~~~\moc{POWR}~$|$~\moc{MASL}~$|$~\moc{FLUX}~$|$~\moc{TIME}~$|$~\moc{VALU}~\{~\moc{REAL}~$|$~\moc{CHAR}~$|$~\moc{INTE}~\}~\} \\
+~~~$]]$ \\
+~~~$[[$~\moc{LOCA}~\dusa{PARKEY} \\
+~~~~~~\{~\moc{TEMP}~$|$~\moc{CONC}~\dusa{HISO2}~$|$~\moc{IRRA}~$|$~\moc{FLUB}~$|$~\moc{FLUG}~$|$~\moc{POWR}~$|$~\moc{MASL}~$|$~\moc{FLUX}~\} \\
+~~~$]]$ \\
+$[$~\moc{ISOT}~\dusa{nisp} (\dusa{HISOP}(i),i=1,\dusa{nisp})~$]$ \\
+$[$ \moc{GFF} $]~[~\{$ \moc{NOALBP} $|$ \moc{ALBP} $\}~]~[~\{$ \moc{NOJSURF} $|$ \moc{JSURF} $\}~]$ \\
+\moc{INIT} $]]$ \\
+{\tt ;}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing in module {\tt
+COMPO:}. =0 for no print; =1 for minimum printing (default value).
+
+\item[\moc{STEP}] keyword used to create the database from a sub-directory named \dusa{NAMDIR}. This capability
+make possible the creation of a single object with many independent {\sc multicompo} structures in it. By default,
+the database is created on directory {\tt 'default'}.
+
+\item[\moc{UP}] keyword used to move up towards a sub-directory of \dusa{CPONAM}.
+
+\item[\dusa{NAMDIR}] create the {\sc multicompo} structure in the sub-directory named \dusa{NAMDIR}.
+
+\item[\moc{MAXCAL}] keyword used to set \dusa{maxcal}.
+
+\item[\dusa{maxcal}] maximum number of elementary calculations to be stored
+in the {\sc multicompo}. \dusa{maxcal}$=10$ by default. This maximum size is
+automatically increased when the number of elementary calculations exceeds
+the current value of \dusa{maxcal}.
+
+\item[\moc{COMM}] keyword used to input a general comment for the {\sc multicompo}.
+
+\item[\dusa{HCOM}] {\tt character*80} user-defined comment.
+
+\item[\moc{ENDC}] end--of--HCOM keyword.
+
+\item[\moc{PARA}] keyword used to define a single global parameter.
+
+\item[\moc{LOCA}] keyword used to define a single local parameter.
+
+\item[\dusa{PARKEY}] {\tt character*12} user-defined keyword associated to a global
+or local parameter.
+
+\item[\dusa{HMIC}] {\tt character*12} name of the \dds{microlib} (type {\tt
+L\_LIBRARY}) associated to a global parameter. The corresponding \dds{microlib} will be required on
+RHS of the \moc{COMPO:} call described in Sect.~\ref{sect:desccpo2}.
+
+\item[\dusa{imix}] index of the mixture associated to a global parameter. This mixture is
+located in \dds{microlib} named \dusa{HMIC}.
+
+\item[\dusa{HISO1}] {\tt character*8} alias name of the isotope associated to a global
+parameter. This isotope is located in \dds{microlib} data structure named \dusa{HMIC}.
+
+\item[\dusa{HISO2}] {\tt character*8} alias name of the isotope associated to a local
+parameter. This isotope is located in the \dds{microlib} directory of the {\sc edition}
+data structure named \dusa{EDINAM}.
+
+\item[\moc{TEMP}] keyword used to define a temperature (in Kelvin) as global or
+local parameter.
+
+\item[\moc{CONC}] keyword used to define a number density as global or
+local parameter.
+
+\item[\moc{IRRA}] keyword used to define a burnup (in MWday/Tonne) as global
+or local parameter.
+
+\item[\moc{FLUB}] keyword used to define a {\sl fuel-only} exposure rate (in n/kb) as global
+or local parameter. The exposure rate is recovered from the \dusa{BRNNAM}
+LCM object.
+
+\item[\moc{FLUG}] keyword used to define an exposure rate in global homogenized mixtures (in n/kb) as
+local parameter. The exposure rate is recovered from the \dusa{BRNNAM}
+LCM object.
+
+\item[\moc{POWR}] keyword used to define the power as global or
+local parameter.
+
+\item[\moc{MASL}] keyword used to define the mass density of heavy isotopes as
+global or local parameter.
+
+\item[\moc{FLUX}] keyword used to define the volume-averaged, energy-integrated flux as
+global or local parameter.
+
+\item[\moc{TIME}] keyword used to define the time (in seconds) as global parameter.
+
+\item[\moc{VALU}] keyword used to define a user-defined quantity as global parameter.
+This keyword must be followed by the type of parameter.
+
+\item[\moc{REAL}] keyword used to indicate that the user-defined global parameter
+is a floating point value.
+
+\item[\moc{CHAR}] keyword used to indicate that the user-defined global parameter
+is a {\tt character*12} value.
+
+\item[\moc{INTE}] keyword used to indicate that the user-defined global parameter
+is an integer value.
+
+\item[\moc{ISOT}] keyword used to select the set of particularized isotopes. By default, all the
+isotopes available in the {\sc edition} data structure \dusa{EDINAM} are selected.
+
+\item[\dusa{nisp}] number of user-defined particularized isotopes.
+
+\item[\dusa{HISOP}] {\tt character*8} names of the user-defined particularized isotopes. These names must be present
+in the {\sc edition} data structure \dusa{EDINAM}.
+
+\item[\moc{GFF}] keyword used to enable the recovery of group form factor information from {\sc edition} data structure \dusa{EDINA2}.
+
+\item[\moc{NOALBP}] keyword used to avoid the recovery of physical albedo information from {\sc edition} data structure \dusa{EDINAM}.
+
+\item[\moc{ALBP}] keyword used to enable the recovery of physical albedo information from {\sc edition} data structure \dusa{EDINAM} (default option).
+
+\item[\moc{NOJSURF}] keyword used to avoid the recovery of discontinuity factor and boundary multigroup current information from {\sc edition} data structure \dusa{EDINAM}.
+
+\item[\moc{JSURF}] keyword used to enable the recovery of discontinuity factor and boundary multigroup current information from {\sc edition} data structure \dusa{EDINAM} (default option).
+
+\item[\moc{INIT}] keyword used to create the empty structure in the {\sc multicompo}.
+
+\end{ListeDeDescription}
+
+\clearpage
+
+\subsubsection{Modification data input for module {\tt COMPO:}}\label{sect:desccpo2}
+
+\vskip -0.5cm
+
+\begin{DataStructure}{Structure \dstr{compo\_data2}}
+$[$ \moc{EDIT} \dusa{iprint} $]$ \\
+$[$ \moc{ALLX} $]$ \\
+$[$ \moc{STEP} \moc{UP} $\{$ \dusa{NAMDIR} $|$ \moc{*} $\}~]$ \\
+$[$ \moc{ORIG} \dusa{orig} $]$ \\
+$[[$ \dusa{PARKEY} \dusa{value} $]]$ \\
+$[$ \moc{MACRO} $]~[$ \moc{SET} \dusa{xtr} $\{$ \moc{S} $|$ \moc{DAY} $|$ \moc{YEAR} $\}$ $]$ \\
+{\tt ;}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing in module {\tt
+COMPO:}. =0 for no print; =1 for minimum printing (default value).
+
+\item[\moc{ALLX}] keyword used to register the region number of each isotope before merging. This option is useful if the same
+keyword has been specified in \moc{EDI:} before. This allows to perform subsequent depletion calculations, in taking into account
+different fuel regions in the diffusion calculation.
+
+\item[\moc{STEP}] keyword used to access the database from a sub-directory named \dusa{NAMDIR} instead of
+accessing it from the root of \dusa{CPONAM}.
+
+\item[\moc{UP}] keyword used to move up towards a sub-directory of \dusa{CPONAM}.
+
+\item[\dusa{NAMDIR}] access the {\sc multicompo} structure in the sub-directory named \dusa{NAMDIR}.
+
+\item[\moc{*}] use a sub-directory name identical to the directory in \dusa{EDINAM}
+where the edition data is coming from.
+
+\item[\dusa{PARKEY}] {\tt character*12} keyword associated to a user-defined
+global parameter.
+
+\item[\dusa{value}] floating-point, integer or {\tt character*12} value of a user-defined
+global parameter.
+
+\item[\moc{ORIG}] keyword used to define the father node in the parameter tree. By
+default, the index of the previous elementary calculation is used.
+
+\item[\dusa{orig}] index of the elementary calculation associated to the father node in the
+parameter tree.
+
+\item[\moc{MACRO}] keyword used to recover cross-section information from the
+macrolib directory in \dusa{EDINAM}. By default, the cross-section information
+is recovered from the microlib in \dusa{EDINAM}.
+
+\item[\moc{SET}] keyword used to recover the flux normalization factor already
+stored on \dusa{BRNNAM} from a sub-directory corresponding to a specific time.
+
+\item[\dusa{xtr}] time associated with the current flux calculation. The
+name of the sub-directory where this information is stored will be given by
+`{\tt DEPL-DAT}'//{\tt CNN} where {\tt CNN} is a  {\tt character*4} variable
+defined by  {\tt WRITE(CNN,'(I4.4)') INN} where {\tt INN} is an index associated
+with the time \dusa{xtr}.
+
+\item[\moc{S}] keyword to specify that the time is given in seconds.
+
+\item[\moc{DAY}] keyword to specify that the time is given in days.
+
+\item[\moc{YEAR}] keyword to specify that the time is given in years.
+
+\end{ListeDeDescription}
+
+\subsubsection{Modification (catenate) data input for module {\tt COMPO:}}\label{sect:desccpo3}
+
+\vskip -0.5cm
+
+\begin{DataStructure}{Structure \dstr{compo\_data3}}
+$[$ \moc{EDIT} \dusa{iprint} $]$ \\
+$[$ \moc{STEP} \moc{UP} \dusa{NAMDIR} $]$ \\
+$[$ \moc{ORIG} \dusa{orig} $]$ \\
+$[[$ \dusa{PARKEY} \dusa{value} $]]$ \\
+$[$ \moc{WARNING-ONLY} $]$ \\
+{\tt ;}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing in module {\tt
+COMPO:}. =0 for no print; =1 for minimum printing (default value).
+
+\item[\dusa{PARKEY}] {\tt character*12} keyword associated to a
+global parameter that is specific to \dusa{CPONAM} (not defined in \dusa{CPORHS}).
+
+\item[\dusa{value}] floating-point, integer or {\tt character*12} value of a
+global parameter that is specific to \dusa{CPONAM}.
+
+\item[\moc{ORIG}] keyword used to define the father node in the parameter tree. By
+default, the index of the previous elementary calculation is used.
+
+\item[\dusa{orig}] index of the elementary calculation associated to the father node in the
+parameter tree.
+
+\item[\moc{WARNING-ONLY}] This option is useful if an elementary calculation in \dusa{CPORHS} 
+is already present in \dusa{CPONAM}. If this keyword is set, a warning is send and the \dusa{CPONAM} values
+are kept, otherwise the run is aborted (default).
+
+\end{ListeDeDescription}
+
+\subsubsection{Display data input for module {\tt COMPO:}}\label{sect:desccpo4}
+
+\vskip -0.5cm
+
+\begin{DataStructure}{Structure \dstr{compo\_data4}}
+$[$ \moc{EDIT} \dusa{iprint} $]$ \\
+$[$ \moc{STEP} \moc{UP} \dusa{NAMDIR} $]$ \\
+$[$ \moc{EDIT} \dusa{iprint} $]$ \\
+ \moc{DB-STRUC} \\
+{\tt ;}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing in module {\tt
+COMPO:}. $<$2 for MUPLET display only (default value) and parameters values are presented at the end, $\ge$2 for the parameter value display for each calculation.
+
+\item[\moc{DB-STRUC}] {\tt character*12} keyword used to display the content of the \dusa{CPONAM} object for the \dusa{NAMDIR} directory.
+
+\end{ListeDeDescription}
+
+\clearpage

@@ -1,0 +1,89 @@
+#
+# Instructions for configuring Version5 components on MS-DOS system
+#
+cd %homepath%\Version5\
+.\script\instver5
+
+#
+# Instructions for configuring Version5 of Dragon/Donjon on UNIX systems
+#
+# To configure Version5 components with custom compiler using makefiles:
+cd ~/Version5/Donjon/
+make
+make clean
+#
+# To build an OpenMP-enabled version, simply write
+make openmp=1
+#
+# To execute the non-regression tests:
+make tests
+#
+# On AIX and Solaris OS, you must use GNU Make:
+cd ~/Version5/Donjon/
+gmake
+gmake clean
+gmake tests
+
+#
+# To configure Version5 components with custom compiler:
+cd ~/Version5/Utilib/
+../script/install
+cd ~/Version5/Ganlib/
+../script/install
+cd ~/Version5/Trivac/
+../script/install
+cd ~/Version5/Dragon/
+../script/install
+cd ~/Version5/Donjon/
+../script/install
+cd ~/Version5/Skin++/
+../script/install
+
+# You can use the "-noopt" option to disable the "-O" switch.
+# Eg: ../script/install -noopt
+
+# You can use the "-debug" option to enable the "-g" switch.
+# Eg: ../script/install -debug
+
+# To configure Version5 components with Intel compiler:
+cd ~/Version5/Utilib/
+../script/install intel
+cd ~/Version5/Ganlib/
+../script/install intel
+cd ~/Version5/Trivac/
+../script/install intel
+cd ~/Version5/Dragon/
+../script/install intel
+cd ~/Version5/Donjon/
+../script/install intel
+
+# "intel" can be replaced with "g95".
+
+# To execute Trivac with custom compiler:
+cd ~/Version5/Trivac/
+./rtrivac iaea3d.x2m
+
+# In case of bug:
+./rtrivac iaea3d.x2m -w
+
+# To execute Dragon with custom compiler:
+cd ~/Version5/Dragon/
+./rdragon iaea2d.x2m
+
+# In case of bug:
+./rdragon iaea2d.x2m -w
+
+# To execute Dragon with Intel compiler:
+cd ~/Version5/Dragon/
+./rdragon iaea2d.x2m intel
+
+# To execute Donjon with custom compiler:
+cd ~/Version5/Donjon/
+./rdonjon Candu6.x2m
+
+# To configure the doc
+cd ~/Version5/doc/IGE335
+./install
+
+# To read the doc:
+gv -antialias ~/Version5/doc/IGE335/IGE335.pdf

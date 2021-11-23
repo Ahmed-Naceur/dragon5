@@ -1,0 +1,97 @@
+\subsection{The {\tt CHAB:} module}\label{sect:CHABData}
+
+This component of the lattice code is dedicated to the modification of cross section
+information in a {\sc microlib}.
+
+\vskip 0.02cm
+
+The calling specifications are:
+
+\begin{DataStructure}{Structure \dstr{CHAB:}}
+$\{$~\dusa{MICRO1}~$|$~\dusa{DRAGLIB1}~$\}$~\moc{:=}~\moc{CHAB:}~$\{$~\dusa{MICRO1}~$|$~\dusa{MICRO2}~$|$~\dusa{DRAGLIB2}~$\}$~\moc{::}~\dstr{CHAB\_data} \\
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\dusa{MICRO1}] {\tt character*12} name of a {\sc microlib} (type {\tt L\_LIBRARY}) object that is created or modified by {\tt CHAB:}.
+
+\item[\dusa{DRAGLIB1}] {\tt character*12} name of a {\sc draglib} (type {\tt L\_DRAGLIB}) object that is created by {\tt CHAB:}.
+
+\item[\dusa{MICRO2}] {\tt character*12} name of a {\sc microlib} (type {\tt L\_LIBRARY}) object open in read-only mode.
+
+\item[\dusa{DRAGLIB2}] {\tt character*12} name of a {\sc draglib} (type {\tt L\_DRAGLIB}) object open in read-only mode.
+
+\item[\dusa{CHAB\_data}] input data structure containing specific data (see \Sect{descCHAB}).
+
+\end{ListeDeDescription}
+
+\subsubsection{Data input for module {\tt CHAB:}}\label{sect:descCHAB}
+
+\vskip -0.5cm
+
+\begin{DataStructure}{Structure \dstr{CHAB\_data}}
+$[$~\moc{EDIT} \dusa{iprint}~$]$ \\
+$[[$~\moc{MODI} \dusa{TYPSEC} \dusa{igm} \moc{TO} \dusa{igp} $\{$
+\moc{VALE}~$[[$~\dusa{val}~$]]~|$~\moc{CONS}~\dusa{value}~$|$~\moc{PLUS}~\dusa{value}~$|$~\moc{MULT}~\dusa{value} $\}$ \dusa{HISOT}~$]]$
+{\tt ;}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing in module {\tt CHAB:}. =0 for no print; =1 for minimum printing (default value).
+
+\item[\moc{MODI}] keyword used to define a modification of a nuclear reaction belonging to a given isotope.
+
+\item[\dusa{TYPSEC}] {\tt character*8} name of an existing nuclear reaction chosen among the following values:
+\begin{description}
+\item[{\tt 'NTOT0'}] Total cross section.
+\item[{\tt 'NG'}] Radiative capture cross section. The total ({\tt 'NTOT0'}) cross section is modified accordingly.
+\item[{\tt 'NA'}] $(n,\alpha)$ cross section. The total ({\tt 'NTOT0'}) cross section is modified accordingly.
+\item[{\tt 'NP'}] $(n,p)$ cross section. The total ({\tt 'NTOT0'}) cross section is modified accordingly.
+\item[{\tt 'ND'}] $(n,d)$ cross section. The total ({\tt 'NTOT0'}) cross section is modified accordingly.
+\item[{\tt 'NT'}] $(n,t)$ cross section. The total ({\tt 'NTOT0'}) cross section is modified accordingly.
+\item[{\tt 'CAPT'}] Capture cross sections. Each present reaction of capture (\textbf{NG}, \textbf{NA}, \textbf{NP}, \textbf{ND}, \textbf{NT}) are taken into account. The total ({\tt 'NTOT0'}) cross section is modified accordingly. Only the keyword \textbf{MULT}, indicating a multiplication of the all cross sections, is available.
+\item[{\tt 'NELAS'}] Elastic scattering cross section. The scattering ({\tt 'SIGS00'} and {\tt 'SCAT00'}) and total
+({\tt 'NTOT0'}) cross sections are modified accordingly.
+\item[{\tt 'NINEL'}] Inelastic scattering cross section. The scattering ({\tt 'SIGS00'} and {\tt 'SCAT00'}) and total
+({\tt 'NTOT0'}) cross sections are modified accordingly.
+\item[{\tt 'N2N'}] ($n$,$2n$) cross section. The scattering ({\tt 'SIGS00'} and {\tt 'SCAT00'}) and total
+({\tt 'NTOT0'}) cross sections are modified accordingly.
+\item[{\tt 'N3N'}] ($n$,$3n$) cross section. The scattering ({\tt 'SIGS00'} and {\tt 'SCAT00'}) and total
+({\tt 'NTOT0'}) cross sections are modified accordingly.
+\item[{\tt 'N4N'}] ($n$,$4n$) cross section. The scattering ({\tt 'SIGS00'} and {\tt 'SCAT00'}) and total
+({\tt 'NTOT0'}) cross sections are modified accordingly.
+\item[{\tt 'SIGS00'}, {\tt 'SIGS01'}, etc.] Scattering cross section. The total ({\tt 'NTOT0'}) cross section is modified accordingly.
+\item[{\tt 'SCAT00'}, {\tt 'SCAT01'}, etc.] Differential scattering cross section. The total ({\tt 'NTOT0'}) cross section is modified accordingly.
+\item[{\tt 'NUSIGF'}] $\nu$ times the fission cross section. The fission ({\tt 'NFTOT'}) and total ({\tt 'NTOT0'}) cross sections are modified accordingly.
+\item[{\tt 'NFTOT'}] Fission cross section. The $\nu$ times fission ({\tt 'NUSIGF'}) and total ({\tt 'NTOT0'}) cross sections are modified accordingly.
+\item[{\tt 'NU'}] Number of neutrons emitted per fission.The $\nu$ times fission ({\tt 'NUSIGF'}) cross section is modified accordingly.
+\item[{\tt 'CHI'}] Fission spectrum. The resulting spectrum is normalized.
+\end{description}
+
+\item[\dusa{igm}] lower energy group index of the energy domain where the modification is taking place.
+
+\item[\dusa{igp}] upper energy group index of the energy domain where the modification is taking place.
+
+\item[\moc{VALE}] keyword indicating a replacement of all values in the above energy domain by different values.
+
+\item[\dusa{val}] group--dependent real variable used as replacement value. We expect \dusa{igp}$-$\dusa{igm}$+$1 components.
+
+\item[\moc{CONS}] keyword indicating a replacement of all values in the above energy domain by \dusa{value}.
+
+\item[\moc{PLUS}] keyword indicating that \dusa{value} is added to all values in the above energy domain.
+
+\item[\moc{MULT}] keyword indicating a multiplication of all values in the above energy domain by \dusa{value}.
+
+\item[\dusa{value}] real variable used to modify the nuclear reaction.
+
+\item[\dusa{HISOT}] {\tt character*8} or {\tt character*12} name of the isotope to modify. If \dusa{HISOT} is a {\tt character*8} value,
+all {\tt character*12} isotope names prefixed by \dusa{HISOT} are modified.
+
+\end{ListeDeDescription}
+
+\eject

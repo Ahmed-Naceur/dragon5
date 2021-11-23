@@ -1,0 +1,374 @@
+*----
+*  Name          : channel_mphy.x2m
+*  Type          : DONJON CLE2000 procedure
+*  Author        : Paul Gallet (2014)
+*
+*  Simple transient multiphysics calculation over a single PWR fuel
+*  assembly
+*----
+*  STRUCTURES, MODULES and PROCEDURES definitions
+*----
+LINKED_LIST Flux Fmap Matex Cpo CpRefl Track Thm SystemP MacroP
+            Kinet_0 Kinet Macro_0 Syst_0 MacroF Macro1 PowerP ;
+MODULE      END: TRIVAA: THM: INIKIN: NCR: FLPOW: MACINI: KINSOL: ;
+MODULE      GREP: DELETE: UTL: ABORT: ;
+PROCEDURE   IniPowCompo PowComponent ThmComponent GetDim ;
+INTEGER     iter := 1 ;
+INTEGER     Itps := 0 ;
+INTEGER     Iter2 := 0 ;
+INTEGER     Niter ;
+REAL        powi := 17.3 ; ! Reference at 17.3 MW
+REAL        densB := 1200.0 ;
+REAL        InitTime ;
+REAL        RealTime := 0.0 ;
+REAL        TemRTV PreRTV DT ;
+REAL        Pini := 15500000.0 ;
+REAL        Tini := 560.95 ;
+REAL        TimeTot := 40.0 ;
+REAL tcm tfm dcm tcmax tfmax dcmax RPT ;
+REAL tfr tsr tgr twr tcr dcr tfe tse tge ;
+REAL twe tce dce tfs tss tgs tws tcs dcs powm ;
+REAL sigf1mo sigf1rd sigf2mo sigf2rd ;
+REAL sign1mo sign1rd sign2mo sign2rd ;
+REAL sigs1mo sigs1rd sigs2mo sigs2rd ;
+REAL siga1mo siga1rd siga2mo siga2rd ;
+REAL Rcomb1 Rcomb2 Rcomb3 Rcomb4
+     R_int_TG R_ext_TG R_int_TI R_ext_TI R_int_G R_ext_G
+     Cote Lame CoteL
+     RmodeN1 RmodeN2 
+     R_ext_G2 R_ext_TGm R_ext_TIm
+     N_U5_UOX N_U5_MOX
+     N_Pu8 N_Pu9 N_Pu0 N_Pu1 N_Pu2 N_Am1
+     densU_UOX densU_MOX densPu_MOX
+     teneur1_Pu teneur2_Pu teneur3_Pu
+     temp_comb temp_mode dens_mode
+     temp_comb_0 temp_mode_0 dens_mode_0 ;    
+REAL pbore_0 := 500. ; ! natural boron concentration in ppm
+REAL Powf REFVALUE DELTA ;
+DOUBLE RPTOT ;
+STRING TimeIncr ;
+STRING  Dir := "EDI2B" ;
+LOGICAL     CONV CONVTP CONVIT ;
+SEQ_ASCII   _ACompo :: FILE "./_ACompo" ;
+
+GetDim ::
+    >>Rcomb1<< >>Rcomb2<< >>Rcomb3<< >>Rcomb4<<
+    >>R_int_TG<< >>R_ext_TG<< >>R_int_TI<< >>R_ext_TI<<
+    >>R_int_G<< >>R_ext_G<< >>Cote<< >>Lame<< >>CoteL<<
+    >>RmodeN1<< >>RmodeN2<< >>R_ext_G2<< >>R_ext_TGm<< >>R_ext_TIm<<
+    >>N_U5_UOX<< >>N_U5_MOX<< >>N_Pu8<< >>N_Pu9<< >>N_Pu0<<
+    >>N_Pu1<< >>N_Pu2<< >>N_Am1<< >>densU_UOX<< >>densU_MOX<<
+    >>densPu_MOX<< >>teneur1_Pu<< >>teneur2_Pu<< >>teneur3_Pu<<
+    >>temp_comb_0<< >>temp_mode_0<< >>dens_mode_0<< ;
+
+Fmap Matex Cpo CpRefl Track := IniPowCompo ;
+
+REPEAT
+
+  IF iter 1 = THEN
+    Fmap Matex MacroP Flux := PowComponent Fmap Matex Cpo CpRefl
+                                  Track :: <<iter>> <<powi>> <<densB>> ;
+
+    Fmap Thm := ThmComponent Fmap :: <<iter>> <<densB>> >>CONV<< ;
+  ELSE
+    MacroP := DELETE: MacroP ;
+    Fmap Matex MacroP Flux := PowComponent Fmap Matex Flux Cpo 
+                        CpRefl Track :: <<iter>> <<powi>> <<densB>> ;
+
+    Fmap Thm := ThmComponent Fmap Thm :: <<iter>> <<densB>> >>CONV<< ;
+  ENDIF ;
+
+  EVALUATE iter := iter 1 + ;
+
+UNTIL CONV ;
+
+ECHO "-----------------------------------------" ;
+ECHO "Initialization of the kinetics parameters" ;
+ECHO "-----------------------------------------" ;
+
+SystemP := TRIVAA: MacroP Track :: UNIT ;
+
+Kinet_0 := INIKIN: MacroP Track SystemP Flux ::
+ EDIT 1
+ NORM POWER-INI <<powi>>
+;
+
+Flux := DELETE: Flux ;
+
+*--
+* Begin transient loop
+*--
+
+REPEAT
+
+Macro_0 := MacroP ;
+Syst_0 := SystemP ;
+
+EVALUATE Itps := Itps 1 + ;
+
+IF Itps 200 <= THEN
+   EVALUATE DT := 0.100 ;
+ELSEIF Itps 400 <= THEN
+   EVALUATE DT := 0.050 ;
+ELSEIF Itps 900 <= THEN
+   EVALUATE DT := 0.100 ;
+ELSEIF Itps 4000 <= THEN
+   EVALUATE DT := 0.050 ;
+ELSE
+   EVALUATE DT := 0.100 ;
+ENDIF ;
+
+* Calculation of the thermohydraulic inlet parameters 
+* for the current time step
+EVALUATE InitTime := RealTime ;
+EVALUATE RealTime := RealTime DT + ;
+
+* Current inlet temperature
+IF RealTime 20.0 <= THEN !Normally RealTime 60.0 <= 
+* Normally Tini 25.0 300.0 / RealTime * -
+   EVALUATE TemRTV := Tini ;
+ELSEIF RealTime 320.0 <= THEN
+   EVALUATE TemRTV := Tini 25.0 300.0 / RealTime 20.0 - * - ;
+ELSEIF RealTime 500.0 <= THEN
+   EVALUATE TemRTV := TemRTV ;
+ELSE
+   ECHO "-----" ;
+   ECHO "Curent inlet temperature not defined for this time step" ;
+   ECHO "-----" ;
+   ABORT: ;
+ENDIF ;
+
+* Current inlet pressure
+IF RealTime 20.0 <= THEN
+   EVALUATE PreRTV := Pini ;
+ELSEIF RealTime 80.0 <= THEN
+* Normally Pini 2000000.0 60.0 / RealTime * - ;
+   EVALUATE PreRTV := Pini 2000000.0 60.0 / RealTime 20.0 - * - ;
+ELSEIF RealTime 320.0 <= THEN
+* Normally 13500000.0 1500000.0 240.0 / RealTime 60.0 - * - ;
+   EVALUATE PreRTV := 13500000.0 1500000.0 240.0 / RealTime 80.0 - * - ;
+ELSEIF RealTime 500.0 <= THEN
+   EVALUATE PreRTV := PreRTV ;
+ELSE
+   ECHO "-----" ;
+   ECHO "Curent inlet pressure not defined for this time step" ;
+   ECHO "-----" ;
+   ABORT: ;
+ENDIF ;
+
+* Evaluate the number of multiphysics iterations for the current time step
+IF RealTime 1.0 <= THEN
+   EVALUATE Niter := 10 ;
+ELSEIF RealTime 20.0 <= THEN
+   EVALUATE Niter := 8 ;
+ELSEIF RealTime 320.0 <= THEN
+   EVALUATE Niter := 12 ;
+ELSE 
+   EVALUATE Niter := 8 ;
+ENDIF ;
+
+REPEAT 
+
+EVALUATE Iter2 := Iter2 1 + ;
+
+Kinet := Kinet_0 ;
+
+ECHO "-----------------------------------------------------" ;
+ECHO "Transient Thermo-hydraulics coupling loop" ;
+ECHO "Itps=" Itps "----" "Time (s)=" RealTime "----" "Iter2=" Iter2 ;
+ECHO "-----------------------------------------------------" ;
+
+ECHO "Niter=" Niter "DT=" DT "PreRTV=" PreRTV "TemRTV=" TemRTV ;
+
+ECHO "Thermo-hydraulic calculation with " ;
+ECHO " new input physical parameters" ;
+
+* Thermo-hydraulic calculation
+Thm Fmap := THM: Thm Fmap ::
+ EDIT 4
+ TIME <<InitTime>> <<DT>>
+ CRITFL 1.80E+6 (* W/m^2 *)
+ ASSMB 264 25
+ CWSECT 3.86 (* m^2 *) 67398.0 (* m^3/hr *)
+ CONV 50 50 50 0.5 1.0E-3
+ INLET <<PreRTV>> (* Pa *) <<TemRTV>> (* K *)
+ RADIUS 0.4095E-2 0.418E-2 0.475E-2 0.6025E-2 (* m *)
+ RODMESH 5 10
+ RELAX 0.5
+;
+
+ECHO "Cross section database interpolation with new" ;
+ECHO "thermo-hydraulic parameters" ;
+
+MacroP SystemP := DELETE: MacroP SystemP ;
+
+MacroF := NCR: Cpo Fmap ::
+             EDIT 1
+             MACRO LINEAR
+             TABLE Cpo <<Dir>> 'burnup'
+               MIX 1 INST-BURN
+                     SET LINEAR 'burnup' MAP
+                     SET LINEAR 'ppmBore' <<pbore_0>>
+                     SET CUBIC 'TF' <<temp_comb_0>>
+                     SET CUBIC 'TCA' <<temp_mode_0>>
+                     SET CUBIC 'DCA' <<dens_mode_0>>
+                     ADD 'ppmBore' <<pbore_0>> MAP
+                        REF 'burnup' SAMEASREF
+                            'TF' <<temp_comb_0>>
+                            'TCA' <<temp_mode_0>>
+                            'DCA' <<dens_mode_0>>
+                        ENDREF
+                     ADD 'TCA' <<temp_mode_0>> MAP
+                        REF 'burnup' SAMEASREF
+                            'ppmBore' <<pbore_0>>
+                            'TF' <<temp_comb_0>>
+                            'DCA' <<dens_mode_0>>
+                        ENDREF
+                     ADD 'TF' <<temp_comb_0>> MAP
+                        REF 'burnup' SAMEASREF
+                            'ppmBore' <<pbore_0>>
+                            'TCA' <<temp_mode_0>>
+                            'DCA' <<dens_mode_0>>
+                        ENDREF
+                     ADD 'DCA' <<dens_mode_0>> MAP
+                        REF 'burnup' SAMEASREF
+                            'ppmBore' <<pbore_0>>
+                            'TCA' <<temp_mode_0>>
+                            'TF' <<temp_comb_0>>
+                        ENDREF
+               ENDMIX
+;
+  
+  Macro1 := NCR: CpRefl ::
+               EDIT 1
+               MACRO LINEAR NMIX 2
+               COMPO CpRefl 'default'
+               MIX 2 FROM 1 SET 'C-BORE' <<densB>> ENDMIX (*lower*)
+;
+
+ECHO "Macrolib generation for the kinetics neutronics calculation" ;
+
+* Macrolib generation
+
+MacroP Matex := MACINI: Matex Macro1 MacroF ;
+
+SystemP := TRIVAA: MacroP Track :: UNIT ;
+
+ECHO "Transient flux calculation using Kinsol module" ;
+
+* Transient flux calculation using Kinsol module
+Kinet := KINSOL: Kinet MacroP Track SystemP Macro_0 Syst_0 ::
+ EDIT 1
+ DELTA <<DT>>
+ SCHEME FLUX CRANK
+ PREC EXPON
+;
+
+ECHO "Transient power calculation using FLPOW module" ;
+
+* Power calculation using FLPOW module
+PowerP Fmap := FLPOW: Fmap Kinet Track Matex ;
+
+IF Iter2 Niter = THEN
+* Create the string to get the parameters recorded in the Thm object
+    IF Itps 10 < THEN
+       EVALUATE TimeIncr := "TIMESTEP000" Itps I_TO_S + ;
+    ELSEIF Itps 100 < THEN
+       EVALUATE TimeIncr := "TIMESTEP00" Itps I_TO_S + ;
+    ELSEIF Itps 1000 < THEN
+       EVALUATE TimeIncr := "TIMESTEP0" Itps I_TO_S + ;
+    ELSE
+       EVALUATE TimeIncr := "TIMESTEP" Itps I_TO_S + ;
+    ENDIF ;
+    
+* Extraction of the ouput parameters
+* Power (in MW)
+    GREP: PowerP :: GETVAL 'PTOT' 1 >>RPTOT<< ;
+* Maximum Temperatures (in K) of coolant & fuel
+* and density of coolant (g/cm3)
+    GREP: Fmap :: STEP UP PARAM STEP AT 2
+                  MAXVAL P-VALUE 1 * >>tfmax<< ;
+    GREP: Fmap :: STEP UP PARAM STEP AT 3
+                  MAXVAL P-VALUE 1 * >>tcmax<< ;
+    GREP: Fmap :: STEP UP PARAM STEP AT 4
+                  MAXVAL P-VALUE 1 * >>dcmax<< ;
+* Print the mean thermohydraulic parameters values by
+* reading MAP LCM object
+    GREP: Fmap :: STEP UP PARAM STEP AT 2
+                  MEAN P-VALUE 1 * >>tfm<< ;
+    GREP: Fmap :: STEP UP PARAM STEP AT 3
+                  MEAN P-VALUE 1 * >>tcm<< ;
+    GREP: Fmap :: STEP UP PARAM STEP AT 4
+                  MEAN P-VALUE 1 * >>dcm<< ; 
+* Recover the values of the neutron cross sections  in the reactor
+
+* Group 1 : Fast Neutrons
+    GREP: MacroP :: STEP UP GROUP
+                    STEP AT 1
+                    MEAN NUSIGF 1 * >>sigf1mo<< ;
+    GREP: MacroP :: STEP UP GROUP
+                    STEP AT 1
+                    MEAN SIGS00 1 * >>sigs1mo<< ;  
+    GREP: MacroP :: STEP UP GROUP
+                    STEP AT 1
+                    MEAN NTOT0 1 * >>sign1mo<< ;
+                    
+* Group 2 : thermal Neutrons
+    GREP: MacroP :: STEP UP GROUP
+                    STEP AT 2
+                    MEAN NUSIGF 1 * >>sigf2mo<< ;
+    GREP: MacroP :: STEP UP GROUP
+                    STEP AT 2
+                    MEAN SIGS00 1 * >>sigs2mo<< ; 
+    GREP: MacroP :: STEP UP GROUP
+                    STEP AT 2
+                    MEAN NTOT0 1 * >>sign2mo<< ;
+    EVALUATE siga1mo := sign1mo sigs1mo - ;
+    EVALUATE siga2mo := sign2mo sigs2mo - ;
+* Print all the parameters in the listing file
+    EVALUATE RPT := 1.0E+6 RPTOT D_TO_R * ;
+    ECHO "ZPE" PreRTV TemRTV ; !Entry parameters
+    ECHO "ZXF" RealTime RPT tfm tcm ; !Mean parameters
+    ECHO "ZCF" dcm tfmax tcmax dcmax ; !Max Parameters
+    ECHO "SGF" sigf1mo sigf2mo ; !Fission cross sections
+    ECHO "SGA" siga1mo siga2mo ; !Absorption cross sections
+    
+ENDIF ;
+
+MacroF Macro1 PowerP := DELETE: MacroF Macro1 PowerP ;
+
+IF Iter2 Niter < THEN
+   Kinet := DELETE: Kinet ;
+ENDIF ;
+
+EVALUATE CONVIT := Iter2 Niter 1 - > ;
+
+UNTIL CONVIT ;
+
+EVALUATE Iter2 := 0 ;
+
+Kinet_0 Macro_0 Syst_0 := DELETE: Kinet_0 Macro_0 Syst_0 ;
+Kinet_0 := Kinet ;
+GREP: Kinet :: GETVAL 'E-POW' 1 >>Powf<< ;
+Kinet := DELETE: Kinet ;
+
+EVALUATE CONVTP := RealTime TimeTot >= ;
+
+UNTIL CONVTP ;
+
+ECHO "Final power=" Powf ;
+EVALUATE REFVALUE := 18.153 ;
+EVALUATE DELTA := Powf REFVALUE - REFVALUE / ABS ;
+IF DELTA 1.0E-2 < THEN
+  PRINT "TEST SUCCESSFUL; DELTA=" DELTA ;
+ELSE
+  PRINT "------------" ;
+  PRINT "TEST FAILURE" ;
+  PRINT "------------" ;
+  PRINT "REFERENCE=" REFVALUE " CALCULATED=" Powf ;
+  ABORT: ;
+ENDIF ;
+
+ECHO "test channel_mphy.x2m completed" ;
+END: ;
+QUIT "LIST" .

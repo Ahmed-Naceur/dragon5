@@ -1,0 +1,68 @@
+*----
+*  Name          : TEST Test_SPH_void_bfgs.x2m
+*  Author        : Alain Hebert (2018)
+*
+*  17 X 17 PWR VOIDED ASSEMBLY WITH NEWTONIAN SPH EQUIVALENCE
+*  Apply SPH correction on albedo factors
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  SPHGEOM MTRACK MACRO MACRO2 SYS OPTIM OUT CALC ;
+MODULE
+  GEO: MAC: TRIVAT: TRIVAA: FLUD: DELETE: UTL: GREP: END: ;
+DOUBLE Fobj ;
+SEQ_ASCII _OUTV :: FILE './_OUTV' ;
+PROCEDURE SPH_LNSR_imp ;
+PROCEDURE assertS ;
+INTEGER nstart := 10 ;
+INTEGER hist_nr := 0 ;
+INTEGER IterEmax := 1000 ;
+
+*----
+* TRANSPORT-DIFFUSION NEWTONIAN SPH EQUIVALENCE
+*----
+OUT := _OUTV ;
+SPHGEOM := GEO: :: CAR2D 9 9
+  X- DIAG X+ ALBE 1 Y- SYME Y+ DIAG
+  MIX   1  2  3  4  5  6  7  8  9
+          10 11 12 13 14 15 16 17
+             18 19 20 21 22 23 24
+                25 26 27 28 29 30
+                   31 32 33 34 35
+                      36 37 38 39
+                         40 41 42
+                            43 44
+                               45
+  MESHX 0.0 1.26471996 2.52943993 3.79415989 5.05887985
+        6.32359982 7.58831978 8.85303974 10.1177597 11.4324799
+  MESHY 0.0 1.26471996 2.52943993 3.79415989 5.05887985
+        6.32359982 7.58831978 8.85303974 10.1177597 11.4324799
+;
+MTRACK := TRIVAT: SPHGEOM :: DUAL (*IELEM=*) 1 (*ICOL=*) 1
+                  SPN 3 SCAT 1 ;
+MACRO := OUT :: STEP UP 'REF-CASE0001' STEP UP 'MACROLIB' ;
+*----
+* Set physical albedos
+*----
+MACRO := MAC: MACRO :: ALBP 1 0.0 0.0 ;
+*----
+* Perform Newtonian SPH equivalence
+*----
+MACRO2 OPTIM := SPH_LNSR_imp MACRO SPHGEOM MTRACK
+   :: 'BFGS' <<hist_nr>> 0.2 3.5 1.0E-10 <<nstart>> <<IterEmax>> ;
+ECHO "control variables at convergence" ;
+UTL: OPTIM :: IMPR 'VAR-VALUE' * ;
+
+GREP: OPTIM :: GETVAL 'FOBJ-CST-VAL' 1 >>Fobj<< ;
+ECHO "optimal objective function=" Fobj ;
+*----
+* Verification calculation
+*----
+SYS := TRIVAA: MACRO2 MTRACK ;
+CALC := FLUD: SYS MTRACK :: EDIT 2 ADI 5 ACCE 5 3 ;
+assertS CALC :: K-EFFECTIVE 1 0.4554051 ;
+
+ECHO "test Test_SPH_void_bfgs completed" ;
+END: ; 
+QUIT "LIST" .

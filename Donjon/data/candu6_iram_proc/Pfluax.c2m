@@ -1,0 +1,110 @@
+!***********************************************************************
+!*                                                                    **
+!* PROCEDURE:  Pfluax                                                 **
+!* USAGE:      Flux calculation for Gentilly2 for axial Flux shape    **
+!*             convergence or criticality on exit burnup (TAVG COMP)  **
+!* NOTES:                                                             **
+!*        Precf= Static Flux calculation precision                    **
+!*        Pow  = total fission Power                                  **
+!*        Eps1 = error on Flux form                                   **
+!*        Keff = effective mutltiplication factor                     **
+!*                                                                    **
+!* Notice : the Reseau must containt the appropriate BURNUP-ZONE      **
+!***********************************************************************
+ PARAMETER     Reseau Flux System Mactot Macres Macnod Index Track Cpo
+               Macro Device ::
+           ::: 
+   LINKED_LIST  Reseau Flux System Mactot Macres Macnod Index Cpo Macro
+                Device Track ;
+           ;
+
+ MODULE    TAVG: CRE: MACINI: NEWMAC: TRIVAA: FLUD: FLPOW: GREP:
+           DELETE: END: ;
+
+ LINKED_LIST  Power Macrso Macro2 Macro3 ;
+
+!* Declaration and initialization of variables
+!*********************************************
+ INTEGER New Iprint ;
+ REAL Precf Eps1 epsilon Keff Pow ;
+ EVALUATE Eps1 := 1.0 ;
+ EVALUATE epsilon := 1.E-4 ;
+
+!* Recover the procedure arguments
+!*********************************
+ :: >>Precf<< >>Pow<< >>New<< >>Iprint<< ;
+
+!* Iterative strategy to converge on the axial Flux shape
+!********************************************************
+ INTEGER Iter := 0 ;
+
+ IF Iprint 1 > THEN 
+  ECHO "*************************" ;
+  ECHO "* Flux CALCULATION - TA *" ;
+  ECHO "*************************" ;
+ ENDIF ;
+ EVALUATE Eps1  := epsilon 1. + ;
+
+ WHILE Eps1 epsilon > Iter 20 < * DO
+   ECHO "Eps1=" Eps1 "epsilon" epsilon ;
+   
+   EVALUATE Iter := Iter 1 + ;
+   IF Iter 1 > THEN 
+     Macrso Macro2 Macro3 :=  DELETE: Macrso Macro2 Macro3  ;
+   ENDIF ;
+*--
+* fuel-map Macrolib:
+*--
+   Macrso := CRE: Cpo Reseau :: EDIT 1 READ
+            TABLE Cpo MIX 1 'MIXTRXE    1' MICRO ALL ENDMIX ;
+*--
+* extended Macrolib:
+*--
+   Macro2 Index := MACINI: Index Macro Macrso :: EDIT 0 ;
+*--
+* complete Macrolib:
+*--
+   Macro3 Index := NEWMAC: Index Macro2 Device :: EDIT 0 ;
+*--
+* numerical solution:
+*--
+   IF Iter 1 = New 1 = * THEN 
+     System := TRIVAA: Macro3 Track :: EDIT 0 ;
+     Flux := FLUD: System Track :: EDIT 1
+             ACCE 3 3  ADI 4  EXTE 1000 <<Precf>> ADJ ;
+   ELSE
+     System := TRIVAA: System Macro3 Track :: EDIT 0 ;
+     Flux := FLUD: Flux System Track :: 
+             EDIT 1 EXTE 1000 <<Precf>> ADJ ;
+   ENDIF ;
+*--
+* Flux and Power:
+*--
+   Power := FLPOW: Reseau Flux Track Index ::
+            EDIT 0 PTOT <<Pow>> ;
+*--
+* burnups integration limits:
+*--
+   Reseau := TAVG: Reseau Power :: EDIT 1 AX-SHAPE RELAX 0.65 ;
+   GREP: Power :: GETVAL 'K-EFFECTIVE' 1 >>Keff<< ;
+   Power := DELETE: Power ;
+*--
+* current parameters:
+*--
+   GREP: Reseau :: GETVAL EPS-AX 1 >>Eps1<< ;
+
+   IF Iprint 1 > THEN 
+     ECHO "Axial convergence factor : " Eps1 ;
+     ECHO "Internal iteration number: " Iter ;
+     ECHO "Keffective               : " Keff ;
+   ENDIF ;
+*
+ ENDWHILE ;
+
+ Macres := Macrso ;
+ Macnod := Macro2 ;
+ Mactot := Macro3 ;
+
+ END: ;
+
+QUIT .

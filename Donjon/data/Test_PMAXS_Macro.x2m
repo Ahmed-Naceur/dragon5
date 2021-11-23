@@ -1,0 +1,270 @@
+*----
+*  Nom          : Test_PMAXS_Macro.x2m
+*  Type         : DONJON dataset
+*  Description  : Reference testcase based on rep900.x2m.
+*----
+*  Definition of STRUCTURES, MODULES and PROCEDURES
+*----
+LINKED_LIST Track System Flux GeoCoeur Macro Power Nflux ;
+MODULE      TRIVAT: TRIVAA: FLUD: GREP: GEO: MAC: DELETE: ABORT: END:
+            NCR: PCR: FLPOW: ;
+XSM_FILE    CpRefl_xsm ;
+SEQ_ASCII   CpRefl :: FILE 'Refl_xs' ;
+SEQ_ASCII   PMAXS1 :: FILE 'Gen_UOX_37.PMAX' ;
+PROCEDURE   assertS ;
+
+*----
+*  Local parameters
+*----
+REAL    burn := 11.75 ;            (*burnup (MW-d/tonne)*)
+REAL    densB := 1000.0 ;          (*boron concentration*)
+REAL    Tfuel1 := 318.20357 SQRT ; (*fuel temperature (K)*)
+REAL    Tfuel2 := 418.20357 SQRT ; (*fuel temperature (K)*)
+REAL    Tcool := 283.10000 ;       (*coolant temperature (K)*)
+REAL    Dcool := 0.7400000 ;       (*coolant density (g/cc)*)
+*----
+*  Calculation options
+*----
+INTEGER Splitx Splitz := 2 1        ;
+INTEGER Splitz_refl   := 2          ;
+REAL    rPavX := 17. ; ! 17 x 17 assembly
+INTEGER iPavX := 17 ;
+
+REAL    dx   := 21.504 ;
+INTEGER MaxR := 150000 ;
+REAL    keff  ;
+
+REAL  x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14
+      x15 x16 x17 :=
+      1. dx *  2. dx *  3. dx *  4. dx *  5. dx *  6. dx *
+      7. dx *  8. dx *  9. dx *  10. dx * 11. dx * 12. dx *
+      13. dx * 14. dx * 15. dx * 16. dx * 17. dx * ;
+
+REAL  dz := 368. 32. / ; ! =HACTIF/NZ_ACTIF =368/32
+REAL  dzRefl := 20. ; ! =HREFLA = .2m
+
+REAL   z1 :=  dzRefl ;
+REAL   z2 :=  1. dz * dzRefl + ;
+REAL   z3 :=  2. dz * dzRefl + ;
+REAL   z4 :=  3. dz * dzRefl + ;
+REAL   z5 :=  4. dz * dzRefl + ;
+REAL   z6 :=  5. dz * dzRefl + ;
+REAL   z7 :=  6. dz * dzRefl + ;
+REAL   z8 :=  7. dz * dzRefl + ;
+REAL   z9 :=  8. dz * dzRefl + ;
+REAL  z10 :=  9. dz * dzRefl + ;
+REAL  z11 := 10. dz * dzRefl + ;
+REAL  z12 := 11. dz * dzRefl + ;
+REAL  z13 := 12. dz * dzRefl + ;
+REAL  z14 := 13. dz * dzRefl + ;
+REAL  z15 := 14. dz * dzRefl + ;
+REAL  z16 := 15. dz * dzRefl + ;
+REAL  z17 := 16. dz * dzRefl + ;
+REAL  z18 := 17. dz * dzRefl + ;
+REAL  z19 := 18. dz * dzRefl + ;
+REAL  z20 := 19. dz * dzRefl + ;
+REAL  z21 := 20. dz * dzRefl + ;
+REAL  z22 := 21. dz * dzRefl + ;
+REAL  z23 := 22. dz * dzRefl + ;
+REAL  z24 := 23. dz * dzRefl + ;
+REAL  z25 := 24. dz * dzRefl + ;
+REAL  z26 := 25. dz * dzRefl + ;
+REAL  z27 := 26. dz * dzRefl + ;
+REAL  z28 := 27. dz * dzRefl + ;
+REAL  z29 := 28. dz * dzRefl + ;
+REAL  z30 := 29. dz * dzRefl + ;
+REAL  z31 := 30. dz * dzRefl + ;
+REAL  z32 := 31. dz * dzRefl + ;
+REAL  z33 := 32. dz * dzRefl + ;
+REAL  z34 := 32. dz * 2. dzRefl * + ;
+
+GeoCoeur := GEO: :: CAR3D 17 17 34
+  EDIT 3
+  X+ ZERO  X- ZERO
+  Y+ ZERO  Y- ZERO
+  Z+ ZERO  Z- ZERO
+  MIX
+
+PLANE 1
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+  2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2   2
+
+PLANE 2
+  1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+  1   1   1   1   1   1   1   5   4   5   1   1   1   1   1   1   1
+  1   1   1   1   1   4   5   4   5   4   5   4   1   1   1   1   1
+  1   1   1   1   4   5   4   5   4   5   4   5   4   1   1   1   1
+  1   1   1   4   5   4   5   4   5   4   5   4   5   4   1   1   1
+  1   1   4   5   4   5   4   5   4   5   4   5   4   5   4   1   1
+  1   1   5   4   5   4   5   4   5   4   5   4   5   4   5   1   1
+  1   5   4   5   4   5   4   5   4   5   4   5   4   5   4   5   1
+  1   4   5   4   5   4   5   4   5   4   5   4   5   4   5   4   1
+  1   5   4   5   4   5   4   5   4   5   4   5   4   5   4   5   1
+  1   1   5   4   5   4   5   4   5   4   5   4   5   4   5   1   1
+  1   1   4   5   4   5   4   5   4   5   4   5   4   5   4   1   1
+  1   1   1   4   5   4   5   4   5   4   5   4   5   4   1   1   1
+  1   1   1   1   4   5   4   5   4   5   4   5   4   1   1   1   1
+  1   1   1   1   1   4   5   4   5   4   5   4   1   1   1   1   1
+  1   1   1   1   1   1   1   5   4   5   1   1   1   1   1   1   1
+  1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+
+PLANE  3 SAME 2
+PLANE  4 SAME 2
+PLANE  5 SAME 2
+PLANE  6 SAME 2
+PLANE  7 SAME 2
+PLANE  8 SAME 2
+PLANE  9 SAME 2
+PLANE 10 SAME 2
+PLANE 11 SAME 2
+PLANE 12 SAME 2
+PLANE 13 SAME 2
+PLANE 14 SAME 2
+PLANE 15 SAME 2
+PLANE 16 SAME 2
+PLANE 17 SAME 2
+PLANE 18 SAME 2
+PLANE 19 SAME 2
+PLANE 20 SAME 2
+PLANE 21 SAME 2
+PLANE 22 SAME 2
+PLANE 23 SAME 2
+PLANE 24 SAME 2
+PLANE 25 SAME 2
+PLANE 26 SAME 2
+PLANE 27 SAME 2
+PLANE 28 SAME 2
+PLANE 29 SAME 2
+PLANE 30 SAME 2
+PLANE 31 SAME 2
+PLANE 32 SAME 2
+PLANE 33 SAME 2
+PLANE 34
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3
+
+  MESHX 0. <<x1>> <<x2>> <<x3>> <<x4>> <<x5>> <<x6>> <<x7>>
+        <<x8>>  <<x9>>  <<x10>> <<x11>> <<x12>> <<x13>> <<x14>>
+        <<x15>> <<x16>> <<x17>>
+
+  MESHY 0. <<x1>> <<x2>> <<x3>> <<x4>> <<x5>> <<x6>> <<x7>>
+        <<x8>>  <<x9>>  <<x10>> <<x11>> <<x12>> <<x13>> <<x14>>
+        <<x15>> <<x16>> <<x17>>
+
+  MESHZ 0. <<z1>> <<z2>> <<z3>> <<z4>> <<z5>> <<z6>> <<z7>>
+        <<z8>>  <<z9>>  <<z10>> <<z11>> <<z12>> <<z13>> <<z14>>
+        <<z15>> <<z16>> <<z17>> <<z18>> <<z19>> <<z20>> <<z21>>
+        <<z22>> <<z23>> <<z24>> <<z25>> <<z26>> <<z27>> <<z28>>
+        <<z29>> <<z30>> <<z31>> <<z32>> <<z33>> <<z34>>
+
+  SPLITX <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>>
+  SPLITY <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>> <<Splitx>>
+         <<Splitx>> <<Splitx>>
+
+  SPLITZ <<Splitz_refl>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz>>
+         <<Splitz>> <<Splitz>> <<Splitz>> <<Splitz_refl>>
+;
+
+Track := TRIVAT: GeoCoeur ::
+   MAXR <<MaxR>> DUAL 2 3 ;
+
+Macro := PCR: PMAXS1 ::
+   EDIT 2
+   MACRO LINEAR
+   NMIX 5
+   PMAXS PMAXS1
+   MIX 4
+     SET 'B'  <<burn>>
+     SET 'PC' <<densB>>
+     SET 'DC' <<Dcool>>
+     SET 'TM' <<Tcool>>
+     SET 'TF' <<Tfuel1>>
+     SET 'CR' 1.
+   ENDMIX 
+   PMAXS PMAXS1
+   MIX 5
+     SET 'B'  <<burn>>
+     SET 'PC' <<densB>>
+     SET 'DC' <<Dcool>>
+     SET 'TM' <<Tcool>>
+     SET 'TF' <<Tfuel2>>
+     SET 'CR' 1.
+   ENDMIX 
+;
+
+CpRefl_xsm := CpRefl ;
+Macro := NCR: Macro CpRefl_xsm ::
+  EDIT 1
+  MACRO LINEAR
+  COMPO CpRefl_xsm default
+  MIX 1 USE
+      SET 'C-BORE' 1206.
+  ENDMIX
+  MIX 2 USE
+      SET 'C-BORE' 1206.
+  ENDMIX
+  MIX 3 USE
+      SET 'C-BORE' 1206.
+  ENDMIX
+;
+
+System := TRIVAA: Macro Track ;
+
+Flux := FLUD: System Track ::
+  EDIT 2 ADI 2
+  EXTE 200 1.E-05
+  ;
+
+REAL Ptot := 1.0 ;
+Power Nflux := FLPOW: Flux Track Macro ::
+ EDIT 2
+ PTOT <<Ptot>> ;
+
+GREP: Flux :: GETVAL 'K-EFFECTIVE ' 1  >>keff<<  ;
+ECHO "keff=" keff ;
+assertS Flux :: 'K-EFFECTIVE' 1 1.143837 ;
+
+ECHO "Test Test_PMAXS_Macro completed" ;
+
+END: ;
+QUIT "LIST" .

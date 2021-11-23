@@ -1,0 +1,43 @@
+ !  "julday" function to compute the Julian day number
+ !
+ !   REFERENCE: "Numerical recipes in FORTRAN,
+ !               The Art of Scientific Computing, Second Edition"
+ !               Press, Teukolsky, Vetterling, Flannery
+ !               Cambridge University Press
+ !               ISBN 0-521-43064-X
+ !       PAGES:  13 ("FUNCTION julday")
+ !
+ !       INPUT:  "mm" the month
+ !               "id" the day
+ !               "iyyy" the year
+ !      OUTPUT:  "julday" the Julian day number
+
+ INTEGER mm id iyyy ;
+ INTEGER julday ;
+
+ !  Gregorian calendar was adopted October 15, 1582
+ INTEGER IGREG := 1582 12 * 10 + 31 * 15 + ;
+ INTEGER ja   jm   jy  ;
+
+ :: >>mm<< >>id<< >>iyyy<<  ;
+
+ EVALUATE jy := iyyy ;
+ IF     jy 0 = THEN  ECHO "There is no year 0" ;
+ ELSEIF jy 0 < THEN  EVALUATE jy := jy 1 + ;
+ ENDIF ;
+ IF mm 2 > THEN EVALUATE jm := mm 1 + ;
+ ELSE           EVALUATE jy jm := jy 1 - mm 13 + ;
+ ENDIF ;
+
+ EVALUATE julday := jy I_TO_R 365.25 * R_TO_I
+                    jm I_TO_R 30.6001 * R_TO_I
+                    + id + 1720995 + ;
+
+ IF iyyy 12 * mm + 31 * id + IGREG >= THEN
+  EVALUATE ja := jy I_TO_R 0.01 * R_TO_I ;
+  EVALUATE julday := julday 2 + ja - ja I_TO_R 0.25 * R_TO_I + ;
+ ENDIF ;
+
+ :: <<julday>> ;
+
+ QUIT " Function *julday* XREF " .

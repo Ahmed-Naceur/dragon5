@@ -1,0 +1,164 @@
+\subsubsection{The {\tt SNT:} tracking module}\label{sect:SNData}
+
+The {\tt SNT:} module can process one-dimensional, two-dimensional regular geometries and three-dimensional Cartesian geometries
+of type \moc{CAR1D}, \moc{TUBE}, \moc{SPHERE}, \moc{CAR2D}, \moc{TUBEZ} and \moc{CAR3D}.
+
+\vskip 0.2cm
+
+The calling specification for this module is:
+
+\begin{DataStructure}{Structure \dstr{SNT:}}
+\dusa{TRKNAM}
+\moc{:=} \moc{SNT:} $[$ \dusa{TRKNAM} $]$ 
+\dusa{GEONAM} \moc{::}  \dstr{desctrack} \dstr{descsn}
+\end{DataStructure}
+
+\noindent  where
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\dusa{TRKNAM}] {\tt character*12} name of the \dds{tracking} data
+structure that will contain region volume and surface area vectors in
+addition to region identification pointers and other tracking information.
+If \dusa{TRKNAM} also appears on the RHS, the previous tracking 
+parameters will be applied by default on the current geometry.
+
+\item[\dusa{GEONAM}] {\tt character*12} name of the \dds{geometry} data
+structure.
+
+\item[\dstr{desctrack}] structure describing the general tracking data (see
+\Sect{TRKData})
+
+\item[\dstr{descsn}] structure describing the transport tracking data
+specific to \moc{SNT:}.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+
+The \moc{SNT:} specific tracking data in \dstr{descsn} is defined as
+
+\begin{DataStructure}{Structure \dstr{descsn}}
+$[~\{$ \moc{ONEG} $|$ \moc{ALLG} $\}~]~[~\{$ \moc{DOFF} $|$ \moc{DOON} \dusa{m} $\}~]$ \\
+$[$ \moc{SCHM} \dusa{ischm} $]~[$ \moc{DIAM} \dusa{mm} $]$ \\
+\moc{SN} \dusa{n} $~[$ \moc{SCAT} \dusa{iscat} $]~$ \\
+$[~\{$ \moc{LIVO} \dusa{icl1} \dusa{icl2} $|$ \moc{NLIVO} $|$ \moc{GMRES} \dusa{nstart} $\}~]$ \\
+$[~\{$ \moc{DSA} \dusa{ndsa} \dusa{mdsa} $|$ \moc{NDSA} $\}~]$ \\
+$[$ \moc{NSHT} $]$ \\
+$[$ \moc{MAXI} \dusa{maxi} $]~[$ \moc{EPSI} \dusa{epsi} $]$ \\
+$[$ \moc{QUAD} \dusa{iquad} $]$ \\
+$[~\{$ \moc{BTE} $|$ \moc{BFPG} $|$ \moc{BFPL}$ \}~]$ \\
+$[~[$ \moc{QUAB} \dusa{iquab} $]~[~\{$ \moc{SAPO} $|$ \moc{HEBE} $|$ \moc{SLSI} $[$ \dusa{frtm} $]~\}~]~]$ \\
+{\tt ;}
+\end{DataStructure}
+
+\noindent where
+
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\dstr{desctrack}] structure describing the general tracking data (see
+\Sect{TRKData})
+
+\item[\moc{ONEG}] keyword to specify that the multigroup flux is computed as a sequence of one-group solutions using Gauss-Seidel iterations. This is the default option.
+
+\item[\moc{ALLG}] keyword to specify that the multigroup flux is computed in parallel for a set of energy groups.
+
+\item[\moc{DOFF}] keyword to specify that standard energy group and discrete angle nested loops are used for OpenMP
+multithreading in 2D and 3D geometries. This is the default option.
+
+\item[\moc{DOON}] keyword to specify that Domino type nested loops with macrocells are used for OpenMP multithreading in 2D and 3D geometries.\cite{domino}
+
+\item[\dusa{m}] use $m\times m$ or $m \times m \times m$ macrocells in Domino swapping.
+
+%Update to tabular format?
+\item[\moc{SCHM}] keyword to specify the spatial discretisation scheme. 
+
+\item[\dusa{ischm}] index to specify the spatial discretisation scheme. \dusa{ischm} $=1$ is used for High-Order Diamond Differencing (HODD) (default value). \dusa{ischm} $=2$ is the Discontinuous Galerkin finite element method (DG) currently available only in 1D slab, and 2D/3D Cartesian/hexagonal geometries.
+
+\item[\moc{DIAM}] keyword to fix the spatial approximation order.
+
+\item[\dusa{mm}] spatial order of the polynomials used in the spatial discretisation method (Legendre for HODD and Lagrange for DG). For HODD, \dusa{mm} $=0$ is the default, while for DG, it is \dusa{mm} $=1$. Linear and parabolic orders of HODD are available only for Cartesian and 2D hexagonal geometries, while the classical scheme is also available for 1D tube, and 1D sphere.
+\begin{displaymath}
+\dusa{mm} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{Constant (only for HODD -- classical diamond scheme )} \\
+ 1 & \textrm{Linear} \\
+ 2 & \textrm{Parabolic} \\
+ 3 & \textrm{Cubic (only for DG)}
+\end{array} \right.
+\end{displaymath}
+
+\item[\moc{SN}] keyword to fix the angular approximation order of the flux.
+
+\item[\dusa{n}] order of the $S_N$ approximation (even number).
+
+\item[\moc{SCAT}] keyword to limit the anisotropy of scattering sources.
+
+\item[\dusa{iscat}] number of terms in the scattering sources. \dusa{iscat} $=1$ is used for
+isotropic scattering in the laboratory system. \dusa{iscat} $=2$ is used for
+linearly anisotropic scattering in the laboratory system. The default value is set to $n$.
+
+\item[\moc{LIVO}] keyword to enable Livolant acceleration of the scattering iterations (default value).
+\item[\dusa{icl1},~\dusa{icl2}] Numbers of respectively free and accelerated iterations in the Livolant method.
+\item[\moc{NLIVO}] keyword to disable acceleration method and to perform free scattering iterations
+
+\item[\moc{GMRES}] keyword to set the GMRES(m) acceleration of the scattering iterations. The default value,
+equivalent to \dusa{nstart}=0, corresponds to a one-parameter Livolant acceleration.\cite{gmres}
+
+\item[\dusa{nstart}] restarts the GMRES method every \dusa{nstart} iterations.
+
+\item[\moc{DSA}] keyword to enable diffusion synthetic acceleration using BIVAC or TRIVAC.
+\item[\dusa{ndsa}] number of inner flux iterations {\sl without} DSA. Depending on the test case, if the DSA is enabled too soon, instabilities and convergence failure can occur. A value of $0$ can be set to start the DSA immediately. The default is \dusa{nsdsa}~$=10$. %keyword to set the number if inner flux iterations {\sl without} DSA in 3D cases if \dusa{mm}~$\ge 2$.
+\item[\dusa{mdsa}] order of the Raviart-Thomas spatial approximation used in the DSA resolution. Sometimes, using the same order as the transport calculation does not provide any benefit to the solution, and ends up being a drain on computational resources. Hence, there is the option of using a different order than the transport approximation.
+\begin{displaymath}
+\dusa{mdsa} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{Constant} \\
+ 1 & \textrm{Linear} \\
+ 2 & \textrm{Parabolic} \\
+\end{array} \right.
+\end{displaymath}
+
+\item[\moc{NDSA}] keyword to disable diffusion synthetic acceleration (default).
+
+\item[\moc{NSHT}] keyword to disable the shooting method for 1D cases -- can be useful for debugging purposes.
+
+\item[\moc{MAXI}] keyword to set the maximum number of inner iterations (or GMRES iterations if actived).
+\item[\dusa{maxi}] maximum number of inner iterations. Default value: $100$.
+
+\item[\moc{EPSI}] set the convergence criterion on inner iterations (or GMRES iterations if actived).
+\item[\dusa{epsi}] convergence criterion on inner iterations. The default value is $1\times 10^{-5}$.
+\item[\moc{QUAD}] keyword to set the type of angular quadrature.
+
+\item[\dusa{iquad}] type of quadrature: $=1$: Lathrop-Carlson level-symmetric quadrature;
+$=2$: $\mu_1$--optimi\-zed level-symmetric quadrature (default option in 2D and in 3D); $=3$ Snow-code level-symmetric quadrature
+(obsolete); $=4$: Legendre-Chebyshev quadrature (variable number of base points
+per axial level); $=5$: symmetric Legendre-Chebyshev quadrature; $=6$: quadruple range (QR)
+quadrature;\cite{quadrupole} $=10$: product of Gauss-Legendre and Gauss-Chebyshev quadrature (equal
+number of base points per axial level).
+
+\item[\moc{BTE}] solution of the Boltzmann transport equation (default option).
+
+\item[\moc{BFPG}] solution of the Boltzmann Fokker-Planck equation with Galerkin energy propagation factors.
+
+\item[\moc{BFPL}] solution of the Boltzmann Fokker-Planck equation with Przybylski and Ligou energy propagation factors.\cite{ligou}
+
+\item[\moc{QUAB}] keyword to specify the number of basis point for the
+numerical integration of each micro-structure in cases involving double
+heterogeneity (Bihet).
+
+\item[\dusa{iquab}] the number of basis point for the numerical integration of
+the collision probabilities in the micro-volumes using the  Gauss-Jacobi
+formula. The values permitted are: 1 to 20, 24, 28, 32 or  64. The default value
+is \dusa{iquab}=5.
+
+\item[\moc{SAPO}] use the Sanchez-Pomraning double-heterogeneity model.\cite{sapo}
+
+\item[\moc{HEBE}] use the Hebert double-heterogeneity model (default option).\cite{BIHET}
+
+\item[\moc{SLSI}] use the She-Liu-Shi double-heterogeneity model without shadow effect.\cite{She2017}
+
+\item[\dusa{frtm}] the minimum microstructure volume fraction used to compute the size of the equivalent cylinder in She-Liu-Shi approach. The default value is \dusa{frtm} $=0.05$.
+
+\end{ListeDeDescription}
+
+\eject

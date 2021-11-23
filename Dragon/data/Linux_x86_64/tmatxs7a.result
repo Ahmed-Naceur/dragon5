@@ -1,0 +1,1593 @@
+* CLE-2000 VERS 3.0 * R.ROY, EPM COPYRIGHT 1999 *                          LINE
+* Regression tests for MATXS7A capabilities in Dragon.                     0001
+* Running time = ~ 30s                                                     0002
+* A. Hebert                                                                0003
+*                                                                          0004
+PROCEDURE TCXA01 ;                                                         0005
+TCXA01  ;                                                                  0006
+QUIT "LIST" .                                                              0007
+ 
+<|PROCEDURE TCXA01 ;                                                      |<0005
+<|TCXA01  ;                                                               |<0006
+ DDDDDD   RRRRRR     AAA     GGGGG    OOOOO   NN     NN
+ DDDDDDD  RRRRRRR   AAAAA   GGGGGGG  OOOOOOO  NNN    NN
+ DD   DD  RR   RR  AA   AA  GG       OO   OO  NNNN   NN
+ DD   DD  RRRRRR   AA   AA  GG  GGG  OO   OO  NN NN  NN
+ DD   DD  RRRR     AAAAAAA  GG  GGG  OO   OO  NN  NN NN
+ DD   DD  RR RR    AAAAAAA  GG   GG  OO   OO  NN   NNNN
+ DDDDDDD  RR  RR   AA   AA  GGGGGGG  OOOOOOO  NN    NNN
+ DDDDDD   RR   RR  AA   AA   GGGGG    OOOOO   NN     NN
+
+ VERSION dragon 5  Version 5.0.7 ($Revision: 2060 $)                   $Date: 2021-02-02 16:03:29 -0500 (Tue, 02 Feb 2021) $           
+ GROUPE D'ANALYSE NUCLEAIRE
+ ECOLE POLYTECHNIQUE DE MONTREAL
+
+
+
+ COPYRIGHT NOTICE FOR THIS VERSION OF dragon:
+ --------------------------------------------
+ Copyright (C) 2002 Ecole Polytechnique de Montreal 
+ This library is free software; you can redistribute it
+ and/or modify it under the terms of the GNU Lesser General
+ Public License as published by the Free Software Foundation;
+ either version 2.1 of the License, or (at your option) any
+ later version 
+
+
+
+
+->@BEGIN MODULE : LIB:        
+->@DESCRIPTION  : Microscopic xs-library processing                                       
+->@CREDITS      : A. Hebert, G. Marleau                                                   
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ PROCESSING MATXS LIBRARY NAMED MATXS7A .
+
+ MATXS FILE ID: MATXS T2LASL NJOY  VERS  7
+ MATXS7 THERMAL LIBRARY                                                  
+
+ OPTIONS
+ -------
+ IMPX       1   (0=NO PRINT/1=SHORT/2=MORE)
+ IPROB      0   (0=DIRECT/1=ADJOINT)
+ ITIME      1   (1=STEADY-STATE/2=PROMPT)
+ NLIB       1   (NUMBER OF SETS OF LIBRARIES)
+ NGF       70   (NUMBER OF FAST GROUP WITHOUT SELF-SHIELDING)
+ IGRMAX     0   (LAST GROUP INDEX WITH SELF-SHIELDING)
+ NBISO      7   (NUMBER OF ISOTOPES OR MATERIALS)
+ NBMIX      3   (NUMBER OF MIXTURES)
+ NRES       1   (NUMBER OF SETS OF RESONANT MIXTURES)
+ NCOMB      0   (NUMBER OF DEPLETING MIXTURES)
+ NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
+ NGRO      69   (NUMBER OF ENERGY GROUPS)
+ NL         2   (NUMBER OF LEGENDRE ORDERS)
+ ITRANC     3   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/3=WIMS-D TYPE/4=LEAKAGE CORRECTION)
+ NBESP      0   (NUMBER OF ENERGY-DEPENDENT FISSION SPECTRA)
+ IPROC      0   (-1=SKIP LIBRARY PROCESSING/0=DILUTION INTERPOLATION/1=USE PHYSICAL TABLES/2=BUILD A DRAGLIB/3=COMPUTE CALENDF TABLES/4=SLOWING-DOWN TABLES/5=ALL CALENDF)
+ IMAC       1   (0=DO NOT/1=DO BUILD AN EMBEDDED MACROLIB)
+ NDEL       0   (NUMBER OF PRECURSOR GROUPS)
+ NDEPL      0   (NUMBER OF DEPLETING ISOTOPES)
+ NFISS      0   (NUMBER OF FISSILE ISOTOPES WITH PYIELD DATA)
+ NPART      0   (NUMBER OF COMPANION PARTICLES)
+ ISOADD     0   (0=COMPLETE BURNUP CHAIN/1=DO NOT)
+ MAXISM   300   (MAX. NUMBER OF ISOTOPES PER MIXTURE)
+ IPRECI     4   (CALENDF ACCURACY FLAG:1/2/3/4)
+
+ CROSS SECTION EDIT NAME (LCM DIRECTORY NAME)
+ --------------------------------------------
+   1  NFTOT        2  NG           3  N2N   
+   4  N3N          5  N4N          6  NA    
+   7  NP           8  N2A          9  NNP   
+  10  ND          11  NT          12  TRANC 
+  13  BSTC        14  BSTR        15  CSTC  
+  16  CSTR  
+
+ AVAILABLE CROSS-SECTION LIBRARIES:
+    1 -- MATXS7A                                                         
+
+                                                        NUMBER
+ SPEC   LOCAL NAME    ISOTOPE       FROM LIBRARY  MIX   DENSITY     TEMP(K)    SIGZERO    SELF-SHIEL  THERMAL CORRECTION
+ -----  ------------  ------------  ------------  ----  ----------  ---------  ---------  ----------  ------------------
+     1  O16     0001  O16           MATXS      1     1  4.6131E-02  6.000E+02  1.000E+10   0            42 FREE                    
+     2  U235    0001  U235          MATXS      1     1  1.6608E-04  6.000E+02  1.000E+10   1            42 FREE                    
+     3  U238    0001  U238          MATXS      1     1  2.2899E-02  6.000E+02  1.000E+10   1            42 FREE                    
+     4  Zr91    0002  ZRNAT         MATXS      1     2  3.8324E-02  6.000E+02  1.000E+10   0            42 FREE                    
+     5  H1H2O   0003  H1            MATXS      1     3  4.4233E-02  6.000E+02  1.000E+10   0            42 H2O                     
+     6  O16H2O  0003  O16           MATXS      1     3  2.2116E-02  6.000E+02  1.000E+10   0            42 FREE                    
+     7  BNat    0003  B10           MATXS      1     3  2.0325E-06  6.000E+02  1.000E+10   0            42 FREE                    
+->@END MODULE   : LIB:        
+-->>MODULE LIB:        : TIME SPENT=        0.582 MEMORY USAGE= 1.044E+03
+->@BEGIN MODULE : GEO:        
+->@DESCRIPTION  : Geometry definition                                                     
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'MOSTELA     ' WITH TYPE TUBE 1-D        .
+->@END MODULE   : GEO:        
+-->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : GEO:        
+->@DESCRIPTION  : Geometry definition                                                     
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'MOSTELC     ' WITH TYPE 2-D RECT. CELL  .
+->@END MODULE   : GEO:        
+-->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : SYBILT:     
+->@DESCRIPTION  : Sybil 2-D tracking                                                      
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ 1-D CYLINDRICAL GEOMETRY.
++                          BASED ON GEOMETRY MOSTELA     .
+
+
+ NUMBER OF MESH INTERVALS ALONG THE X AXIS =    4     AVAILABLE STORAGE MAXX =      4
+                          ALONG THE Y AXIS =    1     AVAILABLE STORAGE MAXY =      4
+                          ALONG THE Z AXIS =    1     AVAILABLE STORAGE MAXZ =      4
+ NUMBER OF DISTINCT MIXTURES =      3
+
+ INFINITE DOMAIN.
+
+
+ QUADRATURE PARAMETER JQUA1 = 5
+
+
+ STATE VECTOR:
+ NREG       4   (NUMBER OF REGIONS)
+ NUN        4   (NUMBER OF FLUX UNKNOWNS)
+ ILK        1   (0=LEAKAGE PRESENT/1=LEAKAGE ABSENT)
+ NBMIX      3   (MAXIMUM NUMBER OF MIXTURES USED)
+ NSURF      0   (NUMBER OF OUTER SURFACES)
+ ITG        2   (TYPE OF GEOMETRY)
+ MAXZ   10000   (TRACKING LENGTH)
+ MAXJ      18   (INTERNAL STORAGE LENGTH FOR CURRENTS)
+ NUNCUR     0   (NUMBER OF ADDITIONAL INTERFACE CURRENT COMPONENTS)
+ IBIHET     0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
+ EPSJ  5.00E-06 (FLUX-CURRENT ITERATION EPSILON)
+->@END MODULE   : SYBILT:     
+-->>MODULE SYBILT:     : TIME SPENT=        0.000 MEMORY USAGE= 2.640E+02
+->@BEGIN MODULE : SHI:        
+->@DESCRIPTION  : Self-shielding by improved Stammler method                              
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ SHIBA MULTIDIMENSIONAL SELF-SHIELDING CALCULATION -> A. HEBERT
+ TCWM01: MOSTELLER BENCHMARK (SYBIL / SYBIL)                             
+ COLLISION PROBABILITY MODULE: SYBIL       
+
+ STAMM'LER APPROXIMATION.
+
+
+ OPTIONS
+ -------
+ IGRMIN       5   (FIRST GROUP TO PROCESS)
+ IGRMAX      27   (MOST THERMAL GROUP TO PROCESS)
+ MAXX0       20   (MAXIMUM NUMBER OF ITERATIONS)
+ IBIEFF       0   (=1: USE LIVOLANT-JEANPIERRE NORMALIZATION)
+ IGC          0   (=1: USE GOLDSTEIN-COHEN APPROXIMATION)
+ ITRANZ       3   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/3=WIMS-D TYPE/4=LEAKAGE CORRECTION)
+ LEVEL        0   (=0: STAMM'LER; =1: STAMM'LER/NORDHEIM; =2: RIEMANN/NORDHEIM)
+ IPHASE       2   (=1: NATIVE ASSEMBLY; =2: USE PIJ)
+ EPS    1.0E-04   (STOPING CRITERION)
+
+
+ CONVERGENCE REACHED AT SHIBA ITERATION =   3  ERROR =  1.591E-05
+
+->@END MODULE   : SHI:        
+-->>MODULE SHI:        : TIME SPENT=        0.063 MEMORY USAGE= 1.160E+03
+->@BEGIN MODULE : ASM:        
+->@DESCRIPTION  : To built system matrices (CP and IC)                                    
+->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ COMPUTATION OF DRAGON COMPLETE CP BY DOOR =   SYBIL       
+
+
+ USE TRANSPORT CORRECTED CROSS-SECTIONS (ITRANC=   2 )
+
+ OPTIONS
+ -------
+ IMPX         1   (0=NO PRINT/1=SHORT/2=MORE)
+ ITPIJ        1   (1=WIJ/2=PIJ/3=WIJK/4=PIJK)
+ LNORM        1   (0=NORMALIZE PIJ TO 1/1=DO NOT)
+ LALBS        1   (0=RECOVER AND SAVE WIS/1=DO NOT)
+ IPHASE       2   (1=GENERAL FLUX SOLUTION/2=PIJ APPROACH)
+ ISTRM        1   (1=HOMO BN OR NO LEAKAGE/2=ECCO/3=TIBERE)
+ KNORM        4   (0=NO/1=GELBARD/2=DIAGONAL/3=NON-LINEAR/4=HELIOS)
+ NGRP        69   (NUMBER OF GROUPS)
+ NUN          4   (NUMBER OF UNKNOWNS)
+ NBMIX        3   (NUMBER OF MIXTURES)
+ NANI         1   (NUMBER OF LEGENDRE ORDERS SCATTERING XS)
+ IDIFF        0   (0/1: DIFFUSION COEFFICIENTS ABSENT/PRESENT)
+ IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
+ DOOR             (SYBIL       )
+->@END MODULE   : ASM:        
+-->>MODULE ASM:        : TIME SPENT=        0.001 MEMORY USAGE= 2.600E+02
+->@BEGIN MODULE : FLU:        
+->@DESCRIPTION  : Solve the flux equations                                                
+->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+
+
+ P. I. M.    SOLUTION TO TRANSPORT EQUATION
+
+ CALCULATION TYPE            =     K-INF
+ FORWARD/BACKWARD OPTION     =    DIRECT
+ (AN)ISOTROPY OPTION         = ISOTROPIC
+ FLUX SOLUTION DOOR          =    TRAFIC
+ NB. OF GROUPS               =        69
+ NB. OF REGIONS              =         4
+ NB. OF UNKNOWNS PER GROUP   =         4
+ MAX. OUTER ITERATIONS       =         7
+ MAX. THERMAL ITERATIONS     =       138
+ ACCELERATION SCHEME         =( 3 FREE, 3 ACCELERATED)
+ REBALANCING OPTION          = ON 
+ SELF-SCATTERING REDUCTION   = ON 
+ FUNDAMENTAL MODE            = ON 
+ EIGENVALUE TOLERANCE        =  1.000E-05
+ UNKNOWN OUTER TOLERANCE     =  5.000E-05
+ UNKNOWN INNER TOLERANCE     =  5.000E-05
+
+
+ USE TRANSPORT CORRECTED CROSS-SECTIONS
+ OUT(  0) EIG: PRC= 1.00E+00 TAR= 1.00E-05 KEFF= 8.899447E-01 BUCK= 0.00000E+00
+          IN(  1) FLX: PRC= 1.52E+01 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 1.44E-01 TAR= 5.00E-05 IGDEB=           27 ACCE=     1.00000
+                  FIRST UNCONVERGED GROUP PRC= 0.63E-03
+          IN(  3) FLX: PRC= 3.85E-03 TAR= 5.00E-05 IGDEB=           31 ACCE=     1.00000
+                  FIRST UNCONVERGED GROUP PRC= 0.59E-04
+          IN(  4) FLX: PRC= 2.58E-05 TAR= 5.00E-05 IGDEB=           70 ACCE=     1.02922
+ FLU2DR: NO LEAKAGE-> REBALANCING ON
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     4 ITERATIONS.
+ OUT(  1) EIG: PRC= 8.33E-02 TAR= 1.00E-05 KEFF= 8.215238E-01 BUCK= 0.00000E+00
+ OUT(  1) FLX:                             FNOR= 1.217250E+00 ACCE=     1.00000
+          IN(  1) FLX: PRC= 3.82E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 5.42E-07 TAR= 5.00E-05 IGDEB=           70 ACCE=     1.00000
+ FLU2DR: NO LEAKAGE-> REBALANCING ON
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  2) EIG: PRC= 3.60E-05 TAR= 1.00E-05 KEFF= 8.214942E-01 BUCK= 0.00000E+00
+ OUT(  2) FLX:                             FNOR= 1.217294E+00 ACCE=     1.00000
+          IN(  1) FLX: PRC= 1.81E-06 TAR= 5.00E-05 IGDEB=           70 ACCE=     1.00000
+ FLU2DR: NO LEAKAGE-> REBALANCING ON
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+ OUT(  3) EIG: PRC= 3.36E-07 TAR= 1.00E-05 KEFF= 8.214945E-01 BUCK= 0.00000E+00
+ OUT(  3) FLX: PRC= 1.81E-06 TAR= 5.00E-05 FNOR= 1.217294E+00 ACCE=     1.00000
+ FLU2DR: CPU TIME=        0. EXTERNAL CONVERGENCE       REACHED AFTER     3 ITERATIONS.
+
+ ++ TRACKING CALLED=   7 TIMES FINAL KINF= 8.214934E-01 FINAL KEFF= 8.214945E-01 B2= 0.00000E+00 PRECISION= 3.36E-07
+ ++ TOTAL NUMBER OF FLUX CALCULATIONS=       427
+->@END MODULE   : FLU:        
+-->>MODULE FLU:        : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : GREP:       
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : GREP:       
+->@BEGIN MODULE : GREP:       
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module GREP:       : time spent=        0.001 memory usage= 0.000E+00
+->@END MODULE   : GREP:       
+>|TEST SUCCESSFUL; DELTA=  3.627819e-07                                   |>0028
+->@BEGIN MODULE : EDI:        
+->@DESCRIPTION  : Editing module                                                          
+->@CREDITS      : A. Hebert, G. Marleau                                                   
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ EDITION-RELATED OPTIONS
+ -----------------------
+ NMERGE       3   (NUMBER OF MERGED REGIONS)
+ NGCOND       2   (NUMBER OF CONDENSED ENERGY GROUPS)
+ IFFAC        0   (=1: 4 FACTORS CALCULATION REQUESTED)
+ ILUPS        0   (=1: REMOVE UP-SCATTERING CONTRIBUTIONS)
+ NACTI        0   (NUMBER OF MIXTURES WITH ACTIVATION EDITS)
+ NSTATS       0   (TYPE OF STATISTIC CALCULATIONS)
+ IADF         0   (=0: DO NOT COMPUTE ADF; =1: USE ALBS INFO; =2: USE BOUNDARY FLUX INFO; =3: USE EURYDICE INFO; =4: USE MACROLIB INFO)
+ IEUR         0   (=1/2/3: SYBIL OR EXCELL MACRO-TRACKING/NXT MACRO-TRACKING/ELSE)
+ NBMICR       0   (=-1: PROCESS ALL ISOTOPES; >1: NUMBER OF ISOTOPES TO PROCESS)
+ IPRINT       4   (PRINT LEVEL)
+ NSAVES       2   (=0: NO COMPUTE/NO SAVE; =1: COMPUTE/NO SAVE; =2: COMPUTE/SAVE)
+ NW           0   (=0: FLUX WEIGHTING FOR P1 INFO; =1: CURRENT WEIGHTING FOR P1 INFO)
+ MAXPTS       4   (ALLOCATED STORAGE LENGTH FOR REGION-DEPENDENT ARRAYS)
+ IHF          1   (=1: H-FACTOR CALCULATION REQUESTED)
+ NDEL         0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ LGEO         0   (=0: MACRO-GEOMETRY NOT AVAILABLE; =1: IS AVAILABLE)
+ IADJ         0   (=0: DIRECT FLUX; =1: DIRECT-ADJOINT WEIGHTING)
+ ICURR        0   (=1: HETEROGENEOUS BN WEIGHTING; =2: TODOROVA OUTSCATTER WEIGHTING; =4: SPHERICAL HARMONICS WEIGHTING)
+ NOUT         0   (=0: OUTPUT ALL REACTIONS; >0: NUMBER OF OUTPUT REACTIONS)
+
+
+ MERGING INDEX:
+     1    1    2    3
+
+ EDI: SAVE MICROLIB INFO ON DIRECTORY 'REF-CASE0001'.
+ EDIDRV: EDITION DIRECTORY IS REF-CASE0001
+
+
+
+
+     REGION      VOLUME       REGION      VOLUME       REGION      VOLUME       REGION      VOLUME       REGION      VOLUME  
+        1     4.85364E-01        2     1.73687E-01        3     9.33829E-01
+
+ E N E R G Y   L I M I T S   (EV)
+  1.0000E+07 >   1 >   4.0000E+00 >   2 >   1.0000E-05
+
+ F L U X E S   A N D    R E A C T I O N    R A T E S
+ ---------------------------------------------------
+
+ G R O U P   :   1
+ REGION   AVERAGE     INTEGRATED     COLLISION    ABSORPTION    NU*FISSION    PRODUCTION        SCATTERING RATES
+           FLUX          FLUX          RATE          RATE          RATE          RATE      WITHIN GROUP  OUT OF GROUP
+    1   2.45020E+01   1.18924E+01   4.89812E+00   2.87917E-01   1.24498E-01   8.21495E-01   4.60255E+00   7.65746E-03
+    2   2.41702E+01   4.19804E+00   1.10736E+00   7.93629E-03   0.00000E+00   0.00000E+00   1.09889E+00   5.31603E-04
+    3   2.39548E+01   2.23697E+01   1.29205E+01   4.38178E-03   0.00000E+00   0.00000E+00   1.22236E+01   6.92486E-01
+
+ G R O U P   :   2
+ REGION   AVERAGE     INTEGRATED     COLLISION    ABSORPTION    NU*FISSION    PRODUCTION        SCATTERING RATES
+           FLUX          FLUX          RATE          RATE          RATE          RATE      WITHIN GROUP  OUT OF GROUP
+    1   1.30420E+01   6.33011E+00   2.96451E+00   5.43703E-01   6.96996E-01   2.55451E-09   2.42044E+00   3.68212E-04
+    2   1.32901E+01   2.30832E+00   4.54600E-01   8.29888E-03   0.00000E+00   0.00000E+00   4.46185E-01   1.15826E-04
+    3   1.34794E+01   1.25875E+01   2.12104E+01   1.47766E-01   0.00000E+00   0.00000E+00   2.10622E+01   4.24840E-04
+
+ G R O U P   :   1
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '            ' OF THE TABLE    'OUT         ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'NFTOT       '         3    REAL            
+        2  'NG          '         3    REAL            
+        3  'N2N         '         3    REAL            
+        4  'N3N         '         3    REAL            
+        5  'N4N         '         3    REAL            
+        6  'NA          '         3    REAL            
+        7  'NP          '         3    REAL            
+        8  'N2A         '         3    REAL            
+        9  'NNP         '         3    REAL            
+       10  'ND          '         3    REAL            
+       11  'NT          '         3    REAL            
+       12  'TRANC       '         3    REAL            
+       13  'BSTC        '         3    REAL            
+       14  'BSTR        '         3    REAL            
+       15  'CSTC        '         3    REAL            
+       16  'CSTR        '         3    REAL            
+       17  'OVERV       '         3    REAL            
+       18  'NTOT0       '         3    REAL            
+       19  'ABS         '         3    REAL            
+       20  'PRODUCTION  '         3    REAL            
+       21  'NUSIGF      '         3    REAL            
+       22  'CHI         '         3    REAL            
+       23  'FLUX-INTG   '         3    REAL            
+       24  'SIGS00      '         3    REAL            
+       25  'SIGW00      '         3    REAL            
+       26  'SCAT00      '         6    REAL            
+       27  'NJJS00      '         3    INTEGER         
+       28  'IJJS00      '         3    INTEGER         
+       29  'IPOS00      '         3    INTEGER         
+       30  'SIGS01      '         3    REAL            
+       31  'SIGW01      '         3    REAL            
+       32  'SCAT01      '         6    REAL            
+       33  'NJJS01      '         3    INTEGER         
+       34  'IJJS01      '         3    INTEGER         
+       35  'IPOS01      '         3    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '            ' =       111
+
+
+ G R O U P   :   2
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '            ' OF THE TABLE    'OUT         ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'NFTOT       '         3    REAL            
+        2  'NG          '         3    REAL            
+        3  'N2N         '         3    REAL            
+        4  'N3N         '         3    REAL            
+        5  'N4N         '         3    REAL            
+        6  'NA          '         3    REAL            
+        7  'NP          '         3    REAL            
+        8  'N2A         '         3    REAL            
+        9  'NNP         '         3    REAL            
+       10  'ND          '         3    REAL            
+       11  'NT          '         3    REAL            
+       12  'TRANC       '         3    REAL            
+       13  'BSTC        '         3    REAL            
+       14  'BSTR        '         3    REAL            
+       15  'CSTC        '         3    REAL            
+       16  'CSTR        '         3    REAL            
+       17  'OVERV       '         3    REAL            
+       18  'NTOT0       '         3    REAL            
+       19  'ABS         '         3    REAL            
+       20  'PRODUCTION  '         3    REAL            
+       21  'NUSIGF      '         3    REAL            
+       22  'CHI         '         3    REAL            
+       23  'FLUX-INTG   '         3    REAL            
+       24  'SIGS00      '         3    REAL            
+       25  'SIGW00      '         3    REAL            
+       26  'SCAT00      '         6    REAL            
+       27  'NJJS00      '         3    INTEGER         
+       28  'IJJS00      '         3    INTEGER         
+       29  'IPOS00      '         3    INTEGER         
+       30  'SIGS01      '         3    REAL            
+       31  'SIGW01      '         3    REAL            
+       32  'SCAT01      '         6    REAL            
+       33  'NJJS01      '         3    INTEGER         
+       34  'IJJS01      '         3    INTEGER         
+       35  'IPOS01      '         3    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '            ' =       111
+
+
+ MERGED/CONDENSED SET OF X-S SAVED IN LCM DIRECTORY 'REF-CASE0001'.
+
+
+ F L U X E S   A N D   H O M O G E N I Z E D   X - S
+ ---------------------------------------------------
+
+ G R O U P   :   1
+ REGION   AVERAGE         NTOT0       ABSORPTION     NUSIGF        FISSION          SCATTERING X-S
+           FLUX            X-S           X-S          X-S          SPECTRUM  WITHIN GROUP  OUT OF GROUP
+    1   2.45020E+01   4.11870E-01   2.42102E-02   1.04687E-02   1.00000E+00   3.87016E-01   6.43895E-04
+    2   2.41702E+01   2.63779E-01   1.89048E-03   0.00000E+00   0.00000E+00   2.61762E-01   1.26631E-04
+    3   2.39548E+01   5.77588E-01   1.95880E-04   0.00000E+00   0.00000E+00   5.46436E-01   3.09564E-02
+
+ FLUX DISADVANTAGE FACTOR =   1.01478E+00
+
+ G R O U P   :   2
+ REGION   AVERAGE         NTOT0       ABSORPTION     NUSIGF        FISSION          SCATTERING X-S
+           FLUX            X-S           X-S          X-S          SPECTRUM  WITHIN GROUP  OUT OF GROUP
+    1   1.30420E+01   4.68319E-01   8.58916E-02   1.10108E-01   3.10959E-09   3.82369E-01   5.81684E-05
+    2   1.32901E+01   1.96940E-01   3.59521E-03   0.00000E+00   0.00000E+00   1.93295E-01   5.01776E-05
+    3   1.34794E+01   1.68504E+00   1.17391E-02   0.00000E+00   0.00000E+00   1.67327E+00   3.37510E-05
+
+ FLUX DISADVANTAGE FACTOR =   9.78724E-01
+
+ SCATTERING TRANSFER X-S (I TOWARD J) IN REGION    1:
+
+           J=   1      J=   2
+ I=   1:   3.8702E-01  6.4390E-04
+ I=   2:   5.8168E-05  3.8237E-01
+
+
+
+
+ SCATTERING TRANSFER X-S (I TOWARD J) IN REGION    2:
+
+           J=   1      J=   2
+ I=   1:   2.6176E-01  1.2663E-04
+ I=   2:   5.0178E-05  1.9329E-01
+
+
+
+
+ SCATTERING TRANSFER X-S (I TOWARD J) IN REGION    3:
+
+           J=   1      J=   2
+ I=   1:   5.4644E-01  3.0956E-02
+ I=   2:   3.3751E-05  1.6733E+00
+
+
+
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'OUT         ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'SIGNATURE   '         3    CHARACTER       ='L_EDIT      '
+        2  'TITLE       '        18    CHARACTER       
+        3  'STATE-VECTOR'        40    INTEGER         
+        4  'LAST-EDIT   '         3    CHARACTER       
+        5  'REF-CASE0001'        -1    DIRECTORY       
+        6  'REF:IMERGE  '         4    INTEGER         
+        7  'REF:MATCOD  '         4    INTEGER         
+        8  'REF:VOLUME  '         4    REAL            
+        9  'REF:IGCOND  '         2    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =        78
+
+->@END MODULE   : EDI:        
+-->>MODULE EDI:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : SYBILT:     
+->@DESCRIPTION  : Sybil 2-D tracking                                                      
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ CARTESIAN MULTICELL OPTION (EURYDICE-2) BASED ON GEOMETRY LOCATED IN 'MOSTELC     '.
+
+
+ NUMBER OF CELLS ALONG THE X-AXIS =   1
+                 ALONG THE Y-AXIS =   1     AVAILABLE STORAGE MAXPTS =   4
+ NUMBER OF MERGED VOLUMES =    4
+ NUMBER OF DISTINCT PHYSICAL MIXTURES =    3
+
+
+     GENERATING CELL   RADIUS
+
+    1 'MOSTELC     '   0.00000E+00 1.96530E-01 3.93060E-01 4.58020E-01
+                       A = 1.26209E+00   B = 1.26209E+00
+
+
+ INFINITE DOMAIN.
+
+
+ DP-0 APPROXIMATION AROUND EACH CARTESIAN CELL.
+
+ QUADRATURE PARAMETERS:
+ HETEROGENEOUS CELLS   -    ANGLES   NA =  6 IN (0,PI/4)
+                          SEGMENTS   NX =  5
+
+ HOMOGENEOUS CELLS     -    ANGLES   NH =  5
+
+ CYLINDRICAL CELLS     -  SEGMENTS   MR =  5
+
+
+
+ TOTAL NUMBER OF CELLS IN THE DOMAIN =      1
+ TOTAL NUMBER OF MERGED CELLS =      1
+ TOTAL NUMBER OF GENERATING CELLS =      1     AVAILABLE STORAGE MAXCEL =      4
+
+
+ TOTAL NUMBER OF DISTINCT OUT-CURRENTS =      4
+ TOTAL NUMBER OF OUT-CURRENTS SURROUNDING ALL THE CELLS =      4     AVAILABLE STORAGE MAXJ =     18
+
+
+ SYBEUR: MAXIMUM STORAGE REQUIRED BY THE TRACKS =     688 +   2577        AVAILABLE STORAGE MAXZ =   10000
+
+
+ SYBEUR: EXACT STORAGE REQUIRED BY THE TRACKS =    268 INT +    866 REAL        ACCURACY =  9.120E-06
+
+
+ NUMBER OF VOLUMES =      4     AVAILABLE STORAGE MAXBLK =      4
+
+
+ STATE VECTOR:
+ NREG       4   (NUMBER OF REGIONS)
+ NUN        4   (NUMBER OF FLUX UNKNOWNS)
+ ILK        1   (0=LEAKAGE PRESENT/1=LEAKAGE ABSENT)
+ NBMIX      3   (MAXIMUM NUMBER OF MIXTURES USED)
+ NSURF      0   (NUMBER OF OUTER SURFACES)
+ ITG        4   (TYPE OF GEOMETRY)
+ MAXZ   10000   (TRACKING LENGTH)
+ MAXJ      18   (INTERNAL STORAGE LENGTH FOR CURRENTS)
+ NUNCUR     4   (NUMBER OF ADDITIONAL INTERFACE CURRENT COMPONENTS)
+ IBIHET     0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
+ EPSJ  5.00E-06 (FLUX-CURRENT ITERATION EPSILON)
+->@END MODULE   : SYBILT:     
+-->>MODULE SYBILT:     : TIME SPENT=        0.001 MEMORY USAGE= 2.600E+02
+->@BEGIN MODULE : SHI:        
+->@DESCRIPTION  : Self-shielding by improved Stammler method                              
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ SHIBA MULTIDIMENSIONAL SELF-SHIELDING CALCULATION -> A. HEBERT
+ TCWM01: MOSTELLER BENCHMARK (SYBIL / SYBIL)                             
+ COLLISION PROBABILITY MODULE: SYBIL       
+
+ STAMM'LER APPROXIMATION.
+
+
+ OPTIONS
+ -------
+ IGRMIN       5   (FIRST GROUP TO PROCESS)
+ IGRMAX      27   (MOST THERMAL GROUP TO PROCESS)
+ MAXX0       20   (MAXIMUM NUMBER OF ITERATIONS)
+ IBIEFF       0   (=1: USE LIVOLANT-JEANPIERRE NORMALIZATION)
+ IGC          0   (=1: USE GOLDSTEIN-COHEN APPROXIMATION)
+ ITRANZ       3   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/3=WIMS-D TYPE/4=LEAKAGE CORRECTION)
+ LEVEL        0   (=0: STAMM'LER; =1: STAMM'LER/NORDHEIM; =2: RIEMANN/NORDHEIM)
+ IPHASE       2   (=1: NATIVE ASSEMBLY; =2: USE PIJ)
+ EPS    1.0E-04   (STOPING CRITERION)
+
+
+ CONVERGENCE REACHED AT SHIBA ITERATION =   3  ERROR =  3.763E-05
+
+->@END MODULE   : SHI:        
+-->>MODULE SHI:        : TIME SPENT=        0.050 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : ASM:        
+->@DESCRIPTION  : To built system matrices (CP and IC)                                    
+->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ COMPUTATION OF DRAGON COMPLETE CP BY DOOR =   SYBIL       
+
+
+ USE TRANSPORT CORRECTED CROSS-SECTIONS (ITRANC=   2 )
+
+ OPTIONS
+ -------
+ IMPX         1   (0=NO PRINT/1=SHORT/2=MORE)
+ ITPIJ        1   (1=WIJ/2=PIJ/3=WIJK/4=PIJK)
+ LNORM        1   (0=NORMALIZE PIJ TO 1/1=DO NOT)
+ LALBS        1   (0=RECOVER AND SAVE WIS/1=DO NOT)
+ IPHASE       2   (1=GENERAL FLUX SOLUTION/2=PIJ APPROACH)
+ ISTRM        1   (1=HOMO BN OR NO LEAKAGE/2=ECCO/3=TIBERE)
+ KNORM        4   (0=NO/1=GELBARD/2=DIAGONAL/3=NON-LINEAR/4=HELIOS)
+ NGRP        69   (NUMBER OF GROUPS)
+ NUN          4   (NUMBER OF UNKNOWNS)
+ NBMIX        3   (NUMBER OF MIXTURES)
+ NANI         1   (NUMBER OF LEGENDRE ORDERS SCATTERING XS)
+ IDIFF        0   (0/1: DIFFUSION COEFFICIENTS ABSENT/PRESENT)
+ IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
+ DOOR             (SYBIL       )
+->@END MODULE   : ASM:        
+-->>MODULE ASM:        : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : FLU:        
+->@DESCRIPTION  : Solve the flux equations                                                
+->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+
+
+ P. I. M.    SOLUTION TO TRANSPORT EQUATION
+
+ CALCULATION TYPE            =     K-INF
+ FORWARD/BACKWARD OPTION     =    DIRECT
+ (AN)ISOTROPY OPTION         = ISOTROPIC
+ FLUX SOLUTION DOOR          =    TRAFIC
+ NB. OF GROUPS               =        69
+ NB. OF REGIONS              =         4
+ NB. OF UNKNOWNS PER GROUP   =         4
+ MAX. OUTER ITERATIONS       =         7
+ MAX. THERMAL ITERATIONS     =       138
+ ACCELERATION SCHEME         =( 3 FREE, 3 ACCELERATED)
+ REBALANCING OPTION          = ON 
+ SELF-SCATTERING REDUCTION   = ON 
+ FUNDAMENTAL MODE            = ON 
+ EIGENVALUE TOLERANCE        =  1.000E-05
+ UNKNOWN OUTER TOLERANCE     =  5.000E-05
+ UNKNOWN INNER TOLERANCE     =  5.000E-05
+
+
+ USE TRANSPORT CORRECTED CROSS-SECTIONS
+ OUT(  0) EIG: PRC= 1.00E+00 TAR= 1.00E-05 KEFF= 8.212617E-01 BUCK= 0.00000E+00
+          IN(  1) FLX: PRC= 1.10E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 1.80E-05 TAR= 5.00E-05 IGDEB=           70 ACCE=     1.00000
+ FLU2DR: NO LEAKAGE-> REBALANCING ON
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  1) EIG: PRC= 4.70E-06 TAR= 1.00E-05 KEFF= 8.212578E-01 BUCK= 0.00000E+00
+ OUT(  1) FLX: PRC= 1.10E-03 TAR= 5.00E-05 FNOR= 1.217644E+00 ACCE=     1.00000
+          IN(  1) FLX: PRC= 2.77E-06 TAR= 5.00E-05 IGDEB=           70 ACCE=     1.00000
+ FLU2DR: NO LEAKAGE-> REBALANCING ON
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+ OUT(  2) EIG: PRC= 2.15E-07 TAR= 1.00E-05 KEFF= 8.212576E-01 BUCK= 0.00000E+00
+ OUT(  2) FLX: PRC= 2.77E-06 TAR= 5.00E-05 FNOR= 1.217645E+00 ACCE=     1.00000
+ FLU2DR: CPU TIME=        0. EXTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+
+ ++ TRACKING CALLED=   3 TIMES FINAL KINF= 8.212570E-01 FINAL KEFF= 8.212576E-01 B2= 0.00000E+00 PRECISION= 2.15E-07
+ ++ TOTAL NUMBER OF FLUX CALCULATIONS=       207
+->@END MODULE   : FLU:        
+-->>MODULE FLU:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : GREP:       
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : GREP:       
+->@BEGIN MODULE : GREP:       
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : GREP:       
+>|TEST SUCCESSFUL; DELTA=  1.669275e-06                                   |>0028
+->@BEGIN MODULE : EDI:        
+->@DESCRIPTION  : Editing module                                                          
+->@CREDITS      : A. Hebert, G. Marleau                                                   
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ EDITION-RELATED OPTIONS
+ -----------------------
+ NMERGE       3   (NUMBER OF MERGED REGIONS)
+ NGCOND       2   (NUMBER OF CONDENSED ENERGY GROUPS)
+ IFFAC        0   (=1: 4 FACTORS CALCULATION REQUESTED)
+ ILUPS        0   (=1: REMOVE UP-SCATTERING CONTRIBUTIONS)
+ NACTI        0   (NUMBER OF MIXTURES WITH ACTIVATION EDITS)
+ NSTATS       3   (TYPE OF STATISTIC CALCULATIONS)
+ IADF         0   (=0: DO NOT COMPUTE ADF; =1: USE ALBS INFO; =2: USE BOUNDARY FLUX INFO; =3: USE EURYDICE INFO; =4: USE MACROLIB INFO)
+ IEUR         0   (=1/2/3: SYBIL OR EXCELL MACRO-TRACKING/NXT MACRO-TRACKING/ELSE)
+ NBMICR       0   (=-1: PROCESS ALL ISOTOPES; >1: NUMBER OF ISOTOPES TO PROCESS)
+ IPRINT       1   (PRINT LEVEL)
+ NSAVES       2   (=0: NO COMPUTE/NO SAVE; =1: COMPUTE/NO SAVE; =2: COMPUTE/SAVE)
+ NW           0   (=0: FLUX WEIGHTING FOR P1 INFO; =1: CURRENT WEIGHTING FOR P1 INFO)
+ MAXPTS       4   (ALLOCATED STORAGE LENGTH FOR REGION-DEPENDENT ARRAYS)
+ IHF          1   (=1: H-FACTOR CALCULATION REQUESTED)
+ NDEL         0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ LGEO         0   (=0: MACRO-GEOMETRY NOT AVAILABLE; =1: IS AVAILABLE)
+ IADJ         0   (=0: DIRECT FLUX; =1: DIRECT-ADJOINT WEIGHTING)
+ ICURR        0   (=1: HETEROGENEOUS BN WEIGHTING; =2: TODOROVA OUTSCATTER WEIGHTING; =4: SPHERICAL HARMONICS WEIGHTING)
+ NOUT         0   (=0: OUTPUT ALL REACTIONS; >0: NUMBER OF OUTPUT REACTIONS)
+
+
+ MERGING INDEX:
+     1    1    2    3
+
+ EDI: SAVE MICROLIB INFO ON DIRECTORY 'REF-CASE0002'.
+ EDIDRV: EDITION DIRECTORY IS REF-CASE0002
+
+
+
+
+     REGION      VOLUME       REGION      VOLUME       REGION      VOLUME       REGION      VOLUME       REGION      VOLUME  
+        1     4.85364E-01        2     1.73687E-01        3     9.33820E-01
+
+ F L U X E S   A N D    R E A C T I O N    R A T E S
+ ---------------------------------------------------
+
+ G R O U P   :   1
+ REGION INTEGRATED FLUX
+     1.1893476E+01     4.1985660E+00     2.2368048E+01
+ AVERAGED REGIONAL FLUX
+     2.4504238E+01     2.4173231E+01     2.3953262E+01
+
+ G R O U P   :   2
+ REGION INTEGRATED FLUX
+     6.3283491E+00     2.3076382E+00     1.2588105E+01
+ AVERAGED REGIONAL FLUX
+     1.3038357E+01     1.3286221E+01     1.3480220E+01
+
+ MERGED/CONDENSED SET OF X-S SAVED IN LCM DIRECTORY 'REF-CASE0002'.
+
+
+
+
+                    D R A G O N   S T A T I S T I C S
+          LCM REFERENCE CASE NAME : REF-CASE0001
+          NUMBER OF GROUPS        :          2
+          NUMBER OF REGIONS       :          3
+          RELATIVE VOLUMES        :   1.0000E+00
+          RELATIVE SOURCES        :   1.0003E+00
+
+          REFERENCE Keff          :         0.82149
+          CURRENT Keff            :         0.82126
+          CHANGE IN Keff          :           -0.24 mk
+
+ ANALYSIS OF GROUP :     1
+
+ STATISTICS FOR : FLUX-INTG   
+
+                    MAXIMUM ERROR=    0.04 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.03 %
+                       RMS  ERROR=    0.03 %
+
+ STATISTICS FOR : NTOT0       
+
+                    MAXIMUM ERROR=    0.04 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.03 %
+                       RMS  ERROR=    0.04 %
+
+ STATISTICS FOR : ABS         
+
+                    MAXIMUM ERROR=    0.09 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.04 %
+                       RMS  ERROR=    0.05 %
+
+ STATISTICS FOR : PRODUCTION  
+
+                    MAXIMUM ERROR=    0.00 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.00 %
+                       RMS  ERROR=    0.00 %
+
+ STATISTICS FOR : NUSIGF      
+
+                    MAXIMUM ERROR=    0.03 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.01 %
+                       RMS  ERROR=    0.02 %
+
+ STATISTICS FOR : SIGW00      
+
+                    MAXIMUM ERROR=    0.04 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.03 %
+                       RMS  ERROR=    0.04 %
+
+ STATISTICS FOR : SIGW01      
+
+                    MAXIMUM ERROR=    0.07 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.04 %
+                       RMS  ERROR=    0.05 %
+
+ ANALYSIS OF GROUP :     2
+
+ STATISTICS FOR : FLUX-INTG   
+
+                    MAXIMUM ERROR=    0.03 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.02 %
+                       RMS  ERROR=    0.02 %
+
+ STATISTICS FOR : NTOT0       
+
+                    MAXIMUM ERROR=    0.04 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.02 %
+                       RMS  ERROR=    0.02 %
+
+ STATISTICS FOR : ABS         
+
+                    MAXIMUM ERROR=    0.04 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.03 %
+                       RMS  ERROR=    0.02 %
+
+ STATISTICS FOR : PRODUCTION  
+
+                    MAXIMUM ERROR=    0.01 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.00 %
+                       RMS  ERROR=    0.00 %
+
+ STATISTICS FOR : NUSIGF      
+
+                    MAXIMUM ERROR=    0.01 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.00 %
+                       RMS  ERROR=    0.00 %
+
+ STATISTICS FOR : SIGW00      
+
+                    MAXIMUM ERROR=    0.04 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.02 %
+                       RMS  ERROR=    0.02 %
+
+ STATISTICS FOR : SIGW01      
+
+                    MAXIMUM ERROR=    0.03 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.02 %
+                       RMS  ERROR=    0.02 %
+->@END MODULE   : EDI:        
+-->>MODULE EDI:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : EXCELT:     
+->@DESCRIPTION  : Excell tracking in 2- and 3-D                                           
+->@CREDITS      : G. Marleau, M. Ouisloumen, R. Roy                                       
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ MOSTELC      WAS NOT ASSEMBLY CHECKED
+ TCWM01: MOSTELLER BENCHMARK (EXCELL)                                    
+
+
+ 
+ ECHO = >>> GEOMETRY NAME: MOSTELC 
+ ECHO = >>> TRACKING FILE: TRKSPC  
+ ECHO = >>>          DISP: NEWT
+ ECHO = >>> NORMALIZED-BY ANGLE     
+ 
+
+  ====> GLOBAL MESHING  
+        X-COORDINATES: 
+               0.000000      1.262090
+        Y-COORDINATES: 
+               0.000000      1.262090
+        CELL(       1,       1,       1)  (X,Y)- CENTRE: (      0.631045      0.631045)
+                          RADII: 
+                                0.196530      0.393060      0.458020
+ 
+ >>> GEOMETRY TREATED:    MOSTELC     
+ >>> EXCELL TREATMENT <<< 
+ 
+ 
+
+ NOW, TRACKING   >>> MOSTELC      GEOMETRY <<<    (WITH ONE CYLINDER )
+
+ RECOMPUTED PARAMETERS 
+ NANGL  =        12 (NUMBER OF TRACKING ANGLES)
+ ISYMM  =         1 (TRACKING SYMMETRY FACTOR)
+ CUTOFX =   0.00000 (CUTOFF FOR TRACK LENGTH)
+ DENS   =  19.60933 (TRACK DENSITY)
+ PCORN  =   0.00000 (CORNER DUPLICATION DISTANCE)
+ -----------------
+
+ 
+
+ TRACKING ERRORS ON SURFACE   AVERAGE ERROR:    -0.4938 %      MAXIMUM ERROR:     0.4938 % 
+ MAXIMUM ERROR ON SURFACE=       4 WITH AREA  = 1.2683E+00
+ 
+ TRACKING ERRORS ON VOLUME    AVERAGE ERROR:     0.0603 %      MAXIMUM ERROR:     4.3209 % 
+ MAXIMUM ERROR IN REGION =       3 WITH VOLUME= 1.6618E-01
+ 
+ ECHO = >>> ISOTROPIC CP CALCULATION    
+ ECHO = >>> NB. OF REGIONS:     4
+ EXCELT PRINT LEVEL =       1
+ TRACK STATE-VECTOR
+ ------------------
+ NREG   =       4 (NUMBER OF REGIONS)
+ NUNKNO =       4 (NUMBER OF UNKNOWNS IN SYSTEM)
+ ILEAK  =       1 (LEAKAGE FLAG:0=PRESENT/1=ABSENT)
+ MAXMIX =       3 (NUMBER OF MIXTURES)
+ NSOUT  =       4 (NUMBER OF OUTER SURFACES)
+ NANIS  =       1 (FLUX ANISOTROPY ORDER)
+ ITROP  =       1 (GEOMETRY TYPE)
+ NORE   =      -1 (TRACK NORMALIZATION OPTION)
+ KTOPT  =       0 (TYPE OF TRACKING:0=TISO/1=TSPC)
+ KSPEC  =       0 (TYPE OF BOUNDARY CONDITION)
+ NANGL  =      12 (USER-SUPPLIED NUMBER OF TRACKING ANGLES)
+ ISYMM  =       1 (USER-SUPPLIED TRACKING SYMMETRY FACTOR)
+ INSB   =       0 (TYPE OF VECTORIZATION:0=ONEG/1=ALLG/2=XCLL)
+ NDIM   =       2 (NUMBER OF GEOMETRIC DIMENSIONS)
+ NPRISM =       0 (NUMBER OF PLANS IN 3D PRISMATIC GEOMETRIES)
+ IBIHET =       0 (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
+ -----------------
+
+ EXCELL TRACK OPTIONS 
+ CUTOFX =          0.00000000 (CUTOFF FOR TRACK LENGTH)
+ DENS   =         20.00000000 (TRACK DENSITY)
+ PCORN  =          0.00000000 (CORNER DUPLICATION DISTANCE)
+ -----------------
+
+->@END MODULE   : EXCELT:     
+-->>MODULE EXCELT:     : TIME SPENT=        0.003 MEMORY USAGE= 2.520E+02
+->@BEGIN MODULE : SHI:        
+->@DESCRIPTION  : Self-shielding by improved Stammler method                              
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ SHIBA MULTIDIMENSIONAL SELF-SHIELDING CALCULATION -> A. HEBERT
+ TCWM01: MOSTELLER BENCHMARK (EXCELL)                                    
+ COLLISION PROBABILITY MODULE: EXCELL      
+
+ STAMM'LER APPROXIMATION.
+
+
+ OPTIONS
+ -------
+ IGRMIN       5   (FIRST GROUP TO PROCESS)
+ IGRMAX      27   (MOST THERMAL GROUP TO PROCESS)
+ MAXX0       20   (MAXIMUM NUMBER OF ITERATIONS)
+ IBIEFF       0   (=1: USE LIVOLANT-JEANPIERRE NORMALIZATION)
+ IGC          0   (=1: USE GOLDSTEIN-COHEN APPROXIMATION)
+ ITRANZ       3   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/3=WIMS-D TYPE/4=LEAKAGE CORRECTION)
+ LEVEL        0   (=0: STAMM'LER; =1: STAMM'LER/NORDHEIM; =2: RIEMANN/NORDHEIM)
+ IPHASE       2   (=1: NATIVE ASSEMBLY; =2: USE PIJ)
+ EPS    1.0E-04   (STOPING CRITERION)
+
+
+ CONVERGENCE REACHED AT SHIBA ITERATION =   3  ERROR =  2.497E-05
+
+->@END MODULE   : SHI:        
+-->>MODULE SHI:        : TIME SPENT=        0.159 MEMORY USAGE= 2.160E+02
+->@BEGIN MODULE : ASM:        
+->@DESCRIPTION  : To built system matrices (CP and IC)                                    
+->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ COMPUTATION OF DRAGON COMPLETE CP BY DOOR =   EXCELL      
+
+
+ USE TRANSPORT CORRECTED CROSS-SECTIONS (ITRANC=   2 )
+
+ OPTIONS
+ -------
+ IMPX         1   (0=NO PRINT/1=SHORT/2=MORE)
+ ITPIJ        1   (1=WIJ/2=PIJ/3=WIJK/4=PIJK)
+ LNORM        1   (0=NORMALIZE PIJ TO 1/1=DO NOT)
+ LALBS        1   (0=RECOVER AND SAVE WIS/1=DO NOT)
+ IPHASE       2   (1=GENERAL FLUX SOLUTION/2=PIJ APPROACH)
+ ISTRM        1   (1=HOMO BN OR NO LEAKAGE/2=ECCO/3=TIBERE)
+ KNORM        4   (0=NO/1=GELBARD/2=DIAGONAL/3=NON-LINEAR/4=HELIOS)
+ NGRP        69   (NUMBER OF GROUPS)
+ NUN          4   (NUMBER OF UNKNOWNS)
+ NBMIX        3   (NUMBER OF MIXTURES)
+ NANI         1   (NUMBER OF LEGENDRE ORDERS SCATTERING XS)
+ IDIFF        0   (0/1: DIFFUSION COEFFICIENTS ABSENT/PRESENT)
+ IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
+ DOOR             (EXCELL      )
+->@END MODULE   : ASM:        
+-->>MODULE ASM:        : TIME SPENT=        0.027 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : FLU:        
+->@DESCRIPTION  : Solve the flux equations                                                
+->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+
+
+ P. I. M.    SOLUTION TO TRANSPORT EQUATION
+
+ CALCULATION TYPE            =     K-INF
+ FORWARD/BACKWARD OPTION     =    DIRECT
+ (AN)ISOTROPY OPTION         = ISOTROPIC
+ FLUX SOLUTION DOOR          =    TRAFIC
+ NB. OF GROUPS               =        69
+ NB. OF REGIONS              =         4
+ NB. OF UNKNOWNS PER GROUP   =         4
+ MAX. OUTER ITERATIONS       =         7
+ MAX. THERMAL ITERATIONS     =       138
+ ACCELERATION SCHEME         =( 3 FREE, 3 ACCELERATED)
+ REBALANCING OPTION          = ON 
+ SELF-SCATTERING REDUCTION   = ON 
+ FUNDAMENTAL MODE            = ON 
+ EIGENVALUE TOLERANCE        =  1.000E-05
+ UNKNOWN OUTER TOLERANCE     =  5.000E-05
+ UNKNOWN INNER TOLERANCE     =  5.000E-05
+
+
+ USE TRANSPORT CORRECTED CROSS-SECTIONS
+ OUT(  0) EIG: PRC= 1.00E+00 TAR= 1.00E-05 KEFF= 8.219470E-01 BUCK= 0.00000E+00
+          IN(  1) FLX: PRC= 3.60E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 3.70E-05 TAR= 5.00E-05 IGDEB=           70 ACCE=     1.00000
+ FLU2DR: NO LEAKAGE-> REBALANCING ON
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  1) EIG: PRC= 8.76E-05 TAR= 1.00E-05 KEFF= 8.220191E-01 BUCK= 0.00000E+00
+ OUT(  1) FLX:                             FNOR= 1.216517E+00 ACCE=     1.00000
+          IN(  1) FLX: PRC= 9.89E-06 TAR= 5.00E-05 IGDEB=           70 ACCE=     1.00000
+ FLU2DR: NO LEAKAGE-> REBALANCING ON
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+ OUT(  2) EIG: PRC= 1.01E-06 TAR= 1.00E-05 KEFF= 8.220182E-01 BUCK= 0.00000E+00
+ OUT(  2) FLX: PRC= 9.89E-06 TAR= 5.00E-05 FNOR= 1.216518E+00 ACCE=     1.00000
+ FLU2DR: CPU TIME=        0. EXTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+
+ ++ TRACKING CALLED=   3 TIMES FINAL KINF= 8.220177E-01 FINAL KEFF= 8.220182E-01 B2= 0.00000E+00 PRECISION= 1.01E-06
+ ++ TOTAL NUMBER OF FLUX CALCULATIONS=       207
+->@END MODULE   : FLU:        
+-->>MODULE FLU:        : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : GREP:       
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : GREP:       
+->@BEGIN MODULE : GREP:       
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : GREP:       
+>|TEST SUCCESSFUL; DELTA=  5.800807e-07                                   |>0028
+->@BEGIN MODULE : EDI:        
+->@DESCRIPTION  : Editing module                                                          
+->@CREDITS      : A. Hebert, G. Marleau                                                   
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ EDITION-RELATED OPTIONS
+ -----------------------
+ NMERGE       3   (NUMBER OF MERGED REGIONS)
+ NGCOND       2   (NUMBER OF CONDENSED ENERGY GROUPS)
+ IFFAC        0   (=1: 4 FACTORS CALCULATION REQUESTED)
+ ILUPS        0   (=1: REMOVE UP-SCATTERING CONTRIBUTIONS)
+ NACTI        0   (NUMBER OF MIXTURES WITH ACTIVATION EDITS)
+ NSTATS       3   (TYPE OF STATISTIC CALCULATIONS)
+ IADF         0   (=0: DO NOT COMPUTE ADF; =1: USE ALBS INFO; =2: USE BOUNDARY FLUX INFO; =3: USE EURYDICE INFO; =4: USE MACROLIB INFO)
+ IEUR         0   (=1/2/3: SYBIL OR EXCELL MACRO-TRACKING/NXT MACRO-TRACKING/ELSE)
+ NBMICR       0   (=-1: PROCESS ALL ISOTOPES; >1: NUMBER OF ISOTOPES TO PROCESS)
+ IPRINT       1   (PRINT LEVEL)
+ NSAVES       2   (=0: NO COMPUTE/NO SAVE; =1: COMPUTE/NO SAVE; =2: COMPUTE/SAVE)
+ NW           0   (=0: FLUX WEIGHTING FOR P1 INFO; =1: CURRENT WEIGHTING FOR P1 INFO)
+ MAXPTS       4   (ALLOCATED STORAGE LENGTH FOR REGION-DEPENDENT ARRAYS)
+ IHF          1   (=1: H-FACTOR CALCULATION REQUESTED)
+ NDEL         0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ LGEO         0   (=0: MACRO-GEOMETRY NOT AVAILABLE; =1: IS AVAILABLE)
+ IADJ         0   (=0: DIRECT FLUX; =1: DIRECT-ADJOINT WEIGHTING)
+ ICURR        0   (=1: HETEROGENEOUS BN WEIGHTING; =2: TODOROVA OUTSCATTER WEIGHTING; =4: SPHERICAL HARMONICS WEIGHTING)
+ NOUT         0   (=0: OUTPUT ALL REACTIONS; >0: NUMBER OF OUTPUT REACTIONS)
+
+
+ MERGING INDEX:
+     1    1    2    3
+
+ EDI: SAVE MICROLIB INFO ON DIRECTORY 'REF-CASE0003'.
+ EDIDRV: EDITION DIRECTORY IS REF-CASE0003
+
+
+
+
+     REGION      VOLUME       REGION      VOLUME       REGION      VOLUME       REGION      VOLUME       REGION      VOLUME  
+        1     4.85364E-01        2     1.73687E-01        3     9.33820E-01
+
+ F L U X E S   A N D    R E A C T I O N    R A T E S
+ ---------------------------------------------------
+
+ G R O U P   :   1
+ REGION INTEGRATED FLUX
+     1.1900795E+01     4.2042556E+00     2.2366604E+01
+ AVERAGED REGIONAL FLUX
+     2.4519318E+01     2.4205992E+01     2.3951717E+01
+
+ G R O U P   :   2
+ REGION INTEGRATED FLUX
+     6.3351617E+00     2.3083587E+00     1.2610698E+01
+ AVERAGED REGIONAL FLUX
+     1.3052393E+01     1.3290370E+01     1.3504414E+01
+
+ MERGED/CONDENSED SET OF X-S SAVED IN LCM DIRECTORY 'REF-CASE0003'.
+
+
+
+
+                    D R A G O N   S T A T I S T I C S
+          LCM REFERENCE CASE NAME : REF-CASE0001
+          NUMBER OF GROUPS        :          2
+          NUMBER OF REGIONS       :          3
+          RELATIVE VOLUMES        :   1.0000E+00
+          RELATIVE SOURCES        :   9.9936E-01
+
+          REFERENCE Keff          :         0.82149
+          CURRENT Keff            :         0.82202
+          CHANGE IN Keff          :            0.52 mk
+
+ ANALYSIS OF GROUP :     1
+
+ STATISTICS FOR : FLUX-INTG   
+
+                    MAXIMUM ERROR=    0.08 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.06 %
+                       RMS  ERROR=    0.07 %
+
+ STATISTICS FOR : NTOT0       
+
+                    MAXIMUM ERROR=    0.08 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.05 %
+                       RMS  ERROR=    0.06 %
+
+ STATISTICS FOR : ABS         
+
+                    MAXIMUM ERROR=    0.29 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.12 %
+                       RMS  ERROR=    0.18 %
+
+ STATISTICS FOR : PRODUCTION  
+
+                    MAXIMUM ERROR=    0.00 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.00 %
+                       RMS  ERROR=    0.00 %
+
+ STATISTICS FOR : NUSIGF      
+
+                    MAXIMUM ERROR=    0.00 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.00 %
+                       RMS  ERROR=    0.00 %
+
+ STATISTICS FOR : SIGW00      
+
+                    MAXIMUM ERROR=    0.09 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.05 %
+                       RMS  ERROR=    0.06 %
+
+ STATISTICS FOR : SIGW01      
+
+                    MAXIMUM ERROR=    0.27 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.08 %
+                       RMS  ERROR=    0.16 %
+
+ ANALYSIS OF GROUP :     2
+
+ STATISTICS FOR : FLUX-INTG   
+
+                    MAXIMUM ERROR=    0.12 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.08 %
+                       RMS  ERROR=    0.08 %
+
+ STATISTICS FOR : NTOT0       
+
+                    MAXIMUM ERROR=    0.13 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.09 %
+                       RMS  ERROR=    0.08 %
+
+ STATISTICS FOR : ABS         
+
+                    MAXIMUM ERROR=    0.14 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.09 %
+                       RMS  ERROR=    0.10 %
+
+ STATISTICS FOR : PRODUCTION  
+
+                    MAXIMUM ERROR=    0.00 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.00 %
+                       RMS  ERROR=    0.00 %
+
+ STATISTICS FOR : NUSIGF      
+
+                    MAXIMUM ERROR=    0.00 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.00 %
+                       RMS  ERROR=    0.00 %
+
+ STATISTICS FOR : SIGW00      
+
+                    MAXIMUM ERROR=    0.13 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.09 %
+                       RMS  ERROR=    0.08 %
+
+ STATISTICS FOR : SIGW01      
+
+                    MAXIMUM ERROR=    0.12 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.08 %
+                       RMS  ERROR=    0.08 %
+->@END MODULE   : EDI:        
+-->>MODULE EDI:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : EXCELT:     
+->@DESCRIPTION  : Excell tracking in 2- and 3-D                                           
+->@CREDITS      : G. Marleau, M. Ouisloumen, R. Roy                                       
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ MOSTELC      WAS NOT ASSEMBLY CHECKED
+ TCWM01: MOSTELLER BENCHMARK (EXCELL)                                    
+
+
+ 
+ ECHO = >>> GEOMETRY NAME: MOSTELC 
+ ECHO = >>> TRACKING FILE: TRKSPC  
+ ECHO = >>>          DISP: NEWT
+ ECHO = >>> NORMALIZED-BY ANGLE     
+ 
+
+  ====> GLOBAL MESHING  
+        X-COORDINATES: 
+               0.000000      1.262090
+        Y-COORDINATES: 
+               0.000000      1.262090
+        CELL(       1,       1,       1)  (X,Y)- CENTRE: (      0.631045      0.631045)
+                          RADII: 
+                                0.196530      0.393060      0.458020
+ 
+ >>> GEOMETRY TREATED:    MOSTELC     
+ >>> EXCELL TREATMENT <<< 
+ 
+ 
+
+ NOW, TRACKING   >>> MOSTELC      GEOMETRY <<<    (WITH ONE CYLINDER )
+
+ RECOMPUTED PARAMETERS 
+ NANGL  =        48 (NUMBER OF TRACKING ANGLES)
+ ISYMM  =         1 (TRACKING SYMMETRY FACTOR)
+ CUTOFX =   0.00000 (CUTOFF FOR TRACK LENGTH)
+ DENS   =  20.00000 (TRACK DENSITY)
+ PCORN  =   0.00000 (CORNER DUPLICATION DISTANCE)
+ -----------------
+
+ 
+
+ TRACKING ERRORS ON SURFACE   AVERAGE ERROR:     0.1158 %      MAXIMUM ERROR:     0.1158 % 
+ MAXIMUM ERROR ON SURFACE=       3 WITH AREA  = 1.2606E+00
+ 
+ TRACKING ERRORS ON VOLUME    AVERAGE ERROR:     0.0573 %      MAXIMUM ERROR:     0.9664 % 
+ MAXIMUM ERROR IN REGION =       1 WITH VOLUME= 1.2017E-01
+ 
+ ECHO = >>>  SPECULAR CP CALCULATION    
+ ECHO = >>>    NO CUT-OFF  
+ ECHO = >>> NB. OF REGIONS:     4
+ EXCELT PRINT LEVEL =       1
+ TRACK STATE-VECTOR
+ ------------------
+ NREG   =       4 (NUMBER OF REGIONS)
+ NUNKNO =       4 (NUMBER OF UNKNOWNS IN SYSTEM)
+ ILEAK  =       1 (LEAKAGE FLAG:0=PRESENT/1=ABSENT)
+ MAXMIX =       3 (NUMBER OF MIXTURES)
+ NSOUT  =       4 (NUMBER OF OUTER SURFACES)
+ NANIS  =       1 (FLUX ANISOTROPY ORDER)
+ ITROP  =       1 (GEOMETRY TYPE)
+ NORE   =      -1 (TRACK NORMALIZATION OPTION)
+ KTOPT  =       1 (TYPE OF TRACKING:0=TISO/1=TSPC)
+ KSPEC  =       1 (TYPE OF BOUNDARY CONDITION)
+ NANGL  =      12 (USER-SUPPLIED NUMBER OF TRACKING ANGLES)
+ ISYMM  =       0 (USER-SUPPLIED TRACKING SYMMETRY FACTOR)
+ INSB   =       0 (TYPE OF VECTORIZATION:0=ONEG/1=ALLG/2=XCLL)
+ NDIM   =       2 (NUMBER OF GEOMETRIC DIMENSIONS)
+ NPRISM =       0 (NUMBER OF PLANS IN 3D PRISMATIC GEOMETRIES)
+ IBIHET =       0 (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
+ -----------------
+
+ EXCELL TRACK OPTIONS 
+ CUTOFX =          0.00000000 (CUTOFF FOR TRACK LENGTH)
+ DENS   =         20.00000000 (TRACK DENSITY)
+ PCORN  =          0.00000000 (CORNER DUPLICATION DISTANCE)
+ -----------------
+
+->@END MODULE   : EXCELT:     
+-->>MODULE EXCELT:     : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : SHI:        
+->@DESCRIPTION  : Self-shielding by improved Stammler method                              
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ SHIBA MULTIDIMENSIONAL SELF-SHIELDING CALCULATION -> A. HEBERT
+ TCWM01: MOSTELLER BENCHMARK (EXCELL)                                    
+ COLLISION PROBABILITY MODULE: EXCELL      
+
+ STAMM'LER APPROXIMATION.
+
+
+ OPTIONS
+ -------
+ IGRMIN       5   (FIRST GROUP TO PROCESS)
+ IGRMAX      27   (MOST THERMAL GROUP TO PROCESS)
+ MAXX0       20   (MAXIMUM NUMBER OF ITERATIONS)
+ IBIEFF       0   (=1: USE LIVOLANT-JEANPIERRE NORMALIZATION)
+ IGC          0   (=1: USE GOLDSTEIN-COHEN APPROXIMATION)
+ ITRANZ       3   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/3=WIMS-D TYPE/4=LEAKAGE CORRECTION)
+ LEVEL        0   (=0: STAMM'LER; =1: STAMM'LER/NORDHEIM; =2: RIEMANN/NORDHEIM)
+ IPHASE       2   (=1: NATIVE ASSEMBLY; =2: USE PIJ)
+ EPS    1.0E-04   (STOPING CRITERION)
+
+
+ CONVERGENCE REACHED AT SHIBA ITERATION =   3  ERROR =  1.145E-05
+
+->@END MODULE   : SHI:        
+-->>MODULE SHI:        : TIME SPENT=        2.796 MEMORY USAGE= 4.000E+01
+->@BEGIN MODULE : ASM:        
+->@DESCRIPTION  : To built system matrices (CP and IC)                                    
+->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ COMPUTATION OF DRAGON COMPLETE CP BY DOOR =   EXCELL      
+
+
+ USE TRANSPORT CORRECTED CROSS-SECTIONS (ITRANC=   2 )
+
+ OPTIONS
+ -------
+ IMPX         1   (0=NO PRINT/1=SHORT/2=MORE)
+ ITPIJ        1   (1=WIJ/2=PIJ/3=WIJK/4=PIJK)
+ LNORM        1   (0=NORMALIZE PIJ TO 1/1=DO NOT)
+ LALBS        1   (0=RECOVER AND SAVE WIS/1=DO NOT)
+ IPHASE       2   (1=GENERAL FLUX SOLUTION/2=PIJ APPROACH)
+ ISTRM        1   (1=HOMO BN OR NO LEAKAGE/2=ECCO/3=TIBERE)
+ KNORM        4   (0=NO/1=GELBARD/2=DIAGONAL/3=NON-LINEAR/4=HELIOS)
+ NGRP        69   (NUMBER OF GROUPS)
+ NUN          4   (NUMBER OF UNKNOWNS)
+ NBMIX        3   (NUMBER OF MIXTURES)
+ NANI         1   (NUMBER OF LEGENDRE ORDERS SCATTERING XS)
+ IDIFF        0   (0/1: DIFFUSION COEFFICIENTS ABSENT/PRESENT)
+ IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
+ DOOR             (EXCELL      )
+->@END MODULE   : ASM:        
+-->>MODULE ASM:        : TIME SPENT=        0.706 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : FLU:        
+->@DESCRIPTION  : Solve the flux equations                                                
+->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+
+
+ P. I. M.    SOLUTION TO TRANSPORT EQUATION
+
+ CALCULATION TYPE            =     K-INF
+ FORWARD/BACKWARD OPTION     =    DIRECT
+ (AN)ISOTROPY OPTION         = ISOTROPIC
+ FLUX SOLUTION DOOR          =    TRAFIC
+ NB. OF GROUPS               =        69
+ NB. OF REGIONS              =         4
+ NB. OF UNKNOWNS PER GROUP   =         4
+ MAX. OUTER ITERATIONS       =         7
+ MAX. THERMAL ITERATIONS     =       138
+ ACCELERATION SCHEME         =( 3 FREE, 3 ACCELERATED)
+ REBALANCING OPTION          = ON 
+ SELF-SCATTERING REDUCTION   = ON 
+ FUNDAMENTAL MODE            = ON 
+ EIGENVALUE TOLERANCE        =  1.000E-05
+ UNKNOWN OUTER TOLERANCE     =  5.000E-05
+ UNKNOWN INNER TOLERANCE     =  5.000E-05
+
+
+ USE TRANSPORT CORRECTED CROSS-SECTIONS
+ OUT(  0) EIG: PRC= 1.00E+00 TAR= 1.00E-05 KEFF= 8.235317E-01 BUCK= 0.00000E+00
+          IN(  1) FLX: PRC= 9.68E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 3.33E-05 TAR= 5.00E-05 IGDEB=           70 ACCE=     1.00000
+ FLU2DR: NO LEAKAGE-> REBALANCING ON
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  1) EIG: PRC= 3.75E-04 TAR= 1.00E-05 KEFF= 8.238405E-01 BUCK= 0.00000E+00
+ OUT(  1) FLX:                             FNOR= 1.213827E+00 ACCE=     1.00000
+          IN(  1) FLX: PRC= 2.74E-05 TAR= 5.00E-05 IGDEB=           70 ACCE=     1.00000
+ FLU2DR: NO LEAKAGE-> REBALANCING ON
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+ OUT(  2) EIG: PRC= 1.83E-07 TAR= 1.00E-05 KEFF= 8.238406E-01 BUCK= 0.00000E+00
+ OUT(  2) FLX: PRC= 2.74E-05 TAR= 5.00E-05 FNOR= 1.213827E+00 ACCE=     1.00000
+ FLU2DR: CPU TIME=        0. EXTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+
+ ++ TRACKING CALLED=   3 TIMES FINAL KINF= 8.238399E-01 FINAL KEFF= 8.238406E-01 B2= 0.00000E+00 PRECISION= 1.83E-07
+ ++ TOTAL NUMBER OF FLUX CALCULATIONS=       207
+->@END MODULE   : FLU:        
+-->>MODULE FLU:        : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : GREP:       
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : GREP:       
+->@BEGIN MODULE : GREP:       
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : GREP:       
+>|TEST SUCCESSFUL; DELTA=  3.617488e-07                                   |>0028
+->@BEGIN MODULE : EDI:        
+->@DESCRIPTION  : Editing module                                                          
+->@CREDITS      : A. Hebert, G. Marleau                                                   
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ EDITION-RELATED OPTIONS
+ -----------------------
+ NMERGE       3   (NUMBER OF MERGED REGIONS)
+ NGCOND       2   (NUMBER OF CONDENSED ENERGY GROUPS)
+ IFFAC        0   (=1: 4 FACTORS CALCULATION REQUESTED)
+ ILUPS        0   (=1: REMOVE UP-SCATTERING CONTRIBUTIONS)
+ NACTI        0   (NUMBER OF MIXTURES WITH ACTIVATION EDITS)
+ NSTATS       3   (TYPE OF STATISTIC CALCULATIONS)
+ IADF         0   (=0: DO NOT COMPUTE ADF; =1: USE ALBS INFO; =2: USE BOUNDARY FLUX INFO; =3: USE EURYDICE INFO; =4: USE MACROLIB INFO)
+ IEUR         0   (=1/2/3: SYBIL OR EXCELL MACRO-TRACKING/NXT MACRO-TRACKING/ELSE)
+ NBMICR       0   (=-1: PROCESS ALL ISOTOPES; >1: NUMBER OF ISOTOPES TO PROCESS)
+ IPRINT       1   (PRINT LEVEL)
+ NSAVES       2   (=0: NO COMPUTE/NO SAVE; =1: COMPUTE/NO SAVE; =2: COMPUTE/SAVE)
+ NW           0   (=0: FLUX WEIGHTING FOR P1 INFO; =1: CURRENT WEIGHTING FOR P1 INFO)
+ MAXPTS       4   (ALLOCATED STORAGE LENGTH FOR REGION-DEPENDENT ARRAYS)
+ IHF          1   (=1: H-FACTOR CALCULATION REQUESTED)
+ NDEL         0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ LGEO         0   (=0: MACRO-GEOMETRY NOT AVAILABLE; =1: IS AVAILABLE)
+ IADJ         0   (=0: DIRECT FLUX; =1: DIRECT-ADJOINT WEIGHTING)
+ ICURR        0   (=1: HETEROGENEOUS BN WEIGHTING; =2: TODOROVA OUTSCATTER WEIGHTING; =4: SPHERICAL HARMONICS WEIGHTING)
+ NOUT         0   (=0: OUTPUT ALL REACTIONS; >0: NUMBER OF OUTPUT REACTIONS)
+
+
+ MERGING INDEX:
+     1    1    2    3
+
+ EDI: SAVE MICROLIB INFO ON DIRECTORY 'REF-CASE0004'.
+ EDIDRV: EDITION DIRECTORY IS REF-CASE0004
+
+
+
+
+     REGION      VOLUME       REGION      VOLUME       REGION      VOLUME       REGION      VOLUME       REGION      VOLUME  
+        1     4.85364E-01        2     1.73687E-01        3     9.33820E-01
+
+ F L U X E S   A N D    R E A C T I O N    R A T E S
+ ---------------------------------------------------
+
+ G R O U P   :   1
+ REGION INTEGRATED FLUX
+     1.1922621E+01     4.2078028E+00     2.2347618E+01
+ AVERAGED REGIONAL FLUX
+     2.4564287E+01     2.4226416E+01     2.3931385E+01
+
+ G R O U P   :   2
+ REGION INTEGRATED FLUX
+     6.3464069E+00     2.3138154E+00     1.2639638E+01
+ AVERAGED REGIONAL FLUX
+     1.3075562E+01     1.3321787E+01     1.3535404E+01
+
+ MERGED/CONDENSED SET OF X-S SAVED IN LCM DIRECTORY 'REF-CASE0004'.
+
+
+
+
+                    D R A G O N   S T A T I S T I C S
+          LCM REFERENCE CASE NAME : REF-CASE0001
+          NUMBER OF GROUPS        :          2
+          NUMBER OF REGIONS       :          3
+          RELATIVE VOLUMES        :   1.0000E+00
+          RELATIVE SOURCES        :   9.9715E-01
+
+          REFERENCE Keff          :         0.82149
+          CURRENT Keff            :         0.82384
+          CHANGE IN Keff          :            2.35 mk
+
+ ANALYSIS OF GROUP :     1
+
+ STATISTICS FOR : FLUX-INTG   
+
+                    MAXIMUM ERROR=    0.38 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.24 %
+                       RMS  ERROR=    0.22 %
+
+ STATISTICS FOR : NTOT0       
+
+                    MAXIMUM ERROR=    0.28 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.24 %
+                       RMS  ERROR=    0.21 %
+
+ STATISTICS FOR : ABS         
+
+                    MAXIMUM ERROR=    0.95 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.57 %
+                       RMS  ERROR=    0.62 %
+
+ STATISTICS FOR : PRODUCTION  
+
+                    MAXIMUM ERROR=    0.00 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.00 %
+                       RMS  ERROR=    0.00 %
+
+ STATISTICS FOR : NUSIGF      
+
+                    MAXIMUM ERROR=    0.33 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.10 %
+                       RMS  ERROR=    0.19 %
+
+ STATISTICS FOR : SIGW00      
+
+                    MAXIMUM ERROR=    0.29 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.24 %
+                       RMS  ERROR=    0.21 %
+
+ STATISTICS FOR : SIGW01      
+
+                    MAXIMUM ERROR=    0.28 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.24 %
+                       RMS  ERROR=    0.21 %
+
+ ANALYSIS OF GROUP :     2
+
+ STATISTICS FOR : FLUX-INTG   
+
+                    MAXIMUM ERROR=    0.13 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.09 %
+                       RMS  ERROR=    0.08 %
+
+ STATISTICS FOR : NTOT0       
+
+                    MAXIMUM ERROR=    0.14 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.10 %
+                       RMS  ERROR=    0.09 %
+
+ STATISTICS FOR : ABS         
+
+                    MAXIMUM ERROR=    0.16 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.12 %
+                       RMS  ERROR=    0.10 %
+
+ STATISTICS FOR : PRODUCTION  
+
+                    MAXIMUM ERROR=    0.06 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.02 %
+                       RMS  ERROR=    0.04 %
+
+ STATISTICS FOR : NUSIGF      
+
+                    MAXIMUM ERROR=    0.06 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.02 %
+                       RMS  ERROR=    0.03 %
+
+ STATISTICS FOR : SIGW00      
+
+                    MAXIMUM ERROR=    0.14 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.10 %
+                       RMS  ERROR=    0.09 %
+
+ STATISTICS FOR : SIGW01      
+
+                    MAXIMUM ERROR=    0.12 %
+    VOLUME WEIGHTED AVERAGE ERROR=    0.09 %
+                       RMS  ERROR=    0.08 %
+->@END MODULE   : EDI:        
+-->>MODULE EDI:        : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+>|test TCXA01 completed                                                   |>0123
+. ------------------------------------------------------------------------ .
+
+ normal end of execution for dragon 5  Version 5.0.7 ($Revision: 2060 $)               
+ check for warning in listing
+ before assuming your run was successful

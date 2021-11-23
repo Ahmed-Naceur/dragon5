@@ -1,0 +1,74 @@
+*----
+*  TEST CASE TCWE09
+*  MOSTELLER BENCHMARK FOR 1-D ANNULAR CELL
+*  WIMS-E Library
+*  REFLECTIVE AND VOID BC
+*
+*  REF: None
+*
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  MOSTELA MOSTELV VOLMAT LIBRARY PIJ FLUX OUT ;
+MODULE
+  LIB: GEO: SYBILT: SHI: ASM: FLU: EDI: DELETE: END: ;
+PROCEDURE assertS ;
+*----
+*  Microscopic cross section from file WIMS-E format WIMSE
+*----
+LIBRARY := LIB: ::
+  NMIX 3 CTRA WIMS
+  MIXS LIB: WIMSE FIL: WIMS-E
+  MIX 1 600.0                        O16      = '8016'   4.61309E-2
+    U235     = '92235'   1.66078E-4 1 
+    U238     = '92238'   2.28994E-2 1 
+  MIX 2 600.0
+    Zr90     = '40090'  1.97179E-02  Zr91     = '40091'  4.29999E-03 2
+    Zr92     = '40092'  6.57262E-03  Zr94     = '40094'  6.66076E-03
+    Zr96     = '40096'  1.07308E-03
+  MIX 3 600.0
+    H1H2O    = '1001'   4.42326E-2   O16H2O   = '8016'   2.21163E-2
+    B10      = '5010'   2.03245E-06  B11      = '5011'   8.18085E-06
+  ;
+*----
+*  Geometry MOSTELA : Annular cell with reflective BC
+*           MOSTELV : Annular cell with void BC
+*----
+MOSTELA := GEO: :: TUBE 3
+  RADIUS 0.0 0.39306 0.45802 0.71206
+  SPLITR     2       1       1
+  MIX        1       2       3
+  R+ REFL ;
+MOSTELV := GEO: MOSTELA ::
+  R+ VOID ;
+*----
+*  Self-Shielding calculation SYBIL
+*  Transport calculation      SYBIL
+*  Flux calculation for keff
+*----
+VOLMAT := SYBILT: MOSTELA ::
+  TITLE 'TCWE09: SYBIL TRACK MOSTELLER BENCHMARK REFLECTIVE BC '
+  MAXR 4 QUA1 5 ;
+LIBRARY := SHI: LIBRARY VOLMAT :: EDIT 0 NOLJ ;
+PIJ := ASM: LIBRARY VOLMAT ;
+FLUX := FLU: PIJ LIBRARY VOLMAT ::
+  TYPE K ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.8289741 ;
+OUT := EDI: LIBRARY VOLMAT FLUX ::
+  EDIT 4 MERG MIX 1 2 3 COND 4.0 SAVE ;
+PIJ VOLMAT := DELETE: PIJ VOLMAT ;
+VOLMAT := SYBILT: MOSTELV ::
+  TITLE 'TCWE09: SYBIL TRACK MOSTELLER BENCHMARK VOID BC '
+  MAXR 4 QUA1 5 ;
+PIJ := ASM: LIBRARY VOLMAT ;
+FLUX := FLU: FLUX PIJ LIBRARY VOLMAT ::
+  TYPE K ;
+assertS FLUX :: 'K-EFFECTIVE' 1 9.918292E-03 ;
+OUT := EDI: OUT LIBRARY VOLMAT FLUX ::
+  EDIT 4 MERG MIX 1 2 3 COND 4.0 SAVE ;
+OUT FLUX PIJ LIBRARY VOLMAT := DELETE:
+  OUT FLUX PIJ LIBRARY VOLMAT  ;
+ECHO "test TCWE09 completed" ;
+END: ;  
+QUIT "LIST" .

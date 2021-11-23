@@ -1,0 +1,54 @@
+*DECK ConcLIBRARY2
+*----
+*  Name          : ConcLIBRARY2.c2m
+*  Type          : DRAGON procedure
+*  Use           : Update of the LIBRARY2 concentrations
+*                  with the ones of LIBHOM
+*  Author        : R. Vallerent
+*
+*  Procedure called as: 
+*
+*  LIBRARY2 := ConcLIBRARY2 LIBRARY2 LIBHOM :: <<NbRegions>> ;
+*
+*  Input data   :
+*    LIBRARY2   : Library which concentrations are to be updated
+*    LIBHOM     : One group library after homogeneization and 2nd level
+*                 evolution
+*    NbRegions  : Number of fuel regions for the calculation (20/32)
+*  Output data  :
+*    LIBRARY2   : Library which concentrations are updated
+
+
+PARAMETER LIBRARY2 LIBHOM ::  
+       EDIT 1 
+           ::: LINKED_LIST LIBRARY2 LIBHOM ; 
+   ;
+*                                                                      ;
+MODULE LIB: END: ;
+
+INTEGER NbRegions   ;
+   :: >>NbRegions<< ;
+
+IF NbRegions 20 = THEN
+  LIBRARY2 := LIB: LIBRARY2 LIBHOM ::
+    EDIT 0
+    MAXS
+    MIX  9 MIX 10 MIX 11 MIX 12 MIX 13 MIX 14 MIX 15 MIX 16
+    MIX 17 MIX 18 MIX 19 MIX 20 MIX 21 MIX 22 MIX 23 MIX 24
+    MIX 25 MIX 26 MIX 27 MIX 28
+  ;
+ELSEIF NbRegions 32 = THEN
+  LIBRARY2 := LIB: LIBRARY2 LIBHOM ::
+    EDIT 0
+    MAXS
+    MIX  9 MIX 10 MIX 11 MIX 12 MIX 13 MIX 14 MIX 15 MIX 16
+    MIX 17 MIX 18 MIX 19 MIX 20 MIX 21 MIX 22 MIX 23 MIX 24
+    MIX 25 MIX 26 MIX 27 MIX 28 MIX 29 MIX 30 MIX 31 MIX 32
+    MIX 33 MIX 34 MIX 35 MIX 36 MIX 37 MIX 38 MIX 39 MIX 40 
+  ;
+ELSE
+  ECHO "Mauvaise donnee de NbRegions" ;
+ENDIF ;
+
+END: ;
+QUIT .

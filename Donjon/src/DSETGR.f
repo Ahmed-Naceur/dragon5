@@ -1,0 +1,273 @@
+*DECK DSETGR
+      SUBROUTINE DSETGR(IPDEV,IMODE,IGRP,NDGR,LROD,IMPX)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Modify some parameters for a specified group of devices.
+*
+*Copyright:
+* Copyright (C) 2007 Ecole Polytechnique de Montreal.
+*
+*Author(s): 
+* D. Sekki
+*
+*Parameters: input
+* IPDEV  pointer to device information.
+* IMODE  type of displacement: =1 for FADE; =2 for MOVE (DONJON3-type
+*        movement).
+* IGRP   current group identification number.
+* LROD   flag for the device type:
+*         =.true. if rod-type devices; =.false. if lzc-type devices.
+* IMPX   printing index (=0 for no print).
+*
+*Parameters: output
+* NDGR   number of devices in the group.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      TYPE(C_PTR) IPDEV
+      INTEGER IMODE,IGRP,NDGR,IMPX
+      LOGICAL LROD
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER(IOUT=6,MAXPRT=10)
+      REAL RODPOS(6,MAXPRT),MAXPOS(6,MAXPRT),EMTPOS(6),FULPOS(6),
+     1 LENG(2),LVOLD,LVNEW,LIMIT(6)
+      DOUBLE PRECISION DFLOT
+      CHARACTER TEXT*12,NXSEQ*12
+      TYPE(C_PTR) JPDEV,KPDEV
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: IDEV
+*----
+*  READ OPTION
+*----
+      ILEVEL=0
+      ISPEED=0
+      ISTIME=0
+   10 CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+      IF(ITYP.NE.3)CALL XABORT('@DSETGR: CHARACTER DATA EXPECTED.')
+      IF(TEXT.EQ.'LEVEL')THEN
+        IF(ILEVEL.EQ.1)CALL XABORT('@DSETGR: LEVEL ALREADY DEFINED.')
+        CALL REDGET(ITYP,NITMA,LVNEW,TEXT,DFLOT)
+        IF(ITYP.NE.2)CALL XABORT('@DSETGR: REAL FOR LEVEL EXPECTED.')
+        IF(LVNEW.GT.1.)CALL XABORT('@DSETGR: WRONG LEVEL VALUE > 1.')
+        IF(LVNEW.LT.0.)CALL XABORT('@DSETGR: WRONG LEVEL VALUE < 0.')
+        ILEVEL=1
+      ELSEIF(TEXT.EQ.'SPEED')THEN
+        IF(ISPEED.EQ.1)CALL XABORT('@DSETGR: SPEED ALREADY DEFINED.')
+        CALL REDGET(ITYP,NITMA,SPNEW,TEXT,DFLOT)
+        IF(ITYP.NE.2)CALL XABORT('@DSETGR: REAL FOR SPEED EXPECTED.')
+        IF(SPNEW.LT.0.)CALL XABORT('@DSETGR: WRONG SPEED VALUE < 0.')
+        ISPEED=1
+      ELSEIF(TEXT.EQ.'TIME')THEN
+        IF(ISTIME.EQ.1)CALL XABORT('@DSETGR: TIME ALREADY DEFINED.')
+        CALL REDGET(ITYP,NITMA,TMNEW,TEXT,DFLOT)
+        IF(ITYP.NE.2)CALL XABORT('@DSETGR: REAL FOR TIME EXPECTED.')
+        IF(TMNEW.LT.0.)CALL XABORT('@DSETGR: WRONG TIME VALUE < 0.')
+        ISTIME=1
+      ELSEIF(TEXT.EQ.'END')THEN
+        GOTO 20
+      ELSE
+        WRITE(IOUT,*)'@DSETGR: INVALID KEYWORD ',TEXT
+        CALL XABORT('@DSETGR: OPTION OR END EXPECTED.')
+      ENDIF
+      GOTO 10
+*----
+*  RECOVER GROUP INFORMATION
+*----
+   20 CALL LCMGET(IPDEV,'CORE-LIMITS',LIMIT)
+      IF(LROD)THEN
+        JPDEV=LCMGID(IPDEV,'ROD_GROUP')
+        KPDEV=LCMGIL(JPDEV,IGRP)
+        CALL LCMGET(KPDEV,'NUM-ROD',NDGR)
+        ALLOCATE(IDEV(NDGR))
+        CALL XDISET(IDEV,NDGR,0)
+        CALL LCMGET(KPDEV,'ROD-ID',IDEV)
+      ELSE
+        JPDEV=LCMGID(IPDEV,'LZC_GROUP')
+        KPDEV=LCMGIL(JPDEV,IGRP)
+        CALL LCMGET(KPDEV,'NUM-LZC',NDGR)
+        ALLOCATE(IDEV(NDGR))
+        CALL XDISET(IDEV,NDGR,0)
+        CALL LCMGET(KPDEV,'LZC-ID',IDEV)
+      ENDIF
+*----
+*  UPDATE DEVICES
+*----
+      DO 60 I=1,NDGR
+        ID=IDEV(I)
+*       RECOVER ROD
+        IF(LROD)THEN
+          JPDEV=LCMGID(IPDEV,'DEV_ROD')
+          KPDEV=LCMGIL(JPDEV,ID)
+          CALL LCMGTC(KPDEV,'ROD-NAME',12,1,TEXT)
+          IF(IMPX.GT.0) WRITE(IOUT,1011) ID,TEXT
+        ELSE
+          JPDEV=LCMGID(IPDEV,'DEV_LZC')
+          KPDEV=LCMGIL(JPDEV,ID)
+          IF(IMPX.GT.0) WRITE(IOUT,1012) ID
+        ENDIF
+*----
+*  UPDATE ROD POSITION
+*----
+        IF((ILEVEL.NE.0).AND.LROD) THEN
+*         RECOVER OLD ROD PARAMETERS
+          CALL LCMGET(KPDEV,'ROD-PARTS',NPART)
+          CALL LCMGET(KPDEV,'LENGTH',LENG)
+          CALL LCMGET(KPDEV,'AXIS',IAXIS)
+          CALL LCMGET(KPDEV,'FROM',ITOP)
+          CALL LCMLEN(KPDEV,'LEVEL',ILONG,ITYLCM)
+          CALL LCMGTC(KPDEV,'ROD-NAME',12,1,NXSEQ)
+          IF((ILONG.GT.0).AND.(IMPX.GT.2)) THEN
+            CALL LCMGET(KPDEV,'ROD-POS',RODPOS)
+            CALL LCMGET(KPDEV,'LEVEL',LVOLD)
+            WRITE(IOUT,1000) LVOLD
+            DO 30 IPART=1,NPART
+            WRITE(IOUT,1001) IPART,RODPOS(1,IPART),RODPOS(3,IPART),
+     1             RODPOS(5,IPART),RODPOS(2,IPART),RODPOS(4,IPART),
+     2             RODPOS(6,IPART)
+   30         CONTINUE
+          ENDIF
+*         MODIFY ROD POSITION
+          IF(IMPX.GT.1) WRITE(IOUT,1002) LVNEW
+          IF(IMODE.EQ.1) THEN
+*           FADING ROD
+            DELH=LVNEW*(LENG(2)-LENG(1))
+          ELSE IF(IMODE.EQ.2) THEN
+*           MOVING ROD
+            IF(ITOP.EQ.-1) THEN
+              DELH=LVNEW*(LENG(2)-LIMIT(1))+LIMIT(1)
+            ELSE IF(ITOP.EQ.1) THEN
+              DELH=LIMIT(2)-LVNEW*(LIMIT(2)-LENG(1))
+            ENDIF
+            DELH=MIN(LIMIT(2),MAX(LIMIT(1),DELH))
+            IF(IMPX.GT.3) THEN
+              WRITE(IOUT,*) '    ADJ ',NXSEQ,' LEVEL ',LVNEW*100.,
+     1                      '% OF INSERTION'
+              WRITE(IOUT,*) '    NEW POSITION (L_sup)= ',DELH
+            ENDIF
+          ENDIF
+          CALL LCMGET(KPDEV,'MAX-POS',RODPOS)
+          CALL MOVCHK(IMPX,IMODE,NPART,IAXIS,ITOP,DELH,LENG,RODPOS)
+*         STORE NEW PARAMETERS
+          CALL LCMPUT(KPDEV,'ROD-POS',6*NPART,2,RODPOS)
+          CALL LCMPUT(KPDEV,'LEVEL',1,2,LVNEW)
+*----
+*  UPDATE LZC POSITION
+*----
+        ELSE IF(ILEVEL.NE.0) THEN
+*         RECOVER OLD LZC PARAMETERS
+          CALL LCMGET(KPDEV,'MAX-POS',MAXPOS)
+          CALL LCMGET(KPDEV,'EMPTY-POS',EMTPOS)
+          CALL LCMGET(KPDEV,'FULL-POS',FULPOS)
+          CALL LCMGET(KPDEV,'HEIGHT',HEIGHT)
+          CALL LCMGET(KPDEV,'LEVEL',LVOLD)
+          CALL LCMGET(KPDEV,'AXIS',IAXIS)
+          IF(IMPX.GT.1) WRITE(IOUT,1005) LVOLD,EMTPOS(1),EMTPOS(3),
+     1           EMTPOS(5),EMTPOS(2),EMTPOS(4),EMTPOS(6),FULPOS(1),
+     2           FULPOS(3),FULPOS(5),FULPOS(2),FULPOS(4),FULPOS(6)
+*         MODIFY LZC POSITION
+          DELH=LVNEW*HEIGHT
+          IF(IAXIS.EQ.1) THEN
+            FULPOS(1)=MAXPOS(2,1)-DELH
+            EMTPOS(2)=FULPOS(1)
+          ELSEIF(IAXIS.EQ.2) THEN
+            FULPOS(3)=MAXPOS(4,1)-DELH
+            EMTPOS(4)=FULPOS(3)
+          ELSEIF(IAXIS.EQ.3) THEN
+            FULPOS(5)=MAXPOS(6,1)-DELH
+            EMTPOS(6)=FULPOS(5)
+          ENDIF
+*         STORE NEW PARAMETERS
+          CALL LCMPUT(KPDEV,'LEVEL',1,2,LVNEW)
+          CALL LCMPUT(KPDEV,'EMPTY-POS',6,2,EMTPOS)
+          CALL LCMPUT(KPDEV,'FULL-POS',6,2,FULPOS)
+          IF(IMPX.GT.1) WRITE(IOUT,1006) LVNEW,EMTPOS(1),EMTPOS(3),
+     1           EMTPOS(5),EMTPOS(2),EMTPOS(4),EMTPOS(6),FULPOS(1),
+     2           FULPOS(3),FULPOS(5),FULPOS(2),FULPOS(4),FULPOS(6)
+        ENDIF
+*----
+*  UPDATE SPEED
+*----
+        IF((ISPEED.NE.0).AND.LROD) THEN
+          CALL LCMLEN(KPDEV,'SPEED',ILONG,ITYLCM)
+          IF(ILONG.GT.0) THEN
+            CALL LCMGET(KPDEV,'SPEED',SPOLD)
+            IF(IMPX.GE.2) WRITE(IOUT,1007) SPOLD,SPNEW
+          ELSE
+            IF(IMPX.GE.2) WRITE(IOUT,1008) SPNEW
+          ENDIF
+          CALL LCMPUT(KPDEV,'SPEED',1,2,SPNEW)
+        ELSE IF(ISPEED.NE.0) THEN
+          CALL LCMLEN(KPDEV,'RATE',ILONG,ITYLCM)
+          IF(ILONG.GT.0) THEN
+            CALL LCMGET(KPDEV,'RATE',SPOLD)
+            IF(IMPX.GE.2) WRITE(IOUT,1007) SPOLD,SPNEW
+          ELSE
+            IF(IMPX.GE.2) WRITE(IOUT,1008) SPNEW
+          ENDIF
+          CALL LCMPUT(KPDEV,'RATE',1,2,SPNEW)
+        ENDIF
+*----
+*  UPDATE TIME
+*----
+        IF(ISTIME.NE.0) THEN
+          CALL LCMLEN(KPDEV,'TIME',ILONG,ITYLCM)
+          IF(ILONG.GT.0) THEN
+            CALL LCMGET(KPDEV,'TIME',TMOLD)
+            IF(IMPX.GE.2) WRITE(IOUT,1009) TMOLD,TMNEW
+          ELSE
+            IF(IMPX.GE.2) WRITE(IOUT,1010) TMNEW
+          ENDIF
+          CALL LCMPUT(KPDEV,'TIME',1,2,TMNEW)
+        ENDIF
+*     PROCEED NEXT ROD
+   60 CONTINUE
+      DEALLOCATE(IDEV)
+      RETURN
+*
+ 1000 FORMAT(
+     1 /5X,'DSETGR: PREVIOUS INSERTION LEVEL =',F8.4)
+ 1001 FORMAT(
+     1 /5X,'DSETGR: PART =',I5/
+     2  5X,'PREVIOUS ROD POSITION :'/
+     3  5X,'X-',F10.4,5X,'Y-',F10.4,5X,'Z-',F10.4/
+     4  5X,'X+',F10.4,5X,'Y+',F10.4,5X,'Z+',F10.4)
+ 1002 FORMAT(
+     1 /5X,'DSETGR: NEW INSERTION LEVEL =',F8.4)
+ 1005 FORMAT(
+     1 /5X,'PREVIOUS LZC LEVEL =',F8.4/
+     2  5X,'PREVIOUS EMPTY-PART POSITION :'/
+     3  5X,'X-',F10.4,5X,'Y-',F10.4,5X,'Z-',F10.4/
+     4  5X,'X+',F10.4,5X,'Y+',F10.4,5X,'Z+',F10.4/
+     5  5X,'PREVIOUS FULL-PART POSITION :'/
+     6  5X,'X-',F10.4,5X,'Y-',F10.4,5X,'Z-',F10.4/
+     7  5X,'X+',F10.4,5X,'Y+',F10.4,5X,'Z+',F10.4/)
+ 1006 FORMAT(
+     1 /5X,'NEW LZC LEVEL =',F8.4/
+     2  5X,'NEW EMPTY-PART POSITION :'/
+     3  5X,'X-',F10.4,5X,'Y-',F10.4,5X,'Z-',F10.4/
+     4  5X,'X+',F10.4,5X,'Y+',F10.4,5X,'Z+',F10.4/
+     5  5X,'NEW FULL-PART POSITION :'/
+     6  5X,'X-',F10.4,5X,'Y-',F10.4,5X,'Z-',F10.4/
+     7  5X,'X+',F10.4,5X,'Y+',F10.4,5X,'Z+',F10.4/)
+ 1007 FORMAT(/5X,'** SETING DEVICE SPEED **',
+     1       /5X,'PREVIOUS SPEED:',F10.4
+     2       /5X,'NEW SPEED:',F10.4/)
+ 1008 FORMAT(/5X,'** SETING DEVICE SPEED **',
+     1       /5X,'PREVIOUS SPEED: (UNDEFINED)'
+     2       /5X,'NEW SPEED:',F10.4/)
+ 1009 FORMAT(/5X,'** SETING DEVICE TIME **',
+     1       /5X,'PREVIOUS TIME:',F10.4
+     2       /5X,'NEW TIME:',F10.4/)
+ 1010 FORMAT(/5X,'** SETING DEVICE TIME **',
+     1       /5X,'PREVIOUS TIME: (UNDEFINED)'
+     2       /5X,'NEW TIME:',F10.4/)
+ 1011 FORMAT(/5X,' =>  ROD #',I3.3,4X,'ROD-NAME:',1X,A)
+ 1012 FORMAT(/5X,' =>  LZC #',I2.2)
+      END

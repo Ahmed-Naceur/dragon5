@@ -1,0 +1,49 @@
+*DECK DimFuel.c2m
+*----
+*  Name          : DimFuel.c2m
+*  Type          : DRAGON procedure
+*  Use           : Fuel dimensions for Gentilly-2 cell
+*  Author        : G. Marleau
+*  Date          : 2006/03/01
+*  Reference     : Gentilly-2 .
+*  
+*  Description of the procedure: 
+*    DimFuel ::  <<Ring>> 
+*    >>npinp<< >>rpinp<< >>apinp<< >>rradf<< >>rrads<< ;
+*  Input data:
+*    Ring          : Ring number
+*  Output data:
+*    npinp         : number of pins in this ring
+*    rpinp         : ring radius 
+*    apinp         : first pin angle
+*    rradf         : outer fuel radius
+*    rrads         : outer sheat radius
+*----
+* Definition of the input and output data structures and 
+* of the input and output parameters for this procedure
+*
+MODULE    END:   ;
+INTEGER   Ring   ;
+  :: >>Ring<<  ;
+INTEGER      npinp1 npinp2 npinp3 npinp4 :=
+             1      6      12     18     ;
+REAL         rradf1   rrads1   rpinp1   apinp1 := 
+             0.6122   0.6540    0.0     0.0      ;    
+REAL         rradf2   rrads2   rpinp2   apinp2 :=
+             rradf1   rrads1   1.4885   0.0      ;
+REAL         rradf3   rrads3   rpinp3   apinp3 :=
+             rradf1   rrads1   2.8755   $Pi_R  npinp3 I_TO_R /  ;
+REAL         rradf4   rrads4   rpinp4   apinp4 :=
+             rradf1   rrads1   4.3305   0.0      ;
+IF Ring 4 = THEN
+  :: <<npinp4>> <<rpinp4>> <<apinp4>> <<rradf4>> <<rrads4>>  ;
+ELSEIF Ring 3 = THEN
+  :: <<npinp3>> <<rpinp3>> <<apinp3>> <<rradf3>> <<rrads3>>  ;
+ELSEIF Ring 2 = THEN
+  :: <<npinp2>> <<rpinp2>> <<apinp2>> <<rradf2>> <<rrads2>>  ;
+ELSEIF Ring 1 = THEN
+  :: <<npinp1>> <<rpinp1>> <<apinp1>> <<rradf1>> <<rrads1>>  ;
+ELSE
+  ECHO "WARNING: Invalid Ring number in DimFuel : " Ring ;
+ENDIF ;
+QUIT .

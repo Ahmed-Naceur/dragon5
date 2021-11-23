@@ -1,0 +1,28 @@
+* Regression tests based on Rowland's benchmarks with a Jef2.2 Draglib.
+* Running time = ~ 10m
+* A. Hebert
+*
+PROCEDURE uo2_1c_case1 uo2_1c_case2 uo2_1c_case3 uo2_1c_case4
+          uo2_6c_case1 uo2_6c_case2 uo2_6c_case3 uo2_6c_case4
+          uo2_6c_case5 mox_1c_case1 mox_1c_case2 mox_1c_case3
+          mox_1c_case4 mox_6c_case1 mox_6c_case2 mox_6c_case3
+          mox_6c_case4 mox_6c_case5 ;
+uo2_1c_case1 ;
+uo2_1c_case2 ;
+uo2_1c_case3 ;
+uo2_1c_case4 ;
+uo2_6c_case1 ;
+uo2_6c_case2 ;
+uo2_6c_case3 ;
+uo2_6c_case4 ;
+uo2_6c_case5 ;
+mox_1c_case1 ;
+mox_1c_case2 ;
+mox_1c_case3 ;
+mox_1c_case4 ;
+mox_6c_case1 ;
+mox_6c_case2 ;
+mox_6c_case3 ;
+mox_6c_case4 ;
+mox_6c_case5 ;
+QUIT "LIST" .

@@ -1,0 +1,68 @@
+*----
+*  Procedure TCWE05Lib
+*  Create Library for test CASE TCWE05
+*  Calling :
+*      LIBRARY := TCWE05Lib :: iedit ;
+*  with :
+*      LIBRARY = Linked list containing the result of LIB: for
+*                TCWE05
+*      iprint  = print level for LIB: module
+*----
+*  Define PARAMETERS,STRUCTURES and MODULES used
+*----
+PARAMETER  LIBRARY  ::  ::: LINKED_LIST LIBRARY ; ;
+MODULE     LIB: END: ;
+*----
+*  Define and read LIB: EDIT option
+INTEGER iedit   ;
+:: >>iedit<<    ;
+*----
+*  Depletion data from file WIMS-E format WIMSE
+*  Microscopic cross sections from file WIMS-E format WIMSE
+*----
+LIBRARY := LIB: ::
+  EDIT <<iedit>>
+  NMIX 17 CTRA WIMS
+  DEPL LIB: WIMSE FIL: WIMS-E
+  MIXS LIB: WIMSE FIL: WIMS-E
+  MIX  1  560.66   0.81212           O16      = '8016'   7.99449E-1
+    D2D2O    = '1002'   1.99768E-1   H1H2O    = '1001'   7.83774E-4
+  MIX  2  560.66   6.57              Nb93     = '41093'  2.50000
+    B10      = '5010'   4.17900E-05  B11      = '5011'   1.68210E-04
+    Zr90     = '40090'  5.01638E+01  Zr91     = '40091'  1.09395E+01 2
+    Zr92     = '40092'  1.67213E+01  Zr94     = '40094'  1.69455E+01
+    Zr96     = '40096'  2.73000E+00
+  MIX  3  345.66   0.0014            He4      = '2004'   1.00000E+2
+  MIX  4  345.66   6.44              Fe56     = '26056'  1.60000E-1
+    Ni58     = '28058'  6.00000E-2   Cr52     = '24052'  1.10000E-1
+    B10      = '5010'   6.16900E-05  B11      = '5011'   2.48310E-04
+    Zr90     = '40090'  5.13008E+01  Zr91     = '40091'  1.11875E+01 2
+    Zr92     = '40092'  1.71003E+01  Zr94     = '40094'  1.73296E+01
+    Zr96     = '40096'  2.79188E+00
+  MIX  5  345.66   1.082885          O16      = '8016'   7.98895E-1
+    D2D2O    = '1002'   2.01016E-1   H1H2O    = '1001'   8.96000E-5
+  MIX  6  941.29  10.4375010         O16      = '8016'   1.18473E+1
+    Xe135    = '54135'  0.0
+    U235     = '92235'   6.27118E-1 1 
+    U238     = '92238'   8.75256E+1 1 
+    U236     = '92236'  0.0        1
+    Pu239    = '94239'  0.0        1 
+  MIX  7  COMB 6 1.0
+  MIX  8  COMB 6 1.0
+  MIX  9  COMB 6 1.0
+  MIX 10   560.66   6.44             Fe56     = '26056'  1.60000E-1
+    Ni58     = '28058'  6.00000E-2   Cr52     = '24052'  1.10000E-1
+    B10      = '5010'   6.16900E-05  B11      = '5011'   2.48310E-04
+    Zr90     = '40090'  5.13008E+01  Zr91     = '40091'  1.11875E+01 2
+    Zr92     = '40092'  1.71003E+01  Zr94     = '40094'  1.73296E+01
+    Zr96     = '40096'  2.79188E+00
+  MIX 11  COMB 10 1.0
+  MIX 12  COMB 10 1.0
+  MIX 13  COMB 10 1.0
+  MIX 14 COMB  1 1.0
+  MIX 15 COMB  1 1.0
+  MIX 16 COMB  1 1.0
+  MIX 17 COMB  1 1.0
+  ;
+END: ;  
+QUIT "LIST" .

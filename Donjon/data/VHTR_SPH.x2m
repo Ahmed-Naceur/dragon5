@@ -1,0 +1,378 @@
+*--------------------------------------------------------------------
+* DB-VHTR Fuel Block Supercell
+* Fresh fuel TRU loading
+* V. Descotes
+* Core corner block(6,1), no BP, no CR.
+* JEFF3.1.0
+* SHEM295 Group Structure -> condensed to 26 groups (SB_MOC)
+
+*--------------------------------------------------------------------
+*  Define STRUCTURES and MODULES used
+*-------------------------------------------------------------------- 
+LINKED_LIST 
+  LIBRARY GEOM SYS FLUX CPO MACROGEO OUT1 CPO26 MACROLIB FLUX1 MTRACK ;
+
+XSM_FILE TRACK1 ;
+SEQ_BINARY TRACK_FIL1 ;
+
+SEQ_ASCII Multicompo flux Multi26 ;
+
+MODULE
+  GEO: EXCELT: MCCGT: LIB: EDI: DELETE: END: NCR: SPH:
+  COMPO: BIVACT: TRIVAT: GREP: BIVACA: TRIVAA: FLUD: ;
+
+REAL        b2 keff ;
+PROCEDURE   assertS ;
+
+*--------------------------------------------------------------------
+* INITIALIZATION OF THE COMPO LCM OBJECTS
+*--------------------------------------------------------------------
+
+CPO := Multicompo ;
+
+*--------------------------------------------------------------------
+* ENTER DATA INTO COMPO LCM OBJECT 
+*--------------------------------------------------------------------
+
+LIBRARY := NCR: CPO ::
+EDIT 99 NMIX 14
+   COMPO CPO 'F'
+* First mixture for the fuel pellet
+   MIX  1 FROM 1 ENDMIX
+   MIX  7 FROM 1 ENDMIX
+* Second mixture for helium + graphite surrounding the fuel pellet
+   MIX  2 FROM 2 ENDMIX
+   MIX  8 FROM 2 ENDMIX
+
+   COMPO CPO 'K'
+* Mixture for small coolant
+   MIX  3 FROM 1 ENDMIX
+   MIX  9 FROM 1 ENDMIX
+
+   COMPO CPO 'C'
+
+* Mixture for large coolant
+   MIX  4 FROM 1 ENDMIX
+   MIX 10 FROM 1 ENDMIX
+
+   COMPO CPO 'G'
+
+* Mixture for the burnable poison cells (graphite here)
+   MIX  5 FROM 1 ENDMIX
+   MIX  11 FROM 1 ENDMIX
+   MIX  13 FROM 1 ENDMIX
+
+   COMPO CPO 'J'
+
+* Mixture for the J-cells (graphite)
+   MIX  6 FROM 1 
+    MICRO ONLY
+    GRAB  9.486753785E-02 
+   ENDMIX
+   MIX  12 FROM 1 
+    MICRO ONLY
+    GRAB  9.486753785E-02 
+   ENDMIX
+   MIX  14 FROM 1 
+    MICRO ONLY
+    GRAB  9.486753785E-02 
+   ENDMIX
+;
+
+*--------------------------------------------------------
+*             SUPERCELL SPECIFICATION
+*--------------------------------------------------------
+* ----
+* F = Fuel cell
+* C = coolant hole cell (large)
+* K = coolant hole cell (small)
+* G = Full density graphite cell
+* J = Reduced/increased density graphite cell
+* ----
+
+GEOM := GEO: :: HEX 36
+  EDIT 0
+  HBC S30 REFL
+  CELL
+* Row   0
+ F01
+* Row   1
+ F01
+* Row   2
+ F01 F01
+* Row   3
+ K01 C01
+* Row   4
+ G01 G01 G01
+* Row   5
+ J01 J01 J01
+* Row   6
+ F02 F02 G03 G03
+* Row   7
+ F02 F02 G03 G03
+* Row   8
+ K02 C02 C02 G03 G03
+* Row   9
+ G02 G02 G02 G03 G03
+* Row  10
+ J02 J02 J02 J02 J03 J03
+
+******* TOTAL NUMBER OF CELLS **********
+* Ntot=   3367
+****** CENTER CELL COORDINATES : *******
+*(x0,y0)=(243,155)
+*
+*--------------------------------------------------------------------
+* Cell Definitions
+*--------------------------------------------------------------------
+*
+*  Fuel Cell FXX --------------------------- 
+ ::: F01 := GEO: HEXCEL 1
+     SIDE 1.08542 
+     RADIUS 0.0 0.6225
+     SECT -1 
+     MIX 1 1 1 1 1 1 
+         2 2 2 2 2 2  ;
+ ::: F02 := GEO: HEXCEL 1
+     SIDE 1.08542 
+     RADIUS 0.0 0.6225
+     SECT -1 
+     MIX 7 7 7 7 7 7 
+         8 8 8 8 8 8  ;
+*  Small coolant Hole KXX ------------------  
+ ::: K01 := GEO: HEXCEL 1
+     SIDE 1.08542 
+     RADIUS 0.0 0.4
+     SECT -1 
+     MIX 3  3  3  3  3  3  
+         3  3  3  3  3  3  ;
+ ::: K02 := GEO: HEXCEL 1
+     SIDE 1.08542 
+     RADIUS 0.0 0.4
+     SECT -1 
+     MIX 9  9  9  9  9  9 
+         9  9  9  9  9  9  ;
+*  Large Coolant Hole CXX ------------------
+ ::: C01 := GEO: HEXCEL 1
+     SIDE 1.08542 
+     RADIUS 0.0 0.4
+     SECT -1 
+     MIX 4  4  4  4  4  4 
+         4  4  4  4  4  4  ;
+ ::: C02 := GEO: HEXCEL 1
+     SIDE 1.08542 
+     RADIUS 0.0 0.4
+     SECT -1 
+     MIX 10 10 10 10 10 10
+         10 10 10 10 10 10  ;
+*  Full Density Grapite GXX ---------------- 
+ ::: G01 := GEO: HEXCEL 1
+     SIDE 1.08542 
+     RADIUS 0.0 0.4
+     SECT -1 
+     MIX 5  5  5  5  5  5
+         5  5  5  5  5  5  ;
+ ::: G02 := GEO: HEXCEL 1
+     SIDE 1.08542 
+     RADIUS 0.0 0.4
+     SECT -1 
+     MIX 11 11 11 11 11 11
+         11 11 11 11 11 11  ;
+ ::: G03 := GEO: HEXCEL 1
+     SIDE 1.08542 
+     RADIUS 0.0 0.4
+     SECT -1 
+     MIX 13 13 13 13 13 13
+         13 13 13 13 13 13  ;
+*  Reduced/increased Density Graphite JXX -- 
+ ::: J01 := GEO: HEXCEL 1
+     SIDE 1.08542 
+     RADIUS 0.0 0.4
+     SECT -1 
+     MIX 6  6  6  6  6  6
+         6  6  6  6  6  6  ;
+ ::: J02 := GEO: HEXCEL 1
+     SIDE 1.08542 
+     RADIUS 0.0 0.4
+     SECT -1 
+     MIX 12 12 12 12 12 12
+         12 12 12 12 12 12  ;
+ ::: J03 := GEO: HEXCEL 1
+     SIDE 1.08542 
+     RADIUS 0.0 0.4
+     SECT -1 
+     MIX 14 14 14 14 14 14
+         14 14 14 14 14 14  ;
+
+;
+
+*-------------------------------
+* MACROGEO defined for SPH equivalence
+*-------------------------------
+
+MACROGEO := GEO: :: HEX 36
+  EDIT 0
+  HBC S30 REFL
+  SIDE 1.08542
+  SPLITL 1
+  MIX
+* Row   0
+ 1
+* Row   1
+ 1
+* Row   2
+ 1 1
+* Row   3
+ 1 1
+* Row   4
+ 1 1 1
+* Row   5
+ 1 1 1
+* Row   6
+ 2 2 3 3
+* Row   7
+ 2 2 3 3
+* Row   8
+ 2 2 2 3 3
+* Row   9
+ 2 2 2 3 3
+* Row  10
+ 2 2 2 2 3 3
+
+******* TOTAL NUMBER OF CELLS **********
+* Ntot=   36
+****** CENTER CELL COORDINATES : *******
+*(x0,y0)=(243,155)
+*
+;
+
+*--------------------------------------------------------------------
+*  Use EXCELT, MCCGT, ASM and FLU for flux solution
+*--------------------------------------------------------------------
+
+***
+* Tracking EXCELT-MCCGT
+***
+TRACK1 TRACK_FIL1 := EXCELT: GEOM ::
+    EDIT 1
+    MAXR 500000
+    ANIS 1
+    ALLG
+    QUAB 5 HEBE
+    PISO  
+    TRAK TISO 4 10.0
+;
+TRACK1 := MCCGT: TRACK1 TRACK_FIL1 GEOM ::     
+     EDIT 0  LCMD 3
+     EPSI 5E-5
+     MAXI 100 KRYL 10 SCR 1 AAC 1 TMT
+;
+
+TRACK_FIL1 := DELETE: TRACK_FIL1 ;
+
+*---
+* Save the flux (do it once !). Attention : very heavy.
+*---
+
+FLUX := flux ;
+GREP: FLUX :: GETVAL 'B2  B1HOM' 1 1 1 >>b2<< ;
+GREP: FLUX :: GETVAL 'K-EFFECTIVE' 1 1 1 >>keff<< ;
+ECHO "b2=" b2 "keff=" keff ;
+
+*---
+* Solution for Trivac calculation :
+* -> homogenize all regions of the central block
+*---
+
+*************
+* 6 Groups *
+*************
+
+MTRACK := TRIVAT: MACROGEO ::
+    EDIT 1
+    MAXR 500000
+    DUAL 1 2
+    SPN 1 SCAT DIFF 1
+    ADI 6
+;
+
+OUT1 := EDI: FLUX LIBRARY TRACK1 GEOM
+             MACROGEO ::
+   EDIT 3
+   MERGE MIX
+ 1 1 1 1 1 1 2 2 2 2
+ 2 2 3 3
+  COND 1.8315E+05   1.6745E+01     2.13   0.62501
+       0.115
+  MICR 16 GRAB HE4 O16 NP27 PU38 PU39 PU40
+          PU41 PU42 AM41 AM42 AM43 C12 SI28 SI29 SI30
+  SAVE ;
+  
+OUT1 := SPH: OUT1 MTRACK :: STD ARM
+  ITER 500 1.0E-04 ;
+
+CPO26 := COMPO: ::
+  EDIT 1
+  STEP UP 'F'
+  COMM 'Multicompo cas-test with SPH moc-moc' ENDC
+  INIT ;
+
+CPO26 := COMPO: CPO26 OUT1 ::
+  EDIT 1
+  STEP UP 'F'
+;
+
+*
+**************************
+* Verification calculation
+**************************
+*
+
+MACROLIB := NCR: CPO26 ::
+   EDIT 1 MACRO LEAK <<b2>>
+   NMIX 3 COMPO CPO26 F
+   MIX 1 FROM 1 ENDMIX
+   MIX 2 FROM 2 ENDMIX
+   MIX 3 FROM 3 ENDMIX
+;
+
+*****
+* Numerical solution with bivac
+*****
+
+TRACK1 := DELETE: TRACK1 ; 
+TRACK1 := BIVACT: MACROGEO ::     
+    EDIT 1
+    MAXR 500000
+    DUAL 1 2
+    SPN 1 SCAT DIFF 1
+;
+
+SYS := BIVACA: MACROLIB TRACK1 :: EDIT 0 ;
+FLUX1 := FLUD: SYS TRACK1 :: EDIT 1
+      ACCE 3 3 EXTE 1000 1E-04 ;
+
+assertS FLUX1 :: 'K-EFFECTIVE' 1 <<keff>> ;
+
+*****
+* Numerical solution with trivac
+*****
+TRACK1 SYS FLUX1 := DELETE: TRACK1 SYS FLUX1 ;
+TRACK1 := TRIVAT: MACROGEO ::     
+    EDIT 1
+    MAXR 500000
+    DUAL 1 2
+    SPN 1 SCAT DIFF 1
+    ADI 6
+;
+
+SYS := TRIVAA: MACROLIB TRACK1 :: EDIT 0 ;
+FLUX1 := FLUD: SYS TRACK1 :: EDIT 1
+      ACCE 3 3 EXTE 1000 1E-04 ;
+
+assertS FLUX1 :: 'K-EFFECTIVE' 1 <<keff>> ;
+*
+ECHO "test VHTR_SPH completed" ;
+
+END: ; 
+QUIT "LIST" .

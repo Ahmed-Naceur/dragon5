@@ -1,0 +1,144 @@
+*----
+*  TEST CASE ene6103
+*
+*  REF: A. Hebert, "Applied Reactor Physics", Presses Internationales
+*       Polytechnique, Problem 5.12 (2009).
+*
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST GEOM MACRO MACROP TRACK SYSTEM SYSTEMP FLUX EDIT KINET ;
+MODULE GEO: MAC: BIVACT: BIVACA: FLUD: OUT: INIKIN: KINSOL: DELETE:
+       GREP: END: ;
+REAL FNORM ;
+REAL TIME := 0.0 ;
+PROCEDURE assertS assertS2 ;
+*
+GEOM := GEO: :: CAR1D 4
+           X- ZERO X+ ZERO
+           MIX  2 1 3 2
+           MESHX 0.0 40.0 350.0 660.0 700.0
+           SPLITX 1 4 4 1
+           ;
+*----
+*  Macroscopic cross sections
+*----
+MACRO := MAC: ::
+ EDIT 2 NGRO 2 NMIX 3 NIFI 1
+ READ INPUT
+ MIX     1
+      DIFF  1.264E+00  0.9328E+00
+     TOTAL  8.154E-03  4.1000E-03
+    NUSIGF  0.000E+00  4.5620E-03
+       CHI  1.000E+00  0.000E+00
+ H-FACTORS  0.000E+00  4.5620E-03
+      SCAT  1 1 0.0 2 2 0.0   7.368E-03
+      OVERV 1.000E-07  5.000E-06
+ MIX     2
+      DIFF  1.310E+00  0.8695E+00
+     TOTAL  1.018E-02  2.1170E-04
+      SCAT  1 1 0.0 2 2 0.0   1.0180E-02
+      OVERV 1.000E-07  5.000E-06
+ MIX     3
+      DIFF  1.264E+00  0.9328E+00
+     TOTAL  8.154E-03  4.1000E-03
+    NUSIGF  0.000E+00  4.5620E-03
+       CHI  1.000E+00  0.000E+00
+ H-FACTORS  0.000E+00  4.5620E-03
+      SCAT  1 1 0.0 2 2 0.0   7.368E-03
+      OVERV 1.000E-07  5.000E-06
+ ;
+*----
+*  Steady-state calculation
+*----
+MACROP := MAC: MACRO ::
+ EDIT 2
+ READ INPUT
+ MIX     1
+     TOTAL  8.154E-03  4.0800E-03
+ ;
+TRACK := BIVACT: GEOM ::
+      TITLE 'BENCHMARK ENE6103'
+      EDIT 99 MAXR 18 PRIM 1 3 ;
+SYSTEM := BIVACA: MACRO TRACK :: EDIT 5 UNIT ;
+FLUX :=  FLUD: SYSTEM TRACK :: EDIT 2 EXTE 5.0E-7 ;
+GREP: FLUX :: STEP UP FLUX GETVAL 2 14 >>FNORM<< ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9976777 ;
+EVALUATE FNORM := 1.0 FNORM / ;
+ECHO "Flux normalization factor=" FNORM ;
+EDIT := OUT: FLUX TRACK MACRO GEOM :: EDIT 2 INTG IN ;
+SYSTEMP := BIVACA: MACROP TRACK :: EDIT 5 UNIT ;
+*----
+*  Implicit space-time kinetics
+*----
+KINET := INIKIN: MACRO TRACK SYSTEM FLUX :: EDIT 6
+          NDEL 6
+          BETA 0.000266 0.001491 0.001316
+               0.002849 0.000896 0.000182
+          LAMBDA 0.0127 0.0317 0.1150
+                 0.3110 1.4000 3.8700
+          CHID 1.0 1.0 1.0 1.0 1.0 1.0
+               0.0 0.0 0.0 0.0 0.0 0.0
+          NORM <<FNORM>> ;
+WHILE TIME 10.0 <= DO
+  KINET := KINSOL: KINET MACROP TRACK SYSTEMP ::
+      EDIT 5  DELTA 0.1 
+      SCHEME  FLUX IMPLIC PREC IMPLIC EXTE 5.0E-7 ;
+  GREP: KINET :: GETVAL 'TOTAL-TIME' 1 >>TIME<< ;
+  ECHO "TIME=" TIME "S" ;
+  IF TIME 0.1 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 1.177896 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 9.579482E-05 ;
+  ELSEIF TIME 0.5 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 1.544617 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 9.600674E-05 ;
+  ELSEIF TIME 1.0 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 1.756835 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 9.642089E-05 ;
+  ELSEIF TIME 5.0 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 2.834877 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 1.026524E-04 ;
+  ELSEIF TIME 10.0 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 4.550276 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 1.179992E-04 ;
+  ENDIF ;
+ENDWHILE ;
+KINET := DELETE: KINET ;
+*----
+*  Crank-Nicholson space-time kinetics
+*----
+EVALUATE TIME := 0.0 ;
+KINET := INIKIN: MACRO TRACK SYSTEM FLUX :: EDIT 6
+          NDEL 6
+          BETA 0.000266 0.001491 0.001316
+               0.002849 0.000896 0.000182
+          LAMBDA 0.0127 0.0317 0.1150
+                 0.3110 1.4000 3.8700
+          CHID 1.0 1.0 1.0 1.0 1.0 1.0
+               0.0 0.0 0.0 0.0 0.0 0.0
+          NORM <<FNORM>> ;
+WHILE TIME 10.0 <= DO
+  KINET := KINSOL: KINET MACROP TRACK SYSTEMP ::
+      EDIT 5  DELTA 0.1 
+      SCHEME  FLUX CRANK PREC CRANK EXTE 5.0E-7 ;
+  GREP: KINET :: GETVAL 'TOTAL-TIME' 1 >>TIME<< ;
+  ECHO "TIME=" TIME "S" ;
+  IF TIME 0.1 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 1.210350 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 9.578590E-05 ;
+  ELSEIF TIME 0.5 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 1.571531 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 9.599043E-05 ;
+  ELSEIF TIME 1.0 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 1.765806 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 9.640217E-05 ;
+  ELSEIF TIME 5.0 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 2.830335 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 1.025722E-04 ;
+  ELSEIF TIME 10.0 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 4.534404 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 1.177749E-04 ;
+  ENDIF ;
+ENDWHILE ;
+ECHO "test prim13_biv completed" ;
+END: ;

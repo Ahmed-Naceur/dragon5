@@ -1,0 +1,79 @@
+\subsection{General input structure}\label{sect:glob}
+
+\vskip 0.2cm
+DONJON is built around the GAN generalized driver\cite{gan1,gan2}.
+Accordingly, all the modules that will be used during the current execution
+must be first identified. It is also necessary to define the format of each object
+(data structure) that will be processed by these modules. Then, the modules
+required for the specific DONJON calculation are called successively,
+information being transferred from one module to the next via the objects.
+Finally, the execution of DONJON is terminated when it encounters the
+\moc{END:} module, even if it is followed by additional data records in the
+input data stream. The general input data structure therefore follows the
+calling specifications given below:
+
+\begin{DataStructure}{Structure \dstr{DONJON}}
+$[$ \moc{MODULE} $[[$ \dusa{MODNAME} $]]$ \moc{;} $]$ \\
+$[$ \moc{LINKED\_LIST} $[[$ \dusa{STRNAME} $]]$ \moc{;} $]$ \\
+$[$ \moc{XSM\_FILE} $[[$ \dusa{STRNAME} $]]$ \moc{;} $]$ \\
+$[$ \moc{SEQ\_BINARY} $[[$ \dusa{STRNAME} $]]$ \moc{;} $]$ \\
+$[$ \moc{SEQ\_ASCII} $[[$ \dusa{STRNAME} $]]$ \moc{;} $]$ \\
+$[[$ \dstr{module}  \moc{;} $]]$ \\
+\moc{END:} \moc{;}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{MODULE}]  keyword used to specify the names of all modules
+that will be used in the current DONJON execution.
+
+\item[\dusa{MODNAME}] {\tt character*12} name of a DONJON, or
+DRAGON, or TRIVAC, or utility module. The list of modules that can be
+executed using DONJON code is provided in \Sect{mod}.
+
+\item[\moc{LINKED\_LIST}]  keyword used to specify the names of data
+structure that will be stored as linked lists. 
+
+\item[\moc{XSM\_FILE}]  keyword used to specify the names of all data
+structure that will be stored on XSM format files. 
+
+\item[\moc{SEQ\_BINARY}]  keyword used to specify the names of all
+data structure that will be stored on sequential binary files. 
+
+\item[\moc{SEQ\_ASCII}]  keyword used to specify the names of all
+data structures that will be stored on sequential ASCII files. 
+
+\item[\dusa{STRNAME}] {\tt character*12} name of a data structure.
+The list of data structure that can be used in DONJON is presented in \Sect{dat}.
+
+\item[\dstr{module}] input specification for a module that will be executed.
+For DONJON specific modules, these input structures are described in
+\Sect{modesc1} to \Sect{modesc4}.
+
+\item[\moc{END:}] keyword to call the normal end-of-execution utility module.
+
+\item[\moc{;}] keyword to specify the end of record. This keyword is used
+to delimit the part of the input data stream associated with each module.
+
+\end{ListeDeDescription}
+
+
+\vskip 0.2cm
+Generally, the user has the choice to declare the most of data structure
+in the format of a linked list to reduce CPU times or as a XSM file to reduce
+memory resources. In general, the data structure are stored on the sequential
+ASCII files only for the backup purposes.
+
+\vskip 0.2cm
+
+The input data normally ends with a call to the \moc{END:} module.
+However, the GAN driver will insert automatically the \moc{END:}
+module, even if it was not provided, upon reaching an end-of-file
+in the input stream.
+
+\vskip 0.2cm
+
+Each \dstr{module} calling specification contains a module execution
+description and its associated input structure. All these modules, except
+the \moc{END:} module may be called more than once.

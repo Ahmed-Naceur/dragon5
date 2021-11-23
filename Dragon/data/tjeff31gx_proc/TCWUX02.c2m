@@ -1,0 +1,159 @@
+*----
+*  TEST CASE TCWU02
+*  17 X 17 PWR ASSEMBLY WITHOUT POISON
+*  WLUP JEFF3.1 XMAS LIBRARY FILE WLUP172 FROM WLUP
+*
+*  REF: none
+*
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  ASSMB DISCR LIBRARY CP CALC OUT DATABASE ISOT SPHGEOM MTRACK ;
+SEQ_ASCII
+  res ;
+MODULE
+  LIB: GEO: SYBILT: BIVACT: SHI: ASM: FLU: EDI: COMPO: SPH: DELETE:
+  END: ;
+PROCEDURE assertS ;
+*----
+*  Microscopic cross sections from file WLUP172 format WIMSD4
+*----
+LIBRARY := LIB: ::
+  NMIX 8 CTRA WIMS
+  MIXS LIB: WIMSD4 FIL: WLUP172
+  MIX 1 579.9
+    H1H2O    = '3001'   4.76690E-2   O16H2O   = '6016'   2.38345E-2
+    BNat     = '1011'   2.38103E-5
+  MIX 2 579.9                        O16      = '6016'   3.06711E-4
+    Cr52     = '52'     7.54987E-5   Fe56     = '2056'   1.47624E-4
+    Zr91     = '91'     4.18621E-2
+  MIX 3 579.9
+    H1H2O    = '3001'   4.65292E-2   O16H2O   = '6016'   2.32646E-2
+                                     Cr52     = '52'     4.79927E-5
+    Fe56     = '2056'   4.45845E-5   Ni58     = '58'     1.13521E-4
+                                     MoNat    = '96'     4.03755E-6
+                                     Al27     = '27'     2.35231E-6
+    Mn55     = '55'     4.15901E-7
+    BNat     = '1011'   2.32761E-5
+    Zr91     = '91'     8.92427E-4
+  MIX 4 579.9                        O16      = '6016'   2.87335E-4
+    Cr52     = '52'     7.07291E-5   Fe56     = '2056'   1.38298E-4
+    Zr91     = '91'     3.92175E-2
+  MIX 5 579.9
+    H1H2O    = '3001'   4.71346E-2   O16H2O   = '6016'   2.35673E-2
+                                     Cr52     = '52'     2.24991E-5
+    Fe56     = '2056'   2.09013E-5   Ni58     = '58'     5.32188E-5
+                                     MoNat    = '96'     1.89281E-6
+                                     Al27     = '27'     1.10277E-6
+    Mn55     = '55'     1.94976E-7
+    BNat     = '1011'   2.35598E-5
+    Zr91     = '91'     4.18372E-4
+  MIX 6 579.9
+    H1H2O    = '3001'   4.71676E-2   O16H2O   = '6016'   2.35838E-2
+                                     Cr52     = '52'     2.11122E-5
+    Fe56     = '2056'   1.96130E-5   Ni58     = '58'     4.99383E-5
+                                     MoNat    = '96'     1.77614E-6
+                                     Al27     = '27'     1.03479E-6
+    Mn55     = '55'     1.82957E-7
+    BNat     = '1011'   2.35753E-5
+    Zr91     = '91'     3.92583E-4
+  MIX 7 579.9
+    H1H2O    = '3001'   4.72020E-2   O16H2O   = '6016'   2.36010E-2
+                                     Cr52     = '52'     1.96591E-5
+    Fe56     = '2056'   1.82630E-5   Ni58     = '58'     4.65011E-5
+                                     MoNat    = '96'     1.65389E-6
+                                     Al27     = '27'     9.63569E-7
+    Mn55     = '55'     1.70365E-7
+    BNat     = '1011'   2.35914E-5
+    Zr91     = '91'     3.65562E-4
+  MIX 8 933.6                        O16      = '6016'     4.49355E-2
+    U235     = '2235'   7.39237E-4 1 
+    U238     = '8238'   2.17285E-2 1 
+  ;
+*----
+*  Geometry ASSMB : a 17 X 17 normal PWR assembly
+*  contains  C1 : cell without fuel
+*            C2 : normal fuel cell
+*            C3 : peripheral cell
+*            C4 : corner cell
+*----
+ASSMB := GEO: :: CAR2D 9 9
+  X- DIAG X+ REFL Y- SYME Y+ DIAG
+  CELL C1 C2 C2 C1 C2 C2 C1 C2 C3
+          C2 C2 C2 C2 C2 C2 C2 C3
+             C2 C2 C2 C2 C2 C2 C3
+                C1 C2 C2 C1 C2 C3
+                   C2 C2 C2 C2 C3
+                      C1 C2 C2 C3
+                         C2 C2 C3
+                            C2 C3
+                               C4
+  MERGE 1  3 12 11 12 12 11 12 15
+           4  6  5  6  6  5  6  8
+             13  5  6  6  5  6  8
+                 2  5  5 10  5  8
+                   13  5  5  6  8
+                       2  5  7  8
+                         13  7  8
+                            14  8
+                                9
+  TURN  H  H  B  H  H  B  H  H  A
+           H  G  G  H  G  G  H  A
+              A  E  E  F  E  E  A
+                 H  H  F  H  H  A
+                    H  E  G  H  A
+                       H  H  A  A
+                          H  A  A
+                             A  A
+                                A
+  ::: C1 := GEO: CARCEL 2
+    MESHX 0.0 1.26472 MESHY 0.0 1.26472
+    RADIUS 0.0 0.572435 0.613142  MIX 1 2 3 ;
+  ::: C2 := GEO: C1  RADIUS 0.0 0.412660 0.474364  MIX 8 4 5 ;
+  ::: C3 := GEO: C2  MESHX 0.0 1.31472 MIX 8 4 6 ;
+  ::: C4 := GEO: C3  MESHY 0.0 1.31472  MIX 8 4 7 ;
+  ;
+*----
+*  Self-Shielding calculation SYBIL
+*  Transport calculation      SYBIL
+*  Flux calculation for B1 homogeneous leakage
+*  Editing using SPH model for transport-diffusion
+*----
+DISCR := SYBILT: ASSMB ::
+  TITLE 'TCWU02: 17 X 17 MULTICELL PWR BENCHMARK WITHOUT POISON'
+  MAXR 400 QUA2 6 3 ;
+LIBRARY := SHI: LIBRARY DISCR :: EDIT 0 NOLJ ;
+CP := ASM: LIBRARY DISCR ;
+CALC := FLU: CP LIBRARY DISCR ::
+  TYPE B B1 ;
+assertS CALC :: 'K-INFINITY' 1 1.249754 ;
+
+OUT := EDI: LIBRARY DISCR CALC ASSMB ::
+  EDIT 3 UPS SAVE MICR RES MERGE CELL COND 4.0
+  ;
+SPHGEOM := OUT :: STEP UP 'MACRO-GEOM' ;
+MTRACK := BIVACT: SPHGEOM :: PRIM 1 2 EDIT 0 ;
+OUT := SPH: OUT MTRACK ;
+SPHGEOM MTRACK := DELETE: SPHGEOM MTRACK ;
+
+DATABASE := COMPO: ::
+  EDIT 5
+  COMM  'Multi-parameter reactor database' ENDC
+  INIT
+  ;
+DATABASE := COMPO: DATABASE OUT ::
+  EDIT 3
+  ;
+res := DATABASE ;
+
+ISOT := DATABASE :: STEP UP default
+                    STEP UP MIXTURES STEP AT 5
+                    STEP UP CALCULATIONS STEP AT 1
+                    STEP UP ISOTOPESLIST STEP AT 1 ;
+assertS ISOT :: 'NWT0' 1 5.216690E-01 ;
+assertS ISOT :: 'NWT0' 2 1.305929E-01 ;
+
+ECHO "test TCWU02 completed" ;
+END: ; 
+QUIT "LIST" .

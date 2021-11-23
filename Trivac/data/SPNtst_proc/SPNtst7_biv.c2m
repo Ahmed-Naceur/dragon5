@@ -1,0 +1,61 @@
+*----
+*  TEST CASE SPNtst7_biv
+*  HEXAGONAL NSE BENCHMARK -- SIMPLIFIED PN THEORY IN BIVAC
+*  MACROLIB-DEFINED CROSS SECTIONS
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST GEOM MACRO TRACK SYSTEM FLUX EDIT ;
+MODULE GEO: MAC: BIVACT: BIVACA: FLUD: OUT: END: ;
+PROCEDURE assertS ;
+*
+GEOM := GEO: :: HEX  16
+       EDIT 2
+       HBC   S30  VOID
+       SIDE 19.0
+       SPLITL 2
+       MIX
+       1
+       1
+       1  1
+       1  2
+       2  2  2
+       2  2  3
+       3  3  3  0
+       ;
+MACRO := MAC: ::
+ EDIT 2 NGRO 1 NMIX 3 NIFI 1 ANIS 2
+ READ INPUT
+ MIX     1
+     TOTAL  0.025
+    NUSIGF  0.0155
+       CHI  1.0
+      SCAT  1 1 0.013
+            1 1 0.0
+ MIX     2
+     TOTAL  0.025
+      SCAT  1 1 0.024
+            1 1 0.006
+ MIX     3
+     TOTAL  0.075
+      SCAT  1 1 0.0
+            1 1 0.0
+ ;
+TRACK := BIVACT: GEOM ::
+      TITLE 'ANISOTROPIC NSE BENCHMARK, 1 GROUP'
+      EDIT 1 MAXR 2500 DUAL (*IELEM=*) 2 (*ICOL=*) 3
+      SPN 3 ;
+SYSTEM := BIVACA: MACRO TRACK ::
+      EDIT 1 ;
+FLUX :=  FLUD: SYSTEM TRACK ::
+      EDIT 2 EXTE 100 5.0E-6 ACCE 4 3 ;
+EDIT := OUT: FLUX TRACK MACRO GEOM ::
+       EDIT 2 INTG
+       1  2  3  4  5
+       6  7  8  9 10
+      11 12 13 14 15
+       0
+       ;
+assertS FLUX :: 'K-EFFECTIVE' 1 1.000329 ;
+ECHO "test SPNtst7_biv completed" ;
+END: ;
