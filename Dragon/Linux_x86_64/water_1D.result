@@ -95,17 +95,17 @@ macro.txt := MACRO ;                                                       0092
 SYSTEM := ASM: MACRO TRACK :: EDIT 0 ARM ;                                 0094
 FLUX  := FLU: MACRO TRACK SYSTEM :: EDIT 0 TYPE S EXTE 300 ;               0095
 * --- Recover flux and reaction rates                                      0096
-EEDIT := OUT: FLUX TRACK MACRO GEOM MICRO :: EDIT 2 COND INTG NONE ;       0097
+EEDIT := OUT: FLUX TRACK MACRO GEOM MICRO  :: EDIT 2 COND INTG NONE ;      0097
 edit.txt  := EEDIT ;                                                       0098
-*EDITION := EDI: MACRO SYSTEM GEOM :: EDIT 99 ;                            0099
-*edition.txt := EDITION ;                                                  0100
-track.txt := TRACK ;                                                       0101
-geom.txt := GEOM ;                                                         0102
-system.txt := SYSTEM ;                                                     0103
-micro.txt := MICRO ;                                                       0104
-flux.txt  := FLUX  ;                                                       0105
+track.txt := TRACK ;                                                       0099
+geom.txt := GEOM ;                                                         0100
+system.txt := SYSTEM ;                                                     0101
+micro.txt := MICRO ;                                                       0102
+flux.txt  := FLUX  ;                                                       0103
+LINKED_LIST GEDIT ;                                                        0104
+GEDIT := EEDIT ;                                                           0105
 * ---- Energy deposition                                                   0106
-*DEPOS := HEAT: EEDIT :: EDIT 99 ;                                         0107
+DEPOS := HEAT: EEDIT GEDIT :: EDIT 99 ;                                    0107
 *edep.txt := EEDIT ;                                                       0108
 EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM := DELETE:                        0109
 EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM ;                                 0110
@@ -463,7 +463,7 @@ QUIT "LIST" .                                                              0112
  TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =       796
 
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.124 MEMORY USAGE= 2.368E+03
+-->>MODULE LIB:        : TIME SPENT=        0.115 MEMORY USAGE= 2.360E+03
 <|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0044
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
@@ -548,7 +548,7 @@ QUIT "LIST" .                                                              0112
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.006 MEMORY USAGE= 2.640E+02
+-->>MODULE MAC:        : TIME SPENT=        0.007 MEMORY USAGE= 2.640E+02
 <|OLDMACRO := DELETE: OLDMACRO ;                                          |<0048
 <|MACRO := MAC: MACRO ::                                                  |<0051
 <|READ INPUT                                                              |<0052
@@ -584,7 +584,7 @@ QUIT "LIST" .                                                              0112
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+-->>MODULE MAC:        : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
 <|macro.txt := MACRO ;                                                    |<0092
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
@@ -593,7 +593,7 @@ QUIT "LIST" .                                                              0112
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macro.txt   '.
--->>module EQU:        : time spent=        0.046 memory usage= 1.560E+02
+-->>module EQU:        : time spent=        0.062 memory usage= 1.400E+02
 ->@END MODULE   : EQU:        
 <|SYSTEM := ASM: MACRO TRACK :: EDIT 0 ARM ;                              |<0094
 ->@BEGIN MODULE : ASM:        
@@ -631,8 +631,8 @@ QUIT "LIST" .                                                              0112
  SNF: UNABLE TO CONVERGE ONE-SPEED ITERATIONS IN GROUP   80.
  SNF: UNABLE TO CONVERGE ONE-SPEED ITERATIONS IN GROUP   80.
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        3.893 MEMORY USAGE= 2.702E+04
-<|EEDIT := OUT: FLUX TRACK MACRO GEOM MICRO :: EDIT 2 COND INTG NONE ;    |<0097
+-->>MODULE FLU:        : TIME SPENT=        6.824 MEMORY USAGE= 2.700E+04
+<|EEDIT := OUT: FLUX TRACK MACRO GEOM MICRO  :: EDIT 2 COND INTG NONE ;   |<0097
 ->@BEGIN MODULE : OUT:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -641,8 +641,8 @@ QUIT "LIST" .                                                              0112
 
 
  EXEC: OUT:         BY A. HEBERT
- OUT: MESHY NOT FOUND.
- OUT: MESHZ NOT FOUND.
+ OUT: MESHY NOT PROVIDED.
+ OUT: MESHZ NOT PROVIDED.
 
  OUTFLX: RECOVER THE DIRECT FLUX.
 
@@ -778,8 +778,8 @@ QUIT "LIST" .                                                              0112
 
   SUM   2.00000E+00           NaN           NaN           NaN   0.00000E+00   0.00000E+00           NaN           NaN
 
- OUTDRV: CPU TIME FOR REACTION RATE CALCULATION =  0.020
--->>MODULE OUT:        : TIME SPENT=        0.020 MEMORY USAGE= 0.000E+00
+ OUTDRV: CPU TIME FOR REACTION RATE CALCULATION =  0.033
+-->>MODULE OUT:        : TIME SPENT=        0.033 MEMORY USAGE= 0.000E+00
 ->@END MODULE   : OUT:        
 <|edit.txt  := EEDIT ;                                                    |<0098
 ->@BEGIN MODULE : EQU:        
@@ -789,9 +789,9 @@ QUIT "LIST" .                                                              0112
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'EEDIT       ' WAS EXPORTED TO FILE 'edit.txt    '.
--->>module EQU:        : time spent=        0.001 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.002 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
-<|track.txt := TRACK ;                                                    |<0101
+<|track.txt := TRACK ;                                                    |<0099
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -801,7 +801,7 @@ QUIT "LIST" .                                                              0112
  DRVEQU: A LCM OBJECT NAMED 'TRACK       ' WAS EXPORTED TO FILE 'track.txt   '.
 -->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
-<|geom.txt := GEOM ;                                                      |<0102
+<|geom.txt := GEOM ;                                                      |<0100
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -809,9 +809,9 @@ QUIT "LIST" .                                                              0112
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'GEOM        ' WAS EXPORTED TO FILE 'geom.txt    '.
--->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.001 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
-<|system.txt := SYSTEM ;                                                  |<0103
+<|system.txt := SYSTEM ;                                                  |<0101
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -821,7 +821,7 @@ QUIT "LIST" .                                                              0112
  DRVEQU: A LCM OBJECT NAMED 'SYSTEM      ' WAS EXPORTED TO FILE 'system.txt  '.
 -->>module EQU:        : time spent=        0.002 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
-<|micro.txt := MICRO ;                                                    |<0104
+<|micro.txt := MICRO ;                                                    |<0102
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -829,9 +829,9 @@ QUIT "LIST" .                                                              0112
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MICRO       ' WAS EXPORTED TO FILE 'micro.txt   '.
--->>module EQU:        : time spent=        0.075 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.111 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
-<|flux.txt  := FLUX  ;                                                    |<0105
+<|flux.txt  := FLUX  ;                                                    |<0103
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -839,12 +839,120 @@ QUIT "LIST" .                                                              0112
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'FLUX        ' WAS EXPORTED TO FILE 'flux.txt    '.
--->>module EQU:        : time spent=        0.384 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.547 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
-<|EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM := DELETE:                     |<0109
-<|EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM ;                              |<0110
-<|END: ;                                                                  |<0111
-
- normal end of execution for dragon 5  Version 5.0.7 ($Revision: 2060 $)               
- check for warning in listing
- before assuming your run was successful
+<|LINKED_LIST GEDIT ;                                                     |<0104
+<|GEDIT := EEDIT ;                                                        |<0105
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|DEPOS := HEAT: EEDIT GEDIT :: EDIT 99 ;                                 |<0107
+->@BEGIN MODULE : HEAT:       
+->@DESCRIPTION  : Compute the energy and charge deposition values                         
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+           1           1                       NaN
+           2           1                       NaN
+           3           1                       NaN
+           4           1                       NaN
+           5           1                       NaN
+           6           1                       NaN
+           7           1                       NaN
+           8           1                       NaN
+           9           1                       NaN
+          10           1                       NaN
+          11           1                       NaN
+          12           1                       NaN
+          13           1                       NaN
+          14           1                       NaN
+          15           1                       NaN
+          16           1                       NaN
+          17           1                       NaN
+          18           1                       NaN
+          19           1                       NaN
+          20           1                       NaN
+          21           1                       NaN
+          22           1                       NaN
+          23           1                       NaN
+          24           1                       NaN
+          25           1                       NaN
+          26           1                       NaN
+          27           1                       NaN
+          28           1                       NaN
+          29           1                       NaN
+          30           1                       NaN
+          31           1                       NaN
+          32           1                       NaN
+          33           1                       NaN
+          34           1                       NaN
+          35           1                       NaN
+          36           1                       NaN
+          37           1                       NaN
+          38           1                       NaN
+          39           1                       NaN
+          40           1                       NaN
+          41           1                       NaN
+          42           1                       NaN
+          43           1                       NaN
+          44           1                       NaN
+          45           1                       NaN
+          46           1                       NaN
+          47           1                       NaN
+          48           1                       NaN
+          49           1                       NaN
+          50           1                       NaN
+          51           1                       NaN
+          52           1                       NaN
+          53           1                       NaN
+          54           1                       NaN
+          55           1                       NaN
+          56           1                       NaN
+          57           1                       NaN
+          58           1                       NaN
+          59           1                       NaN
+          60           1                       NaN
+          61           1                       NaN
+          62           1                       NaN
+          63           1                       NaN
+          64           1                       NaN
+          65           1                       NaN
+          66           1                       NaN
+          67           1                       NaN
+          68           1                       NaN
+          69           1                       NaN
+          70           1                       NaN
+          71           1                       NaN
+          72           1                       NaN
+          73           1                       NaN
+          74           1                       NaN
+          75           1                       NaN
+          76           1                       NaN
+          77           1                       NaN
+          78           1                       NaN
+          79           1                       NaN
+          80           1                       NaN
+          81           1                       NaN
+          82           1                       NaN
+          83           1                       NaN
+          84           1                       NaN
+          85           1                       NaN
+          86           1                       NaN
+          87           1                       NaN
+          88           1                       NaN
+          89           1                       NaN
+          90           1                       NaN
+          91           1                       NaN
+          92           1                       NaN
+          93           1                       NaN
+          94           1                       NaN
+          95           1                       NaN
+          96           1                       NaN
+          97           1                       NaN
+          98           1                       NaN
+          99           1                       NaN
+         100           1                       NaN

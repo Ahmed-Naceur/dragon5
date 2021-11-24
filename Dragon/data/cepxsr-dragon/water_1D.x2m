@@ -115,24 +115,21 @@ FLUX  := FLU: MACRO TRACK SYSTEM :: EDIT 0 TYPE S EXTE 300 ;
 
 * --- Recover flux and reaction rates
 
-EEDIT := OUT: FLUX TRACK MACRO GEOM MICRO :: EDIT 2 COND INTG NONE ;
+EEDIT := OUT: FLUX TRACK MACRO GEOM MICRO  :: EDIT 2 COND INTG NONE ;
 
 edit.txt  := EEDIT ;  
-
-*EDITION := EDI: MACRO SYSTEM GEOM :: EDIT 99 ;
-*edition.txt := EDITION ;
-
 track.txt := TRACK ;
 geom.txt := GEOM ; 
 system.txt := SYSTEM ;
 micro.txt := MICRO ;
-
 flux.txt  := FLUX  ;
 
+LINKED_LIST GEDIT ;
+GEDIT := EEDIT ;
 
 * ---- Energy deposition
 
-*DEPOS := HEAT: EEDIT :: EDIT 99 ;
+DEPOS := HEAT: EEDIT GEDIT :: EDIT 99 ;
 
 *edep.txt := EEDIT ; 
 

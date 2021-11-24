@@ -68,10 +68,12 @@
       INTEGER IGP(NSTATE)
       TYPE(C_PTR) IPMAC1,IPMAC2,IPFLUX,IPTRK,IPGEOM,IPMIC
       INTEGER, DIMENSION(:),ALLOCATABLE :: MAT,IDL
-      REAL, DIMENSION(:),ALLOCATABLE :: VOL,DENMIX
-      LOGICAL :: IsMicroProvided = .FALSE. 
+      REAL, DIMENSION(:),ALLOCATABLE :: VOL
 
-      REAL,DIMENSION(:),ALLOCATABLE :: MESHX,MESHY,MESHZ
+      LOGICAL :: IsMicroProvided = .FALSE. 
+      REAL,DIMENSION(:),ALLOCATABLE :: MESHX,MESHY,MESHZ,DENMIX,DENMIXF
+      REAL,DIMENSION(:),ALLOCATABLE :: SPLITX,SPLITY,SPLITZ,MESH,DENMESH
+      INTEGER, DIMENSION(:), ALLOCATABLE :: MIX
 *----
 *  PARAMETER VALIDATION.
 *----
@@ -147,7 +149,7 @@
          ENDIF
       ENDIF
    90 CONTINUE
-      PRINT *, 'NO MICROLIB PROVIDED FOR OUT: MODULE'
+      PRINT *, 'NOTE: NO MICROLIB PROVIDED FOR OUT: MODULE'
       
 
   100 CALL LCMGET(IPMAC1,'STATE-VECTOR',IGP)
@@ -186,37 +188,103 @@
 *  CONSTRUCT DENSITY MATRIX
 *----
       IF (IsMicroProvided) THEN 
-         ALLOCATE (DENMIX(NBMIX-1))
+         !----
+         ! RECOVER MIXTURES
+         !----
+         CALL LCMLEN(IPGEOM,'MIX',ILONG,ITYLCM)
+         ALLOCATE (MIX(ILONG))
+         CALL LCMGET(IPGEOM,'MIX',MIX) 
+
+         !----
+         ! RECOVER MIXTURES DENSITY IN L_LIBRARY    
+         !----     
+         CALL LCMLEN(IPMIC,'MIXTURESDENS',ILONG,ITYLCM)
+         ALLOCATE (DENMIX(ILONG))
          CALL LCMGET(IPMIC,'MIXTURESDENS',DENMIX)
 
-         !-- temporary
+         !----
+         ! CONSTRUCT DENSITY MIXTURE MATRIX INCLUDING
+         ! SOURCE
+         !----
+
+         ! -- Source mixture in not selected in LIB:
+         ! -- Correct this situation here.
+         ! -- To generalize..
+
+         ALLOCATE(DENMIXF(SIZE(MIX)))
+         IF (SIZE(MIX).EQ.SIZE(DENMIX)) THEN
+            DENMIXF=DENMIX
+         ELSE 
+            DO I=1,SIZE(MIX)
+               IF (MIX(I).EQ.1) THEN
+                  DENMIXF(I)=5.00 !g/cm3
+               ELSE
+                  DENMIXF(I)=DENMIX(I-1) !g/cm3
+               ENDIF
+            END DO
+         ENDIF   
+
+         !----
+         ! RECOVER MESHS
+         !----
+
          !-- meshx
          CALL LCMLEN(IPGEOM,'MESHX',ILONG,ITYLCM)
          IF (ILONG.GT.0) THEN
             ALLOCATE (MESHX(ILONG))
             CALL LCMGET(IPGEOM,'MESHX',MESHX)
+
+            CALL LCMLEN(IPGEOM,'SPLITX',ILONG,ITYLCM)
+            ALLOCATE (SPLITX(ILONG))
+            CALL LCMGET(IPGEOM,'SPLITX',SPLITX)
          ELSE
-            PRINT *, "OUT: MESHX NOT FOUND."       
+            PRINT *, "OUT: MESHX NOT PROVIDED."       
          ENDIF
          !-- meshy
          CALL LCMLEN(IPGEOM,'MESHY',ILONG,ITYLCM)
          IF (ILONG.GT.0) THEN
             ALLOCATE (MESHY(ILONG))
             CALL LCMGET(IPGEOM,'MESHY',MESHY)
+
+            CALL LCMLEN(IPGEOM,'SPLITY',ILONG,ITYLCM)
+            ALLOCATE (SPLITY(ILONG))
+            CALL LCMGET(IPGEOM,'SPLITY',SPLITY)
          ELSE
-            PRINT *, "OUT: MESHY NOT FOUND."       
+            PRINT *, "OUT: MESHY NOT PROVIDED."       
          ENDIF
-          !-- meshz
+         !-- meshz
          CALL LCMLEN(IPGEOM,'MESHZ',ILONG,ITYLCM)
          IF (ILONG.GT.0) THEN
             ALLOCATE (MESHZ(ILONG))
             CALL LCMGET(IPGEOM,'MESHZ',MESHZ)
+
+            CALL LCMLEN(IPGEOM,'SPLITZ',ILONG,ITYLCM)
+            ALLOCATE (SPLITZ(ILONG))
+            CALL LCMGET(IPGEOM,'SPLITZ',SPLITZ)            
          ELSE
-            PRINT *, "OUT: MESHZ NOT FOUND."       
-         ENDIF        
+            PRINT *, "OUT: MESHZ NOT PROVIDED."       
+         ENDIF   
+         !---
+         ! CONSTRUCT COMPLETE MESH
+         !---
+         ALLOCATE(MESH(SIZE(VOL)))
+         MESH(1)=VOL(1)
+         DO I=2,SIZE(VOL)
+            MESH(I)=MESH(I-1)+VOL(I)
+         END DO
+         ALLOCATE(DENMESH(SIZE(MESH)))
+         DO I=1,SIZE(MESH)
+            DO J=2,SIZE(MESHX)
+               IF (MESH(I).GT.MESHX(J-1).AND.MESH(I).LE.MESHX(J)) THEN
+               DENMESH(I)=DENMIXF(J-1)
+               ENDIF
+            END DO
+         END DO
+      CALL LCMPUT(IPMAC2,'DENMESH',SIZE(DENMESH),2,DENMESH)
       ELSE
-         PRINT *,"L_LIBRARY NOT PROVIDED"
+         PRINT *,"NOTE: L_LIBRARY NOT PROVIDED"
       ENDIF  
+      
 
 !   99 FORMAT(/21H DENSITYMATRIX ,A,6H NOT FOUND.)      
 *----
@@ -229,5 +297,7 @@
 *  RELEASE GENERAL TRACKING INFORMATION.
 *----
       DEALLOCATE(IDL,VOL,MAT)
+!      DEALLOCATE(SPLITX,SPLITY,SPLITZ,MESHX,MESHY,MESHZ)
+!      DEALLOCATE(DENMESH,DENMIXF,DENMIX)
       RETURN
       END
