@@ -1,0 +1,371 @@
+*DECK PKINS
+      SUBROUTINE PKINS(NENTRY,HENTRY,IENTRY,JENTRY,KENTRY)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Solve the point kinetic equations and apply global feedback.
+*
+*Copyright:
+* Copyright (C) 2017 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): 
+* A. Hebert
+*
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The PKINS: module specification is:
+* [ MAPFL := ] PKINS: MAPFL :: (descpkins) ;
+* where
+*   MAPFL : name of the \emph{map} object containing fuel regions description 
+*     and global parameter informations. This object is declared in read-only 
+*     mode if and only if keyword PICKR is set.
+*   (descpkins) : structure describing the input data to the PKINS: module. 
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      INTEGER      NENTRY,IENTRY(NENTRY),JENTRY(NENTRY)
+      TYPE(C_PTR)  KENTRY(NENTRY)
+      CHARACTER    HENTRY(NENTRY)*12
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER (NSTATE=40,MAXTIM=2)
+      INTEGER ISTATE(NSTATE)
+      TYPE(C_PTR) IPMAP,JPMAP,JPPAR,KPPAR
+      REAL LAMBDA,TIMES(MAXTIM)
+      DOUBLE PRECISION DFLOT,DT_D,T_D,DH,RHO(3)
+      CHARACTER TEXT12*12,HSIGN*12,HPNAME*12,HSMG*131
+*----
+*  ALLOCATABLE ARRAYS
+*----
+      REAL, ALLOCATABLE, DIMENSION(:) :: BETAI,LAMBDAI,PARAMI,PARAMB,
+     1 FPOWER
+      REAL, ALLOCATABLE, DIMENSION(:,:) :: VAL
+      DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:) :: Y
+      CHARACTER(LEN=12), ALLOCATABLE, DIMENSION(:) :: HPARAM
+*----
+*  RECOVER THE FUELMAP
+*----
+      IF(NENTRY.NE.1) CALL XABORT('PKINS: ONE PARAMETER EXPECTED.')
+      IF((IENTRY(1).NE.1).AND.(IENTRY(1).NE.2))CALL XABORT('PKINS:'
+     1 //' LCM OBJECT EXPECTED.')
+      IF(JENTRY(1).EQ.0) CALL XABORT('PKINS: SECOND ENTRY IN READ-ONLY'
+     1  //' OR MODIFICATION MODE EXPECTED.')
+      IPMAP=KENTRY(1)
+      CALL LCMGTC(IPMAP,'SIGNATURE',12,1,HSIGN)
+      IF(HSIGN.NE.'L_MAP') THEN
+         TEXT12=HENTRY(1)
+         CALL XABORT('PKINS: SIGNATURE OF '//TEXT12//' IS '//HSIGN//
+     1   '. L_MAP EXPECTED.')
+      ENDIF
+      CALL LCMGET(IPMAP,'STATE-VECTOR',ISTATE)
+      NB=ISTATE(1)
+      NCH=ISTATE(2)
+      NPARM=ISTATE(8)
+      IF(NPARM.GT.0) JPPAR=LCMGID(IPMAP,'PARAM')
+      IF(NCH.NE.1) CALL XABORT('PKINS: ONE CHANNEL EXPECTED.')
+      JPMAP=LCMGID(IPMAP,'P-KINETIC')
+      CALL LCMGET(JPMAP,'STATE-VECTOR',ISTATE)
+      NGROUP=ISTATE(2)
+      NALPHA=ISTATE(3)
+      ALLOCATE(HPARAM(NALPHA),PARAMI(NALPHA),PARAMB(NALPHA),Y(NGROUP+1))
+*----
+*  READ INPUT DATA
+*----
+      IMPX=1
+      T=0.0
+      DT=0.0
+   10 CALL REDGET(ITYP,NITMA,FLOT,TEXT12,DFLOT)
+      IF(ITYP.NE.3)CALL XABORT('PKINS: CHARACTER DATA EXPECTED.')
+      IF(TEXT12.EQ.'EDIT') THEN
+*       READ PRINTING INDEX
+        CALL REDGET(ITYP,IMPX,FLOT,TEXT12,DFLOT)
+        IF(ITYP.NE.1)CALL XABORT('PKINS: INTEGER FOR EDIT EXPECTED.')
+      ELSE IF(TEXT12.EQ.'TIME') THEN
+*       Set initial time and stage length (s)
+        CALL REDGET(ITYP,NITMA,T,TEXT12,DFLOT)
+        IF(ITYP.NE.2)CALL XABORT('PKINS: REAL FOR T EXPECTED.')
+        CALL REDGET(ITYP,NITMA,DT,TEXT12,DFLOT)
+        IF(ITYP.NE.2)CALL XABORT('PKINS: REAL FOR DT EXPECTED.')
+        IF(IMPX.GT.0) WRITE(6,100) T,DT
+      ELSE IF(TEXT12.EQ.'Y-INIT') THEN
+*       Read solution of point kinetic equations at beginning-of-stage
+        IF(DT.EQ.0.0) CALL XABORT('PKINS: DT NOT SET.')
+        DO I=1,NGROUP+1
+          CALL REDGET(ITYP,NITMA,FLOT,TEXT12,Y(I))
+          IF(ITYP.NE.4)CALL XABORT('PKINS: DOUBLE FOR Y EXPECTED.')
+        ENDDO
+        CALL LCMGET(JPMAP,'PKIN-TIMES',TIMES)
+        ITIM=0
+        DO I=1,MAXTIM
+          IF(ABS(TIMES(I)-T).LE.1.0E-4*DT) ITIM=I
+        ENDDO
+        IF(ITIM.EQ.0) THEN
+*         unable to find initial contitions
+          WRITE(HSMG,'(44HPKINS: UNABLE TO FIND BEGINNING-OF-STAGE CON,
+     1    13HTITIONS AT T=,1P E12.4,6H S(1).)') T
+          CALL XABORT(HSMG)
+        ENDIF
+        WRITE(TEXT12,'(8HPKIN-DAT,I4.4)') ITIM
+        IF(IMPX.GT.0) WRITE(6,160) T,TEXT12
+        CALL LCMSIX(JPMAP,TEXT12,1)
+          CALL LCMPUT(JPMAP,'Y-VALUE',NGROUP+1,4,Y)
+        CALL LCMSIX(JPMAP,' ',2)
+      ELSE IF(TEXT12.EQ.'POWER') THEN
+*       Read power (MW)
+        IF(DT.EQ.0.0) CALL XABORT('PKINS: DT NOT SET.')
+        CALL REDGET(ITYP,NITMA,FLOT,TEXT12,DFLOT)
+        IF(ITYP.NE.2)CALL XABORT('PKINS: REAL FOR POW EXPECTED.')
+        CALL LCMGET(JPMAP,'Y-VALUE',Y)
+        Y(1)=DFLOT
+        CALL LCMGET(JPMAP,'PKIN-TIMES',TIMES)
+        ITIM=0
+        DO I=1,MAXTIM
+          IF(ABS(TIMES(I)-T).LE.1.0E-4*DT) ITIM=I
+        ENDDO
+        IF(ITIM.EQ.0) THEN
+*         unable to find initial contitions
+          WRITE(HSMG,'(44HPKINS: UNABLE TO FIND BEGINNING-OF-STAGE CON,
+     1    13HTITIONS AT T=,1P E12.4,6H S(2).)') T
+          CALL XABORT(HSMG)
+        ENDIF
+        WRITE(TEXT12,'(8HPKIN-DAT,I4.4)') ITIM
+        IF(IMPX.GT.0) WRITE(6,160) T,TEXT12
+        CALL LCMSIX(JPMAP,TEXT12,1)
+          CALL LCMPUT(JPMAP,'Y-VALUE',NGROUP+1,4,Y)
+        CALL LCMSIX(JPMAP,' ',2)
+      ELSE IF(TEXT12.EQ.';') THEN
+        IPICK=0
+        GO TO 20
+      ELSE IF(TEXT12.EQ.'PICK') THEN
+        IPICK=1
+        GO TO 20
+      ELSE IF(TEXT12.EQ.'PICKR') THEN
+        IPICK=2
+        GO TO 20
+      ELSE
+        CALL XABORT('PKINS: INVALID KEYWORD: '//TEXT12//'.')
+      ENDIF
+      GO TO 10
+*----
+*  RECOVER THE GLOBAL PARAMETER VALUES AT THE BEGINNING OF TIME STAGE
+*----
+   20 IF(IMPX.GT.0) WRITE(6,110)
+      CALL LCMGTC(JPMAP,'P-NAME',12,NALPHA,HPARAM)
+      DO IAL=1,NALPHA
+        DO IPAR=1,NPARM
+          KPPAR=LCMGIL(JPPAR,IPAR)
+          CALL LCMGTC(KPPAR,'P-NAME',12,1,HPNAME)
+          IF(HPNAME.EQ.HPARAM(IAL)) GO TO 30
+        ENDDO
+        CALL XABORT('PKINS: GLOBAL PARAMETER NOT FOUND.')
+   30   CALL LCMLEN(KPPAR,'P-VALUE',ILONG,ITYLCM)
+        IF(ILONG.EQ.0) THEN
+          WRITE(HSMG,'(33HPKINS: VALUE OF GLOBAL PARAMETER ,A,6H IS NO,
+     1    20H SET IN THE FUELMAP.)') HPNAME
+          CALL XABORT(HSMG)
+        ENDIF
+        CALL LCMGET(KPPAR,'P-TYPE',ITYPE)
+        IF(ITYPE.EQ.1) THEN
+          CALL LCMGET(KPPAR,'P-VALUE',PARAMB(IAL))
+        ELSE IF(ITYPE.EQ.2) THEN
+          ALLOCATE(VAL(NCH,NB),FPOWER(NB))
+          CALL LCMGET(KPPAR,'P-VALUE',VAL)
+          CALL LCMLEN(IPMAP,'AXIAL-FPW',JLONG,ITYLCM)
+          IF((ILONG.NE.NCH*NB).OR.(JLONG.NE.NB)) CALL XABORT('PKINS: U'
+     1    //'NABLE TO FIND RECORD AXIAL-FPW IN THE FUELMAP.')
+          CALL LCMGET(IPMAP,'AXIAL-FPW',FPOWER)
+          DD1=0.0
+          DD2=0.0
+          DO ICH=1,NCH
+            DO IB=1,NB
+              DD1=DD1+VAL(ICH,IB)*FPOWER(IB)**2
+              DD2=DD2+FPOWER(IB)**2
+            ENDDO
+          ENDDO
+          PARAMB(IAL)=DD1/DD2
+          DEALLOCATE(FPOWER,VAL)
+        ENDIF
+        IF(IMPX.GT.0) WRITE(6,120) IAL,HPNAME,PARAMB(IAL)
+      ENDDO
+*----
+*  COMPUTE THE REACTIVITY AT TIME T
+*----
+      RHO(1)=0.0D0
+      IF((DT.EQ.0.0).AND.(NALPHA.GT.0)) THEN
+        CALL LCMGET(JPMAP,'P-VALUE-INIT',PARAMI)
+        DH=0.0D0
+        T_D=T
+        CALL PKIRHO(JPMAP,NALPHA,T_D,DH,PARAMI,PARAMB,RHO)
+      ENDIF
+*----
+*  SOLVE THE POINT KINETIC EQUATIONS
+*----
+      IF(DT.GT.0.0) THEN
+        ALLOCATE(BETAI(NGROUP),LAMBDAI(NGROUP))
+        CALL LCMGET(JPMAP,'LAMBDA',LAMBDA)
+        CALL LCMGET(JPMAP,'EPSILON',EPSILON)
+        CALL LCMGET(JPMAP,'BETAI',BETAI)
+        CALL LCMGET(JPMAP,'LAMBDAI',LAMBDAI)
+        CALL LCMGET(JPMAP,'P-VALUE-INIT',PARAMI)
+*
+        CALL LCMGET(JPMAP,'PKIN-TIMES',TIMES)
+        ITIM=0
+        DO I=1,MAXTIM
+          IF(ABS(TIMES(I)-T).LE.1.0E-4*DT) ITIM=I
+        ENDDO
+        IF(ITIM.EQ.0) THEN
+*         unable to find initial contitions
+          WRITE(HSMG,'(44HPKINS: UNABLE TO FIND BEGINNING-OF-STAGE CON,
+     1    13HTITIONS AT T=,1P E12.4,6H S(3).)') T
+          CALL XABORT(HSMG)
+        ENDIF
+        WRITE(TEXT12,'(8HPKIN-DAT,I4.4)') ITIM
+        IF(IMPX.GT.0) WRITE(6,130) T,TEXT12
+        CALL LCMSIX(JPMAP,TEXT12,1)
+          CALL LCMGET(JPMAP,'T-VALUE',TT)
+          IF(ABS(T-TT).GT.1.0E-4*DT) CALL XABORT('PKINS: INVALID TIME '
+     1    //'RECORD.')
+          CALL LCMGET(JPMAP,'Y-VALUE',Y)
+          CALL LCMGET(JPMAP,'I-VALUE',ISTAGE)
+        CALL LCMSIX(JPMAP,' ',2)
+        IF(IMPX.GT.0) WRITE(6,140) ISTAGE
+        IF(IMPX.GT.0) WRITE(6,150) T,T+DT,Y(1)
+        ISTAGE=ISTAGE+1
+        DT_D=DT
+        T_D=T
+        CALL PKIDRV(JPMAP,NALPHA,NGROUP,LAMBDA,EPSILON,BETAI,LAMBDAI,
+     1  DT_D,PARAMI,PARAMB,T_D,Y)
+        T=REAL(T_D)
+        ITIM=0
+        DO I=1,MAXTIM
+          IF(ABS(TIMES(I)-T).LE.1.0E-4*DT) ITIM=I
+        ENDDO
+        IF(ITIM.EQ.0) THEN
+*         add end-of-stage info in a new slot
+          ITIM=MOD(ISTAGE-1,MAXTIM)+1
+          TIMES(ITIM)=T
+        ENDIF
+        WRITE(TEXT12,'(8HPKIN-DAT,I4.4)') ITIM
+        IF(IMPX.GT.0) WRITE(6,160) T,TEXT12
+        CALL LCMSIX(JPMAP,TEXT12,1)
+          CALL LCMPUT(JPMAP,'Y-VALUE',NGROUP+1,4,Y)
+          CALL LCMPUT(JPMAP,'T-VALUE',1,2,T)
+          CALL LCMPUT(JPMAP,'DT-VALUE',1,2,DT)
+          CALL LCMPUT(JPMAP,'I-VALUE',1,1,ISTAGE)
+        CALL LCMSIX(JPMAP,' ',2)
+        CALL LCMPUT(JPMAP,'PKIN-TIMES',MAXTIM,2,TIMES)
+        IF(IMPX.GT.0) WRITE(6,170) ISTAGE,T,Y(1)
+        DEALLOCATE(LAMBDAI,BETAI)
+        POW=REAL(Y(1))
+*----
+*  SAVE THE GLOBAL PARAMETER VALUES AT THE END OF TIME STAGE
+*----
+        IF(IMPX.GT.0) WRITE(6,180)
+        DO IAL=1,NALPHA
+          DO IPAR=1,NPARM
+            KPPAR=LCMGIL(JPPAR,IPAR)
+            CALL LCMGTC(KPPAR,'P-NAME',12,1,HPNAME)
+            IF(HPNAME.EQ.HPARAM(IAL)) GO TO 40
+          ENDDO
+          CALL XABORT('PKINS: GLOBAL PARAMETER NOT FOUND.')
+   40     CALL LCMPUT(KPPAR,'P-VALUE',1,2,PARAMB(IAL))
+          ITYPE=1
+          CALL LCMPUT(KPPAR,'P-TYPE',1,1,ITYPE)
+          IF(IMPX.GT.0) WRITE(6,120) IAL,HPNAME,PARAMB(IAL)
+        ENDDO
+      ENDIF
+      DEALLOCATE(PARAMB,PARAMI,HPARAM)
+*----
+*  RECOVER THE FINAL POWER AND SAVE IT IN A CLE-2000 VARIABLE
+*----
+      IF(IPICK.EQ.1) THEN
+         IF(DT.EQ.0.0) CALL XABORT('PKINS: DT>0 EXPECTED.')
+         CALL REDGET(ITYP,NITMA,FLOT,TEXT12,DFLOT)
+         IF(ITYP.NE.-2) CALL XABORT('PKINS: OUTPUT REAL EXPECTED(1).')
+         ITYP=2
+         FLOT=REAL(Y(1))
+         CALL REDPUT(ITYP,NITMA,FLOT,TEXT12,DFLOT)
+         CALL REDGET(ITYP,NITMA,FLOT,TEXT12,DFLOT)
+         IF((ITYP.NE.3).OR.(TEXT12.NE.';')) THEN
+           CALL XABORT('PKINS: ; CHARACTER EXPECTED(1).')
+         ENDIF      
+      ELSE IF(IPICK.EQ.2) THEN
+         IF(DT.NE.0.0) CALL XABORT('PKINS: DT=0 EXPECTED.')
+         IF(JENTRY(1).NE.2) CALL XABORT('PKINS: SECOND ENTRY IN READ-O'
+     1  //'NLY MODE EXPECTED.')
+         CALL REDGET(ITYP,NITMA,FLOT,TEXT12,DFLOT)
+         IF(ITYP.NE.-2) CALL XABORT('PKINS: OUTPUT REAL EXPECTED(2).')
+         ITYP=2
+         FLOT=REAL(RHO(1))
+         CALL REDPUT(ITYP,NITMA,FLOT,TEXT12,DFLOT)
+         CALL REDGET(ITYP,NITMA,FLOT,TEXT12,DFLOT)
+         IF((ITYP.NE.3).OR.(TEXT12.NE.';')) THEN
+           CALL XABORT('PKINS: ; CHARACTER EXPECTED(2).')
+         ENDIF      
+      ENDIF      
+      DEALLOCATE(Y)
+*----
+*  UPDATE STATE VECTOR AND SAVE POWER
+*----
+      IF(DT.GT.0.0) THEN
+        ISTATE(1)=ISTAGE
+        CALL LCMPUT(JPMAP,'STATE-VECTOR',NSTATE,1,ISTATE)
+        CALL LCMPUT(IPMAP,'REACTOR-PW',1,2,POW)
+        CALL LCMLEN(IPMAP,'BUND-PW',ILONG,ITYLCM)
+        CALL LCMLEN(IPMAP,'AXIAL-FPW',JLONG,ITYLCM)
+        IF((ILONG.EQ.NCH*NB).AND.(JLONG.EQ.NB)) THEN
+          ALLOCATE(VAL(NCH,NB),FPOWER(ILONG))
+          CALL LCMGET(IPMAP,'AXIAL-FPW',FPOWER)
+          DSUM=0.0
+          DO IB=1,NB
+            DSUM=DSUM+FPOWER(IB)
+          ENDDO
+          DO ICH=1,NCH
+            DO IB=1,NB
+              VAL(ICH,IB)=FPOWER(IB)*POW*1.0E3/(DSUM*REAL(NCH))
+            ENDDO
+          ENDDO
+          CALL LCMPUT(IPMAP,'BUND-PW',NCH*NB,2,VAL)
+          DEALLOCATE(FPOWER,VAL)
+        ENDIF
+      ENDIF
+      RETURN
+*
+  100 FORMAT(/36H PKINS: REDEFINE INITIAL STAGE TIME=,1P,E12.4,2H S,
+     1 15H WITH DURATION=,E12.4,2H S)
+  110 FORMAT(54H PKINS: GLOBAL PARAMETER -- BEGINNING-OF-STAGE VALUES:)
+  120 FORMAT(1X,I8,A14,3H = ,1P,E12.4)
+  130 FORMAT(/43H PKINS: RECOVER INFORMATION RELATED TO TIME,1P,E12.4,
+     1 29H S FROM LCM DIRECTORY NAMED ',A12,2H'.)
+  140 FORMAT(1X,18(1H*)/8H * STAGE,I9,2H */1X,18(1H*))
+  150 FORMAT(/27H PKINS: INITIAL STAGE TIME=,1P,E12.4,14H S FINAL TIME=,
+     1 E12.4,17H S INITIAL POWER=,E12.4,3H MW)
+  160 FORMAT(/40H PKINS: SAVE INFORMATION RELATED TO TIME,1P,E12.4,
+     1 27H S IN LCM DIRECTORY NAMED ',A12,2H'.)
+  170 FORMAT(/16H PKINS: ##STAGE=,I8,12H FINAL TIME=,1P,E12.4,
+     1 15H S FINAL POWER=,E12.4,3H MW)
+  180 FORMAT(48H PKINS: GLOBAL PARAMETER -- END-OF-STAGE VALUES:)
+      END

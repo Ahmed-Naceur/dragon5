@@ -1,0 +1,129 @@
+*----
+*  TEST CASE multigroup_albedo_3d.x2m
+*  MACROLIB-DEFINED CROSS SECTIONS AND ALBEDOS
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST GEOMETRY MACRO TRACK SYSTEM FLUX ;
+MODULE GEO: MAC: TRIVAT: TRIVAA: FLUD: END: UTL: DELETE: ;
+PROCEDURE assertS ;
+*
+GEOMETRY := GEO: :: CAR3D 9 9 4
+          EDIT 2
+          X- DIAG  X+ ALBE 1 
+          Y- SYME  Y+ DIAG 
+          Z- ALBE 2  Z+ ALBE 3 
+          MESHX 0.0 20.0 40.0 60.0 80.0 100.0 120.0 140.0 160.0 180.0
+          MESHZ 0.0 20.0 280.0 360.0 380.0 
+          SPLITZ 1 2 1 1
+          ! PLANE NB 1
+          MIX 4 4 4 4 4 4 4 4 4 
+                4 4 4 4 4 4 4 4 
+                  4 4 4 4 4 4 4 
+                    4 4 4 4 4 4 
+                      4 4 4 4 0 
+                        4 4 4 0 
+                          4 0 0 
+                            0 0 
+                              0 
+              ! PLANE NB 2
+              3 2 2 2 3 2 2 1 4 
+                2 2 2 2 2 2 1 4 
+                  2 2 2 2 1 1 4 
+                    2 2 2 1 4 4 
+                      3 1 1 4 0 
+                        1 4 4 0 
+                          4 0 0 
+                            0 0 
+                              0 
+              ! PLANE NB 3
+              3 2 2 2 3 2 2 1 4 
+                2 2 2 2 2 2 1 4 
+                  3 2 2 2 1 1 4 
+                    2 2 2 1 4 4 
+                      3 1 1 4 0 
+                        1 4 4 0 
+                          4 0 0 
+                            0 0 
+                              0 
+              ! PLANE NB 4
+              5 4 4 4 5 4 4 4 4 
+                4 4 4 4 4 4 4 4 
+                  5 4 4 4 4 4 4 
+                    4 4 4 4 4 4 
+                      5 4 4 4 0 
+                        4 4 4 0 
+                          4 0 0 
+                            0 0 
+                              0 
+           ;
+MACRO := MAC: ::
+ EDIT 2 NGRO 2 NMIX 5 NIFI 1
+ ALBP 3 0.2 0.2
+        0.4 0.4
+        0.6 0.6
+ READ INPUT
+ MIX     1
+     DIFFX  1.500E+00  4.0000E-01
+     TOTAL  3.000E-02  8.0000E-02
+    NUSIGF  0.000E+00  1.3500E-01
+  H-FACTOR  0.000E+00  1.3500E-01
+      SCAT  1 1 0.0 2 2 0.0 0.2E-01
+ MIX     2
+     DIFFX  1.500E+00  4.0000E-01
+     TOTAL  3.000E-02  8.5000E-02
+    NUSIGF  0.000E+00  1.3500E-01
+  H-FACTOR  0.000E+00  1.3500E-01
+      SCAT  1 1 0.0 2 2 0.0 0.2E-01
+ MIX     3
+     DIFFX  1.500E+00  4.00000E-01
+     TOTAL  3.000E-02  1.30000E-01
+    NUSIGF  0.000E+00  1.35000E-01
+  H-FACTOR  0.000E+00  1.35000E-01
+      SCAT  1 1 0.0 2 2 0.0 0.2E-01
+ MIX     4
+     DIFFX  2.000E+00  3.0000E-01
+     TOTAL  4.000E-02  1.0000E-02
+    NUSIGF  0.000E+00  1.35000E-02
+  H-FACTOR  0.000E+00  1.35000E-02
+      SCAT  1 1 0.0 2 2 0.0 0.4E-01
+ MIX     5
+     DIFFX  2.000E+00  3.0000E-01
+     TOTAL  4.000E-02  5.5000E-02
+      SCAT  1 1 0.0 2 2 0.0 0.4E-01
+ ;
+ 
+UTL: MACRO :: DIR IMPR STATE-VECTOR * ;
+ 
+TRACK := TRIVAT: GEOMETRY ::
+      TITLE '3D GEOMETRY WITH MULTIGROUP ALBEDOS'
+      EDIT 5 MAXR 405 DUAL 3 3 ;
+SYSTEM := TRIVAA: MACRO TRACK ::
+      EDIT 5 ;
+FLUX := FLUD: SYSTEM TRACK ::
+      EDIT 2 ;
+assertS FLUX :: 'K-EFFECTIVE' 1 1.100502 ;
+
+TRACK SYSTEM FLUX := DELETE: TRACK SYSTEM FLUX ;
+
+TRACK := TRIVAT: GEOMETRY ::
+      TITLE '3D GEOMETRY WITH MULTIGROUP ALBEDOS'
+      EDIT 5 MAXR 405 PRIM 3 ;
+SYSTEM := TRIVAA: MACRO TRACK ::
+      EDIT 5 ;
+FLUX := FLUD: SYSTEM TRACK ::
+      EDIT 2 ;
+assertS FLUX :: 'K-EFFECTIVE' 1 1.103704 ;
+
+TRACK SYSTEM FLUX := DELETE: TRACK SYSTEM FLUX ;
+
+TRACK := TRIVAT: GEOMETRY ::
+      TITLE '3D GEOMETRY WITH MULTIGROUP ALBEDOS'
+      EDIT 5 MAXR 405 MCFD 3 ;
+SYSTEM := TRIVAA: MACRO TRACK ::
+      EDIT 5 ;
+FLUX := FLUD: SYSTEM TRACK ::
+      EDIT 2 ;
+assertS FLUX :: 'K-EFFECTIVE' 1 1.097387 ;
+ECHO "test multigroup_albedo_3d completed" ;
+END: ;

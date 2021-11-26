@@ -1,0 +1,119 @@
+*DECK DETREAD
+      SUBROUTINE DETREAD(IPDET,TYPE,NREP,IPRT,LHEX)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+*  This subroutine reads detector parameters and store them
+*
+*Copyright:
+* Copyright (C) 2010 Ecole Polytechnique de Montreal.
+*
+*Author(s): 
+* J. Koclas, E. Varin, M. Guyot
+*
+*Parameters: input/output
+* IPDET   pointer to the L_DETECT object.
+* TYPE
+* NREP    number of values stored for detector response
+* IPRT    printing flag
+* LHEX    =.TRUE. if it is an hexagonal geometry
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+      IMPLICIT NONE
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      TYPE(C_PTR) IPDET
+      INTEGER     NREP,IPRT
+      LOGICAL     LHEX
+      CHARACTER   TYPE*12
+*----
+*  LOCAL VARIABLES
+*----
+      CHARACTER TEXT*12,NAMDET*12
+      INTEGER ITYP,NITMA,NHEX,I
+      REAL FLOT,DEVPOS(6)
+      DOUBLE PRECISION DFLOT
+      LOGICAL LEND,LPOS,LRESP,LHEX2
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: IHEX
+      REAL, ALLOCATABLE, DIMENSION(:) :: REP
+*----
+*  READING INFORMATION LINKED TO DETECTOR PARAMETERS
+*----
+      LEND=.FALSE.
+      LPOS=.FALSE.
+      LRESP=.FALSE.
+      LHEX2=.FALSE.
+
+      ALLOCATE(REP(NREP))
+
+   10 CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+      IF(ITYP.NE.3) CALL XABORT('@DETREAD: CHARACTER DATA'
+     +    //' EXPECTED(1)')
+      IF(TEXT.EQ.'NAME') THEN
+        CALL REDGET(ITYP,NITMA,FLOT,NAMDET,DFLOT)
+        IF(ITYP.NE.3) CALL XABORT('@DETREAD: CHARACTER DATA'
+     +    //' EXPECTED(2)')
+      ELSEIF(TEXT.EQ.'NHEX') THEN
+        LHEX2=.TRUE.
+        IF(.NOT.LHEX )CALL XABORT('@DETREAD: INVALID KEYWORD NHEX')
+        CALL REDGET(ITYP,NHEX,FLOT,TEXT,DFLOT)
+        IF (ITYP.NE.1) CALL XABORT('@DETREAD: INTEGER DATA'
+     +       //' EXPECTED(1)')
+        ALLOCATE(IHEX(NHEX))
+        CALL REDGET(ITYP,NITMA,FLOT,TEXT,DFLOT)
+        IF((ITYP.NE.3).AND.(TEXT.EQ.'HEX')) CALL XABORT('@DETREAD:'
+     +           //' CHARACTER DATA EXPECTED HEX')
+      ELSEIF(TEXT.EQ.'HEX') THEN
+        DO 20 I=1,NHEX
+          CALL REDGET(ITYP,IHEX(I),FLOT,TEXT,DFLOT)
+          IF(ITYP.NE.1)
+     +      CALL XABORT('@DETREAD: INTEGER DATA EXPECTED FOR HEX')
+   20   CONTINUE
+      ELSEIF(TEXT.EQ.'POSITION') THEN
+        LPOS=.TRUE.
+        DO 30 I=1,6
+          CALL REDGET(ITYP,NITMA,DEVPOS(I),TEXT,DFLOT)
+          IF (ITYP.NE.2) CALL XABORT('@DETREAD: REAL DATA EXPECTED(2)')
+   30   CONTINUE
+      ELSEIF(TEXT.EQ.'RESP') THEN
+         LRESP=.TRUE.
+         DO 40 I=1,NREP
+            CALL REDGET(ITYP,NITMA,REP(I),TEXT,DFLOT)
+            IF (ITYP.NE.2)CALL XABORT('@DETREAD: REAL DATA EXPECTED(2)')
+   40   CONTINUE
+      ELSEIF(TEXT.EQ.'ENDN') THEN
+        LEND=.TRUE.
+      ELSE
+         CALL XABORT('@DETREAD: WRONG KEYWORD')
+      ENDIF
+
+      IF(.NOT.LEND) GOTO 10
+*----
+*  READING INFORMATION LINKED TO DETECTOR PARAMETERS
+*----
+      IF((.NOT.LPOS).OR.(.NOT.LRESP)) CALL XABORT('@DETREAD: POSITIONS'
+     +       //' OR RESP NOT SPECIFIED')
+      IF(LHEX.NEQV.LHEX2) CALL XABORT('@DETREAD: NHEX SHOULD BE'
+     +       //' SPECIFIED')
+
+      CALL LCMSIX(IPDET,' ',0)
+      CALL LCMSIX(IPDET,TYPE,1)
+      CALL LCMSIX(IPDET,NAMDET,1)
+      CALL LCMPUT(IPDET,'POSITION',6,2,DEVPOS)
+      IF(LHEX)CALL LCMPUT(IPDET,'NHEX',NHEX,1,IHEX)
+      CALL LCMPUT(IPDET,'RESPON',NREP,2,REP)
+      IF(IPRT.GT.5) THEN
+         IF(LHEX) WRITE(6,50) (IHEX(I),I=1,NHEX)
+         WRITE(6,60) (REP(I),I=1,NREP)
+      ENDIF
+      IF(LHEX) DEALLOCATE(IHEX)
+      DEALLOCATE(REP)
+      RETURN
+*
+   50 FORMAT(/20H DETREAD: IHEX ARRAY/(10X,20I6))
+   60 FORMAT(/19H DETREAD: REP ARRAY/(10X,1P,10E12.4))
+      END

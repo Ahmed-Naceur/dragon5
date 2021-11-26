@@ -1,0 +1,213 @@
+*DECK LIBDI6
+      SUBROUTINE LIBDI6 (MAXDIL,NGROUP,NAMFIL,HNISOR,HSHI,NDIL,DILUT)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Find the dilutions corresponding to a resonant isotope within a
+* library in WIMS-AECL format.
+*
+*Copyright:
+* Copyright (C) 2002 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): A. Hebert
+*
+*Parameters: input
+* MAXDIL  maximum number of dilutions.
+* NGROUP  number of energy groups.
+* NAMFIL  name of the WIMS-AECL format file.
+* HNISOR  library name of the isotope.
+* HSHI    library name of the self-shielding data.
+*
+*Parameters: output
+* NDIL    number of finite dilutions.
+* DILUT   dilutions.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      CHARACTER  NAMFIL*(*),HNISOR*12,HSHI*12
+      INTEGER    MAXDIL,NGROUP,NDIL
+      REAL       DILUT(MAXDIL)
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER (IOUT=6,MAXRES=50,MAXTEM=20)
+      CHARACTER  FMT*6,HSMG*131
+      REAL       RS1(3*MAXRES)
+      REAL, ALLOCATABLE, DIMENSION(:) :: DSIGPL
+      REAL, ALLOCATABLE, DIMENSION(:,:) :: GAR
+*----
+*  WIMS-AECL LIBRARY PARAMETERS
+*----
+      PARAMETER (IACTC=1,MAXISO=246,NCT=10,LPZ=9,LMASTB=MAXISO+9,
+     >           LMASIN=LMASTB-4,LGENTB=6,LGENIN=LGENTB,
+     >           LSUBTB=6*MAXTEM+28,LSUBIN=LSUBTB-12,
+     >           LRESTB=MAXRES*5,LRESIN=LRESTB)
+      CHARACTER  CWISO(MAXISO)*8,CTITLE(NCT)*8
+      INTEGER    MASTER(LMASTB),GENINX(LGENTB),SUBINX(LSUBTB),
+     >           SUBINR(LSUBTB),RESINX(LRESTB),ITITLE(2*NCT),
+     >           NPZ(LPZ),IWISO(2*MAXISO)
+*----
+*  SCRATCH STORAGE ALLOCATION
+*----
+      ALLOCATE(GAR(NGROUP,2))
+*----
+*  OPEN WIMSLIB AND READ GENERAL DIMENSIONING
+*----
+      IUNIT=KDROPN(NAMFIL,2,4,256)
+      IF(IUNIT.LE.0) THEN
+         WRITE (HSMG,'(35HLIBDI6: UNABLE TO OPEN LIBRARY FILE,1X,A16,
+     1   8H. IUNIT=,I4,1H.)') NAMFIL,IUNIT
+         CALL XABORT(HSMG)
+      ENDIF
+      CALL OPNIND(IUNIT,MASTER,LMASTB)
+      CALL REDIND(IUNIT,MASTER,LMASIN,GENINX,LGENTB,1)
+      CALL REDIND(IUNIT,MASTER,LMASIN,ITITLE,2*NCT,2)
+      CALL UPCKIC(ITITLE,CTITLE,NCT)
+      CALL REDIND(IUNIT,GENINX,LGENIN,NPZ,LPZ,1)
+      IF(NPZ(2).NE.NGROUP) THEN
+        WRITE(IOUT,9001) NGROUP,NPZ(2)
+        CALL XABORT('LIBDI6: INVALID NUMBER OF GROUPS(1)')
+      ENDIF
+      NEL=NPZ(1)
+      NGF=NPZ(4)
+      NGR=NPZ(5)
+      NGTHER=NPZ(6)
+      NGFR=NGF+NGR
+      MXSCT=NGROUP*(NGROUP+2)
+      IF(NGFR+NGTHER.NE.NGROUP) THEN
+        WRITE(IOUT,9001) NGROUP,NGFR+NGTHER
+        CALL XABORT('LIBDI6: INVALID NUMBER OF GROUPS(2)')
+      ENDIF
+      IF(NEL.GT.MAXISO) THEN
+        WRITE(IOUT,9003) MAXISO,NEL
+        CALL XABORT('LIBDI6: INVALID NUMBER OF ISOTOPES')
+      ENDIF
+      ALLOCATE(DSIGPL(NGR))
+*----
+* READ ISOTOPES NAMES
+*---
+      CALL REDIND(IUNIT,GENINX,LGENIN,IWISO,2*NEL,3)
+      CALL UPCKIC(IWISO,CWISO,NEL)
+      CALL REDIND(IUNIT,GENINX,LGENIN,IWISO,NEL,2)
+      NRDT=NGTHER-1
+*---
+* READ THROUGH DRAGON FILE AND ACCUMULATE CROSS SECTIONS FOR
+* CROSS SECTION ARE SAVED ONLY IF ISOTOPE IS USED
+*----
+      IDRES=INDEX(HSHI,'.')
+      IF(IDRES.GT.0) THEN
+        WRITE(FMT,'(2H(F,I1,3H.1))') IDRES+1
+        READ(HSHI,FMT) RIND
+      ENDIF
+      IRISO=0
+      DO 120 IEL=1,NEL
+        IF(CWISO(IEL).EQ.HNISOR(1:8)) THEN
+          IRISO=IEL
+          IF(IDRES.EQ.0) THEN
+            RIND=FLOAT(IWISO(IRISO))
+          ENDIF
+          GO TO 125
+        ENDIF
+ 120  CONTINUE
+      CALL XABORT('LIBDI6: ISOTOPE NOT FOUND ON LIBRARY')
+ 125  CONTINUE
+*----
+*  READ SUB INDEX ASSOCIATED WITH ISOTOPE
+*---
+      CALL REDIND(IUNIT,MASTER,LMASIN,SUBINX,LSUBTB,IRISO+4)
+      IENDF=SUBINX(LSUBIN+12)
+*----
+*  FAST AND/OR RESONANCE XS
+*----
+      CALL REDIND(IUNIT,SUBINX,LSUBIN,GAR(NGF+1:,2),NGR,9)
+      IF(IENDF.EQ.0) THEN
+        CALL REDIND(IUNIT,SUBINX,LSUBIN,GAR(NGF+1:,1),NGR,2)
+        DO 130 IG=NGF+1,NGFR
+          DSIGPL(IG-NGF)=GAR(IG,1)*GAR(IG,2)
+ 130    CONTINUE
+      ELSE
+        CALL XDRSET(DSIGPL,NGR,0.0)
+      ENDIF
+*----
+*  MODIFIED SUB IDX LENGTH FOR RESONANCE
+*----
+      LSUBTR=NGR+7
+      LSUBZ=NGR+1
+      CALL REDIND(IUNIT,MASTER,LMASIN,SUBINR,LSUBTR,NEL+5)
+*----
+*  MODIFIED RES IDX LENGTH FOR RESONANCE
+*----
+      LRESND=SUBINR(NGR+6)
+      IGRF=NGF
+      DO 300 IGR=1,NGR
+        IGRF=IGRF+1
+        CALL REDIND(IUNIT,SUBINR,LSUBZ,RESINX,LRESND+1,IGR)
+        NRES=RESINX(LRESND+1)
+        IF(NRES.GT.MAXRES) THEN
+          WRITE(IOUT,9005) NRES,MAXRES
+          CALL XABORT('LIBDI6: INVALID NUMBER OF RESONANCE')
+        ENDIF
+        IF(IGR.EQ.1) THEN
+          CALL REDIND(IUNIT,RESINX,LRESND,RS1,3*NRES,1)
+*----
+*  IDENTIFY SELF SHIELDING RESONNANT ISOTOPE
+*----
+          DO 310 JRES=1,NRES
+            IF(IDRES.EQ.0) THEN
+              XRS1=FLOAT(INT((RS1(3*(JRES-1)+1)+0.01)*10.)
+     >            -INT(RS1(3*(JRES-1)+1)+0.01)*10)/10.+0.02
+              XRS1=ABS(RS1(3*(JRES-1)+1)-XRS1-RIND)
+            ELSE
+              XRS1=ABS(RS1(3*(JRES-1)+1)-RIND)
+            ENDIF
+            IF(XRS1.LE.0.01) THEN
+              KRES=JRES
+              NTMPR=INT(RS1(3*(KRES-1)+2)+0.1)
+              NDILR=INT(RS1(3*(KRES-1)+3)+0.1)
+              IF(NDILR.GT.MAXDIL) THEN
+                WRITE(IOUT,9007) NDILR,MAXDIL
+                CALL XABORT('LIBDI6: INVALID NUMBER OF RES DIL')
+              ENDIF
+              CALL REDIND(IUNIT,RESINX,LRESND,DILUT,NDILR,3+5*(KRES-1))
+              DO 313 II=1,NDILR
+                IF(DILUT(II)-DSIGPL(IGR).GT.0.0) THEN
+                  DILUT(II)=DILUT(II)-DSIGPL(IGR)
+                ELSE
+                  DILUT(II)=0.0
+                ENDIF
+                DILUT(II)=MIN(DILUT(II),1.0E10)
+ 313          CONTINUE
+              GO TO 300
+            ENDIF
+ 310      CONTINUE
+          GO TO 110
+        ENDIF
+ 300  CONTINUE
+ 110  NDIL=NDILR-1
+      CALL CLSIND(IUNIT)
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
+      DEALLOCATE(DSIGPL,GAR)
+*----
+*  RETURN
+*----
+      RETURN
+ 9001 FORMAT(/' LIBDI6: NUMBER OF GROUPS SPECIFIED :',I10/
+     >        '         NUMBER OF GROUPS IN LIBRARY :',I10)
+ 9003 FORMAT(/' LIBDI6: MAXIMUM NUMBER OF ISOTOPE SPECIFIED :',I10/
+     >        '         NUMBER OF ISOTOPE IN LIBRARY :',I10)
+ 9005 FORMAT(/' LIBDI6: NUMBER OF RESONANT ISOTOPES :',I10/
+     >        '         MAXIMUM NUMBER OF RESONANT ISOTOPES :',I10)
+ 9007 FORMAT(/' LIBDI6: NUMBER OF RESONANT DILUTION :',I10/
+     >        '         MAXIMUM NUMBER OF RESONANT DILUTION :',I10)
+      END

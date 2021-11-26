@@ -1,0 +1,541 @@
+*======================================================================
+* Name  : testNAPhet.x2m
+* Type  : DONJON File
+*
+* Use   : Input file to perform PPR
+*   Notes:
+*  1) Homogenization can be homogeneous or heterogeneous 
+*  2) The pin-by-pin geometry is also created to be able to visualize it
+*----------------------------------------------------------------------
+* Donjon: v5.0.1_ev346 modified (or more recent)
+*----------------------------------------------------------------------
+*
+* Author   : R. Chambon (06/2014)
+*
+* modified : R. Chambon (09/2015)
+*    Note:   The '_ACPOenrichU0' enrich multicompo can be obtained by running
+*    -----     twice the 'rep900EnrichCOMPOhet.x2m' input file once for 
+*              homogeneous option and once for heterogeneous option.
+*
+SEQ_ASCII ACOMPOU :: FILE '_ACPOenrichU0' ;
+SEQ_ASCII ACOMPOR :: FILE '_ACompo' ;
+*
+SEQ_ASCII AGEO1 :: FILE 'AGEO1' ;
+SEQ_ASCII AGEOH AmapH AMatH :: FILE 'AGEOH' 'AmapH' 'AMatH' ;
+SEQ_ASCII AMFH AMACROH AMACR :: FILE 'AMFH' 'AMACROH' 'AMACR' ;
+SEQ_ASCII AFLU ATRK :: FILE 'AFLU_NAP' 'ATRK_NAP' ;
+LINKED_LIST CpoU CpoR DONNEES Geo1 
+   GeoH MatexH FmapH MacroFH Macro2H 
+   GeoP  
+   CpoRefl Micro Macro 
+   Track System Flux
+   FmapH2 FmapH3 PowerIter
+;
+PROCEDURE assertS ;
+*
+MODULE GEO: USPLIT: RESINI: MACINI: NCR: NAP: 
+  TRIVAA: TRIVAT: FLUD: FLPOW:
+  END: DELETE: GREP: UTL: ABORT:  ;
+*
+STRING Fuel := "UOX"    ; ! UOX
+
+INTEGER npin maxr ;
+REAL BURN1 BURN2 BURN3 := 0. 0. 0. ;
+REAL CBOR := 600. ;
+REAL Cote Lame mx1 mx2 mx3 mx4 mx5 mx6 Size wat ;
+REAL Ptot := 9.0 ; ! MW
+EVALUATE npin := 17 ;
+*
+EVALUATE Cote      := 1.26  ;
+EVALUATE Lame      := 0.04  ;
+EVALUATE wat       := 10.   ;
+EVALUATE Size := npin I_TO_R Cote * Lame 2. * + ;
+EVALUATE mx1 := Size -1.5 * wat - ;
+EVALUATE mx2 := Size -1.5 * ;
+EVALUATE mx3 := Size -0.5 * ;
+EVALUATE mx4 := Size 0.5 * ;
+EVALUATE mx5 := Size 1.5 * ;
+EVALUATE mx6 := Size 1.5 * wat + ;
+
+*
+STRING TypeCompo := "Homog" ;     ! Homog    : homogeneous properties
+                                  ! Heter    : heterogeneous (3 mix) properties
+                                  ! PinByPin : PinByPin properties
+
+STRING DirAss := "Ass         " ; ! the name used in the multicompo
+                                  ! Homog    Ass 
+                                  ! PinByPin Pin 
+                                  ! Heter    Het1 
+
+INTEGER ifx := 0 ;                ! ifx value used in the enrich multicompo
+                                  ! Homog    0 
+                                  ! Heter    1 
+
+
+STRING DirR   := "EDI2B       " ;
+STRING AutoAss := "Manual" ; ! Definition of assembly in FmapH 
+                           ! "Auto" done by NAP
+                           ! "Manual" by the user directly in the input
+                           !     for homogeneous properties only
+*
+CpoU := ACOMPOU ;
+CpoR := ACOMPOR ;
+
+!--------------------------
+!--------------------------
+* Test NAP: Geometry part
+!--------------------------
+! Build geometry for homogeneous assembly
+Geo1 := GEO: :: CAR3D 5 5 4 
+  EDIT 0
+  X- VOID X+ VOID
+  Y- VOID Y+ VOID
+  Z- VOID Z+ VOID
+  
+  MIX 
+PLANE 1
+    0 4 4 4 0 
+    4 4 4 4 4
+    4 4 4 4 4
+    4 4 4 4 4
+    0 4 4 4 0
+PLANE 2
+    0 4 4 4 0 
+    4 3 2 3 4
+    4 2 1 2 4
+    4 3 2 3 4
+    0 4 4 4 0
+PLANE 3 SAME 2
+PLANE 4 SAME 1
+  MESHX <<mx1>> <<mx2>> <<mx3>> <<mx4>> <<mx5>> <<mx6>>
+  MESHY <<mx1>> <<mx2>> <<mx3>> <<mx4>> <<mx5>> <<mx6>>
+  MESHZ 0. 10. 110. 210. 220.
+  SPLITX 2 1 1 1 2 
+  SPLITY 2 1 1 1 2 
+  SPLITZ 2 1 1 2 
+;
+
+IF TypeCompo "Homog" = THEN
+  ECHO " Build geometry for homogeneous assembly " ;
+  GeoH := NAP: Geo1 CpoU ::
+    EDIT 100
+    DIRGEO <<DirAss>>
+    MIXASS 3 1 2 3
+    SPLITX-ASS 2
+    SPLITY-ASS 2
+  ;
+  ! Max reg=(2+2*3+2)^2*6=600
+  EVALUATE maxr := 600 ;
+ELSEIF TypeCompo "Heter" = THEN
+  ECHO " Build geometry for heterogeneous assembly " ;
+  GeoH := NAP: Geo1 CpoU ::
+    EDIT 100
+    DIRGEO <<DirAss>>
+    MIXASS 3 1 2 3
+    SPLITX-ASS 1 2 1
+    SPLITY-ASS 1 2 1
+  ;
+  ! Max reg=(2+4*3+2)^2*6=1536
+  EVALUATE maxr := 1536 ;
+ELSEIF TypeCompo "PinByPin" = THEN
+  ECHO " Build geometry for pin-by-pin assembly " ;
+  GeoH := NAP: Geo1 CpoU ::
+    EDIT 100
+    DIRGEO <<DirAss>>
+    MIXASS 3 1 2 3
+  ;
+  ! Max reg=(2+17*3+2)^2*6=18150
+  EVALUATE maxr := 18150 ;
+ENDIF ;
+
+AGEO1 := Geo1 ;
+AGEOH := GeoH ;
+!AGEOP := GeoP ;
+
+* Max reg=(2+4*3+2)^2*6=1536
+IF AutoAss "Auto" = THEN
+  GeoH MatexH := USPLIT: GeoH :: 
+                 NGRP 2 MAXR 1536
+                 NREFL 1  RMIX 4
+                 NFUEL ASBLY                 
+  ;
+ELSEIF AutoAss "Manual" = THEN
+  GeoH MatexH := USPLIT: GeoH :: 
+                 NGRP 2 MAXR 1536
+                 NREFL 1  RMIX 4
+                 NFUEL 6   FMIX 1  5         ! Homog
+                                2  6    
+                                3  7  
+  ;
+ENDIF ;
+Track := TRIVAT: GeoH ::
+   MAXR <<maxr>> DUAL 3 3 ;
+ATRK := Track ;
+
+!--------------------------
+* Test NAP: Geometry part embedded in RESINI:
+!--------------------------
+IF TypeCompo "Homog" = AutoAss "Auto" = * THEN
+ECHO " Build map for homogeneous assembly (auto)" ;
+  FmapH MatexH := RESINI: MatexH CpoU ::
+    EDIT 0
+    ::: 
+    SPLIT-NAP: 
+    GEO: 
+      CAR3D 5 5 4
+      EDIT  10
+      X- VOID      X+ VOID
+      Y- VOID      Y+ VOID
+      Z- VOID      Z+ VOID
+      MIX
+      PLANE 1
+          0 0 0 0 0 
+          0 0 0 0 0
+          0 0 0 0 0
+          0 0 0 0 0
+          0 0 0 0 0
+      PLANE 2
+          0 0 0 0 0 
+          0 3 2 3 0
+          0 2 1 2 0
+          0 3 2 3 0
+          0 0 0 0 0
+      PLANE 3 SAME 2
+      PLANE 4 SAME 1
+      MESHX <<mx1>> <<mx2>> <<mx3>> <<mx4>> <<mx5>> <<mx6>>
+      MESHY <<mx1>> <<mx2>> <<mx3>> <<mx4>> <<mx5>> <<mx6>>
+      MESHZ 0. 10. 110. 210. 220.
+    ;
+    ::: NAP:
+      DIRGEO <<DirAss>>
+      MIXASS 3 1 2 3
+      MAX-MIX-GEO 4
+    ;
+  ASSEMBLY 9 3 3
+    A-ZONE
+    ASBLY
+    AXNAME '1' '2' '3'
+    AYNAME 'A' 'B' 'C'
+    NXNAME '-' '1' '2' '3' '-' 
+    NYNAME '-' 'A' 'B' 'C' '-' 
+    NCOMB ASBLY
+    ADD-PARAM PNAME 'ppmBore' PARKEY 'ppmBore' GLOBAL
+  ;
+ELSEIF TypeCompo "Homog" = AutoAss "Manual" = * THEN
+ECHO " Build map for homogeneous assembly (manual)" ;
+  FmapH MatexH := RESINI: MatexH ::
+    EDIT 0
+    ::: 
+    GEO: 
+      CAR3D 5 5 4
+      EDIT  10
+      X- VOID      X+ VOID
+      Y- VOID      Y+ VOID
+      Z- VOID      Z+ VOID
+      MIX
+      PLANE 1
+          0 0 0 0 0 
+          0 0 0 0 0
+          0 0 0 0 0
+          0 0 0 0 0
+          0 0 0 0 0
+      PLANE 2
+          0 0 0 0 0 
+          0 3 2 3 0
+          0 2 1 2 0
+          0 3 2 3 0
+          0 0 0 0 0
+      PLANE 3 SAME 2
+      PLANE 4 SAME 1
+      MESHX <<mx1>> <<mx2>> <<mx3>> <<mx4>> <<mx5>> <<mx6>>
+      MESHY <<mx1>> <<mx2>> <<mx3>> <<mx4>> <<mx5>> <<mx6>>
+      MESHZ 0. 10. 110. 210. 220.
+    ;
+    ASSEMBLY 9 3 3
+      A-ZONE
+       1 2 3 
+       4 5 6 
+       7 8 9
+      A-NX  3 3 3
+      A-IBX 1 1 1
+!                                          !---
+    AXNAME '1' '2' '3'
+    AYNAME 'A' 'B' 'C'
+    NXNAME '-' '1' '2' '3' '-' 
+    NYNAME '-' 'A' 'B' 'C' '-' 
+    NCOMB ASBLY
+    ADD-PARAM PNAME 'ppmBore' PARKEY 'ppmBore' GLOBAL
+  ;
+ELSEIF TypeCompo "Heter" = THEN
+  ECHO " Build map for heterogeneous assembly " ;
+  FmapH MatexH := RESINI: MatexH CpoU ::
+    EDIT 1000
+    ::: 
+    SPLIT-NAP: 
+    GEO: 
+      CAR3D 5 5 4
+      EDIT  10
+      X- VOID      X+ VOID
+      Y- VOID      Y+ VOID
+      Z- VOID      Z+ VOID
+      MIX
+      PLANE 1
+          0 0 0 0 0 
+          0 0 0 0 0
+          0 0 0 0 0
+          0 0 0 0 0
+          0 0 0 0 0
+      PLANE 2
+          0 0 0 0 0 
+          0 3 2 3 0
+          0 2 1 2 0
+          0 3 2 3 0
+          0 0 0 0 0
+      PLANE 3 SAME 2
+      PLANE 4 SAME 1
+      MESHX <<mx1>> <<mx2>> <<mx3>> <<mx4>> <<mx5>> <<mx6>>
+      MESHY <<mx1>> <<mx2>> <<mx3>> <<mx4>> <<mx5>> <<mx6>>
+      MESHZ 0. 10. 110. 210. 220.
+    ;
+    ::: NAP:
+      DIRGEO <<DirAss>>
+      MIXASS 3 1 2 3
+      MAX-MIX-GEO 4
+    ;
+    ASSEMBLY 9 3 3
+    A-ZONE
+    ASBLY
+    AXNAME '1' '2' '3'
+    AYNAME 'A' 'B' 'C'
+    NXNAME '-' '1' '1' '1' '2' '2' '2' '3' '3' '3' '-' 
+    NYNAME '-' 'A' 'A' 'A' 'B' 'B' 'B' 'C' 'C' 'C' '-' 
+    NCOMB ASBLY
+    ADD-PARAM PNAME 'ppmBore' PARKEY 'ppmBore' GLOBAL
+;
+ELSEIF TypeCompo "PinByPin" = THEN
+  ECHO " Build map for heterogeneous assembly " ;
+  FmapH MatexH := RESINI: MatexH CpoU ::
+    EDIT 0
+    ::: 
+    SPLIT-NAP: 
+    GEO: 
+      CAR3D 5 5 4
+      EDIT  10
+      X- VOID      X+ VOID
+      Y- VOID      Y+ VOID
+      Z- VOID      Z+ VOID
+      MIX
+      PLANE 1
+          0 0 0 0 0 
+          0 0 0 0 0
+          0 0 0 0 0
+          0 0 0 0 0
+          0 0 0 0 0
+      PLANE 2
+          0 0 0 0 0 
+          0 3 2 3 0
+          0 2 1 2 0
+          0 3 2 3 0
+          0 0 0 0 0
+      PLANE 3 SAME 2
+      PLANE 4 SAME 1
+      MESHX <<mx1>> <<mx2>> <<mx3>> <<mx4>> <<mx5>> <<mx6>>
+      MESHY <<mx1>> <<mx2>> <<mx3>> <<mx4>> <<mx5>> <<mx6>>
+      MESHZ 0. 10. 110. 210. 220.
+    ;
+    ::: NAP:
+      DIRGEO <<DirAss>> 
+      MIXASS 3 1 2 3
+      MAX-MIX-GEO 4
+    ;
+    ASSEMBLY 9 3 3
+    A-ZONE
+    ASBLY
+    AXNAME '1' '2' '3'
+    AYNAME 'A' 'B' 'C'
+    NXNAME '-' '1' '1' '1' '1' '1' '1' '1' '1' '1' 
+               '1' '1' '1' '1' '1' '1' '1' '1' 
+               '2' '2' '2' '2' '2' '2' '2' '2' '2' 
+               '2' '2' '2' '2' '2' '2' '2' '2'
+               '3' '3' '3' '3' '3' '3' '3' '3' '3' 
+               '3' '3' '3' '3' '3' '3' '3' '3' 
+           '-' 
+    NYNAME '-' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 
+               'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 
+               'B' 'B' 'B' 'B' 'B' 'B' 'B' 'B' 'B' 
+               'B' 'B' 'B' 'B' 'B' 'B' 'B' 'B'
+               'C' 'C' 'C' 'C' 'C' 'C' 'C' 'C' 'C' 
+               'C' 'C' 'C' 'C' 'C' 'C' 'C' 'C' 
+           '-' 
+    NCOMB ASBLY
+    ADD-PARAM PNAME 'ppmBore' PARKEY 'ppmBore' GLOBAL
+  ;
+ENDIF ;
+
+FmapH := RESINI: FmapH :: EDIT 2
+   BTYPE INST-BURN
+   INST-BVAL ASBL 
+  <<BURN3>> <<BURN2>> <<BURN3>> 
+  <<BURN2>> <<BURN1>> <<BURN2>> 
+  <<BURN3>> <<BURN2>> <<BURN3>> 
+
+  SET-PARAM 'ppmBore' 0.0
+;
+AMatH := MatexH ;
+
+!--------------------------
+* Test NCR: assembly related keywords
+!--------------------------
+! Compute cross-section for heterogeneous assembly
+IF AutoAss "Auto" = THEN
+  MacroFH := NCR: CpoU FmapH ::
+    EDIT 0
+    MACRO
+    LINEAR
+    TABLE CpoU <<DirAss>> 'burnup'
+        MIX 1 ASBLY INST-BURN 
+                     SET  'burnup'    0.0 
+                     SET  'ppmBore'   <<CBOR>>
+                     SET  'TF'        800.0
+                     SET  'DCA'       0.659
+                     SET  'TCA'       600.0
+                     SET  'BARR'      0.0
+          ENDMIX
+        MIX 2 ASBLY INST-BURN 
+                     SET  'burnup'    0.0 
+                     SET  'ppmBore'   <<CBOR>>
+                     SET  'TF'        800.0
+                     SET  'DCA'       0.659
+                     SET  'TCA'       600.0
+                     SET  'BARR'      0.0
+          ENDMIX
+        MIX 3 ASBLY INST-BURN 
+                     SET  'burnup'    0.0 
+                     SET  'ppmBore'   <<CBOR>>
+                     SET  'TF'        800.0
+                     SET  'DCA'       0.659
+                     SET  'TCA'       600.0
+                     SET  'BARR'      0.0
+          ENDMIX
+  ;
+ELSEIF AutoAss "Manual" = THEN ! for homogene only
+  MacroFH := NCR: CpoU FmapH ::
+    EDIT 100
+    MACRO
+    LINEAR
+    TABLE CpoU <<DirAss>> 'burnup'
+!* look back at mixture renumbering earlier, USPLIT: module
+!*    homogene
+        MIX 1 FROM 1 INST-BURN 
+                     SET  'burnup'    0.0 
+                     SET  'ppmBore'   <<CBOR>>
+                     SET  'TF'        800.0
+                     SET  'DCA'       0.659
+                     SET  'TCA'       600.0
+                     SET  'BARR'      0.0
+          ENDMIX
+        MIX 2 FROM 1 INST-BURN 
+                     SET  'burnup'    0.0 
+                     SET  'ppmBore'   <<CBOR>>
+                     SET  'TF'        800.0
+                     SET  'DCA'       0.659
+                     SET  'TCA'       600.0
+                     SET  'BARR'      0.0
+          ENDMIX
+        MIX 3 FROM 1 INST-BURN 
+                     SET  'burnup'    0.0 
+                     SET  'ppmBore'   <<CBOR>>
+                     SET  'TF'        800.0
+                     SET  'DCA'       0.659
+                     SET  'TCA'       600.0
+                     SET  'BARR'      0.0
+          ENDMIX
+        MIX 5 FROM 1 INST-BURN 
+                     SET  'burnup'    0.0 
+                     SET  'ppmBore'   <<CBOR>>
+                     SET  'TF'        800.0
+                     SET  'DCA'       0.659
+                     SET  'TCA'       600.0
+                     SET  'BARR'      0.0
+          ENDMIX
+        MIX 6 FROM 1 INST-BURN 
+                     SET  'burnup'    0.0 
+                     SET  'ppmBore'   <<CBOR>>
+                     SET  'TF'        800.0
+                     SET  'DCA'       0.659
+                     SET  'TCA'       600.0
+                     SET  'BARR'      0.0
+          ENDMIX
+        MIX 7 FROM 1 INST-BURN 
+                     SET  'burnup'    0.0 
+                     SET  'ppmBore'   <<CBOR>>
+                     SET  'TF'        800.0
+                     SET  'DCA'       0.659
+                     SET  'TCA'       600.0
+                     SET  'BARR'      0.0
+          ENDMIX
+  ;
+ENDIF ;
+AMFH := MacroFH ;
+
+Micro := NCR: CpoR ::
+*            dummy reflector -- please use more realistic data
+             EDIT 0
+             LINEAR NMIX 4
+             COMPO CpoR <<DirR>>
+               MIX 4 SET 'burnup' 0.0
+                     SET 'ppmBore' 0.0
+               ENDMIX 
+;
+Macro := Micro :: STEP UP MACROLIB ;
+AMACR := Macro ;
+Micro := DELETE: Micro ;
+
+Macro2H MatexH := MACINI: MatexH Macro MacroFH ::
+EDIT 0 
+;
+AMACROH := Macro2H ;
+
+
+* Compute flux distribution
+System := TRIVAA: Macro2H Track ;
+
+Flux := FLUD: System Track ::
+  EDIT 0 
+  ADI 4
+  EXTE 500 0.00001
+;
+AFLU := Flux ;
+
+REAL keff2 ;
+GREP: Flux ::
+  GETVAL 'K-EFFECTIVE ' 1  >>keff2<< ;
+ECHO "CBOR=" CBOR "K-effective  2 = " keff2 ;
+
+PowerIter FmapH := FLPOW: FmapH Flux Track MatexH ::
+  EDIT 5 PTOT <<Ptot>> PRINT DISTR POWER ;
+
+* Perform PPR
+IF TypeCompo "Homog" = TypeCompo "Heter" = + THEN
+  FmapH := NAP: FmapH Track Flux MatexH MacroFH ::
+    EDIT 4
+    PPR
+    NZASS 2
+    METH GPPR <<ifx>>
+  ;
+ENDIF ;
+
+AmapH := FmapH ;
+
+FmapH2 := FmapH :: 
+  STEP UP ASSEMBLY
+  STEP AT 1 
+;
+FmapH2 := UTL: FmapH2 :: 
+  DIR
+;
+assertS FmapH2 :: 'ASS-POWER' 1 6.361761E02 ;
+
+ECHO "test testNAPhet.x2m completed" ;
+END: ;
+QUIT .

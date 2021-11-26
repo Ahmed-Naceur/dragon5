@@ -1,0 +1,147 @@
+***********************************************************
+*                                                         *
+* Procedure :  Axial_Refl.c2m                             *
+* Purpose   :  Set the PWR axial reflector properties     *
+*                                                         *
+* CALL      :  CpRefl := Axial_Refl ;                     *
+*                                                         *
+***********************************************************
+
+PARAMETER CpRefl ::
+      ::: LINKED_LIST
+          CpRefl ; ;
+
+MODULE      MAC: UTL: EDI: COMPO: DELETE: END: ;
+LINKED_LIST Macro Edition ;
+
+REAL TOTAL1_inf   TOTAL2_inf
+     DIFF1_inf    DIFF2_inf
+     SCAT1to1_inf SCAT2to2_inf
+     SCAT1to2_inf SCAT2to1_inf ;
+
+REAL TOTAL1_sup   TOTAL2_sup
+     DIFF1_sup    DIFF2_sup
+     SCAT1to1_sup SCAT2to2_sup
+     SCAT1to2_sup SCAT2to1_sup ;
+
+*---
+*  Inferior (Foot)
+*---
+EVALUATE TOTAL1_inf TOTAL2_inf :=
+         .141535E+01 .261305E-01 +
+         .511240E+00 .198432E-01 + ;
+
+EVALUATE DIFF1_inf DIFF2_inf :=
+         1. 3. TOTAL1_inf * /
+         1. 3. TOTAL2_inf * / ;
+
+EVALUATE SCAT1to1_inf SCAT2to2_inf :=
+         .141535E+01  .511240E+00 ;
+
+EVALUATE SCAT1to2_inf SCAT2to1_inf :=
+         .187184E-01  .742590E-04 ;
+
+*---
+*  Superior (Head)
+*---
+EVALUATE TOTAL1_sup TOTAL2_sup :=
+         .158287E+01 .276758E-01 +
+         .503068E+00 .282751E-01 + ;
+
+EVALUATE DIFF1_sup DIFF2_sup :=
+         1. 3. TOTAL1_sup * /
+         1. 3. TOTAL2_sup * / ;
+
+EVALUATE SCAT1to1_sup SCAT2to2_sup :=
+         .158287E+01  .503068E+00 ;
+
+EVALUATE SCAT1to2_sup SCAT2to1_sup :=
+         .200239E-01  .955672E-04 ;
+
+INTEGER  BoronIndex := 1 ;
+REAL     BoronConc ;
+
+WHILE BoronIndex 5 <= DO
+*---
+* BoronIndex  BoronConc [ppm]
+* ----------  --------------
+*          1          0.
+*          2        100.
+*          3        600.
+*          4       1800.
+*          5       2200.
+*---  
+  IF BoronIndex 1 = THEN
+
+    EVALUATE BoronConc := 0. ;
+    
+  ELSEIF BoronIndex 2 = THEN
+    
+    EVALUATE BoronConc := 100. ;
+
+  ELSEIF BoronIndex 3 = THEN
+    
+    EVALUATE BoronConc := 600. ;
+
+  ELSEIF BoronIndex 4 = THEN
+    
+    EVALUATE BoronConc := 1800. ;
+
+  ELSEIF BoronIndex 5 = THEN
+
+    EVALUATE BoronConc := 2200. ;
+
+  ENDIF ;
+    
+*---
+*  Reflector definition
+*---
+
+  Macro := MAC: ::
+    EDIT 3 NGRO 2 NMIX 1 NIFI 0
+    ANIS 1 CTRA NONE
+    ENER 2.E7 0.625 1.E-3
+    VOLUME 1.
+    READ INPUT
+
+    MIX 1 ! Lower Reflector
+      FLUX-INTG  1. 1.
+      TOTAL <<TOTAL1_inf>> <<TOTAL2_inf>>
+      DIFF  <<DIFF1_inf>> <<DIFF2_inf>>
+      SCAT 2 2 (*2->1*) 0.               (*1->1*) <<SCAT1to1_inf>>
+           2 2 (*2->2*) <<SCAT2to2_inf>> (*1->2*) <<SCAT1to2_inf>>
+
+    NORM
+  ;
+
+  Edition := EDI: Macro :: 
+          EDIT 1
+          SAVE
+          ;
+
+  IF BoronIndex 1 = THEN
+
+    CpRefl := COMPO: ::
+              EDIT 1
+              COMM
+ 'light reflector XS'
+              ENDC
+              PARA 'C-BORE' VALU REAL
+              INIT
+              ;
+  ENDIF ;
+
+  CpRefl := COMPO: CpRefl Edition ::
+            EDIT 1
+            C-BORE <<BoronConc>>
+            MACRO
+            ;  
+
+  Macro Edition := DELETE: Macro Edition ;
+  
+  EVALUATE BoronIndex := BoronIndex 1 + ;
+  
+ENDWHILE ;
+
+END: ;
+QUIT .

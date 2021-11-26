@@ -1,0 +1,99 @@
+*----
+*  TEST CASE TDCM47
+*  MACROSCOPIC CROSS SECTIONS
+*  SIMPLE HEXAGONAL BENCHMARK
+*----
+*  Define STRUCTURES and MODULES used
+*----
+MODULE GEO: G2S: SALT: MCCGT: FLU: MAC: UTL: ASM: DELETE: END: ;
+PROCEDURE assertS ;
+LINKED_LIST  GEOM MACRO FLUX T_EXC PREC ;
+SEQ_ASCII Fil_SAL Fil_SAL.ps ;
+SEQ_BINARY  TF_EXC  ;
+*
+GEOM := GEO: ::
+      HEX 19
+          EDIT 2
+          HBC COMPLETE ALBE 1.0
+          MIX HEXVGV HEXVGV HEXFGM HEXVGV HEXVGV HEXVGV HEXNOIR
+              HEXCREU HEXCREU HEXCREU HEXCREU HEXCREU HEXCREU HEXCREU
+              HEXCREU HEXCREU HEXCREU HEXCREU HEXCREU
+          TURN   A  A  A  A  B  A  A
+                 A  A  A  A  A  A  A  A  A  A  A  A
+          MERGE  1  2  3  4  4  5  6
+                 7  8  9 10 11 12 13 14 15 16 17 18
+          ::: HEXFGM := GEO: HEXCEL 2 (*CELLULE COMBUSTIBLE*)
+               SIDE 1.12045
+               RADIUS 0.0 0.2 1.01946
+               SECT -1
+               MIX 4 4 4 4 4 4
+                   2 2 2 2 2 2
+                   2 2 2 2 2 2
+          ;
+          ::: HEXVGV := GEO: HEXCEL 2 (*CELLULE AVEC 2 REGIONS VIDES*)
+               SIDE 1.12045
+               RADIUS 0.0 0.2 0.4
+               SECT -1
+               MIX 1 1 1 1 1 1
+                   2 2 2 2 2 2
+                   1 1 1 1 1 1
+          ;
+          ::: HEXCREU := GEO: HEX 1 (*CELLULE PRESQUE VIDE*)
+               SIDE 1.12045
+               (*SECT -999*)
+               MIX 3
+          ;
+          ::: HEXNOIR := GEO: HEXCEL 1 (*CELLULE AVEC SECTEUR NOIR*)
+               SIDE 1.12045
+               RADIUS 0.0 0.4
+               SECT -1 1
+               MIX 4
+                   5 2 2 2 2 2
+          ;
+;
+Fil_SAL Fil_SAL.ps := G2S: GEOM ;
+T_EXC TF_EXC := SALT: Fil_SAL ::
+     EDIT 2
+     TISO 8 10.0 REND
+;
+MACRO := MAC: ::
+ EDIT 2 NGRO 1 NMIX 5 NIFI 1
+     READ INPUT
+     MIX 1 (*VIDE*)
+       TOTAL 0.0 SCAT 1 1 0.0
+     MIX 2 (*MIDI*)
+       TOTAL 1.0 SCAT 1 1 0.9
+     MIX 3 (*CREU*)
+       TOTAL 1.0E-4 SCAT 1 1 0.0
+     MIX 4 (*MIFI*)
+       TOTAL 1.0 SCAT 1 1 0.8
+       NUSIGF 1.1 CHI 1.0
+     MIX 5 (*NOIR*)
+       TOTAL 1.0E5 SCAT 1 1 0.0
+;
+PREC := ASM: MACRO T_EXC TF_EXC :: PIJ
+     EDIT 2
+     ;
+FLUX := FLU: MACRO PREC T_EXC TF_EXC :: 
+     EDIT 1 TYPE K
+     ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.7674155 ;
+FLUX PREC := DELETE: FLUX PREC ;
+
+T_EXC := MCCGT: T_EXC TF_EXC GEOM ::
+   EDIT 2 GAUS 4
+   AAC 1 EPSI 1E-5
+   MAXI 100 KRYL 0 SCR 0 HDD 0.0
+     ;
+
+PREC := ASM: MACRO T_EXC TF_EXC :: ARM
+     EDIT 2
+     ;
+FLUX := FLU: MACRO PREC T_EXC TF_EXC :: 
+     EDIT 1 TYPE K
+     ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.7644990 ;
+
+ECHO "test TDCM47 completed" ;
+END: ;
+QUIT "LIST" .

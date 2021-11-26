@@ -1,0 +1,82 @@
+***********************************************************
+*                                                         *
+* Procedure :  SetFuelMap.c2m                             *
+* Purpose   :  Fuel-map specifications for REP900         *
+* Author(s) :  M. Guyot (2010)                            *
+* Modified by : A. Hebert (2011)                          *
+*                                                         *
+* CALL      :  FMAP MATEX := SetFuelMap MATEX ;           *
+*                                                         *
+***********************************************************
+
+PARAMETER FMAP MATEX ::
+      ::: LINKED_LIST
+          FMAP MATEX ; ;
+
+MODULE RESINI: END: ;
+
+REAL  x1 := 21.6 ;
+
+REAL z1 dz := 20.0 23.0 ;
+
+REAL  z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14 
+      z15 z16 z17 :=
+      z1 dz +       z1  2. dz * + z1  3. dz * + z1  4. dz * +
+      z1  5. dz * + z1  6. dz * + z1  7. dz * + z1  8. dz * +
+      z1  9. dz * + z1 10. dz * + z1 11. dz * + z1 12. dz * +
+      z1 13. dz * + z1 14. dz * + z1 15. dz * + z1 16. dz * + ;
+      
+REAL  z18 := z17 z1 + ;
+      
+FMAP MATEX := RESINI: MATEX ::
+      ::: GEO: CAR3D 1 1 18
+                EDIT  0
+                X- REFL      X+ REFL
+                Y- REFL      Y+ REFL
+                Z- VOID      Z+ VOID
+MIX
+PLANE 1
+  0
+PLANE 2
+  1
+PLANE 3 SAME 2
+PLANE 4 SAME 2
+PLANE 5 SAME 2
+PLANE 6 SAME 2
+PLANE 7 SAME 2
+PLANE 8 SAME 2
+PLANE 9 SAME 2
+PLANE 10 SAME 2
+PLANE 11 SAME 2
+PLANE 12 SAME 2
+PLANE 13 SAME 2
+PLANE 14 SAME 2
+PLANE 15 SAME 2
+PLANE 16 SAME 2
+PLANE 17 SAME 2
+PLANE 18 SAME 1
+!
+MESHX 0.0 <<x1>>
+
+MESHY 0.0 <<x1>>
+
+MESHZ 0.0 <<z1>> <<z2>> <<z3>> <<z4>> <<z5>> <<z6>> <<z7>> 
+          <<z8>>  <<z9>>  <<z10>> <<z11>> <<z12>> <<z13>> <<z14>>
+          <<z15>> <<z16>> <<z17>> <<z18>>
+;
+!
+NXNAME '01'
+!
+NYNAME  'A'
+!
+NCOMB 1
+B-ZONE 1                            
+
+  ADD-PARAM PNAME 'C-BORE' PARKEY 'ppmBore' GLOBAL
+  ADD-PARAM PNAME 'T-FUEL' PARKEY 'TF' GLOBAL
+  ADD-PARAM PNAME 'T-COOL' PARKEY 'TCA' GLOBAL
+  ADD-PARAM PNAME 'D-COOL' PARKEY 'DCA' GLOBAL
+;
+
+END: ;
+QUIT .

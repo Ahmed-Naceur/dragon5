@@ -1,0 +1,189 @@
+*DECK MicWUC.c2m
+*----------
+*  Name          : MicWUC.c2m
+*  Type          : DRAGON procedure
+*  Use           : Create Gentilly-2 fuel microlib  
+*                  with cross sections from the WLUP based 69 
+*                  groups (LibName = IAEA69).
+*  Author        : G. Marleau
+*  Date          : 2006/03/01
+*
+*  Procedure description: 
+*    MicroLib := MicWUC ::
+*      <<PrtLev>> ;
+*  
+*  Procedure parameters:
+*    MicroLib      : XSM_FILE containing the new microlib where:
+*                    Mix  1 = coolant at full density
+*                    Mix  2 = pressure tube
+*                    Mix  3 = helium for gap and LZC
+*                    Mix  4 = Zr for calandrial tube and adjuster
+*                    Mix  5 = moderator
+*                    Mix  6 = left central fuel
+*                    Mix  7 = left 6 pin fuel
+*                    Mix  8 = left 12 pin  fuel
+*                    Mix  9 = left outer fuel
+*                    Mix 10 = right central fuel
+*                    Mix 11 = right 6 pin fuel
+*                    Mix 12 = right 12 pin  fuel
+*                    Mix 13 = right outer fuel
+*                    Mix 14 = fuel sheating
+*                    (see GeoLZC.c2m for mixture location in 
+*                     geometry)
+*    PrtLev        : Print Level
+*                    0  -> Minimum print
+*                    1  -> Standard print
+*                    10 -> Debug  
+* 
+*----------
+* Define procedure parameters and options and read
+* the procedure input data
+*----
+PARAMETER MicroLib :: EDIT 0 ::: XSM_FILE MicroLib ; ;
+INTEGER   PrtLev ;
+::  >>PrtLev<<   ;
+*----
+*  Local modules used in this procedure
+*----     
+MODULE  INFO: LIB:  DELETE:  ;
+*----------
+*  Define local fuel, coolant and moderator properties
+*  Fuel enrichment (%) =  0.71140;  T = 941.26 K; RHO =10.4375 g/cc;
+*  Coolant D2 AT (%)   = 99.222;    T = 560.66 K;
+*  Moderator D2 AT (%) = 99.911;    T = 345.66 K.
+*----------
+REAL
+  Ftemp   Fenri   Fdens 
+  Ctemp   Cprty 
+  Mtemp   Mprty            
+  Wprty          :=
+  941.26  0.7114  10.4375
+  560.66  99.30
+  345.66  99.92
+  0.0            ; 
+REAL
+  FwgtU8  FwgtU5  FwgtO16
+  CwgtH1  CwgtD2  CwgtO16  Cdens
+  MwgtH1  MwgtD2  MwgtO16  Mdens
+  WwgtH1  WwgtD2  WwgtO16  Wdens ; 
+REAL 
+  BNZrNb         BNZr         BNZrII         :=
+  0.00021        0.00031      0.00005962     ;  
+REAL 
+  B10ZrNb        B10Zr        B10ZrII 
+  B11ZrNb        B11Zr        B11ZrII        :=
+  0.199 BNZrNb * 0.199 BNZr * 0.199 BNZrII * 
+  0.801 BNZrNb * 0.801 BNZr * 0.801 BNZrII * ;  
+*----------
+*  Library and isotope names
+*----------
+STRING   LibName 
+         IsoU5    IsoU8    IsoU6    IsoPu9   IsoO16 
+         IsoH1    IsoD2    IsoB10   IsoB11   IsoBn
+         IsoZr    IsoFe    IsoFeA   IsoCr    IsoNi 
+         IsoNb    IsoC     IsoSi    IsoMn    IsoCu
+         IsoMo    IsoAl    IsoHe4   IsoN     IsoTi    
+         IsoCd    IsoCo59                          :=
+        "IAEA69"               
+        "2235"   "8238"   "236"    "6239"   "6016"
+        "3001"   "3002"   "10"     "11"     "1011"
+        "91"     "2056"   "2056"   "52"     "58"     
+        "93"     "2012"   "29"     "55"     "3063" 
+        "96"     "27"     "4"      "14"     "48"
+        "2113"   "1059"                            ; 
+*----------
+*  End region information
+*  endzrv   = Volume of Zr in endregion
+*  endcoolv = Volume of coolant in endregion
+*  endgasv  = Volume of gas (void) in endregion
+*  endtotv  = Total volume of endregion
+*  endzrf   = Volume fraction of Zr in endregion
+*  endcoolf = Volume fraction of coolant in endregion
+*  endgasf  = Volume fraction of gas (void) in endregion
+*---------- 
+REAL  endzrv endcoolv endgasv := 42.40  77.43    8.65 ;
+REAL  endtotv :=  endzrv endcoolv endgasv + +  ;          
+REAL  endzrf             endcoolf             endgasf  := 
+      endzrv endtotv /   endcoolv endtotv /   endgasv endtotv / ;
+*----------
+*  Guide tube perforation
+*---------- 
+REAL   PerfM1  PerfM2  PerfM3  :=   0.3566  0.02    0.005    ;
+REAL   PerfZ1        PerfZ2        PerfZ3        := 
+       1.0 PerfM1 -  1.0 PerfM2 -  1.0 PerfM3 -  ;
+*----------
+* COMPUTE WGT% FOR FUEL 
+* COMPUTE DENSITY AND WGT% FOR COOLANT AND MODERATOR 
+*----------         
+INFO: ::   
+  ENR: <<Fenri>> WGT%
+  LIB: WIMSD4 FIL: <<LibName>>
+  ISO: 3        <<IsoU5>>   <<IsoU8>>   <<IsoO16>> 
+  CALC WGT% UO2 >>FwgtU5<<  >>FwgtU8<<  >>FwgtO16<<   ;
+INFO: ::
+  TMP: <<Ctemp>> K 
+  PUR: <<Cprty>> WGT% 
+  CALC DENS WATER >>Cdens<<
+  LIB: WIMSD4 FIL: <<LibName>>
+  ISO: 3        <<IsoH1>>   <<IsoD2>>   <<IsoO16>> 
+  CALC WGT% D2O >>CwgtH1<<  >>CwgtD2<<  >>CwgtO16<<   ;
+INFO: ::
+  TMP: <<Mtemp>> K 
+  PUR: <<Mprty>> WGT% 
+  CALC DENS WATER >>Mdens<<
+  LIB: WIMSD4 FIL: <<LibName>>
+  ISO: 3        <<IsoH1>>   <<IsoD2>>   <<IsoO16>> 
+  CALC WGT% D2O >>MwgtH1<<  >>MwgtD2<<  >>MwgtO16<<   ;
+INFO: ::
+  TMP: <<Mtemp>> K 
+  PUR: <<Wprty>>  WGT% 
+  CALC DENS WATER >>Wdens<<
+  LIB: WIMSD4 FIL: <<LibName>>
+  ISO: 3        <<IsoH1>>   <<IsoD2>>   <<IsoO16>> 
+  CALC WGT% D2O >>WwgtH1<<  >>WwgtD2<<  >>WwgtO16<<   ;
+*----------
+*  Generate Microscopic cross section library
+*----------
+MicroLib := LIB: ::
+  EDIT <<PrtLev>>
+  NMIX 14  CTRA WIMS
+  DEPL LIB: WIMSD4 FIL: <<LibName>>
+  MIXS LIB: WIMSD4 FIL: <<LibName>>
+  MIX  1  <<Ctemp>>  <<Cdens>> 
+    H1  = <<IsoH1>>  <<CwgtH1>>     D2  = <<IsoD2>>  <<CwgtD2>>
+    O16 = <<IsoO16>> <<CwgtO16>>  
+  MIX  2  <<Ctemp>>  6.57
+    ZR  = <<IsoZr>>  97.5           NB  = <<IsoNb>>  2.5
+*    BN  = <<IsoBn>> <<BNZrNb>>   
+    B10 = <<IsoB10>>  <<B10ZrNb>>   B11 = <<IsoB11>>  <<B11ZrNb>>   
+  MIX  3  <<Mtemp>>  0.0014     
+    HE4 = <<IsoHe4>> 100.0        
+  MIX  4  <<Mtemp>>  6.44      
+    ZR  = <<IsoZr>>  99.71          FE  = <<IsoFe>>   0.16      
+    CR  = <<IsoCr>>  0.11           NI  = <<IsoNi>>   0.06    
+*    BN  = <<IsoBn>> <<BNZr>>   
+    B10 = <<IsoB10>> <<B10Zr>>      B11 = <<IsoB11>>  <<B11Zr>>   
+  MIX  5  <<Mtemp>>  <<Mdens>>  
+    H1  = <<IsoH1>>  <<MwgtH1>>     D2  = <<IsoD2>>  <<MwgtD2>> 
+    O16 = <<IsoO16>> <<MwgtO16>>  
+  MIX  6  <<Ftemp>>  <<Fdens>>    
+    O16 = <<IsoO16>> <<FwgtO16>>    U5  = <<IsoU5>>   <<FwgtU5>>  1
+    U8  = <<IsoU8>>  <<FwgtU8>>  1  U6  = <<IsoU6>>   0.0         1
+    PU9 = <<IsoPu9>> 0.0         1
+  MIX  7 COMB 6 100.0 
+  MIX  8 COMB 6 100.0 
+  MIX  9 COMB 6 100.0
+  MIX 10  <<Ftemp>>  <<Fdens>>    
+    O16 = <<IsoO16>> <<FwgtO16>>    U5  = <<IsoU5>>   <<FwgtU5>>  2
+    U8  = <<IsoU8>>  <<FwgtU8>>  2  U6  = <<IsoU6>>   0.0         2
+    PU9 = <<IsoPu9>> 0.0         2
+  MIX 11 COMB 10 100.0 
+  MIX 12 COMB 10 100.0
+  MIX 13 COMB 10 100.0
+  MIX 14  <<Ctemp>>  6.44       
+    ZR  = <<IsoZr>>  99.71          FE  = <<IsoFe>>  0.16      
+    CR  = <<IsoCr>>  0.11           NI  = <<IsoNi>>  0.06      
+*    BN   = <<IsoBn>> <<BNZr>>   
+    B10 = <<IsoB10>> <<B10Zr>>      B11 = <<IsoB11>>  <<B11Zr>>   
+  ;
+QUIT .

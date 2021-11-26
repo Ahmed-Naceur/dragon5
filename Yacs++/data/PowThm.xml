@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='iso-8859-1' ?>
+<proc name="newSchema_1">
+   <property name="DefaultStudyID" value="1"/>
+   <objref name="CALCIUM_logical" id="IDL:Ports/Calcium_Ports/Calcium_Logical_Port:1.0"/>
+   <objref name="CALCIUM_real" id="IDL:Ports/Calcium_Ports/Calcium_Real_Port:1.0"/>
+   <type name="string" kind="string"/>
+   <struct name="Engines/dataref">
+      <member name="ref" type="string"/>
+   </struct>
+   <type name="bool" kind="bool"/>
+   <sequence name="boolvec" content="bool"/>
+   <type name="double" kind="double"/>
+   <sequence name="dblevec" content="double"/>
+   <objref name="file" id="file"/>
+   <type name="int" kind="int"/>
+   <sequence name="intvec" content="int"/>
+   <struct name="stringpair">
+      <member name="name" type="string"/>
+      <member name="value" type="string"/>
+   </struct>
+   <sequence name="propvec" content="stringpair"/>
+   <objref name="pyobj" id="python:obj:1.0"/>
+   <sequence name="seqboolvec" content="boolvec"/>
+   <sequence name="seqdblevec" content="dblevec"/>
+   <sequence name="seqintvec" content="intvec"/>
+   <sequence name="stringvec" content="string"/>
+   <sequence name="seqstringvec" content="stringvec"/>
+   <container name="DefaultContainer">
+      <property name="container_name" value="FactoryServer"/>
+      <property name="name" value="localhost"/>
+   </container>
+   <service name="runTHM0">
+      <component>Composant_THM</component>
+      <load container="DefaultContainer"/>
+      <method>runTHM</method>
+      <instream name="powerTab" type="CALCIUM_real"/>
+      <instream name="irradiationTab" type="CALCIUM_real"/>
+      <outstream name="fuel_temperature" type="CALCIUM_real"/>
+      <outstream name="water_temperature" type="CALCIUM_real"/>
+      <outstream name="water_density" type="CALCIUM_real"/>
+      <outstream name="continueLoop" type="CALCIUM_logical"/>
+   </service>
+   <service name="runPOW1">
+      <component>Composant_POW</component>
+      <load container="DefaultContainer"/>
+      <method>runPOW</method>
+      <inport name="Power" type="double"/>
+      <instream name="fuel_temperature" type="CALCIUM_real"/>
+      <instream name="water_temperature" type="CALCIUM_real"/>
+      <instream name="water_density" type="CALCIUM_real"/>
+      <instream name="continueLoop" type="CALCIUM_logical"/>
+      <outstream name="powerTab" type="CALCIUM_real"/>
+      <outstream name="irradiationTab" type="CALCIUM_real"/>
+   </service>
+   <stream>
+      <fromnode>runTHM0</fromnode> <fromport>fuel_temperature</fromport>
+      <tonode>runPOW1</tonode> <toport>fuel_temperature</toport>
+   </stream>
+   <stream>
+      <fromnode>runTHM0</fromnode> <fromport>water_temperature</fromport>
+      <tonode>runPOW1</tonode> <toport>water_temperature</toport>
+   </stream>
+   <stream>
+      <fromnode>runTHM0</fromnode> <fromport>water_density</fromport>
+      <tonode>runPOW1</tonode> <toport>water_density</toport>
+   </stream>
+   <stream>
+      <fromnode>runTHM0</fromnode> <fromport>continueLoop</fromport>
+      <tonode>runPOW1</tonode> <toport>continueLoop</toport>
+   </stream>
+   <stream>
+      <fromnode>runPOW1</fromnode> <fromport>powerTab</fromport>
+      <tonode>runTHM0</tonode> <toport>powerTab</toport>
+   </stream>
+   <stream>
+      <fromnode>runPOW1</fromnode> <fromport>irradiationTab</fromport>
+      <tonode>runTHM0</tonode> <toport>irradiationTab</toport>
+   </stream>
+   <parameter>
+      <tonode>runPOW1</tonode><toport>Power</toport>
+      <value><double>2775</double></value>
+   </parameter>
+   <presentation name="runTHM0" x="305.5" y="47.5" width="158" height="144" expanded="1" expx="305.5" expy="47.5" expWidth="158" expHeight="144" shownState="0"/>
+   <presentation name="runPOW1" x="19" y="47" width="158" height="171" expanded="1" expx="19" expy="47" expWidth="158" expHeight="171" shownState="0"/>
+   <presentation name="__ROOT__" x="0" y="0" width="467.5" height="222" expanded="1" expx="0" expy="0" expWidth="467.5" expHeight="222" shownState="0"/>
+</proc>

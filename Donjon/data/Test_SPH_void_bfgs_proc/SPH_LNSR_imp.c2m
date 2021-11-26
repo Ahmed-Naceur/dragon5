@@ -1,0 +1,186 @@
+****************************************************************
+*                                                              *
+* Procedure :  SPH_LNSR_imp.c2m                                *
+* Purpose   :  Compute SPH factors using a gradient search     *
+* Author    :  A. Hebert                                       *
+*                                                              *
+* CALL      :                                                  *
+*  Macro2 Optim := SPH_LNSR_imp Macro1 Macrogeom Track         *
+*                     :: (data) ;                              *
+*                                                              *
+*  Output object:                                              *
+*    Macro2    : Corrected macrolib                            *
+*    Optim     : L_OPTIMIZE object                             *
+*                                                              *
+*  Input objects:                                              *
+*    Macro1    : Reference macrolib for the macro-geometry     *
+*    Macrogeom : Macro-geometry                                *
+*    Track     : Tracking of the macro-geometry                *
+*                                                              *
+*  Input data:                                                 *
+*    type      : 'SD', 'CG', 'BFGS', 'LBFGS' or 'NEWT'         *
+*    hist_nr   : number of corrections stored in LBFGS method  *
+*    fmin      : minimum acceptable correction factor          *
+*    fmax      : maximum acceptable correction factor          *
+*    epsout    : convergence criterion for outer iterations    *
+*    nstart    : external iteration restart cycle              *
+*    IterEmax  : maximum number of external iterations         *
+*                                                              *
+****************************************************************
+PARAMETER  MACRO2 OPTIM MACRO1 MACROGEOM TRACK ::
+  ::: LINKED_LIST MACRO2 OPTIM MACRO1 MACROGEOM TRACK ; ;
+MODULE DSPH: TRIVAA: FLUD: GREP: OUT: DREF: GPTFLU: DELETE:
+       DLEAK: DELTA: GRAD: LNSR: MAC: ERROR: UTL: END: ;
+LINKED_LIST DMACRO1 SYSTEM CALC EDIT DSYSTEM GPTD GPTA DCALCA ;
+INTEGER LConv IterE IterS nlf ;
+REAL Keff ;
+DOUBLE rmsval ;
+LOGICAL InConv OutConv ;
+STRING type ;
+REAL fmin fmax epsout ; 
+INTEGER hist_nr nstart IterEmax ;
+! set IterSmax := 1 to avoid line search
+INTEGER IterSmax := 30 ;
+  :: >>type<< >>hist_nr<< >>fmin<< >>fmax<< >>epsout<<
+     >>nstart<< >>IterEmax<< ;
+
+!****************************************
+!****************************************
+!*******   EXTERNAL ITERATIONS   ********
+!****************************************
+!****************************************
+
+DMACRO1 OPTIM := DSPH: MACRO1 :: EDIT 1 SPH PN ;
+     
+MACRO2 := MACRO1 ;
+
+EVALUATE IterE := 0 ;
+REPEAT
+  EVALUATE IterE := IterE 1 + ;
+  ECHO "#------------------------------" ;
+  IF IterE 10 < THEN
+    ECHO "#-------------" IterE "--------------" ;
+  ELSE
+    ECHO "#------------" IterE "--------------" ;
+  ENDIF ;
+  ECHO "#------------------------------" ;
+
+  SYSTEM := TRIVAA: MACRO2 TRACK :: EDIT 0 ;
+  IF IterE 1 = THEN
+    CALC := FLUD: SYSTEM TRACK ::
+      EDIT 0 ADI 5 EXTE 50 1.0E-6 ACCE 5 3 ADJ ;
+  ELSE
+    CALC := FLUD: CALC SYSTEM TRACK ::
+      EDIT 0 ADI 5 EXTE 50 1.0E-6 ACCE 5 3 ADJ ;
+  ENDIF ;
+  EDIT := OUT: CALC MACROGEOM MACRO2 TRACK ::
+      EDIT 0 INTG MIX ;
+  IF IterE 1 = THEN
+     ECHO "Error statistics before correction" ;
+     ERROR: MACRO1 EDIT :: HREA 'NFTOT' ;
+  ENDIF ;
+      
+  GREP: CALC :: GETVAL 'K-EFFECTIVE ' 1 >>Keff<< ;
+*----
+* IMPLICIT SOLUTION.
+* SOLUTION OF AN ADJOINT FIXED SOURCE EIGENVALUE PROBLEM.
+*----
+  IF type 'NEWT' = THEN
+    GPTA OPTIM := DREF: OPTIM CALC TRACK EDIT MACRO1 ::
+        EDIT 1 NEWTON RMS >>rmsval<< ;
+  ELSE
+    GPTA OPTIM := DREF: OPTIM CALC TRACK EDIT MACRO1 ::
+        EDIT 1 RMS >>rmsval<< ;
+  ENDIF ;
+  IF IterE 1 = THEN
+    DCALCA := GPTFLU: GPTA CALC SYSTEM TRACK ::
+      EDIT 0 ADI 5 EXTE 50 1.0E-5 ACCE 5 3 GMRES 10
+      IMPLICIT FROM-TO ALL ;
+  ELSE
+    DCALCA := GPTFLU: DCALCA GPTA CALC SYSTEM TRACK ::
+      EDIT 0 ADI 5 EXTE 50 1.0E-5 ACCE 5 3 GMRES 10
+      IMPLICIT FROM-TO ALL ;
+  ENDIF ;
+  ECHO "outer iteration=" IterE "rmsval=" rmsval D_TO_R "Keff=" Keff ;
+  EDIT := DELETE: EDIT ;
+*----
+* DIRECT SOURCE CALCULATION
+*----
+  DSYSTEM := TRIVAA: MACRO2 TRACK DMACRO1 :: EDIT 0 DERI ;
+  GPTD := DELTA: CALC SYSTEM DSYSTEM TRACK :: EDIT 0 ;
+  SYSTEM DSYSTEM GPTA := DELETE: SYSTEM DSYSTEM GPTA ;
+*----
+* IMPLICIT GRADIENT CALCULATION
+*----
+  OPTIM := GRAD: OPTIM DCALCA GPTD :: EDIT 0
+       VAR-VAL-MIN ALL <<fmin>>
+       VAR-VAL-MAX ALL <<fmax>>
+  ;
+  GPTD := DELETE: GPTD ;
+*----
+* LINE SEARCH ITERATION
+*----
+  EVALUATE IterS := 0 ;
+  REPEAT
+    EVALUATE IterS := IterS 1 + ;
+    ECHO "Line search iteration IterS=" IterS ;
+    IF IterS 1 > THEN
+      SYSTEM := TRIVAA: MACRO2 TRACK :: EDIT 0 ;
+      CALC := FLUD: CALC SYSTEM TRACK ::
+        EDIT 0 ADI 5 EXTE 50 1.0E-6 ACCE 5 3 ;
+      EDIT := OUT: CALC MACROGEOM MACRO2 TRACK ::
+          EDIT 0 INTG MIX ;
+*----
+* COMPUTE THE OBJECTIVE FUNCTION DURING THE LINE SEARCH
+*----
+      GPTA OPTIM := DREF: OPTIM CALC TRACK EDIT MACRO1 ::
+          EDIT 1 NODERIV ;
+      GPTA EDIT SYSTEM := DELETE: GPTA EDIT SYSTEM ;
+    ENDIF ;
+    IF IterS IterSmax = THEN
+      OPTIM := UTL: OPTIM :: CREA STATE-VECTOR 11 11 = 1 ;
+    ENDIF ;
+    IF type "LBFGS" = THEN
+      OPTIM := LNSR: OPTIM ::
+        EDIT 2
+        OUT-STEP-LIM 0.5D0
+        INN-STEP-EPS 1.0D-5
+        OUT-STEP-EPS <<epsout>>
+        OUT-ITER-MAX <<IterEmax>>
+        OUT-RESTART <<nstart>>
+        LBFGS <<hist_nr>>
+        INN-CONV-TST >>InConv<< OUT-CONV-TST >>OutConv<<
+      ;
+    ELSE
+      OPTIM := LNSR: OPTIM ::
+        EDIT 2
+        OUT-STEP-LIM 0.5D0
+        INN-STEP-EPS 1.0D-5
+        OUT-STEP-EPS <<epsout>>
+        OUT-ITER-MAX <<IterEmax>>
+        OUT-RESTART <<nstart>>
+        <<type>>
+        INN-CONV-TST >>InConv<< OUT-CONV-TST >>OutConv<<
+      ;
+    ENDIF ;
+*----
+* UPDATE MACROLIB WITH NEW CONTROL VARIABLES
+*----
+    MACRO2 := MACRO2 MACRO1 ;
+    MACRO2 := MAC: MACRO2 OPTIM ;
+  UNTIL InConv ;
+UNTIL OutConv ;
+CALC DCALCA := DELETE: CALC DCALCA ;
+*----
+* VERIFICATION CALCULATION
+*----
+SYSTEM := TRIVAA: MACRO2 TRACK :: EDIT 0 ;
+CALC := FLUD: SYSTEM TRACK ::
+      EDIT 0 ADI 5 EXTE 50 1.0E-6 ACCE 5 3 ;
+
+EDIT := OUT: CALC MACROGEOM MACRO2 TRACK ::
+      EDIT 0 INTG MIX ;
+
+ECHO "Error statistics after correction" ;
+ERROR: MACRO1 EDIT :: HREA 'NFTOT' ;
+END: ;

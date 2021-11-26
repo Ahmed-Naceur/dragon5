@@ -1,0 +1,465 @@
+*DECK FPSPH
+      SUBROUTINE FPSPH(NENTRY,HENTRY,IENTRY,JENTRY,KENTRY)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Perform a single SPH factor fixed point iteration
+*
+*Copyright:
+* Copyright (C) 2019 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): 
+* A. Hebert
+*
+*Parameters: input
+* NENTRY  number of data structures transfered to this module.
+* HENTRY  name of the data structures.
+* IENTRY  data structure type where:
+*         IENTRY=1 for LCM memory object;
+*         IENTRY=2 for XSM file;
+*         IENTRY=3 for sequential binary file;
+*         IENTRY=4 for sequential ASCII file.
+* JENTRY  access permission for the data structure where:
+*         JENTRY=0 for a data structure in creation mode;
+*         JENTRY=1 for a data structure in modifications mode;
+*         JENTRY=2 for a data structure in read-only mode.
+* KENTRY  data structure pointer.
+*
+*Comments:
+* The FPSPH: calling specifications are:
+* OPTIM := FPSPH: [ OPTIM ] MACROLIB MACROREF :: (fpsph\_data) ;
+* where
+*   OPTIM    : name of the \emph{optimize} object (L\_OPTIMIZE signature) 
+*     containing the SPH factors. At the first call, object OPTIM must appear on
+*     LHS to receive its initial values. On subsequent calls, object OPTIM must 
+*     appear on both LHS and RHS to be able to update the previous values.
+*   MACROLIB : name of the read-only extended \emph{macrolib} object 
+*     (L\_MACROLIB signature) containing the macroscopic cross sections used by
+*     the macro-calculation and fluxes produced by the macro-calculation.
+*   MACROREF : name of the read-only extended \emph{macrolib} object 
+*    (L\_MACROLIB signature) containing the reference macroscopic cross 
+*    sections and fluxes.
+*   (fpsph\_data) : structure containing the data to the module FPSPH:
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      INTEGER      NENTRY,IENTRY(NENTRY),JENTRY(NENTRY)
+      TYPE(C_PTR)  KENTRY(NENTRY)
+      CHARACTER    HENTRY(NENTRY)*12
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER (NSTATE=40)
+      TYPE(C_PTR) IPOPT,IPMAC1,IPMAC2,JPMAC1,JPMAC2,KPMAC1,KPMAC2
+      CHARACTER HSIGN*12,TEXT12*12
+      INTEGER ISTATE(NSTATE),DNVTST
+      DOUBLE PRECISION OPTPRR(NSTATE),DFLOTT,ZNORM1,ZNORM2,EPSPH,ERRT,
+     > ERR2,ERROR,SPHMIN,SPHMAX
+*----
+*  ALLOCATABLE ARRAYS
+*----
+      REAL, ALLOCATABLE, DIMENSION(:) :: SPH,FLUX1,FLUX2,OUTG1,OUTG2
+      DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:) :: VARV,VAROLD,XMIN,
+     > XMAX,P,FF,UD
+      DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:) :: DFF,TDFF
+*----
+*  PARAMETER VALIDATION.
+*----
+      IF(NENTRY.NE.3) CALL XABORT('FPSPH: THREE PARAMETERS EXPECTED.')
+      IF((IENTRY(1).NE.1).AND.(IENTRY(1).NE.2)) CALL XABORT('FPSPH: LCM'
+     >  //' OBJECT EXPECTED AT LHS.')
+      IF(JENTRY(1).EQ.0)THEN
+        HSIGN='L_OPTIMIZE'
+        CALL LCMPTC(KENTRY(1),'SIGNATURE',12,1,HSIGN)
+      ELSE IF(JENTRY(1).EQ.1)THEN
+        CALL LCMGTC(KENTRY(1),'SIGNATURE',12,1,HSIGN)
+        IF(HSIGN.NE.'L_OPTIMIZE')THEN
+          CALL XABORT('FPSPH: SIGNATURE OF '//HENTRY(2)//' IS '//HSIGN//
+     >    '. L_OPTIMIZE EXPECTED.')
+        ENDIF
+      ELSE IF(JENTRY(1).EQ.2)THEN
+        CALL XABORT('FPSPH: OPTIMIZE OBJECT IN CREATION OR MODIFICATIO'
+     >  //'N MODE EXPECTED.')
+      ENDIF
+      IPOPT=KENTRY(1)
+      IF(JENTRY(1).EQ.1) THEN
+        CALL LCMGET(IPOPT,'STATE-VECTOR',ISTATE)
+        NVAR=ISTATE(1)
+        NFUNC=ISTATE(2)+1
+        ITER=ISTATE(5)
+        IMETH=ISTATE(8)
+        CALL LCMGET(IPOPT,'OPT-PARAM-R',OPTPRR)
+        EPSPH=OPTPRR(3)
+        CALL LCMGET(IPOPT,'DEL-STATE',ISTATE)
+        NGRP=ISTATE(1)
+        NMIX=ISTATE(2)
+        ICONT=ISTATE(4)
+        NGR1=ISTATE(5)
+        NGR2=ISTATE(6)
+        NALBP=ISTATE(9)
+        IF((ICONT.NE.3).AND.(ICONT.NE.4)) CALL XABORT('FPSPH: SPH FACT'
+     >  //'ORS EXPECTED IN OPTIMIZE OBJECT.')
+        IF(NVAR.NE.(NGR2-NGR1+1)*(NMIX+NALBP)) CALL XABORT('FPSPH: INC'
+     >  //'OHERENT NUMBER OF DECISION VARIABLES.')
+      ELSE
+        ITER=0
+        IMETH=3
+        EPSPH=1.0D-4
+        NGRP=0
+        NMIX=0
+      ENDIF
+      DO I=2,3
+        IF((JENTRY(I).NE.2).OR.((IENTRY(I).NE.1).AND.(IENTRY(I).NE.2)))
+     1  CALL XABORT('FPSPH: LCM OBJECT IN READ-ONLY MODE EXPECTED AT R'
+     2  //'HS.')
+      ENDDO
+      ITER=ITER+1
+*----
+*  RECOVER THE ACTUAL MACROLIB.
+*----
+      CALL LCMGTC(KENTRY(2),'SIGNATURE',12,1,HSIGN)
+      IF(HSIGN.EQ.'L_MACROLIB') THEN
+        IPMAC1=KENTRY(2)
+      ELSE IF(HSIGN.EQ.'L_LIBRARY') THEN
+        IPMAC1=LCMGID(KENTRY(5),'MACROLIB')
+      ELSE
+        TEXT12=HENTRY(2)
+        CALL XABORT('FPSPH: SIGNATURE OF '//TEXT12//' IS '//HSIGN//
+     >  '. ACTUAL L_MACROLIB OR L_LIBRARY EXPECTED.')
+      ENDIF
+      CALL LCMGET(IPMAC1,'STATE-VECTOR',ISTATE)
+      IF(JENTRY(1).EQ.0) THEN
+        NGRP=ISTATE(1)
+        NMIX=ISTATE(2)
+      ELSE IF(ISTATE(1).NE.NGRP) THEN
+        CALL XABORT('FPSPH: INVALID NUMBER OF GROUPS.')
+      ELSE IF(ISTATE(2).NE.NMIX) THEN
+        CALL XABORT('FPSPH: INVALID NUMBER OF MIXTURES.')
+      ENDIF
+      NFIS1=ISTATE(4)
+      ILEAKS=ISTATE(9)
+*----
+*  RECOVER THE REFERENCE MACROLIB.
+*----
+      CALL LCMGTC(KENTRY(3),'SIGNATURE',12,1,HSIGN)
+      IF(HSIGN.EQ.'L_MACROLIB') THEN
+        IPMAC2=KENTRY(3)
+      ELSE IF(HSIGN.EQ.'L_LIBRARY') THEN
+        IPMAC2=LCMGID(KENTRY(3),'MACROLIB')
+      ELSE
+        TEXT12=HENTRY(3)
+        CALL XABORT('FPSPH: SIGNATURE OF '//TEXT12//' IS '//HSIGN//
+     1  '. REFERENCE L_MACROLIB OR L_LIBRARY EXPECTED.')
+      ENDIF
+      CALL LCMGET(IPMAC2,'STATE-VECTOR',ISTATE)
+      IF(ISTATE(1).NE.NGRP) THEN
+        CALL XABORT('FPSPH: INVALID NUMBER OF REFERENCE GROUPS.')
+      ELSE IF(ISTATE(2).NE.NMIX) THEN
+        CALL XABORT('FPSPH: INVALID NUMBER OF REFERENCE MIXTURES.')
+      ELSE IF(ISTATE(9).NE.ILEAKS) THEN
+        CALL XABORT('FPSPH: INVALID TYPE OF LEAKAGE.')
+      ENDIF
+      NFIS2=ISTATE(4)
+      NALBP=ISTATE(8)
+      IF(NALBP.GT.1) CALL XABORT('FPSPH: NALBP>1 NOT SUPPORTED.')
+*----
+*  READ INPUT PARAMETERS
+*----
+      IPICK=0
+      IPRINT=1
+      SPHMIN=0.0D0
+      SPHMAX=10.0D0
+      IF(JENTRY(1).EQ.0) THEN
+        IMC=2
+        NGR1=1
+        NGR2=NGRP
+      ENDIF
+   10 CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DFLOTT)
+      IF(INDIC.EQ.10) GO TO 50
+      IF(INDIC.NE.3) CALL XABORT('FPSPH: CHARACTER DATA EXPECTED')
+      IF(TEXT12(1:4).EQ.'EDIT') THEN
+        CALL REDGET(INDIC,IPRINT,FLOTT,TEXT12,DFLOTT)
+        IF(INDIC.NE.1) CALL XABORT('FPSPH: INTEGER DATA EXPECTED FOR I'
+     1  //'PRINT')
+      ELSE IF(TEXT12.EQ.'SPH') THEN
+*       READ THE TYPE OF SPH CORRECTION.
+        CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DFLOTT)
+        IF(INDIC.NE.3) CALL XABORT('FPSPH: CHARACTER DATA EXPECTED(2).')
+        IF(TEXT12.EQ.'PN') THEN
+          IMC=1
+        ELSE IF(TEXT12.EQ.'SN') THEN
+          IMC=2
+        ELSE
+          CALL XABORT('FPSPH: INVALID TYPE OF SPH CORRECTION.')
+        ENDIF
+      ELSE IF(TEXT12.EQ.'GRPMIN') THEN
+*       READ THE MINIMUM GROUP INDEX.
+        CALL REDGET(INDIC,NGR1,FLOTT,TEXT12,DFLOTT)
+        IF(INDIC.NE.1) CALL XABORT('FPSPH: INTEGER DATA EXPECTED(4).')
+        IF((NGR1.LE.0).OR.(NGR1.GT.NGRP)) CALL XABORT('FPSPH: INVALID '
+     >  //'VALUE OF GRPMIN.')
+      ELSE IF(TEXT12.EQ.'GRPMAX') THEN
+*       READ THE MAXIMUM GROUP INDEX.
+        CALL REDGET(INDIC,NGR2,FLOTT,TEXT12,DFLOTT)
+        IF(INDIC.NE.1) CALL XABORT('FPSPH: INTEGER DATA EXPECTED(5).')
+        IF((NGR2.LT.NGR1).OR.(NGR2.GT.NGRP)) CALL XABORT('FPSPH: INVAL'
+     >  //'ID VALUE OF GRPMAX.')
+      ELSE IF(TEXT12.EQ.'OUT-STEP-EPS') THEN
+*       Set the tolerence used for SPH iterations.
+        CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DFLOTT)
+        IF(INDIC.EQ.2) THEN
+          EPSPH=FLOTT
+        ELSE IF(INDIC.EQ.4) THEN
+          EPSPH=DFLOTT
+        ELSE
+          CALL XABORT('FPSPH: REAL OR DOUBLE PRECISION VALUE EXPECTED.')
+        ENDIF
+      ELSE IF(TEXT12.EQ.'VAR-VAL-MIN') THEN
+*       Set the minimum value for SPH dactors.
+        CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DFLOTT)
+        IF(INDIC.EQ.2) THEN
+          SPHMIN=FLOTT
+        ELSE IF(INDIC.EQ.4) THEN
+          SPHMIN=DFLOTT
+        ELSE
+          CALL XABORT('FPSPH: REAL OR DOUBLE PRECISION VALUE EXPECTED.')
+        ENDIF
+      ELSE IF(TEXT12.EQ.'VAR-VAL-MAX') THEN
+*       Set the maximum value for SPH dactors.
+        CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DFLOTT)
+        IF(INDIC.EQ.2) THEN
+          SPHMAX=FLOTT
+        ELSE IF(INDIC.EQ.4) THEN
+          SPHMAX=DFLOTT
+        ELSE
+          CALL XABORT('FPSPH: REAL OR DOUBLE PRECISION VALUE EXPECTED.')
+        ENDIF
+      ELSE IF(TEXT12.EQ.'OUT-CONV-TST') THEN
+*       Convergence test
+        IPICK=1
+        GO TO 50
+      ELSE IF(TEXT12(1:1).EQ.';') THEN
+        GO TO 50
+      ELSE 
+        CALL XABORT('FPSPH: '//TEXT12//' IS AN INVALID KEYWORD')
+      ENDIF
+      GO TO 10
+*----
+*  RECOVER SPH FACTORS FROM PREVIOUS ITERATION
+*----
+   50 NPERT=(NGR2-NGR1+1)*(NMIX+NALBP)
+      ALLOCATE(VARV(NPERT),VAROLD(NPERT),XMIN(NPERT),XMAX(NPERT))
+      CALL LCMLEN(IPOPT,'VAR-VAL-MIN',ILONG,ITYLCM)
+      IF(ILONG.EQ.0) THEN
+        CALL XDDSET(XMIN,NPERT,SPHMIN)
+        CALL LCMPUT(IPOPT,'VAR-VAL-MIN',NPERT,4,XMIN)
+      ELSE
+        CALL LCMGET(IPOPT,'VAR-VAL-MIN',XMIN)
+      ENDIF
+      CALL LCMLEN(IPOPT,'VAR-VAL-MAX',ILONG,ITYLCM)
+      IF(ILONG.EQ.0) THEN
+        CALL XDDSET(XMAX,NPERT,SPHMAX)
+        CALL LCMPUT(IPOPT,'VAR-VAL-MAX',NPERT,4,XMAX)
+      ELSE
+        CALL LCMGET(IPOPT,'VAR-VAL-MAX',XMAX)
+      ENDIF
+      CALL LCMLEN(IPOPT,'VAR-VALUE',ILONG,ITYLCM)
+      IF(ILONG.EQ.0) THEN
+        CALL XDDSET(VAROLD,NPERT,1.0D0)
+      ELSE
+        CALL LCMGET(IPOPT,'VAR-VALUE',VAROLD)
+      ENDIF
+*----
+*  PERFORM A FIXED POINT SPH ITERATION
+*----
+      IF(IPRINT.GT.0) WRITE(6,'(/34H FPSPH: COMPUTE SPH FACTORS AT ITE,
+     > 6HRATION,I5,12H WITH METHOD,I2,1H.)') ITER,IMETH
+      IF(IMETH.EQ.3) THEN
+        IPERT=0
+        JPMAC1=LCMGID(IPMAC1,'GROUP')
+        JPMAC2=LCMGID(IPMAC2,'GROUP')
+        ALLOCATE(SPH(NMIX+NALBP),FLUX1(NMIX),FLUX2(NMIX),OUTG1(NGRP),
+     >  OUTG2(NGRP))
+        IF(IPRINT.GT.4) WRITE(6,'(/32H FPSPH: SPH FACTORS AT ITERATION,
+     >  I5)') ITER
+        IF(NALBP.GT.0) THEN
+          CALL FPSOUT(IPMAC1,IPRINT,NGRP,NMIX,NFIS1,ILEAKS,'    MACRO',
+     >    OUTG1)
+          CALL FPSOUT(IPMAC2,IPRINT,NGRP,NMIX,NFIS2,ILEAKS,'REFERENCE',
+     >    OUTG2)
+        ENDIF
+        DO 120 IGR=NGR1,NGR2
+        CALL XDRSET(SPH,NMIX+NALBP,1.0)
+        KPMAC1=LCMGIL(JPMAC1,IGR)
+        KPMAC2=LCMGIL(JPMAC2,IGR)
+        CALL LCMGET(KPMAC1,'FLUX-INTG',FLUX1)
+        CALL LCMGET(KPMAC2,'FLUX-INTG',FLUX2)
+        DO 60 IBM=1,NMIX
+        SPH(IBM)=FLUX2(IBM)/FLUX1(IBM)
+   60   CONTINUE
+        DO 70 IAL=1,NALBP
+        IF(OUTG1(IGR).NE.0.0) THEN
+          SPH(NMIX+IAL)=REAL(VAROLD(IPERT+NMIX+1))*OUTG2(IGR)/OUTG1(IGR)
+        ENDIF
+   70   CONTINUE
+        ZNORM1=0.0D0
+        ZNORM2=0.0D0
+        DO 80 IBM=1,NMIX
+        ZNORM1=ZNORM1+FLUX2(IBM)/SPH(IBM)
+        ZNORM2=ZNORM2+FLUX2(IBM)
+   80   CONTINUE
+        ZNORM1=ZNORM1/ZNORM2
+        IF(IPRINT.GT.1) THEN
+          WRITE(6,'(/14H FPSPH: GROUP=,I4,22H NORMALIZATION FACTOR=,1P,
+     >    E12.4)') IGR,ZNORM1
+        ENDIF
+        DO 90 IBM=1,NMIX+NALBP
+        SPH(IBM)=SPH(IBM)*REAL(ZNORM1)
+   90   CONTINUE
+        DO 100 IBM=1,NMIX
+        IPERT=IPERT+1
+        VARV(IPERT)=SPH(IBM)
+  100   CONTINUE
+        DO 110 IAL=1,NALBP
+        IPERT=IPERT+1
+        VARV(IPERT)=SPH(NMIX+IAL)
+  110   CONTINUE
+  120   CONTINUE
+        DEALLOCATE(OUTG2,OUTG1,FLUX2,FLUX1,SPH)
+*----
+*  PERFORM A NEWTONIAN SPH ITERATION
+*----
+      ELSE IF(IMETH.EQ.4) THEN
+        ALLOCATE(P(NPERT),FF(NFUNC),DFF(NPERT,NFUNC),TDFF(NFUNC,NPERT),
+     >  UD(NPERT))
+        CALL LCMGET(IPOPT,'FOBJ-CST-VAL',FF)
+        CALL LCMGET(IPOPT,'GRADIENT',DFF)
+        TDFF=TRANSPOSE(DFF)
+        CALL ALST2F(NFUNC,NFUNC,NPERT,TDFF,UD)
+        CALL ALST2S(NFUNC,NFUNC,NPERT,TDFF,UD,FF,P)
+        DO 130 IPERT=1,NPERT
+        VARV(IPERT)=VAROLD(IPERT)-P(IPERT)
+  130   CONTINUE
+        DEALLOCATE(UD,TDFF,DFF,FF,P)
+      ENDIF
+*----
+*  APPLY CONSTRAINTS ON SPH FACTORS
+*----
+       DO 135 IPERT=1,NPERT
+         VARV(IPERT)=MAX(VARV(IPERT),XMIN(IPERT))
+         VARV(IPERT)=MIN(VARV(IPERT),XMAX(IPERT))
+  135  ENDDO
+*----
+*  PRINT SPH FACTORS
+*----
+      IF(IPRINT.GT.4) THEN
+        ALLOCATE(SPH(NMIX+NALBP))
+        IPERT=0
+        DO 150 IGR=NGR1,NGR2
+        DO 140 IBM=1,NMIX+NALBP
+        IPERT=IPERT+1
+        SPH(IBM)=REAL(VARV(IPERT))
+  140   CONTINUE
+        WRITE(6,200) 'NSPH',IGR,(SPH(IBM),IBM=1,NMIX+NALBP)
+  150   CONTINUE
+        DEALLOCATE(SPH)
+      ENDIF
+*----
+*  TEST CONVERGENCE
+*----
+      ICONV=0
+      IF(JENTRY(1).EQ.1) THEN
+        ERROR=0.0
+        ERR2=0.0
+        DO 160 IPERT=1,NPERT
+          ERRT=ABS((VARV(IPERT)-VAROLD(IPERT))/VARV(IPERT))
+          ERR2=ERR2+ERRT*ERRT
+          ERROR=MAX(ERROR,ERRT)
+  160   CONTINUE
+        ERR2=SQRT(ERR2/REAL(NPERT))
+        IF(IPRINT.GT.1) WRITE(6,230) ITER,ERROR,ERR2
+        IF(ERR2.LT.EPSPH) THEN
+          ICONV=1
+          IF(IPRINT.GT.0) WRITE(6,220) ITER
+        ENDIF
+      ENDIF
+*----
+*  PUT OPTIMIZE OBJECT INFORMATION
+*----
+      CALL LCMPUT(IPOPT,'VAR-VALUE',NPERT,4,VARV)
+      DEALLOCATE(XMAX,XMIN,VAROLD,VARV)
+      IF(JENTRY(1).EQ.0)THEN
+        CALL XDISET(ISTATE,NSTATE,0)
+        ISTATE(1)=NGRP
+        ISTATE(2)=NMIX
+        ISTATE(3)=1
+        ISTATE(4)=2+IMC
+        ISTATE(5)=NGR1
+        ISTATE(6)=NGR2
+        ISTATE(7)=1
+        ISTATE(8)=NMIX
+        ISTATE(9)=NALBP
+        IF(IPRINT.GT.0) WRITE(6,210) (ISTATE(I),I=1,6)
+        CALL LCMPUT(IPOPT,'DEL-STATE',NSTATE,1,ISTATE)
+        CALL XDISET(ISTATE,NSTATE,0)
+        ISTATE(1)=NPERT
+        ISTATE(8)=IMETH ! set to fixed point or Newtonian method
+        CALL LCMPUT(IPOPT,'STATE-VECTOR',NSTATE,1,ISTATE)
+        CALL XDDSET(OPTPRR,NSTATE,0.0D0)
+        OPTPRR(1)=1.0D0
+        OPTPRR(2)=0.1D0
+        OPTPRR(3)=EPSPH
+        OPTPRR(4)=1.0D-4
+        OPTPRR(5)=1.0D-4
+        CALL LCMPUT(IPOPT,'OPT-PARAM-R',NSTATE,4,OPTPRR)
+      ELSE
+        CALL LCMGET(IPOPT,'STATE-VECTOR',ISTATE)
+        ISTATE(1)=NPERT
+        ISTATE(4)=ICONV ! convergence index
+        ISTATE(5)=ITER ! number of iterations
+        ISTATE(8)=IMETH ! set to fixed point or Newtonian method
+        CALL LCMPUT(IPOPT,'STATE-VECTOR',NSTATE,1,ISTATE)
+      ENDIF
+*----
+*  RECOVER THE CONVERGENCE FLAGS AND SAVE IT IN A CLE-2000 VARIABLE
+*----
+      IF(IPICK.EQ.1) THEN
+        CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DFLOTT)
+        IF(INDIC.NE.-5) CALL XABORT('FPSPH: OUTPUT LOGICAL EXPECTED.')
+        INDIC=5
+        IF(ICONV.EQ.0) THEN
+          DNVTST=-1 ! not converged
+        ELSE IF(ICONV.EQ.1) THEN
+          DNVTST=1 ! converged
+        ENDIF
+        CALL REDPUT(INDIC,DNVTST,FLOTT,TEXT12,DFLOTT)
+        CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DFLOTT)
+        IF((INDIC.NE.3).OR.(TEXT12.NE.';')) THEN
+          CALL XABORT('FPSPH: ; CHARACTER EXPECTED.')
+        ENDIF
+      ENDIF      
+      RETURN
+*
+  200 FORMAT(/25H FPSPH: VALUES OF VECTOR ,A,9H IN GROUP,I5,4H ARE/
+     > (1X,1P,10E13.5))
+  210 FORMAT(/18H DEL-STATE OPTIONS/18H -----------------/
+     1 7H NGRP  ,I8,28H   (NUMBER OF ENERGY GROUPS)/
+     2 7H NMIX  ,I8,32H   (NUMBER OF MATERIAL MIXTURES)/
+     3 7H ITYPE ,I8,13H   (NOT USED)/
+     4 7H IDELTA,I8,34H   (=3/4: USE PN-TYPE/USE SN-TYPE)/
+     5 7H NGR1  ,I8,24H   (MINIMUM GROUP INDEX)/
+     6 7H NGR2  ,I8,24H   (MAXIMUM GROUP INDEX))
+  220 FORMAT(/39H FPSPH: CONVERGENCE OF SPH ALGORITHM IN,I5,
+     > 12H ITERATIONS.)
+  230 FORMAT(/13H FPSPH: ITER=,I3,4X,6HERROR=,1P,E10.3,1X,5HERR2=,
+     > E10.3)
+      END

@@ -1,0 +1,49 @@
+\subsection{Assert procedures}\label{sect:assert}
+
+These two procedures are used in  {\sl non-regression testcases}\index{non-regression testcases}
+to ensure that existing capabilities of Dragon are not lost with subsequent
+updates of the code. Procedure {\tt assertS} is used to assert a single real value taken
+from record {\tt KEY} of a LCM {\sl associative table}. Its calling
+specification is
+
+\begin{DataStructure}{Structure \dusa{assertS}}
+\moc{assertS} \dusa{LCMNAM} \moc{::} \dusa{KEY} \dusa{ipos} \dusa{value} \moc{;} 
+\end{DataStructure}
+\noindent where 
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\dusa{LCMNAM}] {\tt character*12} name of the LCM data structure.
+
+\item[\dusa{KEY}] {\tt character*12} name of the real array we want to assert.
+
+\item[\dusa{ipos}] integer index of the component in the real array we want to assert.
+
+\item[\dusa{values}] real reference value of the \dusa{ipos}--th component.
+
+\end{ListeDeDescription}
+
+Procedure {\tt assertV} is used to assert a single real value taken from an heterogeneous list
+(named {\tt KEY}) where each component is a real array. Its calling
+specification is
+
+\begin{DataStructure}{Structure \dusa{assertV}}
+\moc{assertV} \dusa{LCMNAM} \moc{::} \dusa{KEY} \dusa{iset} \dusa{ipos} \dusa{value} \moc{;} 
+\end{DataStructure}
+\noindent where 
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\dusa{LCMNAM}] {\tt character*12} name of the LCM data structure.
+
+\item[\dusa{KEY}] {\tt character*12} name of the heterogeneous list we want to assert.
+
+\item[\dusa{ipos}] integer index of the component in the heterogeneous list
+
+\item[\dusa{ipos}] integer index of the component in the real array we want to assert.
+
+\item[\dusa{values}] real reference value of the \dusa{ipos}--th component.
+
+\end{ListeDeDescription}
+
+\listing{assertS.c2m}
+
+\listing{assertV.c2m}

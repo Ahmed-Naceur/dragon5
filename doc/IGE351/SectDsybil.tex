@@ -1,0 +1,332 @@
+\subsection{The \moc{sybilt} dependent records and sub-directories on a
+\dir{tracking} directory}\label{sect:sybiltrackingdir}
+
+When the \moc{SYBILT:} operator is used ($\mathsf{CDOOR}$={\tt 'SYBIL'}), the following elements in the vector
+$\mathcal{S}^{t}_{i}$ will also be defined.
+
+\begin{itemize}
+\item The main SYBIL model $\mathcal{S}^{t}_{6}$
+
+\begin{displaymath}
+\mathcal{S}^{t}_{6} = \left\{
+\begin{array}{rl}
+ 2 & \textrm{Pure geometry} \\
+ 3 & \textrm{Do-it-yourself geometry} \\
+ 4 & \textrm{2-D assembly geometry} \\
+\end{array} \right.
+\end{displaymath}
+
+\item Minimum space required to store tracks for assembly geometry $\mathcal{S}^{t}_{7}$ 
+
+\item Minimum space required to store interface currents for assembly geometry $\mathcal{S}^{t}_{8}$ 
+
+\item Number of additional unknowns holding the interface currents
+$\mathcal{S}^{t}_{9}$. These unknowns are used if and only if a current--based
+inner iterative method is set (with option \moc{ARM}).
+
+\end{itemize}
+
+The following sub-directories will also be present on the main level of a \dir{tracking}
+directory. 
+
+\begin{DescriptionEnregistrement}{The \moc{sybilt} records and sub-directories in
+\dir{tracking}}{8.0cm}\label{table:puregeom}
+\RealEnr
+  {EPSJ\blank{8}}{$1$}{$1$}
+  {Stopping criterion for flux-current iterations of the interface current method}
+\OptDirEnr
+  {PURE-GEOM\blank{3}}{$\mathcal{S}^{t}_{6}=2$}
+  {Sub-directory containing the data related to a pure geometry} 
+\OptDirEnr
+  {DOITYOURSELF}{$\mathcal{S}^{t}_{6}=3$}
+  {Sub-directory containing the data related to a do-it-yourself geometry} 
+\OptDirEnr
+  {EURYDICE\blank{4}}{$\mathcal{S}^{t}_{6}=4$}
+  {Sub-directory containing the data related to an assembly geometry} 
+\end{DescriptionEnregistrement}
+
+\vskip -0.4cm
+\noindent
+where the sub-directories in Table~\ref{table:puregeom} are described in the following subsections.
+
+\subsubsection{The \moc{/PURE-GEOM/} sub-directory in \moc{sybilt}}\label{sect:puregeomtrackingdir}
+
+\begin{DescriptionEnregistrement}{The contents of the \moc{sybilt}
+\moc{/PURE-GEOM/} sub-directory}{8.0cm}
+\IntEnr
+  {PARAM\blank{7}}{$6$}
+  {Record containing the parameters for a SYBIL tracking on a pure geometry $\mathcal{P}_{i}$}
+\IntEnr
+  {NCODE\blank{7}}{$6$}
+  {Record containing the types of boundary conditions on each surface $N_{\beta,j}$}
+\RealEnr
+  {ZCODE\blank{7}}{$6$}{$1$}
+  {Record containing the albedo value on each surface}
+\OptRealEnr
+  {XXX\blank{9}}{$\mathcal{P}_{4}+1$}{$\mathcal{P}_{4}\ge 1$}{cm}
+  {$x-$directed mesh coordinates after mesh-splitting for type
+   2, 5 and 7 geometries. Region-ordered radius after mesh-splitting for type 3 and 6
+   geometries}
+\OptRealEnr
+  {YYY\blank{9}}{$\mathcal{P}_{5}+1$}{$\mathcal{P}_{5}\ge 1$}{cm}
+  {$y-$directed mesh coordinates after mesh-splitting for type 5, 6 and 7 geometries}
+\OptRealEnr
+  {ZZZ\blank{9}}{$\mathcal{P}_{6}+1$}{$\mathcal{P}_{6}\ge 1$}{cm}
+  {$z-$directed mesh coordinates after mesh-splitting for type 7 and 9 geometries}
+\OptRealEnr
+  {SIDE\blank{8}}{$1$}{$\mathcal{P}_{1}\ge 8$}{cm}
+  {Side of a hexagon for type 8 and 9 geometries}
+\end{DescriptionEnregistrement}
+
+\vskip -0.2cm
+\noindent
+with the dimension parameter $\mathcal{P}_{i}$, representing:
+
+\begin{itemize}
+\item The type of geometry $\mathcal{P}_{1}$
+\begin{displaymath}
+\mathcal{P}_{1} = \left\{
+\begin{array}{rl}
+ 2 & \textrm{Cartesian 1-D geometry} \\ 
+ 3 & \textrm{Tube 1-D geometry}  \\
+ 4 & \textrm{Spherical 1-D geometry}  \\
+ 5 & \textrm{Cartesian 2-D geometry}  \\
+ 6 & \textrm{Tube 2-D geometry}  \\
+ 7 & \textrm{Cartesian 3-D geometry}  \\
+ 8 & \textrm{Hexagonal 2-D geometry}   \\
+ 9 & \textrm{Hexagonal 3-D geometry}  \\
+\end{array} \right.
+\end{displaymath}
+
+\item The type of hexagonal symmetry $\beta_{h}=\mathcal{P}_{2}$
+\begin{displaymath}
+\beta_{h} = \left\{
+\begin{array}{rl}
+ 1 & \textrm{S30} \\
+ 2 & \textrm{SA60} \\
+ 3 & \textrm{SB60} \\
+ 4 & \textrm{S90} \\
+ 5 & \textrm{R120} \\
+ 6 & \textrm{R180} \\
+ 7 & \textrm{SA180} \\
+ 8 & \textrm{SB180} \\
+ 9 & \textrm{COMPLETE} \\
+\end{array} \right.
+\end{displaymath}
+
+\item The quadrature parameter $\mathcal{P}_{3}$
+
+\item The number of $x-$directed or radial mesh intervals in the geometry $\mathcal{P}_{4}$
+
+\item The number of $y-$directed mesh intervals in the geometry $\mathcal{P}_{5}$
+
+\item The number of $z-$directed mesh intervals in the geometry $\mathcal{P}_{6}$
+
+\end{itemize}
+
+The type of boundary conditions used will be defined in the following way
+\begin{displaymath}
+N_{\beta,j} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{Not used} \\
+ 1 & \textrm{Void boundary condition} \\
+ 2 & \textrm{Reflection boundary condition} \\
+ 3 & \textrm{Diagonal reflection boundary condition} \\
+ 4 & \textrm{Translation boundary condition condition} \\
+ 5 & \textrm{Symmetric reflection boundary condition} \\
+ 6 & \textrm{Albedo boundary condition} \\
+\end{array} \right.
+\end{displaymath}
+
+\subsubsection{The \moc{/DOITYOURSELF/} sub-directory in \moc{sybilt}}\label{sect:doittrackingdir}
+
+\vskip -0.9cm
+
+\begin{DescriptionEnregistrement}{The contents of the \moc{sybilt}
+\moc{/DOITYOURSELF/} sub-directory}{8.0cm}
+\IntEnr
+  {PARAM\blank{7}}{$3$}
+  {Record containing the parameters for a SYBIL tracking on a do-it-yourself geometry
+   $\mathcal{P}_{i}$} 
+\IntEnr
+  {NMC\blank{9}}{$M+1$}
+  {Offset of the first region in each cell}
+\RealEnr
+  {RAYRE\blank{7}}{$N_r+M$}{cm}
+  {Radius of the tubes in each cell}
+\RealEnr
+  {PROCEL\blank{6}}{$M,M$}{}
+  {Geometric matrix}
+\RealEnr
+  {POURCE\blank{6}}{$M$}{}
+  {Weight assigned to each cell}
+\RealEnr
+  {SURFA\blank{7}}{$M$}{cm$^{2}$}
+  {Surface of each cell }
+\end{DescriptionEnregistrement}
+\noindent
+with the dimension parameter $\mathcal{P}_{i}$, representing:
+
+\begin{itemize}
+\item The number of cells $\mathcal{P}_{1}=M$
+
+\item The quadrature parameter $\mathcal{P}_{2}$
+
+\item The statistical option $\mathcal{P}_{3}$
+\begin{displaymath}
+\mathcal{P}_{3} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{the statistical approximation is not used. Record {\tt 'PROCEL'} is used.} \\
+ 1 & \textrm{use the statistical approximation. Record {\tt 'PROCEL'} is not used.}
+\end{array} \right.
+\end{displaymath}
+
+\end{itemize}
+
+\clearpage
+
+\subsubsection{The \moc{/EURYDICE/} sub-directory in \moc{sybilt}}\label{sect:eurydicetrackingdir}
+
+\vskip -0.9cm
+
+\begin{DescriptionEnregistrement}{The contents of the \moc{sybilt}
+\moc{/EURYDICE/} sub-directory}{8.0cm}
+\IntEnr
+  {PARAM\blank{7}}{$16$}
+{Record containing the parameters for a SYBIL tracking on an assembly geometry
+   $\mathcal{P}_{i}$}
+\RealEnr
+  {XX\blank{10}}{$\mathcal{P}_{6}$}{cm}
+  {$x-$thickness of the generating cells}
+\RealEnr
+  {YY\blank{10}}{$\mathcal{P}_{6}$}{cm}
+  {$y-$thickness of the generating cells}
+\IntEnr
+  {LSECT\blank{7}}{$\mathcal{P}_{6}$}
+  {Type of sectorization for each each generating cell. Equal to zero for
+   non-sectorized cells. Allowed values are defined as $F_{\mathrm{sec}}$ in \Sect{geometrydirmain}}
+\IntEnr
+  {NMC\blank{9}}{$\mathcal{P}_{6}+1$}
+  {Offset of the first region index in each generating cell}
+\IntEnr
+  {NMCR\blank{8}}{$\mathcal{P}_{6}+1$}
+  {Offset of the first radius index in each generating cell. Equal to
+   {\tt NMC}, unless the cell is sectorized.}
+\RealEnr
+  {RAYRE\blank{7}}{$M_r$}{cm}
+  {Radius of the tubes in each generating cell. $M_r=${\tt NMCR(}$\mathcal{P}_{6}+1${\tt )}}
+\IntEnr
+  {MAIL\blank{8}}{$2,\mathcal{P}_{6}$}
+  {Offsets of the first tracking information in each generating cell. {\tt
+   MAIL(1,:)} contains offsets for the integer array {\tt ZMAILI}; {\tt
+   MAIL(2,:)} contains offsets for the real array {\tt ZMAILR}.}
+\IntEnr
+  {ZMAILI\blank{6}}{$\mathcal{P}_{15}$}
+  {The integer tracking information}
+\RealEnr
+  {ZMAILR\blank{6}}{$\mathcal{P}_{16}$}{cm}
+  {The tracking lengths}
+\IntEnr
+  {IFR\blank{9}}{$\mathcal{P}_{4},\mathcal{P}_{14}$}
+  {Index numbers of incoming currents}
+\RealEnr
+  {ALB\blank{9}}{$\mathcal{P}_{4},\mathcal{P}_{14}$}{}
+  {Albedo or transmission factors corresponding to incoming currents}
+\IntEnr
+  {INUM\blank{8}}{$\mathcal{P}_{4}$}
+  {Index  number of the merge cell associated to each cell of the assembly}
+\IntEnr
+  {MIX\blank{9}}{$\mathcal{P}_{5},\mathcal{P}_{14}$}
+  {Index  numbers of outgoing currents}
+\RealEnr
+  {DVX\blank{9}}{$\mathcal{P}_{5},\mathcal{P}_{14}$}{}
+  {Weights corresponding to outgoing currents}
+\IntEnr
+  {IGEN\blank{8}}{$\mathcal{P}_{5}$}
+  {Index number of the generating cell associated to each merged cell}
+\end{DescriptionEnregistrement}
+
+\noindent
+with the dimension parameter $\mathcal{P}_{i}$, representing:
+
+\begin{itemize}
+
+\item The type of hexagonal symmetry $\mathcal{P}_{1}$
+\begin{displaymath}
+\mathcal{P}_{1} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{Cartesian assembly} \\
+ 1 & \textrm{S30} \\
+ 2 & \textrm{SA60} \\
+ 3 & \textrm{SB60} \\
+ 4 & \textrm{S90} \\
+ 5 & \textrm{R120} \\
+ 6 & \textrm{R180} \\
+ 7 & \textrm{SA180} \\
+ 8 & \textrm{SB180} \\
+ 9 & \textrm{COMPLETE} \\
+\end{array} \right.
+\end{displaymath}
+
+\item The type of multicell approximation $\mathcal{P}_{2}$
+\begin{displaymath}
+\mathcal{P}_{2} = \left\{
+\begin{array}{ll}
+1 & \textrm{Roth approximation}\\
+2 & \textrm{Roth$\times 4$ or Roth$\times 6$ approximation}\\
+3 & \textrm{DP-0 approximation}\\
+4 & \textrm{DP-1 approximation} \end{array} \right.
+\end{displaymath}
+
+\item The type of cylinderization $\mathcal{P}_{3}$
+\begin{displaymath}
+\mathcal{P}_{3} = \left\{
+\begin{array}{ll}
+1 & \textrm{Askew cylinderization}\\
+2 & \textrm{Wigner cylinderization}\\
+3 & \textrm{Sanchez cylinderization} \end{array} \right.
+\end{displaymath}
+
+\item The total number of cells $\mathcal{P}_{4}$
+
+\item The number of merged cells $\mathcal{P}_{5}$
+
+\item The number of generating cells $\mathcal{P}_{6}$
+
+\item The number of distinct interface currents $\mathcal{P}_{7}$
+
+\item The number of angles for 2-D quadrature $\mathcal{P}_{8}$
+
+\item The number of segments for 2-D quadrature $\mathcal{P}_{9}$
+
+\item The number of segments for homogeneous 2-D cells $\mathcal{P}_{10}$
+
+\item The number of segments for 1-D cells $\mathcal{P}_{11}$
+
+\item The track normalization option $\mathcal{P}_{12}$
+\begin{displaymath}
+\mathcal{P}_{12} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{Normalize the tracks} \\
+ 1 & \textrm{Do not normalize the tracks} \\
+\end{array} \right.
+\end{displaymath}
+
+\item The type of quadrature in angle and space $\mathcal{P}_{13}$
+\begin{displaymath}
+\mathcal{P}_{13} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{Gauss quadrature} \\
+ 1 & \textrm{Equal weight quadrature} \\
+\end{array} \right.
+\end{displaymath}
+
+\item The number of outgoing interface currents per cell $\mathcal{P}_{14}$
+
+\item The number of integer array elements in the tracking arrays $\mathcal{P}_{15}$
+
+\item The number of real array elements in the tracking arrays $\mathcal{P}_{16}$
+
+\end{itemize}
+
+\eject

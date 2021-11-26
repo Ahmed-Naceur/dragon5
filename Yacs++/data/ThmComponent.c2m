@@ -1,0 +1,51 @@
+****************************************************************
+*                                                              *
+* Procedure :  ThmComponent.c2m                                *
+* Purpose   :  Thermo-hydraulics component                     *
+* Author    :  A. Hebert                                       *
+*                                                              *
+* CALL      :                                                  *
+*  Fmap Thm := ThmComponent Fmap Thm                           *
+*    :: <<iter>> <<densB>> >>CONV<< ;                          *
+*                                                              *
+****************************************************************
+PARAMETER  Fmap Thm ::
+  ::: LINKED_LIST Fmap Thm ; ;
+MODULE THM: GREP: END: ;
+INTEGER iter ;
+ :: >>iter<< ;
+REAL densB ;
+ :: >>densB<< ;
+
+REAL erra1 ;
+LOGICAL CONV ;
+
+IF iter 1 = THEN
+  Thm Fmap := THM: Fmap ::
+    EDIT 2
+    TIME 0.0 (* s *)
+    CONV 50 50 50 0.5 1.0E-3
+    CRITFL 1.80E+6 (* W/m^2 *)
+    ASSMB 264 25
+    CWSECT 3.86 (* m^2 *) 67398.0 (* m^3/hr *)
+    INLET 15500000.0 (* Pa *) 560.95 (* K *)
+    RADIUS 0.4095E-2 0.418E-2 0.475E-2 0.6025E-2 (* m *)
+    SET-PARAM 'C-BORE' <<densB>>
+    RODMESH 5 10
+    CONV 50 50 50 1.0 1.0E-4
+    RELAX 0.5
+  ;
+ELSE
+  Thm Fmap := THM: Thm Fmap ;
+ENDIF ;
+*--
+* Convergence test
+*--
+GREP: Thm :: GETVAL 'ERROR-T-FUEL' 1  >>erra1<< ;
+ECHO "error on fuel temperature at iteration" iter "=" erra1 ;
+EVALUATE CONV := erra1 1.0 < iter 50 > + ;
+ECHO "at iter=" iter "erra1=" erra1 " CONV=" CONV ;
+ECHO "-------------------------------" ;
+ :: <<CONV>> ;
+
+END: ;

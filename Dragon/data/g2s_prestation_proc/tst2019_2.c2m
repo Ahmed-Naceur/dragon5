@@ -1,0 +1,59 @@
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST TRACKM GEOM ; 
+SEQ_BINARY TRKFILM ;
+MODULE GEO: G2S: SALT: TLM: END: ;
+SEQ_ASCII Fil_SAL_fl  :: FILE './Fil_syme_fl.ps' ;
+SEQ_ASCII Fil_SAL.tdt :: FILE './Fil_syme.tdt'  ;
+SEQ_ASCII Lines.m    :: FILE './Lines_syme.m' ;
+
+REAL side rfuel rclad := 1.63600 0.51500 0.60300 ;
+REAL densur := 10.0 ;
+INTEGER an2d := 6 ;
+
+GEOM := GEO: :: CAR2D 9 5 
+  EDIT 0
+  X- VOID     X+ VOID
+  Y- SYME     Y+ VOID
+  CELL
+  C1 C1 C1 C2 C2 C2 C1 C1 C1
+  C0 C1 C1 C2 C2 C2 C1 C1 C0
+  C0 C0 C1 C1 C1 C1 C1 C0 C0
+  C0 C0 C1 C1 C1 C1 C1 C0 C0
+  C0 C0 C0 C1 C1 C1 C0 C0 C0
+  ::: C2 := GEO: CARCEL 2 1 1 
+         MESHX 0.0 <<side>>
+         MESHY 0.0 <<side>>
+         RADIUS 0.0 <<rfuel>> <<rclad>> 
+         MIX  1 2 3
+  ;
+  ::: C1 := GEO: CAR2D 1 1
+         MESHX 0.0 <<side>>
+         MESHY 0.0 <<side>>
+         MIX  4 
+  ;
+  ::: C0 := GEO: CAR2D 1 1
+         MESHX 0.0 <<side>>
+         MESHY 0.0 <<side>>
+         MIX  0 
+  ;
+  ;  
+
+Fil_SAL.tdt Fil_SAL_fl := G2S: GEOM
+  ;
+
+TRACKM TRKFILM := SALT: Fil_SAL.tdt ::
+  EDIT 2
+  TISO <<an2d>> <<densur>> REND LONG
+  TITLE 'TRACKING FOR TISO'
+  ;
+
+Lines.m := TLM: TRACKM TRKFILM ::
+  EDIT 1
+  MIXTURE
+  NTPO 1
+  DIRECTIONS NoPause DIR 0
+  ;
+ECHO "test tst2019_2 completed" ;
+END: ;

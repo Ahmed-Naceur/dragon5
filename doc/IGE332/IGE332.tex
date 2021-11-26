@@ -1,0 +1,36 @@
+\def\opcite#1{\textsuperscript{\cite{#1}}}
+\documentclass{report}
+%
+%  Black and white
+%
+\usepackage{IGNrapport,GuideBW}
+\usepackage{makeidx}
+\setlength{\textheight}{22.5cm}
+\topmargin -0.5cm
+
+\makeindex
+\begin{document}
+
+\title{THE GANLIB5 KERNEL GUIDE \\(64--BIT CLEAN VERSION)}
+
+\author{A.~H\'ebert and R.~Roy}
+
+\date{\today}
+
+\RapportIGN{IGE--332}
+
+\GuideVersion{5.00}
+
+\tableofcontents
+
+\Debutdutexte
+
+\input{chapter1.tex}
+\clearpage
+\phantomsection
+\input{Bibliography.tex}
+\clearpage
+\phantomsection
+\printindex
+
+\end{document}

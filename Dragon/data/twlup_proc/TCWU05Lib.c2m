@@ -1,0 +1,62 @@
+*----
+*  Procedure TCWU05Lib
+*  Create Library for test CASE TCWU05
+*  Calling :
+*      LIBRARY := TCWU05Lib :: iedit ;
+*  with :
+*      LIBRARY = Linked list containing the result of LIB: for
+*                TCWU05
+*      iprint  = print level for LIB: module
+*----
+*  Define PARAMETERS,STRUCTURES and MODULES used
+*----
+PARAMETER  LIBRARY  ::  ::: LINKED_LIST LIBRARY ; ;
+MODULE     LIB: END: ;
+*----
+*  Define and read LIB: EDIT option
+INTEGER iedit   ;
+:: >>iedit<<    ;
+*----
+*  Depletion data from file iaea format WIMSD4
+*  Microscopic cross sections from file iaea format WIMSD4
+*----
+LIBRARY := LIB: ::
+  EDIT <<iedit>>
+  NMIX 17 CTRA WIMS
+  DEPL LIB: WIMSD4 FIL: iaea
+  MIXS LIB: WIMSD4 FIL: iaea
+  MIX  1  560.66   0.81212           O16      = '6016'   7.99449E-1
+    D2D2O    = '3002'   1.99768E-1   H1H2O    = '3001'   7.83774E-4
+  MIX  2  560.66   6.57              Nb93     = '93'     2.50000
+    BNat     = '1011'   2.10000E-4
+    Zr91     = '91'     9.75000E+1
+  MIX  3  345.66   0.0014            He4      = '4'      1.00000E+2
+  MIX  4  345.66   6.44              Fe56     = '2056'   1.60000E-1
+    Ni58     = '58'     6.00000E-2   Cr52     = '52'     1.10000E-1
+    BNat     = '1011'   3.10000E-4
+    Zr91     = '91'     9.97100E+1
+  MIX  5  345.66   1.082885          O16      = '6016'   7.98895E-1
+    D2D2O    = '3002'   2.01016E-1   H1H2O    = '3001'   8.96000E-5
+  MIX  6  941.29  10.4375010         O16      = '6016'   1.18473E+1
+    Xe135    = '4135'   0.0
+    U235     = '2235'   6.27118E-1 1 
+    U238     = '8238'   8.75256E+1 1 
+    U236     = '236'    0.0        1
+    Pu239    = '6239'   0.0        1 
+  MIX  7  COMB 6 1.0
+  MIX  8  COMB 6 1.0
+  MIX  9  COMB 6 1.0
+  MIX 10   560.66   6.44             Fe56     = '2056'   1.60000E-1
+    Ni58     = '58'     6.00000E-2   Cr52     = '52'     1.10000E-1
+    BNat     = '1011'   3.10000E-4
+    Zr91     = '91'     9.97100E+1
+  MIX 11  COMB 10 1.0
+  MIX 12  COMB 10 1.0
+  MIX 13  COMB 10 1.0
+  MIX 14 COMB  1 1.0
+  MIX 15 COMB  1 1.0
+  MIX 16 COMB  1 1.0
+  MIX 17 COMB  1 1.0
+  ;
+END: ;  
+QUIT "LIST" .

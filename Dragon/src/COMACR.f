@@ -1,0 +1,264 @@
+*DECK COMACR
+      SUBROUTINE COMACR(IPEDIT,IMPX,IPCPO,NG,NMIL,NED,NL,NF,NDEL,NW,
+     1 IMIL,FNORM,NSPH,EIGENK,EIGINF,B2,VOLUME,ENER,DELT,HVECT,ZLAMB)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Transform a Macrolib in IPEDIT format into a Microlib with IPCPO
+* format.
+*
+*Copyright:
+* Copyright (C) 2007 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): A. Hebert
+*
+*Parameters: input
+* IPEDIT  pointer to the edition object (L_EDIT signature).
+* IMPX    print parameter.
+* IPCPO   pointer to the multicompo isotope directory.
+* NG      number of energy groups.
+* NMIL    number of homogenized mixtures.
+* NED     number of extra edits.
+* NL      number of Legendre orders.
+* NF      number of fissile isotopes.
+* NDEL    number of precursor groups.
+* NW      type of weighting for P1 cross section info (=0: P0 ; =1: P1).
+* IMIL    homogenized mixture index we want to recover.
+* FNORM   flux normalization factor.
+* NSPH    flag for SPH content (=0 no SPH, =1 NSPH included in COMPO).
+*
+*Parameters: output
+* EIGENK  effective multiplication factor.
+* EIGINF  infinite multiplication factor.
+* B2      buckling.
+* VOLUME  volume of homogenized mixture IMIL.
+* ENER    energy limits.
+* DELT    lethargy increments.
+* HVECT   additional edit names.
+* ZLAMB   delayed precursor decay constants.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      TYPE(C_PTR) IPEDIT,IPCPO
+      INTEGER IMPX,NG,NMIL,NED,NL,NDEL,NW,IMIL,NSPH,HVECT(2,NED+1),NF
+      REAL FNORM,EIGENK,EIGINF,B2,VOLUME,ENER(NG+1),DELT(NG),
+     1 ZLAMB(NDEL)
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER (NSTATE=40)
+      TYPE(C_PTR) JPEDIT,KPEDIT
+      INTEGER IPAR(NSTATE)
+      CHARACTER TEXT8*8,TEXT12*12,CM*2
+      LOGICAL LHF
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: IJJ,NJJ,IPOS,ITYPR
+      REAL, ALLOCATABLE, DIMENSION(:) :: GAR3
+      REAL, ALLOCATABLE, DIMENSION(:,:) :: GAR1
+      REAL, ALLOCATABLE, DIMENSION(:,:,:) :: GAR2
+*----
+*  SCRATCH STORAGE ALLOCATION
+*----
+      ALLOCATE(IJJ(NMIL),NJJ(NMIL),IPOS(NMIL),ITYPR(NL))
+      ALLOCATE(GAR1(NG,10+2*NW+2*NDEL+NED+NL),GAR2(NG,NG,NL),
+     1 GAR3(NMIL*NG))
+*
+      CALL LCMGET(IPEDIT,'STATE-VECTOR',IPAR)
+      IF(NG.NE.IPAR(1)) THEN
+         CALL XABORT('COMACR: INVALID NUMBER OF GROUPS IN MACROLIB.')
+      ELSE IF(NMIL.NE.IPAR(2)) THEN
+         CALL XABORT('COMACR: INVALID NUMBER OF MIXTURES IN MACROLIB.')
+      ELSE IF(NL.NE.IPAR(3)) THEN
+         CALL XABORT('COMACR: INVALID NUMBER OF MIXTURES IN MACROLIB.')
+      ELSE IF(NF.GT.1) THEN
+         CALL XABORT('COMACR: MULTIPLE FISSION SPECTRA NOT SUPPORTED.')
+      ELSE IF(NED.NE.IPAR(5)) THEN
+         CALL XABORT('COMACR: INVALID NUMBER OF EDITS IN MACROLIB.')
+      ELSE IF(NDEL.NE.IPAR(7)) THEN
+         CALL XABORT('COMACR: INVALID NUMBER OF PRECURSOR GROUPS IN MA'
+     1   //'CROLIB.')
+      ELSE IF(NW.NE.IPAR(10)) THEN
+         CALL XABORT('COMACR: INVALID P1 WEIGHTING IN MACROLIB.')
+      ENDIF
+      NLEAK=IPAR(9)
+      LHF=.FALSE.
+      IF(NF.GT.0) THEN
+         CALL LCMGET(IPEDIT,'K-EFFECTIVE',EIGENK)
+      ELSE
+         EIGENK=0.0
+      ENDIF
+      CALL LCMLEN(IPEDIT,'K-INFINITY',LENGT,ITYLCM)
+      IF(LENGT.EQ.1) THEN
+         CALL LCMGET(IPEDIT,'K-INFINITY',EIGINF)
+      ELSE
+         EIGINF=EIGENK
+      ENDIF
+      CALL LCMLEN(IPEDIT,'B2  B1HOM',LENGT,ITYLCM)
+      IF(LENGT.EQ.1) THEN
+         CALL LCMGET(IPEDIT,'B2  B1HOM',B2)
+      ELSE
+         B2=0.0
+      ENDIF
+      CALL LCMGET(IPEDIT,'ENERGY',ENER)
+      CALL LCMLEN(IPEDIT,'DELTAU',LENGT,ITYLCM)
+      IF(LENGT.EQ.NG) THEN
+         CALL LCMGET(IPEDIT,'DELTAU',DELT)
+      ELSE IF(LENGT.EQ.0) THEN
+         IF(ENER(NG+1).EQ.0.0) ENER(NG+1)=1.0E-5
+         DO 10 J=1,NG
+         DELT(J)=LOG(ENER(J)/ENER(J+1))
+   10    CONTINUE
+      ENDIF
+      IF(NED.GT.0) CALL LCMGET(IPEDIT,'ADDXSNAME-P0',HVECT)
+      IF(NDEL.GT.0) CALL LCMGET(IPEDIT,'LAMBDA-D',ZLAMB)
+      IF(NSPH.EQ.1) THEN
+        TEXT8='NSPH    '
+        READ(TEXT8,'(2A4)') HVECT(1,NED+1),HVECT(2,NED+1)
+      ENDIF
+      CALL LCMGET(IPEDIT,'VOLUME',GAR3)
+      VOLUME=GAR3(IMIL)
+      JPEDIT=LCMGID(IPEDIT,'GROUP')
+      CALL XDRSET(GAR2,NG*NG*NL,0.0)
+      DO 125 IG=1,NG
+      KPEDIT=LCMGIL(JPEDIT,IG)
+      CALL LCMGET(KPEDIT,'FLUX-INTG',GAR3)
+      GAR1(IG,1)=FNORM*GAR3(IMIL)/VOLUME
+      DO 20 IW=2,MIN(NW+1,10)
+         WRITE(TEXT12,'(11HFLUX-INTG-P,I1)') IW-1
+         CALL LCMLEN(KPEDIT,TEXT12,LENGTH,ITYLCM)
+         IF(LENGTH.EQ.NMIL) THEN
+           CALL LCMGET(KPEDIT,TEXT12,GAR3)
+         ELSE
+           CALL LCMGET(KPEDIT,'FLUX-INTG',GAR3)
+         ENDIF
+         GAR1(IG,IW)=FNORM*GAR3(IMIL)/VOLUME
+   20 CONTINUE
+      DO 30 IW=1,MIN(NW+1,10)
+         WRITE(TEXT12,'(4HNTOT,I1)') IW-1
+         CALL LCMLEN(KPEDIT,TEXT12,LENGTH,ITYLCM)
+         IF(LENGTH.EQ.NMIL) THEN
+           CALL LCMGET(KPEDIT,TEXT12,GAR3)
+         ELSE
+           CALL LCMGET(KPEDIT,'NTOT0',GAR3)
+         ENDIF
+         GAR1(IG,1+NW+IW)=GAR3(IMIL)
+   30 CONTINUE
+      CALL LCMGET(KPEDIT,'OVERV',GAR3)
+      GAR1(IG,3+2*NW)=GAR3(IMIL)
+      IF(NLEAK.EQ.1) THEN
+         CALL LCMGET(KPEDIT,'DIFF',GAR3)
+         GAR1(IG,4+2*NW)=1.0/(3.0*GAR3(IMIL))
+      ELSE IF(NLEAK.EQ.2) THEN
+         CALL LCMGET(KPEDIT,'DIFFX',GAR3)
+         GAR1(IG,4+2*NW)=1.0/(3.0*GAR3(IMIL))
+         CALL LCMGET(KPEDIT,'DIFFY',GAR3)
+         GAR1(IG,5+2*NW)=1.0/(3.0*GAR3(IMIL))
+         CALL LCMGET(KPEDIT,'DIFFZ',GAR3)
+         GAR1(IG,6+2*NW)=1.0/(3.0*GAR3(IMIL))
+      ENDIF
+      IF(NF.EQ.1) THEN
+         CALL LCMGET(KPEDIT,'NUSIGF',GAR3)
+         GAR1(IG,7+2*NW)=GAR3(IMIL)
+         CALL LCMGET(KPEDIT,'CHI',GAR3)
+         GAR1(IG,8+2*NW)=GAR3(IMIL)
+      ENDIF
+      CALL LCMLEN(KPEDIT,'H-FACTOR',LENGTH,ITYLCM)
+      IF(LENGTH.EQ.NMIL) THEN
+         LHF=.TRUE.
+         CALL LCMGET(KPEDIT,'H-FACTOR',GAR3)
+         GAR1(IG,9+2*NW)=GAR3(IMIL)
+      ELSE
+         GAR1(IG,9+2*NW)=0.0
+      ENDIF
+      DO 90 IDEL=1,NDEL
+      IF(NF.EQ.1) THEN
+         WRITE(TEXT12,'(6HNUSIGF,I2.2)') IDEL
+         CALL LCMGET(KPEDIT,TEXT12,GAR3)
+         GAR1(IG,9+2*NW+2*(IDEL-1)+1)=GAR3(IMIL)
+         WRITE(TEXT12,'(3HCHI,I2.2)') IDEL
+         CALL LCMGET(KPEDIT,TEXT12,GAR3)
+         GAR1(IG,9+2*NW+2*(IDEL-1)+2)=GAR3(IMIL)
+      ENDIF
+   90 CONTINUE
+      DO 100 IED=1,NED
+      WRITE(TEXT8,'(2A4)') HVECT(1,IED),HVECT(2,IED)
+      CALL LCMLEN(KPEDIT,TEXT8,LENGT,ITYLCM)
+      IF(LENGT.GT.0) THEN
+        CALL LCMGET(KPEDIT,TEXT8,GAR3)
+        GAR1(IG,9+2*NW+2*NDEL+IED)=GAR3(IMIL)
+      ENDIF
+  100 CONTINUE
+      DO 120 IL=1,NL
+      WRITE(CM,'(I2.2)') IL-1
+      LENGTH=1
+      IF(IL.GT.1) CALL LCMLEN(KPEDIT,'SCAT'//CM,LENGTH,ITYLCM)
+      IF(LENGTH.GT.0) THEN
+         CALL LCMGET(KPEDIT,'SIGS'//CM,GAR3)
+         GAR1(IG,9+2*NW+2*NDEL+NED+IL)=GAR3(IMIL)
+         CALL LCMGET(KPEDIT,'SCAT'//CM,GAR3)
+         CALL LCMGET(KPEDIT,'NJJS'//CM,NJJ)
+         CALL LCMGET(KPEDIT,'IJJS'//CM,IJJ)
+         CALL LCMGET(KPEDIT,'IPOS'//CM,IPOS)
+         IPOSDE=IPOS(IMIL)
+         DO 110 JG=IJJ(IMIL),IJJ(IMIL)-NJJ(IMIL)+1,-1
+         GAR2(IG,JG,IL)=GAR3(IPOSDE)
+         IPOSDE=IPOSDE+1
+  110    CONTINUE
+      ENDIF
+      IF(NSPH.EQ.1) THEN
+        CALL LCMGET(KPEDIT,'NSPH',GAR3)
+        GAR1(IG,9+2*NW+2*NDEL+NED+NL+1)=GAR3(IMIL)
+      ENDIF
+  120 CONTINUE
+  125 CONTINUE
+      DO 130 IW=1,MIN(NW+1,10)
+         WRITE(TEXT12,'(3HNWT,I1)') IW-1
+         CALL LCMPUT(IPCPO,TEXT12,NG,2,GAR1(1,IW))
+         WRITE(TEXT12,'(4HNTOT,I1)') IW-1
+         CALL LCMPUT(IPCPO,TEXT12,NG,2,GAR1(1,1+NW+IW))
+  130 CONTINUE
+      CALL LCMPUT(IPCPO,'OVERV',NG,2,GAR1(1,3+2*NW))
+      IF(NLEAK.EQ.1) THEN
+         CALL LCMPUT(IPCPO,'STRD',NG,2,GAR1(1,4+2*NW))
+      ELSE IF(NLEAK.EQ.2) THEN
+         CALL LCMPUT(IPCPO,'STRD-X',NG,2,GAR1(1,4+2*NW))
+         CALL LCMPUT(IPCPO,'STRD-Y',NG,2,GAR1(1,5+2*NW))
+         CALL LCMPUT(IPCPO,'STRD-Z',NG,2,GAR1(1,6+2*NW))
+      ENDIF
+      IF(NF.EQ.1) THEN
+         CALL LCMPUT(IPCPO,'NUSIGF',NG,2,GAR1(1,7+2*NW))
+         CALL LCMPUT(IPCPO,'CHI',NG,2,GAR1(1,8+2*NW))
+      ENDIF
+      IF(LHF) CALL LCMPUT(IPCPO,'H-FACTOR',NG,2,GAR1(1,9+2*NW))
+      DO 140 IDEL=1,NDEL
+      IF(NF.EQ.1) THEN
+         WRITE(TEXT12,'(6HNUSIGF,I2.2)') IDEL
+         CALL LCMPUT(IPCPO,TEXT12,NG,2,GAR1(1,9+2*NW+2*(IDEL-1)+1))
+         WRITE(TEXT12,'(3HCHI,I2.2)') IDEL
+         CALL LCMPUT(IPCPO,TEXT12,NG,2,GAR1(1,9+2*NW+2*(IDEL-1)+2))
+      ENDIF
+  140 CONTINUE
+      DO 150 IED=1,NED
+      WRITE(TEXT8,'(2A4)') HVECT(1,IED),HVECT(2,IED)
+      CALL LCMPUT(IPCPO,TEXT8,NG,2,GAR1(1,9+2*NW+2*NDEL+IED))
+  150 CONTINUE
+      IF(NSPH.EQ.1) THEN
+         CALL LCMPUT(IPCPO,'NSPH',NG,2,GAR1(1,9+2*NW+2*NDEL+NED+NL+1))
+      ENDIF
+      CALL XDRLGS(IPCPO,1,IMPX,0,NL-1,1,NG,GAR1(1,10+2*NW+2*NDEL+NED),
+     1 GAR2,ITYPR)
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
+      DEALLOCATE(GAR3,GAR2,GAR1)
+      DEALLOCATE(ITYPR,IPOS,NJJ,IJJ)
+      RETURN
+      END

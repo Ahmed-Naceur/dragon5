@@ -1,0 +1,710 @@
+*DECK FLDSPN
+      SUBROUTINE FLDSPN(NAMP,IPTRK,IPSYS,LL4,NBMIX,NAN,S1,F1,NADI)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Perform NADI inner iterations with the ADI preconditionning.
+* Special version for Thomas-Raviart basis (simplified PN).
+*
+*Copyright:
+* Copyright (C) 2005 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): A. Hebert
+*
+*Parameters: input
+* NAMP    name of the ADI-splitted matrix.
+* IPTRK   L_TRACK pointer to the tracking information.
+* IPSYS   L_SYSTEM pointer to system matrices.
+* LL4     order of the matrix.
+* NBMIX   total number of material mixtures in the macrolib.
+* NAN     number of Legendre orders in the cross sections.
+* S1      source term of the linear system.
+* F1      initial solution of the linear system.
+* NADI    number of inner ADI iterations.
+*
+*Parameters: output
+* F1      solution of the linear system after NADI iterations.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      CHARACTER NAMP*(*)
+      TYPE(C_PTR) IPTRK,IPSYS
+      INTEGER LL4,NBMIX,NAN,NADI
+      REAL F1(LL4),S1(LL4)
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER (NSTATE=40)
+      CHARACTER NAMT*12,TEXT12*12
+      INTEGER ITP(NSTATE)
+      LOGICAL LMUX,DIAG,CHEX
+      INTEGER, DIMENSION(:), ALLOCATABLE :: MAT,KN,IQFR
+      REAL, DIMENSION(:), ALLOCATABLE :: VOL,QFR,XX,YY,ZZ,DIFF,T,GAR,
+     1 FL,FW,FX,FY,FZ,GAMMA
+      REAL, DIMENSION(:,:), ALLOCATABLE :: SIGT,SIGTI,R,V
+      INTEGER C11W_LEN,C11X_LEN,C11Y_LEN,C11Z_LEN
+      INTEGER, DIMENSION(:), POINTER :: IPERT,IPBW,MUW,IPVW,NBLW,LBLW,
+     1 IPBX,MUX,IPVX,NBLX,LBLX,IPBY,MUY,IPVY,NBLY,LBLY,IPBZ,MUZ,IPVZ,
+     2 NBLZ,LBLZ
+      REAL, DIMENSION(:), POINTER :: TF,FRZ,BW,C11W,BX,C11X,BY,C11Y,BZ,
+     1 C11Z
+      DOUBLE PRECISION, DIMENSION(:), POINTER :: CTRAN
+      TYPE(C_PTR) TF_PTR,FRZ_PTR,IPERT_PTR,CTRAN_PTR,
+     1 BW_PTR,C11W_PTR,IPBW_PTR,MUW_PTR,IPVW_PTR,NBLW_PTR,LBLW_PTR,
+     2 BX_PTR,C11X_PTR,IPBX_PTR,MUX_PTR,IPVX_PTR,NBLX_PTR,LBLX_PTR,
+     3 BY_PTR,C11Y_PTR,IPBY_PTR,MUY_PTR,IPVY_PTR,NBLY_PTR,LBLY_PTR,
+     4 BZ_PTR,C11Z_PTR,IPBZ_PTR,MUZ_PTR,IPVZ_PTR,NBLZ_PTR,LBLZ_PTR
+*----
+*  SCRATCH STORAGE ALLOCATION
+*----
+      ALLOCATE(SIGT(NBMIX,NAN),SIGTI(NBMIX,NAN))
+*----
+*  RECOVER PN SPECIFIC PARAMETERS.
+*----
+      NAMT=NAMP
+      IF(NAMT(1:1).NE.'A') CALL XABORT('FLDSPN: ''A'' MATRIX EXPECTED.')
+      READ(NAMT,'(1X,2I3)') IGR,JGR
+      IF(IGR.NE.JGR) CALL XABORT('FLDSPN: INVALIB GROUP INDICES.')
+      CALL LCMGET(IPTRK,'STATE-VECTOR',ITP)
+      NREG=ITP(1)
+      NUN=ITP(2)
+      ITYPE=ITP(6)
+      IELEM=ITP(9)
+      ICOL=ITP(10)
+      L4=ITP(11)
+      LX=ITP(14)
+      LZ=ITP(16)
+      ISEG=ITP(17)
+      LTSW=ITP(19)
+      LL4F=ITP(25)
+      LL4W=ITP(26)
+      LL4X=ITP(27)
+      LL4Y=ITP(28)
+      LL4Z=ITP(29)
+      NLF=ITP(30)
+      NVD=ITP(34)
+      CHEX=(ITYPE.EQ.8).OR.(ITYPE.EQ.9)
+      IF(CHEX) THEN
+         IOFW=LL4F
+         IOFX=LL4F+LL4W
+         IOFY=LL4F+LL4W+LL4X
+         IOFZ=LL4F+LL4W+LL4X+LL4Y
+         IF(NUN.GT.(LX*LZ+L4)*NLF/2) CALL XABORT('FLDSPN: INVALID NUN '
+     1   //'OR L4.')
+      ELSE
+         IOFW=0
+         IOFX=LL4F
+         IOFY=LL4F+LL4X
+         IOFZ=LL4F+LL4X+LL4Y
+         IF(NUN.NE.L4*NLF/2) CALL XABORT('FLDSPN: INVALID NUN OR L4.')
+      ENDIF
+      IF(L4*NLF/2.NE.LL4) CALL XABORT('FLDSPN: INVALID L4 OR LL4.')
+*----
+*  RECOVER TRACKING-RELATED INFORMATIONS
+*----
+      ALLOCATE(MAT(NREG),VOL(NREG))
+      CALL LCMGET(IPTRK,'MATCOD',MAT)
+      CALL LCMGET(IPTRK,'VOLUME',VOL)
+      CALL LCMLEN(IPTRK,'KN',MAXKN,ITYLCM)
+      CALL LCMLEN(IPTRK,'QFR',MAXQF,ITYLCM)
+      ALLOCATE(KN(MAXKN),QFR(MAXQF),IQFR(MAXQF))
+      CALL LCMGET(IPTRK,'KN',KN)
+      CALL LCMGET(IPTRK,'QFR',QFR)
+      CALL LCMGET(IPTRK,'IQFR',IQFR)
+      IF(CHEX) THEN
+         CALL LCMGET(IPTRK,'SIDE',SIDE)
+      ELSE
+         ALLOCATE(XX(NREG),YY(NREG))
+         CALL LCMGET(IPTRK,'XX',XX)
+         CALL LCMGET(IPTRK,'YY',YY)
+      ENDIF
+      ALLOCATE(ZZ(NREG))
+      CALL LCMGET(IPTRK,'ZZ',ZZ)
+*----
+*  PROCESS PHYSICAL ALBEDOS
+*----
+      TEXT12='ALBEDO-FU'//NAMT(2:4)
+      CALL LCMLEN(IPSYS,TEXT12,NALBP,ITYLCM)
+      IF(NALBP.GT.0) THEN
+         ALLOCATE(GAMMA(NALBP))
+         CALL LCMGET(IPSYS,TEXT12,GAMMA)
+         DO IQW=1,MAXQF
+            IALB=IQFR(IQW)
+            IF(IALB.NE.0) QFR(IQW)=QFR(IQW)*GAMMA(IALB)
+         ENDDO
+         DEALLOCATE(GAMMA)
+      ENDIF
+*----
+*  RECOVER THE CROSS SECTIONS.
+*----
+      DO 10 IL=1,NAN
+      WRITE(TEXT12,'(4HSCAR,I2.2,A6)') IL-1,NAMT(2:7)
+      CALL LCMGET(IPSYS,TEXT12,SIGT(1,IL))
+      WRITE(TEXT12,'(4HSCAI,I2.2,A6)') IL-1,NAMT(2:7)
+      CALL LCMGET(IPSYS,TEXT12,SIGTI(1,IL))
+   10 CONTINUE
+*----
+*  RECOVER THE FINITE ELEMENT UNIT STIFFNESS MATRIX.
+*----
+      CALL LCMSIX(IPTRK,'BIVCOL',1)
+      CALL LCMLEN(IPTRK,'T',LC,ITYLCM)
+      ALLOCATE(R(LC,LC),V(LC,LC-1))
+      CALL LCMGET(IPTRK,'R',R)
+      CALL LCMGET(IPTRK,'V',V)
+      CALL LCMSIX(IPTRK,' ',2)
+*----
+*  RECOVER INFORMATIONS RELATED TO SYSTEM MATRICES
+*----
+      CALL LCMLEN(IPTRK,'MUX',IDUM,ITYLCM)
+      LMUX=(IDUM.NE.0).AND.(ITYLCM.EQ.1)
+      DIAG=(LL4Y.GT.0).AND.(.NOT.LMUX)
+      CALL LCMGPD(IPSYS,'TF'//NAMT,TF_PTR)
+      CALL C_F_POINTER(TF_PTR,TF,(/ LL4F*NLF/2 /))
+*
+      NULLIFY(IPBW)
+      NULLIFY(IPVW)
+      NULLIFY(BW)
+      NULLIFY(C11W)
+      IF(LL4W.GT.0) THEN
+         NBLOS=LX*LZ/3
+         CALL LCMGPD(IPTRK,'CTRAN',CTRAN_PTR)
+         CALL LCMGPD(IPTRK,'IPERT',IPERT_PTR)
+         CALL LCMGPD(IPTRK,'FRZ',FRZ_PTR)
+         CALL C_F_POINTER(CTRAN_PTR,CTRAN,(/ ((IELEM+1)*IELEM)**2 /))
+         CALL C_F_POINTER(IPERT_PTR,IPERT,(/ NBLOS /))
+         CALL C_F_POINTER(FRZ_PTR,FRZ,(/ NBLOS /))
+*
+         CALL LCMGPD(IPTRK,'IPBBW',IPBW_PTR)
+         CALL LCMLEN(IPSYS,'WB',LENWB,ITYL)
+         IF(LENWB.EQ.0) THEN
+           CALL LCMGPD(IPTRK,'WB',BW_PTR)
+         ELSE
+           CALL LCMGPD(IPSYS,'WB',BW_PTR)
+         ENDIF
+         CALL C_F_POINTER(IPBW_PTR,IPBW,(/ 2*IELEM*LL4W /))
+         CALL C_F_POINTER(BW_PTR,BW,(/ 2*IELEM*LL4W /))
+         CALL LCMLEN(IPSYS,'WI'//NAMT,C11W_LEN,ITYLCM)
+         CALL LCMGPD(IPSYS,'WI'//NAMT,C11W_PTR)
+         IF(ISEG.EQ.0) THEN
+*           SCALAR SOLUTION FOR A W-ORIENTED LINEAR SYSTEM.
+            CALL LCMGPD(IPTRK,'MUW',MUW_PTR)
+            CALL C_F_POINTER(MUW_PTR,MUW,(/ LL4W /))
+         ELSE IF(ISEG.GT.0) THEN
+*           SUPERVECTORIAL SOLUTION FOR A W-ORIENTED LINEAR SYSTEM.
+            CALL LCMGET(IPTRK,'LL4VW',LL4VW)
+            CALL LCMGPD(IPTRK,'MUVW',MUW_PTR)
+            CALL LCMGPD(IPTRK,'IPVW',IPVW_PTR)
+            CALL LCMLEN(IPTRK,'NBLW',LONW,ITYLCM)
+            CALL LCMGPD(IPTRK,'NBLW',NBLW_PTR)
+            CALL LCMGPD(IPTRK,'LBLW',LBLW_PTR)
+            CALL C_F_POINTER(MUW_PTR,MUW,(/ LL4VW/ISEG /))
+            CALL C_F_POINTER(IPVW_PTR,IPVW,(/ LL4W /))
+            CALL C_F_POINTER(NBLW_PTR,NBLW,(/ LONW /))
+            CALL C_F_POINTER(LBLW_PTR,LBLW,(/ LONW /))
+         ENDIF
+         CALL C_F_POINTER(C11W_PTR,C11W,(/ C11W_LEN /))
+      ENDIF
+      CALL LCMGPD(IPTRK,'IPBBX',IPBX_PTR)
+      CALL LCMLEN(IPSYS,'XB',LENXB,ITYL)
+      IF(LENXB.EQ.0) THEN
+        CALL LCMGPD(IPTRK,'XB',BX_PTR)
+      ELSE
+        CALL LCMGPD(IPSYS,'XB',BX_PTR)
+      ENDIF
+      CALL C_F_POINTER(IPBX_PTR,IPBX,(/ 2*IELEM*LL4X /))
+      CALL C_F_POINTER(BX_PTR,BX,(/ 2*IELEM*LL4X /))
+      NULLIFY(IPVX)
+      IF(DIAG) THEN
+         CALL LCMLEN(IPSYS,'YI'//NAMT,C11X_LEN,ITYLCM)
+         CALL LCMGPD(IPSYS,'YI'//NAMT,C11X_PTR)
+         IF(ISEG.EQ.0) THEN
+*           SCALAR SOLUTION FOR A X-ORIENTED LINEAR SYSTEM.
+            CALL LCMGPD(IPTRK,'MUY',MUX_PTR)
+            CALL C_F_POINTER(MUX_PTR,MUX,(/ LL4X /))
+         ELSE IF(ISEG.GT.0) THEN
+*           SUPERVECTORIAL SOLUTION FOR A X-ORIENTED LINEAR SYSTEM.
+            CALL LCMGET(IPTRK,'LL4VY',LL4VX)
+            CALL LCMGPD(IPTRK,'MUVY',MUX_PTR)
+            CALL LCMGPD(IPTRK,'IPVY',IPVX_PTR)
+            CALL LCMLEN(IPTRK,'NBLY',LONX,ITYLCM)
+            CALL LCMGPD(IPTRK,'NBLY',NBLX_PTR)
+            CALL LCMGPD(IPTRK,'LBLY',LBLX_PTR)
+            CALL C_F_POINTER(MUX_PTR,MUX,(/ LL4VX/ISEG /))
+            CALL C_F_POINTER(IPVX_PTR,IPVX,(/ LL4X /))
+            CALL C_F_POINTER(NBLX_PTR,NBLX,(/ LONX /))
+            CALL C_F_POINTER(LBLX_PTR,LBLX,(/ LONX /))
+         ENDIF
+      ELSE
+         CALL LCMLEN(IPSYS,'XI'//NAMT,C11X_LEN,ITYLCM)
+         CALL LCMGPD(IPSYS,'XI'//NAMT,C11X_PTR)
+         IF(ISEG.EQ.0) THEN
+*           SCALAR SOLUTION FOR A X-ORIENTED LINEAR SYSTEM.
+            CALL LCMGPD(IPTRK,'MUX',MUX_PTR)
+            CALL C_F_POINTER(MUX_PTR,MUX,(/ LL4X /))
+         ELSE IF(ISEG.GT.0) THEN
+*           SUPERVECTORIAL SOLUTION FOR A X-ORIENTED LINEAR SYSTEM.
+            CALL LCMGET(IPTRK,'LL4VX',LL4VX)
+            CALL LCMGPD(IPTRK,'MUVX',MUX_PTR)
+            CALL LCMGPD(IPTRK,'IPVX',IPVX_PTR)
+            CALL LCMLEN(IPTRK,'NBLX',LONX,ITYLCM)
+            CALL LCMGPD(IPTRK,'NBLX',NBLX_PTR)
+            CALL LCMGPD(IPTRK,'LBLX',LBLX_PTR)
+            CALL C_F_POINTER(MUX_PTR,MUX,(/ LL4VX/ISEG /))
+            CALL C_F_POINTER(IPVX_PTR,IPVX,(/ LL4X /))
+            CALL C_F_POINTER(NBLX_PTR,NBLX,(/ LONX /))
+            CALL C_F_POINTER(LBLX_PTR,LBLX,(/ LONX /))
+         ENDIF
+      ENDIF
+      CALL C_F_POINTER(C11X_PTR,C11X,(/ C11X_LEN /))
+      NULLIFY(IPBY)
+      NULLIFY(IPVY)
+      NULLIFY(BY)
+      NULLIFY(C11Y)
+      IF(LL4Y.GT.0) THEN
+         CALL LCMGPD(IPTRK,'IPBBY',IPBY_PTR)
+         CALL LCMLEN(IPSYS,'YB',LENYB,ITYL)
+         IF(LENYB.EQ.0) THEN
+            CALL LCMGPD(IPTRK,'YB',BY_PTR)
+         ELSE
+            CALL LCMGPD(IPSYS,'YB',BY_PTR)
+         ENDIF
+         CALL C_F_POINTER(IPBY_PTR,IPBY,(/ 2*IELEM*LL4Y /))
+         CALL C_F_POINTER(BY_PTR,BY,(/ 2*IELEM*LL4Y /))
+         CALL LCMLEN(IPSYS,'YI'//NAMT,C11Y_LEN,ITYLCM)
+         CALL LCMGPD(IPSYS,'YI'//NAMT,C11Y_PTR)
+         IF(ISEG.EQ.0) THEN
+*           SCALAR SOLUTION FOR A Y-ORIENTED LINEAR SYSTEM.
+            CALL LCMGPD(IPTRK,'MUY',MUY_PTR)
+            CALL C_F_POINTER(MUY_PTR,MUY,(/ LL4Y /))
+         ELSE IF(ISEG.GT.0) THEN
+*           SUPERVECTORIAL SOLUTION FOR A Y-ORIENTED LINEAR SYSTEM.
+            CALL LCMGET(IPTRK,'LL4VY',LL4VY)
+            CALL LCMGPD(IPTRK,'MUVY',MUY_PTR)
+            CALL LCMGPD(IPTRK,'IPVY',IPVY_PTR)
+            CALL LCMLEN(IPTRK,'NBLY',LONY,ITYLCM)
+            CALL LCMGPD(IPTRK,'NBLY',NBLY_PTR)
+            CALL LCMGPD(IPTRK,'LBLY',LBLY_PTR)
+            CALL C_F_POINTER(MUY_PTR,MUY,(/ LL4VY/ISEG /))
+            CALL C_F_POINTER(IPVY_PTR,IPVY,(/ LL4Y /))
+            CALL C_F_POINTER(NBLY_PTR,NBLY,(/ LONY /))
+            CALL C_F_POINTER(LBLY_PTR,LBLY,(/ LONY /))
+         ENDIF
+         CALL C_F_POINTER(C11Y_PTR,C11Y,(/ C11Y_LEN /))
+      ENDIF
+      NULLIFY(IPBZ)
+      NULLIFY(IPVZ)
+      NULLIFY(BZ)
+      NULLIFY(C11Z)
+      IF(LL4Z.GT.0) THEN
+         CALL LCMGPD(IPTRK,'IPBBZ',IPBZ_PTR)
+         CALL LCMLEN(IPSYS,'ZB',LENZB,ITYL)
+         IF(LENZB.EQ.0) THEN
+            CALL LCMGPD(IPTRK,'ZB',BZ_PTR)
+         ELSE
+            CALL LCMGPD(IPSYS,'ZB',BZ_PTR)
+         ENDIF
+         CALL C_F_POINTER(IPBZ_PTR,IPBZ,(/ 2*IELEM*LL4Z /))
+         CALL C_F_POINTER(BZ_PTR,BZ,(/ 2*IELEM*LL4Z /))
+         CALL LCMLEN(IPSYS,'ZI'//NAMT,C11Z_LEN,ITYLCM)
+         CALL LCMGPD(IPSYS,'ZI'//NAMT,C11Z_PTR)
+         IF(ISEG.EQ.0) THEN
+*           SCALAR SOLUTION FOR A Z-ORIENTED LINEAR SYSTEM.
+            CALL LCMGPD(IPTRK,'MUZ',MUZ_PTR)
+            CALL C_F_POINTER(MUZ_PTR,MUZ,(/ LL4Z /))
+         ELSE IF(ISEG.GT.0) THEN
+*           SUPERVECTORIAL SOLUTION FOR A Z-ORIENTED LINEAR SYSTEM.
+            CALL LCMGET(IPTRK,'LL4VZ',LL4VZ)
+            CALL LCMGPD(IPTRK,'MUVZ',MUZ_PTR)
+            CALL LCMGPD(IPTRK,'IPVZ',IPVZ_PTR)
+            CALL LCMLEN(IPTRK,'NBLZ',LONZ,ITYLCM)
+            CALL LCMGPD(IPTRK,'NBLZ',NBLZ_PTR)
+            CALL LCMGPD(IPTRK,'LBLZ',LBLZ_PTR)
+            CALL C_F_POINTER(MUZ_PTR,MUZ,(/ LL4VZ/ISEG /))
+            CALL C_F_POINTER(IPVZ_PTR,IPVZ,(/ LL4Z /))
+            CALL C_F_POINTER(NBLZ_PTR,NBLZ,(/ LONZ /))
+            CALL C_F_POINTER(LBLZ_PTR,LBLZ,(/ LONZ /))
+         ENDIF
+         CALL C_F_POINTER(C11Z_PTR,C11Z,(/ C11Z_LEN /))
+      ENDIF
+      IF(CHEX) THEN
+         NBLOS=LX*LZ/3
+         ALLOCATE(DIFF(NBLOS))
+      ENDIF
+*----
+*  PERFORM ADI ITERATIONS AND LEGENDRE ORDER SWAPPING
+*----
+      ALLOCATE(FL(LL4F),FX(LL4X))
+      IF(LL4W.GT.0) ALLOCATE(FW(LL4W))
+      IF(LL4Y.GT.0) ALLOCATE(FY(LL4Y))
+      IF(LL4Z.GT.0) ALLOCATE(FZ(LL4Z))
+      IF(ISEG.GT.0) ALLOCATE(T(ISEG))
+      DO 615 IADI=1,NADI
+      DO 610 IL=0,NLF-1
+      JOFF=(IL/2)*L4
+      IF(MOD(IL,2).EQ.0) THEN
+         DO 21 I0=1,LL4X
+         FX(I0)=F1(JOFF+IOFX+I0)
+   21    CONTINUE
+         DO 22 I0=1,LL4Y
+         FY(I0)=F1(JOFF+IOFY+I0)
+   22    CONTINUE
+         DO 23 I0=1,LL4Z
+         FZ(I0)=F1(JOFF+IOFZ+I0)
+   23    CONTINUE
+      ENDIF
+      IF(CHEX) THEN
+         NBLOS=LX*LZ/3
+         CALL PNFH3E(IL,NBMIX,NBLOS,IELEM,ICOL,NLF,NVD,NAN,L4,LL4F,
+     1   MAT,SIGTI,SIDE,ZZ,FRZ,QFR,IPERT,KN,LC,R,V,S1,F1)
+      ELSE
+         CALL PNFL3E(IL,NREG,IELEM,ICOL,XX,YY,ZZ,MAT,VOL,NBMIX,NLF,
+     1   NVD,NAN,SIGTI,L4,KN,QFR,LC,R,V,S1,F1)
+      ENDIF
+      IF(MOD(IL,2).EQ.1) THEN
+*----
+*  RECOVER CROSS SECTIONS FOR THE PIOLAT TERMS.
+*----
+         IF(CHEX) THEN
+            NBLOS=LX*LZ/3
+            FACT=REAL(2*IL+1)
+            DO 25 KEL=1,NBLOS
+            DIFF(KEL)=0.0
+            IF(IPERT(KEL).GT.0) THEN
+               IBM=MAT((IPERT(KEL)-1)*3+1)
+               IF(IBM.GT.0) THEN
+                  GARS=SIGT(IBM,MIN(IL+1,NAN))
+                  IOF=(IPERT(KEL)-1)*3+1
+                  DIFF(KEL)=FACT*ZZ(IOF)*FRZ(KEL)*GARS
+               ENDIF
+            ENDIF
+   25       CONTINUE
+         ENDIF
+*----
+*  W DIRECTION
+*----
+         IF(LL4W.GT.0) THEN
+            NBLOS=LX*LZ/3
+            DO 30 I0=1,LL4F
+            FL(I0)=F1(JOFF+I0)
+   30       CONTINUE
+            DO 50 I0=1,LL4X
+            DO 40 J0=1,2*IELEM
+            JJ=IPBX((I0-1)*2*IELEM+J0)
+            IF(JJ.EQ.0) GO TO 50
+            FL(JJ)=FL(JJ)-BX((I0-1)*2*IELEM+J0)*REAL(IL)*FX(I0)
+   40       CONTINUE
+   50       CONTINUE
+            DO 70 I0=1,LL4Y
+            DO 60 J0=1,2*IELEM
+            JJ=IPBY((I0-1)*2*IELEM+J0)
+            IF(JJ.EQ.0) GO TO 70
+            FL(JJ)=FL(JJ)-BY((I0-1)*2*IELEM+J0)*REAL(IL)*FY(I0)
+   60       CONTINUE
+   70       CONTINUE
+            DO 90 I0=1,LL4Z
+            DO 80 J0=1,2*IELEM
+            JJ=IPBZ((I0-1)*2*IELEM+J0)
+            IF(JJ.EQ.0) GO TO 90
+            FL(JJ)=FL(JJ)-BZ((I0-1)*2*IELEM+J0)*REAL(IL)*FZ(I0)
+   80       CONTINUE
+   90       CONTINUE
+            DO 115 I0=1,LL4W
+            GGW=-F1(JOFF+IOFW+I0)
+            DO 100 J0=1,2*IELEM
+            JJ=IPBW((I0-1)*2*IELEM+J0)
+            IF(JJ.EQ.0) GO TO 110
+            GGW=GGW+BW((I0-1)*2*IELEM+J0)*REAL(IL)*
+     1          FL(JJ)/TF((IL/2)*LL4F+JJ)
+  100       CONTINUE
+  110       FW(I0)=GGW
+  115       CONTINUE
+*
+*           PIOLAT TRANSFORM TERM.
+            CALL FLDPWY(LL4W,LL4X,LL4Y,NBLOS,IELEM,CTRAN,IPERT,KN,DIFF,
+     1      FY,FW)
+            CALL FLDPWX(LL4W,LL4X,NBLOS,IELEM,CTRAN,IPERT,KN,DIFF,FX,FW)
+            MUMAX=MUW(LL4W)
+            IF(ISEG.EQ.0) THEN
+*              SCALAR SOLUTION FOR A W-ORIENTED LINEAR SYSTEM.
+               CALL ALLDLS(LL4W,MUW,C11W(1+(IL/2)*MUMAX),FW)
+            ELSE IF(ISEG.GT.0) THEN
+*              SUPERVECTORIAL SOLUTION FOR A W-ORIENTED LINEAR SYSTEM.
+               ALLOCATE(GAR(LL4VW))
+               CALL XDRSET(GAR,LL4VW,0.0)
+               DO 120 I=1,LL4W
+               GAR(IPVW(I))=FW(I)
+  120          CONTINUE
+               CALL ALVDLS(LTSW,MUW,C11W(1+(IL/2)*MUMAX),GAR,ISEG,LONW,
+     1         NBLW,LBLW,T)
+               DO 130 I=1,LL4W
+               FW(I)=GAR(IPVW(I))
+  130          CONTINUE
+               DEALLOCATE(GAR)
+            ENDIF
+         ENDIF
+*----
+*  X DIRECTION
+*----
+         DO 140 I0=1,LL4F
+         FL(I0)=F1(JOFF+I0)
+  140    CONTINUE
+         DO 160 I0=1,LL4W
+         DO 150 J0=1,2*IELEM
+         JJ=IPBW((I0-1)*2*IELEM+J0)
+         IF(JJ.EQ.0) GO TO 160
+         FL(JJ)=FL(JJ)-BW((I0-1)*2*IELEM+J0)*REAL(IL)*FW(I0)
+  150    CONTINUE
+  160    CONTINUE
+         DO 180 I0=1,LL4Y
+         DO 170 J0=1,2*IELEM
+         JJ=IPBY((I0-1)*2*IELEM+J0)
+         IF(JJ.EQ.0) GO TO 180
+         FL(JJ)=FL(JJ)-BY((I0-1)*2*IELEM+J0)*REAL(IL)*FY(I0)
+  170    CONTINUE
+  180    CONTINUE
+         DO 200 I0=1,LL4Z
+         DO 190 J0=1,2*IELEM
+         JJ=IPBZ((I0-1)*2*IELEM+J0)
+         IF(JJ.EQ.0) GO TO 200
+         FL(JJ)=FL(JJ)-BZ((I0-1)*2*IELEM+J0)*REAL(IL)*FZ(I0)
+  190    CONTINUE
+  200    CONTINUE
+         DO 225 I0=1,LL4X
+         GGX=-F1(JOFF+IOFX+I0)
+         DO 210 J0=1,2*IELEM
+         JJ=IPBX((I0-1)*2*IELEM+J0)
+         IF(JJ.EQ.0) GO TO 220
+         GGX=GGX+BX((I0-1)*2*IELEM+J0)*REAL(IL)*FL(JJ)/
+     1       TF((IL/2)*LL4F+JJ)
+  210    CONTINUE
+  220    FX(I0)=GGX
+  225    CONTINUE
+         IF(LL4W.GT.0) THEN
+*           PIOLAT TRANSFORM TERM.
+            NBLOS=LX*LZ/3
+            CALL FLDPXW(LL4W,LL4X,NBLOS,IELEM,CTRAN,IPERT,KN,DIFF,FW,
+     1      FX)
+            CALL FLDPXY(LL4W,LL4X,LL4Y,NBLOS,IELEM,CTRAN,IPERT,KN,
+     1      DIFF,FY,FX)
+         ENDIF
+         MUMAX=MUX(LL4X)
+         IF(ISEG.EQ.0) THEN
+*           SCALAR SOLUTION FOR A X-ORIENTED LINEAR SYSTEM.
+            CALL ALLDLS(LL4X,MUX,C11X(1+(IL/2)*MUMAX),FX)
+         ELSE IF(ISEG.GT.0) THEN
+*           SUPERVECTORIAL SOLUTION FOR A X-ORIENTED LINEAR SYSTEM.
+            ALLOCATE(GAR(LL4VX))
+            CALL XDRSET(GAR,LL4VX,0.0)
+            DO 230 I=1,LL4X
+            GAR(IPVX(I))=FX(I)
+  230       CONTINUE
+            CALL ALVDLS(LTSW,MUX,C11X(1+(IL/2)*MUMAX),GAR,ISEG,LONX,
+     1      NBLX,LBLX,T)
+            DO 240 I=1,LL4X
+            FX(I)=GAR(IPVX(I))
+  240       CONTINUE
+            DEALLOCATE(GAR)
+         ENDIF
+*----
+*  Y DIRECTION
+*----
+         IF(LL4Y.GT.0) THEN
+            DO 250 I0=1,LL4F
+            FL(I0)=F1(JOFF+I0)
+  250       CONTINUE
+            DO 270 I0=1,LL4W
+            DO 260 J0=1,2*IELEM
+            JJ=IPBW((I0-1)*2*IELEM+J0)
+            IF(JJ.EQ.0) GO TO 270
+            FL(JJ)=FL(JJ)-BW((I0-1)*2*IELEM+J0)*REAL(IL)*FW(I0)
+  260       CONTINUE
+  270       CONTINUE
+            DO 290 I0=1,LL4X
+            DO 280 J0=1,2*IELEM
+            JJ=IPBX((I0-1)*2*IELEM+J0)
+            IF(JJ.EQ.0) GO TO 290
+            FL(JJ)=FL(JJ)-BX((I0-1)*2*IELEM+J0)*REAL(IL)*FX(I0)
+  280       CONTINUE
+  290       CONTINUE
+            DO 310 I0=1,LL4Z
+            DO 300 J0=1,2*IELEM
+            JJ=IPBZ((I0-1)*2*IELEM+J0)
+            IF(JJ.EQ.0) GO TO 310
+            FL(JJ)=FL(JJ)-BZ((I0-1)*2*IELEM+J0)*REAL(IL)*FZ(I0)
+  300       CONTINUE
+  310       CONTINUE
+            DO 335 I0=1,LL4Y
+            GGY=-F1(JOFF+IOFY+I0)
+            DO 320 J0=1,2*IELEM
+            JJ=IPBY((I0-1)*2*IELEM+J0)
+            IF(JJ.EQ.0) GO TO 330
+            GGY=GGY+BY((I0-1)*2*IELEM+J0)*REAL(IL)*
+     1          FL(JJ)/TF((IL/2)*LL4F+JJ)
+  320       CONTINUE
+  330       FY(I0)=GGY
+  335       CONTINUE
+            IF(LL4W.GT.0) THEN
+*              PIOLAT TRANSFORM TERM.
+               NBLOS=LX*LZ/3
+               CALL FLDPYX(LL4W,LL4X,LL4Y,NBLOS,IELEM,CTRAN,IPERT,KN,
+     1         DIFF,FX,FY)
+               CALL FLDPYW(LL4W,LL4X,LL4Y,NBLOS,IELEM,CTRAN,IPERT,KN,
+     1         DIFF,FW,FY)
+            ENDIF
+            MUMAX=MUY(LL4Y)
+            IF(ISEG.EQ.0) THEN
+*              SCALAR SOLUTION FOR A Y-ORIENTED LINEAR SYSTEM.
+               CALL ALLDLS(LL4Y,MUY,C11Y(1+(IL/2)*MUMAX),FY)
+            ELSE IF(ISEG.GT.0) THEN
+*              SUPERVECTORIAL SOLUTION FOR A Y-ORIENTED LINEAR SYSTEM.
+               ALLOCATE(GAR(LL4VY))
+               CALL XDRSET(GAR,LL4VY,0.0)
+               DO 340 I=1,LL4Y
+               GAR(IPVY(I))=FY(I)
+  340          CONTINUE
+               CALL ALVDLS(LTSW,MUY,C11Y(1+(IL/2)*MUMAX),GAR,ISEG,LONY,
+     1         NBLY,LBLY,T)
+               DO 350 I=1,LL4Y
+               FY(I)=GAR(IPVY(I))
+  350          CONTINUE
+               DEALLOCATE(GAR)
+            ENDIF
+         ENDIF
+*----
+*  Z DIRECTION
+*----
+         IF(LL4Z.GT.0) THEN
+            DO 360 I0=1,LL4F
+            FL(I0)=F1(JOFF+I0)
+  360       CONTINUE
+            DO 380 I0=1,LL4W
+            DO 370 J0=1,2*IELEM
+            JJ=IPBW((I0-1)*2*IELEM+J0)
+            IF(JJ.EQ.0) GO TO 380
+            FL(JJ)=FL(JJ)-BW((I0-1)*2*IELEM+J0)*REAL(IL)*FW(I0)
+  370       CONTINUE
+  380       CONTINUE
+            DO 400 I0=1,LL4X
+            DO 390 J0=1,2*IELEM
+            JJ=IPBX((I0-1)*2*IELEM+J0)
+            IF(JJ.EQ.0) GO TO 400
+            FL(JJ)=FL(JJ)-BX((I0-1)*2*IELEM+J0)*REAL(IL)*FX(I0)
+  390       CONTINUE
+  400       CONTINUE
+            DO 420 I0=1,LL4Y
+            DO 410 J0=1,2*IELEM
+            JJ=IPBY((I0-1)*2*IELEM+J0)
+            IF(JJ.EQ.0) GO TO 420
+            FL(JJ)=FL(JJ)-BY((I0-1)*2*IELEM+J0)*REAL(IL)*FY(I0)
+  410       CONTINUE
+  420       CONTINUE
+            DO 445 I0=1,LL4Z
+            GGZ=-F1(JOFF+IOFZ+I0)
+            DO 430 J0=1,2*IELEM
+            JJ=IPBZ((I0-1)*2*IELEM+J0)
+            IF(JJ.EQ.0) GO TO 440
+            GGZ=GGZ+BZ((I0-1)*2*IELEM+J0)*REAL(IL)*
+     1          FL(JJ)/TF((IL/2)*LL4F+JJ)
+  430       CONTINUE
+  440       FZ(I0)=GGZ
+  445       CONTINUE
+            MUMAX=MUZ(LL4Z)
+            IF(ISEG.EQ.0) THEN
+*              SCALAR SOLUTION FOR A Z-ORIENTED LINEAR SYSTEM.
+               CALL ALLDLS(LL4Z,MUZ,C11Z(1+(IL/2)*MUMAX),FZ)
+            ELSE IF(ISEG.GT.0) THEN
+*              SUPERVECTORIAL SOLUTION FOR A Z-ORIENTED LINEAR SYSTEM.
+               ALLOCATE(GAR(LL4VZ))
+               CALL XDRSET(GAR,LL4VZ,0.0)
+               DO 450 I=1,LL4Z
+               GAR(IPVZ(I))=FZ(I)
+  450          CONTINUE
+               CALL ALVDLS(LTSW,MUZ,C11Z(1+(IL/2)*MUMAX),GAR,ISEG,LONZ,
+     1         NBLZ,LBLZ,T)
+               DO 460 I=1,LL4Z
+               FZ(I)=GAR(IPVZ(I))
+  460          CONTINUE
+               DEALLOCATE(GAR)
+            ENDIF
+         ENDIF
+*----
+*  COMPUTE FLUX AND RECOVER CURRENTS
+*----
+         DO 470 I0=1,LL4F
+         FL(I0)=F1(JOFF+I0)
+  470    CONTINUE
+         DO 490 J0=1,LL4W
+         DO 480 I0=1,2*IELEM
+         II=IPBW((J0-1)*2*IELEM+I0)
+         IF(II.EQ.0) GO TO 490
+         FL(II)=FL(II)-BW((J0-1)*2*IELEM+I0)*REAL(IL)*FW(J0)
+  480    CONTINUE
+  490    CONTINUE
+         DO 510 J0=1,LL4X
+         DO 500 I0=1,2*IELEM
+         II=IPBX((J0-1)*2*IELEM+I0)
+         IF(II.EQ.0) GO TO 510
+         FL(II)=FL(II)-BX((J0-1)*2*IELEM+I0)*REAL(IL)*FX(J0)
+  500    CONTINUE
+  510    CONTINUE
+         DO 530 J0=1,LL4Y
+         DO 520 I0=1,2*IELEM
+         II=IPBY((J0-1)*2*IELEM+I0)
+         IF(II.EQ.0) GO TO 530
+         FL(II)=FL(II)-BY((J0-1)*2*IELEM+I0)*REAL(IL)*FY(J0)
+  520    CONTINUE
+  530    CONTINUE
+         DO 550 J0=1,LL4Z
+         DO 540 I0=1,2*IELEM
+         II=IPBZ((J0-1)*2*IELEM+I0)
+         IF(II.EQ.0) GO TO 550
+         FL(II)=FL(II)-BZ((J0-1)*2*IELEM+I0)*REAL(IL)*FZ(J0)
+  540    CONTINUE
+  550    CONTINUE
+         DO 560 I0=1,LL4F
+         F1(JOFF+I0)=FL(I0)/TF((IL/2)*LL4F+I0)
+  560    CONTINUE
+         IF(LL4W.GT.0) THEN
+            DO 570 I0=1,LL4W
+            F1(JOFF+IOFW+I0)=FW(I0)
+  570       CONTINUE
+         ENDIF
+         DO 580 I0=1,LL4X
+         F1(JOFF+IOFX+I0)=FX(I0)
+  580    CONTINUE
+         IF(LL4Y.GT.0) THEN
+            DO 590 I0=1,LL4Y
+            F1(JOFF+IOFY+I0)=FY(I0)
+  590       CONTINUE
+         ENDIF
+         IF(LL4Z.GT.0) THEN
+            DO 600 I0=1,LL4Z
+            F1(JOFF+IOFZ+I0)=FZ(I0)
+  600       CONTINUE
+         ENDIF
+      ENDIF
+  610 CONTINUE
+  615 CONTINUE
+      IF(ISEG.GT.0) DEALLOCATE(T)
+      DEALLOCATE(FL,FX)
+      IF(LL4W.GT.0) DEALLOCATE(FW)
+      IF(LL4Y.GT.0) DEALLOCATE(FY)
+      IF(LL4Z.GT.0) DEALLOCATE(FZ)
+      IF(.NOT.CHEX) DEALLOCATE(YY,XX)
+      DEALLOCATE(V,R,ZZ,IQFR,QFR,KN,VOL,MAT)
+      IF(CHEX) DEALLOCATE(DIFF)
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
+      DEALLOCATE(SIGT,SIGTI)
+      RETURN
+      END

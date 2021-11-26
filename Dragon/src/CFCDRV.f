@@ -1,0 +1,1117 @@
+*DECK CFCDRV
+      SUBROUTINE CFCDRV (IPRINT,NENTRY,KENTRY,HENTRY,NBURN,NGRP,NISO,
+     1 NL,CTITRE,TEX,NXS,NBPARA,DBPARA)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Driver for the construction of a feedback database.
+*
+*Copyright:
+* Copyright (C) 1996 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
+*
+*Author(s): M. T. Sissaoui
+*
+*Parameters: input
+* IPRINT  print level.
+* NENTRY  number of LCM objects.
+* KENTRY  address of the LCM objects.
+* HENTRY  name of the LCM objects.
+* NBURN   number of burnup steps.
+* NGRP    number of energy groups.
+* NISO    1+number of extracted isotopes.
+* NL      number of Legendre orders.
+* CTITRE  execution title.
+* TEX     database name.
+* NXS     number of reactions (equal to 21+NL).
+* NBPARA  number of parameters for FBM.
+* DBPARA  values of parameters for FBM.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      TYPE(C_PTR) KENTRY(NENTRY)
+      INTEGER     IPRINT,NENTRY,NBURN,NGRP,NISO,NL,NXS,NBPARA
+      CHARACTER   HENTRY(NENTRY)*12,TEX*9
+      REAL        DBPARA(NBPARA)
+*----
+*  LOCAL PARAMETERS
+*----
+      TYPE(C_PTR) IPLISU,IPLISD,IPFBM,IPLIST,IPHISU,IPHISD,IPHIST
+      INTEGER     IOUT,NSTATE
+      PARAMETER  (IOUT=6,NSTATE=40)
+      CHARACTER   TEXT1*8,CM*2,TEXT2*8,HMICRO*12,
+     1            TEXTB*12,TEXT(2)*12,TEXTR*12,TEXT12*12,CTITRE*72
+      INTEGER     ISTATE(NSTATE),IPAR(5),HTITLE(18)
+      REAL        XP(7)
+*----
+*  ALLOCATABLE STATEMENTS
+*----
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: IJJ,NJJ,MIJ,MNJ,HISO,JTAB,
+     1 IXS
+      REAL, ALLOCATABLE, DIMENSION(:) :: WORK3,DENSIT,EFJ,KBUR,KB
+      REAL, ALLOCATABLE, DIMENSION(:) :: TOT2,ZN2,DXF2,DYF2,DZF2,HF2,
+     1 SCA2,MIRCT2,MIRCS2,MICDX2,MICDY2,MICDZ2,V2,MIRCF2,MIRCH2
+      REAL, ALLOCATABLE, DIMENSION(:) :: FLUI3,FLDIS3,OV3,DIFD3,NF3,
+     1 CHI3,MCHI3
+      REAL, ALLOCATABLE, DIMENSION(:,:) :: TOTAL,ZNUG,DIFFX,DIFFY,DIFFZ,
+     1 H,REFC,DELTA
+      REAL, ALLOCATABLE, DIMENSION(:,:,:) :: TMREF,DMRFX,DMRFY,DMRFZ,
+     1 FMREF,HMREF
+      REAL, ALLOCATABLE, DIMENSION(:,:,:,:) :: SCAT
+      REAL, ALLOCATABLE, DIMENSION(:,:,:,:,:) :: SMREF
+*----
+*  SCRATCH STORAGE ALLOCATION
+*----
+      ALLOCATE(IJJ(NL*NGRP),NJJ(NL*NGRP),MIJ(NL*NGRP),MNJ(NL*NGRP),
+     1 HISO(3*NISO),JTAB(NISO),IXS(NXS))
+      ALLOCATE(TOTAL(NGRP,NBURN),ZNUG(NGRP,NBURN),DIFFX(NGRP,NBURN),
+     1 DIFFY(NGRP,NBURN),DIFFZ(NGRP,NBURN),H(NGRP,NBURN),
+     2 SCAT(NBURN,NL,NGRP,NGRP),WORK3(NGRP*(NGRP+1)),DENSIT(NISO),
+     3 EFJ(NISO),TMREF(NGRP,NBURN,NISO),SMREF(NISO,NBURN,NL,NGRP,NGRP),
+     4 DMRFX(NGRP,NBURN,NISO),DMRFY(NGRP,NBURN,NISO),
+     5 DMRFZ(NGRP,NBURN,NISO),REFC(NBURN,NISO),FMREF(NGRP,NBURN,NISO),
+     6 HMREF(NGRP,NBURN,NISO),DELTA(NBURN,2))
+*-----
+*  REFERENCE(NOMINAL) LOCAL PARAMETER
+*-----
+      PWR=DBPARA(1)
+      TCR=DBPARA(2)
+      TMR=DBPARA(3)
+      TFR=DBPARA(4)
+      RHOM=DBPARA(5)
+      RHOC=DBPARA(6)
+      XIR=DBPARA(7)
+      TFU=DBPARA(8)
+      TCU=DBPARA(9)
+      PWUL=DBPARA(10)
+      PWDL=DBPARA(11)
+      PWU=DBPARA(12)
+      PWD=DBPARA(13)
+      XI=DBPARA(14)
+C
+C     FLAG FOR COLLISION PROBABILITY CALCULATION
+C     IXYZ=0  PIJ  CALCULATION
+C     IXYZ=1  PIJK  CALCULATION
+C
+       IXYZ=0
+C-----
+C     CHECK NGRP AND NBURN
+C-----
+      IF(NBURN.EQ.0) CALL XABORT('CFCDRV: ZERO NUMBER OF MIXTURES.')
+      IF(NGRP.EQ.0)  CALL XABORT('CFCDRV: ZERO NUMBER OF GROUPS.')
+C
+C     ONLY THE FIRST ORDER IS CONSIDERED IN FBM
+C
+C----------------------------------------------------------------------C
+C-----
+C     DYNAMIC MEMORY ALLOCATION
+C-----
+      ALLOCATE(TOT2(2*NBURN*NGRP),ZN2(2*NBURN*NGRP),DXF2(2*NBURN*NGRP),
+     1 DYF2(2*NBURN*NGRP),DZF2(2*NBURN*NGRP),HF2(2*NBURN*NGRP),
+     2 SCA2(2*NBURN*NL*NGRP*NGRP),MIRCT2(2*NBURN*NISO*NGRP),
+     3 MIRCS2(2*NBURN*NL*NGRP*NGRP*NISO),MICDX2(2*NBURN*NISO*NGRP),
+     4 MICDY2(2*NBURN*NISO*NGRP),MICDZ2(2*NBURN*NISO*NGRP),V2(16*NBURN),
+     5 MIRCF2(2*NBURN*NISO*NGRP),MIRCH2(2*NBURN*NISO*NGRP))
+C
+C-----
+C     DATABASE FILE UNIT NUMBER
+C-----
+         IPFBM=KENTRY(1)
+C-----
+C     STOTRE THE NOMINAL LOCAL PARAMETER IN THE DATABASE
+C     IP=1 FOR THE FUEL
+C     IP=2 FOR THE REFLECTOR
+C-----
+        DO 801 IP=1,2
+C
+C     INITIALIZATION OF THE MATRICES.
+C
+      JTAB(:NISO)=0
+      TOTAL(:NGRP,:NBURN)=0.0
+      ZNUG(:NGRP,:NBURN)=0.0
+      DIFFX(:NGRP,:NBURN)=0.0
+      DIFFY(:NGRP,:NBURN)=0.0
+      DIFFZ(:NGRP,:NBURN)=0.0
+      H(:NGRP,:NBURN)=0.0
+      TMREF(:NGRP,:NBURN,:NISO)=0.0
+      DMRFX(:NGRP,:NBURN,:NISO)=0.0
+      DMRFY(:NGRP,:NBURN,:NISO)=0.0
+      DMRFZ(:NGRP,:NBURN,:NISO)=0.0
+      FMREF(:NGRP,:NBURN,:NISO)=0.0
+      HMREF(:NGRP,:NBURN,:NISO)=0.0
+      SCAT(:NBURN,:NL,:NGRP,:NGRP)=0.0
+      SMREF(:NISO,:NBURN,:NL,:NGRP,:NGRP)=0.0
+      DO 10 IGR=1,NGRP
+      IJJ(IGR)=IGR
+      NJJ(IGR)=1
+      MIJ(IGR)=IGR
+      MNJ(IGR)=1
+  10  CONTINUE
+C
+        DO 44 ILOC=1,7
+        IF(ILOC.EQ.1) THEN
+        HMICRO='PW'
+        XP(ILOC)=PWR
+        ELSE IF(ILOC.EQ.2) THEN
+        HMICRO='TCOOL'
+        XP(ILOC)=TCR
+        ELSE IF(ILOC.EQ.3) THEN
+        HMICRO='TMOD'
+        XP(ILOC)=TMR
+        ELSE IF(ILOC.EQ.4) THEN
+        HMICRO='TFUEL'
+        XP(ILOC)=TFR
+        ELSE IF(ILOC.EQ.5) THEN
+        HMICRO='RHOC'
+        XP(ILOC)=RHOC
+        ELSE IF(ILOC.EQ.6) THEN
+        HMICRO='RHOM'
+        XP(ILOC)=RHOM
+        ELSE IF(ILOC.EQ.7) THEN
+        HMICRO='PUR'
+        XP(ILOC)=XIR
+        ENDIF
+        READ(HMICRO,'(3A4)') (HISO((ILOC-1)*3+IH),IH=1,3)
+  44    CONTINUE
+C-----
+C        TYPE OF PROPERTIES
+C-----
+         IF(IP.EQ.1) THEN
+         IPLIST=KENTRY(2)
+         TEXTR='FUL'//TEX
+         ELSE
+         IPLIST=KENTRY(23)
+         TEXTR='MOD'//TEX
+         ENDIF
+C----------------------------------------------------------------------C
+C-----
+C     RECOVER AND STORE NEUTRONICS PARAMETRES
+C-----
+         IF(IP.EQ.1) THEN
+          CALL LCMSIX(IPFBM,TEXTR,1)
+          CALL LCMSIX(IPFBM,'INFO-NOMINA',1)
+          CALL LCMPUT(IPFBM,'NOMINALN',3*7,3,HISO)
+          CALL LCMPUT(IPFBM,'NOMINALP',7,2,XP)
+          CALL LCMSIX(IPFBM,' ',2)
+          READ(CTITRE,'(18A4)') (HTITLE(I),I=1,18)
+          CALL LCMPUT(IPFBM,'TITLE',18,3,HTITLE)
+          IPAR(1)=NGRP
+          IPAR(2)=NISO
+          IPAR(3)=NL
+          IPAR(4)=NBURN
+          NBUM=NBURN
+          NISM=NISO
+          CALL LCMPUT(IPFBM,'PARAM',4,1,IPAR)
+          CALL LCMSIX(IPFBM,' ',2)
+         ELSE
+          TEXT12='SIGNATURE'
+          CALL LCMNXT(IPLIST,TEXT12)
+C
+          IF(TEXT12.EQ.'SIGNATURE') CALL XABORT('CFCDRV: '
+     1 //'INVALID INPUT COMPO.')
+          CALL LCMGET(IPLIST,'STATE-VECTOR',ISTATE)
+          CALL LCMSIX(IPLIST,TEXT12,1)
+          CALL LCMSIX(IPLIST,' ',2)
+          NGRP=ISTATE(2)
+          NISO=ISTATE(3)
+          NL=ISTATE(4)
+          NBURN=ISTATE(5)
+C
+          CALL LCMSIX(IPFBM,TEXTR,1)
+          CALL LCMSIX(IPFBM,'INFO-NOMINA',1)
+          CALL LCMPUT(IPFBM,'NOMINALN',3*7,3,HISO)
+          CALL LCMPUT(IPFBM,'NOMINALP',7,2,XP)
+          CALL LCMSIX(IPFBM,' ',2)
+          READ(CTITRE,'(18A4)') (HTITLE(I),I=1,18)
+          CALL LCMPUT(IPFBM,'TITLE',18,3,HTITLE)
+          CALL LCMSIX(IPFBM,' ',2)
+         ENDIF
+C
+C        RECOVER INFORMATION FROM CPO FILE(NOMINAL)
+C
+         ALLOCATE(KB(NBURN),KBUR(NBURN))
+         IF(IP.EQ.1) THEN
+         CALL LCMSIX(IPLIST,'REF        1',1)
+         ELSE
+         CALL LCMSIX(IPLIST,'MODREF     1',1)
+         ENDIF
+         CALL LCMGET(IPLIST,'ISOTOPESNAME',HISO)
+         CALL LCMGET(IPLIST,'VOLUME',VOL)
+         CALL LCMGET(IPLIST,'ENERGY',WORK3)
+         CALL LCMGET(IPLIST,'BURNUP',KBUR)
+         CALL LCMGET(IPLIST,'N/KB',KB)
+         CALL LCMSIX(IPLIST,' ',2)
+C
+C        STORE INFORMATION IN THE DATABASE
+C
+         CALL LCMSIX(IPFBM,TEXTR,1)
+         CALL LCMPUT(IPFBM,'HITAB',3*NISO,3,HISO)
+         CALL LCMPUT(IPFBM,'VOLUME',1,2,VOL)
+         CALL LCMPUT(IPFBM,'ENERGY',NGRP+1,2,WORK3)
+         CALL LCMPUT(IPFBM,'BURNUP',NBURN,2,KBUR)
+         CALL LCMPUT(IPFBM,'N/KB',NBURN,2,KB)
+         CALL LCMSIX(IPFBM,' ',2)
+C
+         DEALLOCATE(KBUR,KB)
+C-----
+C     GOING DOWN TO THE MACR AND MICR SUB-DIRECTORIES
+C-----
+C
+C        DYNAMIC ALLOCATION MEMORY
+C
+         ALLOCATE(FLUI3(NGRP),FLDIS3(NGRP),OV3(NGRP),DIFD3(3*NGRP),
+     1   NF3(NGRP),CHI3(NGRP),MCHI3(NGRP))
+C
+         DO 20 I=1,NBURN
+         WRITE(TEXTB,'(4HBURN,4X,I4)') I
+         IF(IP.EQ.1) THEN
+         CALL LCMSIX(IPLIST,'REF        1',1)
+         ELSE
+         CALL LCMSIX(IPLIST,'MODREF     1',1)
+         ENDIF
+         CALL LCMSIX(IPLIST,TEXTB,1)
+         CALL LCMGET(IPLIST,'ISOTOPESDENS',DENSIT)
+         CALL LCMGET(IPLIST,'ISOTOPES-EFJ',EFJ)
+         IF(DENSIT(1).NE.1.0) CALL XABORT('FBM: DENSIT(1).NE.1.')
+         CALL LCMGET(IPLIST,'FLUX-INTG',FLUI3)
+         CALL LCMGET(IPLIST,'FLUXDISAFACT',FLDIS3)
+         CALL LCMGET(IPLIST,'OVERV',OV3)
+C-----
+C        RECOVER MACROSCOPIC  X-SECTIONS.
+C-----
+         CALL LCMSIX(IPLIST,'MACR',1)
+         CALL XDISET(IXS,NXS,0)
+         CALL LCMGET(IPLIST,'XS-SAVED',IXS)
+         CALL LCMGET(IPLIST,'SCAT-SAVED',IXS(21))
+         IF(IXS(18).EQ.1) IXYZ=1
+         IF(IXS(3).EQ.1)  JTAB(1)=1
+C
+         IF(IXS(1).EQ.1) CALL LCMGET(IPLIST,'TOTAL',TOTAL(1,I))
+         IF(IXS(3).EQ.1) CALL LCMGET(IPLIST,'NUSIGF',ZNUG(1,I))
+         IF(IXS(4).EQ.1) THEN
+           CALL LCMGET(IPLIST,'NFTOT',NF3)
+           CALL LCMGET(IPLIST,'NFTOT',H(1,I))
+           DO 11 IGR=1,NGRP
+           H(IGR,I)=H(IGR,I)*EFJ(1)
+  11       CONTINUE
+         ENDIF
+         IF(IXS(5).EQ.1) CALL LCMGET(IPLIST,'CHI',CHI3)
+         IF(IXS(17).EQ.1) CALL LCMGET(IPLIST,'STRD  ',DIFFX(1,I))
+         IF(IXS(18).EQ.1) CALL LCMGET(IPLIST,'STRD X',DIFFX(1,I))
+         IF(IXS(19).EQ.1) CALL LCMGET(IPLIST,'STRD Y',DIFFY(1,I))
+         IF(IXS(20).EQ.1) CALL LCMGET(IPLIST,'STRD Z',DIFFZ(1,I))
+         CALL LCMLEN(IPLIST,'NUSIGF',ILENGF,ITYLCM)
+C
+C        RECOVER SCATTERING X-SECTIONS.
+C
+         IL=1
+         WRITE (CM,'(I2.2)') IL-1
+         IF(IXS(20+IL).EQ.1) THEN
+         CALL LCMGET(IPLIST,'SIGS'//CM,WORK3)
+         DO 110 IGR=1,NGRP
+         TOTAL(IGR,I)= TOTAL(IGR,I)-WORK3(IGR)
+ 110     CONTINUE
+C
+         CALL LCMLEN(IPLIST,'SCAT'//CM,LENGT,ITYLCM)
+         CALL LCMGET(IPLIST,'SCAT'//CM,WORK3)
+         CALL LCMGET(IPLIST,'NJJS'//CM,NJJ)
+         CALL LCMGET(IPLIST,'IJJS'//CM,IJJ)
+         IGAR=0
+         DO 125 JGR=1,NGRP
+         DO 120 IGR=IJJ(JGR),IJJ(JGR)-NJJ(JGR)+1,-1
+         IGAR=IGAR+1
+         SCAT(I,IL,IGR,JGR)=WORK3(IGAR)
+  120    CONTINUE
+  125    CONTINUE
+        ENDIF
+C
+         CALL LCMSIX(IPLIST,' ',2)
+C-----
+C       RECOVER MICROSCOPIC  X-SECTIONS.
+C-----
+        DO 40 ISO=2,NISO
+        IF(DENSIT(ISO).EQ.0.0) GO TO 40
+        WRITE(HMICRO,'(3A4)') (HISO((ISO-1)*3+IH),IH=1,3)
+        REFC(I,ISO)=DENSIT(ISO)
+        CALL LCMSIX(IPLIST,HMICRO,1)
+        CALL LCMGET(IPLIST,'XS-SAVED',IXS)
+        CALL LCMGET(IPLIST,'SCAT-SAVED',IXS(21))
+        IF(IXS(3).EQ.1)  JTAB(ISO)=1
+        IF(IXS(1).EQ.1) CALL LCMGET(IPLIST,'TOTAL',TMREF(1,I,ISO))
+C
+C       COMPUTE THE ABSORPTION XS
+C
+        IL=1
+        WRITE (CM,'(I2.2)') IL-1
+         IF(IXS(20+IL).EQ.1) THEN
+          CALL LCMGET(IPLIST,'SIGS'//CM,WORK3)
+          DO 231 IGR=1,NGRP
+          TMREF(IGR,I,ISO)= TMREF(IGR,I,ISO)-WORK3(IGR)
+ 231      CONTINUE
+         ENDIF
+C
+         IF(IXS(17).EQ.1) CALL LCMGET(IPLIST,'STRD  ',DMRFX(1,I,ISO))
+         IF(IXS(18).EQ.1) CALL LCMGET(IPLIST,'STRD X',DMRFX(1,I,ISO))
+         IF(IXS(19).EQ.1) CALL LCMGET(IPLIST,'STRD Y',DMRFY(1,I,ISO))
+         IF(IXS(20).EQ.1) CALL LCMGET(IPLIST,'STRD Z',DMRFZ(1,I,ISO))
+C
+C      ADD THE CONTRIBURTION OF THE MICR. X-SECTIONS
+C
+       DO 721 IGR=1,NGRP
+       TOTAL(IGR,I)=TOTAL(IGR,I) + DENSIT(ISO)*TMREF(IGR,I,ISO)
+       DIFFX(IGR,I)=DIFFX(IGR,I) + DENSIT(ISO)*DMRFX(IGR,I,ISO)
+       DIFFY(IGR,I)=DIFFY(IGR,I) + DENSIT(ISO)*DMRFY(IGR,I,ISO)
+       DIFFZ(IGR,I)=DIFFZ(IGR,I) + DENSIT(ISO)*DMRFZ(IGR,I,ISO)
+  721  CONTINUE
+C
+       IF(IXS(3).EQ.1) THEN
+       CALL LCMGET(IPLIST,'NUSIGF',FMREF(1,I,ISO))
+       DO 30 IGR=1,NGRP
+       ZNUG(IGR,I)=ZNUG(IGR,I) + DENSIT(ISO)*FMREF(IGR,I,ISO)
+ 30    CONTINUE
+       ENDIF
+       IF(IXS(4).EQ.1) THEN
+          CALL LCMGET(IPLIST,'NFTOT',WORK3)
+          CALL LCMGET(IPLIST,'NFTOT',HMREF(1,I,ISO))
+          DO 31 IGR=1,NGRP
+          HMREF(IGR,I,ISO)=HMREF(IGR,I,ISO)*EFJ(ISO)
+          NF3(IGR)=NF3(IGR)+DENSIT(ISO)*WORK3(IGR)
+          H(IGR,I)=H(IGR,I) + DENSIT(ISO)*HMREF(IGR,I,ISO)
+  31      CONTINUE
+         ENDIF
+         IF(IXS(5).EQ.1) CALL LCMGET(IPLIST,'CHI',MCHI3)
+      CALL LCMSIX(IPLIST,' ',2)
+   40 CONTINUE
+         CALL LCMSIX(IPLIST,' ',2)
+         CALL LCMSIX(IPLIST,' ',2)
+C----------------------------------------------------------------------C
+C-----
+C     STORE PROPERTIES
+C-----
+         CALL LCMSIX(IPFBM,TEXTR,1)
+C
+         CALL LCMPUT(IPFBM,'JTAB',NISO,1,JTAB)
+C
+         CALL LCMSIX(IPFBM,TEXTB,1)
+         CALL LCMPUT(IPFBM,'ISOTOPESDENS',NISO,2,DENSIT)
+         CALL LCMPUT(IPFBM,'FLUX-INTG',NGRP,2,FLUI3)
+         CALL LCMPUT(IPFBM,'OVERV',NGRP,2,OV3)
+         CALL LCMPUT(IPFBM,'FLUXDISAFACT',NGRP,2,FLDIS3)
+C
+C        STORE MACROSCOPIC X-SECTIONS
+C
+         CALL LCMSIX(IPFBM,'MACR',1)
+         CALL LCMSIX(IPFBM,'ABS',1)
+         CALL LCMPUT(IPFBM,'REF',NGRP,2,TOTAL(1,I))
+         CALL LCMSIX(IPFBM,' ',2)
+         IF(IXYZ.EQ.0) THEN
+         CALL LCMSIX(IPFBM,'STRD',1)
+         CALL LCMPUT(IPFBM,'REF',NGRP,2,DIFFX(1,I))
+         CALL LCMSIX(IPFBM,' ',2)
+         ELSE IF(IXYZ.EQ.1) THEN
+         CALL LCMSIX(IPFBM,'STRD X',1)
+         CALL LCMPUT(IPFBM,'REF',NGRP,2,DIFFX(1,I))
+         CALL LCMSIX(IPFBM,' ',2)
+         CALL LCMSIX(IPFBM,'STRD Y',1)
+         CALL LCMPUT(IPFBM,'REF',NGRP,2,DIFFY(1,I))
+         CALL LCMSIX(IPFBM,' ',2)
+         CALL LCMSIX(IPFBM,'STRD Z',1)
+         CALL LCMPUT(IPFBM,'REF',NGRP,2,DIFFZ(1,I))
+         CALL LCMSIX(IPFBM,' ',2)
+         ENDIF
+         IF(JTAB(1).EQ.1) THEN
+         CALL LCMSIX(IPFBM,'NUSIGF',1)
+         CALL LCMPUT(IPFBM,'REF',NGRP,2,ZNUG(1,I))
+         CALL LCMSIX(IPFBM,' ',2)
+         CALL LCMSIX(IPFBM,'H-FACTORS',1)
+         CALL LCMPUT(IPFBM,'REF',NGRP,2,H(1,I))
+         CALL LCMSIX(IPFBM,' ',2)
+         CALL LCMPUT(IPFBM,'CHI',NGRP,2,CHI3)
+         CALL LCMPUT(IPFBM,'NFTOT',NGRP,2,NF3)
+         ENDIF
+         CALL LCMSIX(IPFBM,' ',2)
+C
+C        STORE MICROSCOPIC X-SECTIONS
+C
+         DO 49 ISO=2,NISO
+         IF(DENSIT(ISO).EQ.0.0) GO TO 49
+         WRITE(HMICRO,'(3A4)') (HISO((ISO-1)*3+IH),IH=1,3)
+         CALL LCMSIX(IPFBM,HMICRO,1)
+         CALL LCMSIX(IPFBM,'ABS',1)
+         CALL LCMPUT(IPFBM,'REF',NGRP,2,TMREF(1,I,ISO))
+         CALL LCMSIX(IPFBM,' ',2)
+         IF(IXYZ.EQ.0) THEN
+           CALL LCMSIX(IPFBM,'STRD',1)
+           CALL LCMPUT(IPFBM,'REF',NGRP,2,DMRFX(1,I,ISO))
+           CALL LCMSIX(IPFBM,' ',2)
+         ELSE IF(IXYZ.EQ.1) THEN
+           CALL LCMSIX(IPFBM,'STRD X',1)
+           CALL LCMPUT(IPFBM,'REF',NGRP,2,DMRFX(1,I,ISO))
+           CALL LCMSIX(IPFBM,' ',2)
+           CALL LCMSIX(IPFBM,'STRD Y',1)
+           CALL LCMPUT(IPFBM,'REF',NGRP,2,DMRFY(1,I,ISO))
+           CALL LCMSIX(IPFBM,' ',2)
+           CALL LCMSIX(IPFBM,'STRD Z',1)
+           CALL LCMPUT(IPFBM,'REF',NGRP,2,DMRFZ(1,I,ISO))
+           CALL LCMSIX(IPFBM,' ',2)
+         ENDIF
+         IF(JTAB(ISO).EQ.1) THEN
+           CALL LCMSIX(IPFBM,'NUSIGF',1)
+           CALL LCMPUT(IPFBM,'REF',NGRP,2,FMREF(1,I,ISO))
+           CALL LCMSIX(IPFBM,' ',2)
+           CALL LCMSIX(IPFBM,'H-FACTORS',1)
+           CALL LCMPUT(IPFBM,'REF',NGRP,2,HMREF(1,I,ISO))
+           CALL LCMSIX(IPFBM,' ',2)
+           CALL LCMPUT(IPFBM,'CHI',NGRP,2,MCHI3)
+         ENDIF
+         CALL LCMSIX(IPFBM,' ',2)
+   49    CONTINUE
+         CALL LCMSIX(IPFBM,' ',2)
+         CALL LCMSIX(IPFBM,' ',2)
+C-----
+C     RECOVER MICROSCOPIC CONTRIBUTIONS OF SCATTERING X-SECTIONS.
+C-----
+      DO 160 ISO=2,NISO
+      IF(DENSIT(ISO).EQ.0.0) GO TO 160
+      WRITE(HMICRO,'(3A4)') (HISO((ISO-1)*3+IH),IH=1,3)
+      IF(IP.EQ.1) THEN
+         CALL LCMSIX(IPLIST,'REF        1',1)
+         ELSE
+         CALL LCMSIX(IPLIST,'MODREF     1',1)
+         ENDIF
+      CALL LCMSIX(IPLIST,TEXTB,1)
+      CALL LCMLEN(IPLIST,HMICRO,ILENG,ITYLCM)
+      IF(ILENG.NE.0) THEN
+      CALL LCMSIX(IPLIST,HMICRO,1)
+      CALL LCMGET(IPLIST,'XS-SAVED',IXS)
+      CALL LCMGET(IPLIST,'SCAT-SAVED',IXS(21))
+C
+      IL=1
+      WRITE (CM,'(I2.2)') IL-1
+      IF(IXS(20+IL).EQ.1) THEN
+         CALL LCMGET(IPLIST,'SCAT'//CM,WORK3)
+         CALL LCMGET(IPLIST,'NJJS'//CM,NJJ)
+         CALL LCMGET(IPLIST,'IJJS'//CM,IJJ)
+         IGAR=0
+         DO 150 JGR=1,NGRP
+         DO 140 IGR=IJJ(JGR),IJJ(JGR)-NJJ(JGR)+1,-1
+         IGAR=IGAR+1
+         SMREF(ISO,I,IL,IGR,JGR)=WORK3(IGAR)
+         SCAT(I,IL,IGR,JGR)=SCAT(I,IL,IGR,JGR)+DENSIT(ISO)*WORK3(IGAR)
+  140    CONTINUE
+  150    CONTINUE
+        ENDIF
+C
+        CALL LCMSIX(IPLIST,' ',2)
+      ENDIF
+      CALL LCMSIX(IPLIST,' ',2)
+      CALL LCMSIX(IPLIST,' ',2)
+  160 CONTINUE
+C----------------------------------------------------------------------C
+C
+C        STORE MACROSCOPIC SCATTERING X-SECTIONS
+C
+         CALL LCMSIX(IPFBM,TEXTR,1)
+         CALL LCMSIX(IPFBM,TEXTB,1)
+C
+         CALL LCMSIX(IPFBM,'MACR',1)
+         IL=1
+         WRITE (CM,'(I2)') IL-1
+         CALL LCMSIX(IPFBM,'SCAT'//CM,1)
+         IGARM=0
+         DO 799 JGR=1,NGRP
+         IGRMIN=JGR
+         IGRMAX=JGR
+         DO 899 IGR=1,NGRP
+          IF(SCAT(I,IL,IGR,JGR).NE.0.0) THEN
+                    IGRMIN=MIN(IGRMIN,IGR)
+                    IGRMAX=MAX(IGRMAX,IGR)
+          ENDIF
+ 899     CONTINUE
+         MIJ(JGR)=IGRMAX
+         MNJ(JGR)=IGRMAX-IGRMIN+1
+         DO 795 IGR=MIJ(JGR),MIJ(JGR)-MNJ(JGR)+1,-1
+         IGARM=IGARM+1
+         WORK3(IGARM)=SCAT(I,IL,IGR,JGR)
+  795    CONTINUE
+  799   CONTINUE
+         CALL LCMPUT(IPFBM,'NJJ',NGRP,1,MNJ)
+         CALL LCMPUT(IPFBM,'IJJ',NGRP,1,MIJ)
+         CALL LCMPUT(IPFBM,'REF',IGARM,2,WORK3)
+         CALL LCMSIX(IPFBM,' ',2)
+C
+C
+         CALL LCMSIX(IPFBM,' ',2)
+C
+C
+C       STORE THE SCATTERING X-SECTIONS
+C
+         DO 860 ISO=2,NISO
+         IF(DENSIT(ISO).EQ.0.0) GO TO 860
+         WRITE(HMICRO,'(3A4)') (HISO((ISO-1)*3+IH),IH=1,3)
+         CALL LCMSIX(IPFBM,HMICRO,1)
+         IL=1
+         WRITE (CM,'(I2)') IL-1
+         CALL LCMSIX(IPFBM,'SCAT'//CM,1)
+         IGARM=0
+         DO 105 JGR=1,NGRP
+         DO 100 IGR=MIJ(JGR),MIJ(JGR)-MNJ(JGR)+1,-1
+         IGARM=IGARM+1
+         WORK3(IGARM)=SMREF(ISO,I,IL,IGR,JGR)
+  100    CONTINUE
+  105    CONTINUE
+         CALL LCMPUT(IPFBM,'REF',IGARM,2,WORK3)
+         CALL LCMPUT(IPFBM,'NJJ',NGRP,1,MNJ)
+         CALL LCMPUT(IPFBM,'IJJ',NGRP,1,MIJ)
+         CALL LCMSIX(IPFBM,' ',2)
+C
+         CALL LCMSIX(IPFBM,' ',2)
+  860    CONTINUE
+         CALL LCMSIX(IPFBM,' ',2)
+         CALL LCMSIX(IPFBM,' ',2)
+  20     CONTINUE
+C
+         DEALLOCATE(MCHI3,CHI3,NF3,DIFD3,OV3,FLDIS3,FLUI3)
+         WRITE(IOUT,9000)
+C----------------------------------------------------------------------C
+C                                                                      C
+C  FUEL COEFFICIENTS CALCULATIONS                                      C
+C                                                                      C
+C----------------------------------------------------------------------C
+C MIXP =0 : INDIVIDUAL LOCAL PARAMETER                                 C
+C MIXP =1 : MIXDED     LOCAL PARAMETER                                 C
+C NB   =1 : THE COEFFICIENTS CALCULATION REQUIRE ONE L_COMPO           C
+C NB   =2 : THE COEFFICIENTS CALCULATION REQUIRE TWO L_COMPO           C
+C TEXT1   : FIRST RECORD ON WHICH THE COEFF. ARE STORED (NB=1)         C
+C TEXT2   : SECOND RECORD ON WHICH THE COEFF. ARE STORED (NB=2)        C
+C----------------------------------------------------------------------C
+C
+       IF(IP.EQ.1) THEN
+       DO 111 J=1,5
+       JJU=2*J+1
+       JJD=2*J+2
+       IPLISU=KENTRY(JJU)
+       IPLISD=KENTRY(JJD)
+       IF(ABS(IPRINT) .GT. 5) THEN
+         WRITE(IOUT,6000) JJU,HENTRY(JJU),JJD,HENTRY(JJD)
+       ENDIF 
+       NB=2
+       MIXP=0
+C-----
+C     COMPUTE  FUEL TEMPERATURE COEFFICIENTS (TWO L_COMPO)
+C-----
+       IF(J.EQ.1) THEN
+        TEXT(1)='SIGNATURE'
+        CALL LCMNXT(IPLISU,TEXT(1))
+        IF(TEXT(1).NE.'FTEMP-UP   1') THEN
+        CALL XABORT('CFCDRV: FTEMP-UP COMPO EXPECTED.')
+        ENDIF
+        TEXT(2)='SIGNATURE'
+        CALL LCMNXT(IPLISD,TEXT(2))
+        IF(TEXT(2).NE.'FTEMP-D    1') CALL XABORT('CFCDRV: '
+     1   //' FTEMP-D COMPO EXPECTED.')
+        TEXT1='T1F'
+        TEXT2='T2F'
+C-----
+C     COMPUTE  COOLANT TEMPERATURE COEFFICIENTS (TWO L_COMPO)
+C-----
+       ELSE IF(J.EQ.2) THEN
+       TEXT(1)='SIGNATURE'
+       CALL LCMNXT(IPLISU,TEXT(1))
+       IF(TEXT(1).NE.'CTEMP-UP   1') THEN
+       CALL XABORT('CFCDRV: CTEMP-UP COMPO EXPECTED.')
+       ENDIF
+       TEXT(2)='SIGNATURE'
+       CALL LCMNXT(IPLISD,TEXT(2))
+       IF(TEXT(2).NE.'CTEMP-D    1') CALL XABORT('CFCDRV:'
+     1  //' CTEMP-D COMPO EXPECTED.')
+       TEXT1='T1C'
+       TEXT2='T2C'
+C-----
+C     COMPUTE  MODERATOR TEMPERATURE COEFFICIENTS (TWO L_COMPO)
+C-----
+      ELSE IF(J.EQ.3) THEN
+      TEXT(1)='SIGNATURE'
+      CALL LCMNXT(IPLISU,TEXT(1))
+      IF(TEXT(1).NE.'MTEMP-UP   1') THEN
+      CALL XABORT('CFCDRV: MTEMP-UP COMPO EXPECTED.')
+      ENDIF
+      TEXT(2)='SIGNATURE'
+      CALL LCMNXT(IPLISD,TEXT(2))
+      IF(TEXT(2).NE.'MTEMP-D    1') CALL XABORT('CFCDRV:'
+     1  //' MTEMP-D COMPO EXPECTED.')
+      TEXT1='T1M'
+      TEXT2='T2M'
+C-----
+C      COMPUTE  COOLANT DENSITY COEFFICIENTS (TWO L_COMPO)
+C-----
+       ELSE IF(J.EQ.4) THEN
+       TEXT(1)='SIGNATURE'
+       CALL LCMNXT(IPLISU,TEXT(1))
+       IF(TEXT(1).NE.'CDEN-UP    1') THEN
+       CALL XABORT('CFCDRV: CDEN-UP COMPO EXPECTED.')
+       ENDIF
+       TEXT(2)='SIGNATURE'
+       CALL LCMNXT(IPLISD,TEXT(2))
+       IF(TEXT(2).NE.'CDEN-D     1') CALL XABORT('CFCDRV:'
+     1 //' CDEN-D COMPO EXPECTED.')
+       TEXT1='D1C'
+       TEXT2='D2C'
+C-----
+C     COMPUTE  MODERATOR DENSITY COEFFICIENTS (TWO L_COMPO)
+C-----
+      ELSE IF(J.EQ.5) THEN
+      TEXT(1)='SIGNATURE'
+      CALL LCMNXT(IPLISU,TEXT(1))
+      IF(TEXT(1).NE.'MDEN-UP    1') THEN
+      CALL XABORT('CFCDRV: MDEN-UP COMPO EXPECTED.')
+      ENDIF
+      TEXT(2)='SIGNATURE'
+      CALL LCMNXT(IPLISD,TEXT(2))
+      IF(TEXT(2).NE.'MDEN-D     1') CALL XABORT('CFCDRV:'
+     1//'  MDEN-D COMPO EXPECTED.')
+      TEXT1='D1M'
+      TEXT2='D2M'
+      ENDIF
+C
+         CALL CFCFBM(TEXT1,TEXT2,IPLISU,IPLISD,IPFBM,NGRP,NBUM,NISM,
+     1   NBURN,NISO,HISO,NL,IPRINT,TOTAL,ZNUG,DIFFX,DIFFY,DIFFZ,
+     1   H,SCAT,MIJ,MNJ,TMREF,SMREF,DMRFX,DMRFY,DMRFZ,TOT2,ZN2,DXF2,
+     1   DYF2,DZF2,HF2,SCA2,WORK3,REFC,MIRCT2,MIRCS2,MICDX2,MICDY2,
+     1   MICDZ2,DELTA,DENSIT,TFR,TCR,TMR,XIR,TEXT,TEXTR,NB,MIRCF2,
+     1   MIRCH2,FMREF,HMREF,JTAB,MIXP,V2,EFJ,NXS,IXYZ,NBPARA,DBPARA)
+ 111   CONTINUE
+       WRITE(IOUT,9001)
+C----------------------------------------------------------------------C
+C                                                                      C
+C                                                                      C
+C----------------------------------------------------------------------C
+       DO 112 J=13,21
+       IPLISU=KENTRY(J)
+       IPLISD=IPLISU
+       NB=1
+       MIXP=0
+       IF(ABS(IPRINT) .GT. 5) THEN
+         WRITE(IOUT,6001) J,HENTRY(J)
+       ENDIF 
+C-----
+C      COMPUTE BORON COEFFICIENTS (ONE L_COMPO)
+C-----
+       IF(J.EQ.13) THEN
+       TEXT(1)='SIGNATURE'
+       CALL LCMNXT(IPLISU,TEXT(1))
+        IF(TEXT(1).NE.'BORON      1') THEN
+        CALL XABORT('CFCDRV: BORON COMPO EXPECTED.')
+        ENDIF
+       TEXT1='BOR'
+       TEXT2='BOR'
+       TEXT(2)=TEXT(1)
+C-----
+C      COMPUTE PURITY COEFFICIENTS (ONE L_COMPO)
+C-----
+       ELSE IF(J.EQ.14) THEN
+       TEXT(1)='SIGNATURE'
+       CALL LCMNXT(IPLISU,TEXT(1))
+        IF(TEXT(1).NE.'PURITY     1') THEN
+        CALL XABORT('CFCDRV: BORON COMPO EXPECTED.')
+        ENDIF
+       TEXT1='PUR'
+       TEXT2='PUR'
+       TEXT(2)=TEXT(1)
+C-----
+C       COMPUTE  XENON COEFFICIENTS (ONE L_COMPO)
+C-----
+        ELSE IF(J.EQ.15) THEN
+        TEXT(1)='SIGNATURE'
+        CALL LCMNXT(IPLISU,TEXT(1))
+         IF(TEXT(1).NE.'XENON      1') THEN
+         CALL XABORT('CFCDRV: XENON COMPO EXPECTED.')
+         ENDIF
+        TEXT1='XEN'
+        TEXT2='XEN'
+        TEXT(2)=TEXT(1)
+C-----
+C      COMPUTE  SAMARIUM COEFFICIENTS (ONE L_COMPO)
+C-----
+       ELSE IF(J.EQ.16) THEN
+       TEXT(1)='SIGNATURE'
+       CALL LCMNXT(IPLISU,TEXT(1))
+        IF(TEXT(1).NE.'SM149      1') THEN
+        CALL XABORT('CFCDRV: SM149 COMPO EXPECTED.')
+        ENDIF
+       TEXT1='SM149'
+       TEXT2='SM149'
+       TEXT(2)=TEXT(1)
+C-----
+C       COMPUTE  NP239 COEFFICIENTS (ONE L_COMPO)
+C-----
+        ELSE IF(J.EQ.17) THEN
+        TEXT(1)='SIGNATURE'
+        CALL LCMNXT(IPLISU,TEXT(1))
+         IF(TEXT(1).NE.'NP239      1') THEN
+         CALL XABORT('CFCDRV: NP239 COMPO EXPECTED.')
+         ENDIF
+        TEXT1='NP239'
+        TEXT2='NP239'
+        TEXT(2)=TEXT(1)
+C-----
+C       COMPUTE MIXED FUEL AND DENSITY COEFFICIENTS (ONE L_COMPO)
+C-----
+        ELSE IF(J.EQ.18) THEN
+        TEXT(1)='SIGNATURE'
+        CALL LCMNXT(IPLISU,TEXT(1))
+         IF(TEXT(1).NE.'MIXFD      1') THEN
+         CALL XABORT('CFCDRV: MIXFD COMPO EXPECTED.')
+         ENDIF
+         MIXP=1
+        TEXT1='MIXFD'
+        TEXT2='MIXFD'
+        TEXT(2)=TEXT(1)
+C-----
+C       COMPUTE MIXED COLLANT AND DENSITY COEFFICIENTS (ONE L_COMPO)
+C-----
+        ELSE IF(J.EQ.19) THEN
+        TEXT(1)='SIGNATURE'
+        CALL LCMNXT(IPLISU,TEXT(1))
+         IF(TEXT(1).NE.'MIXMD      1') THEN
+         CALL XABORT('CFCDRV: MIXMD COMPO EXPECTED.')
+         ENDIF
+         MIXP=1
+        TEXT1='MIXMD'
+        TEXT2='MIXMD'
+        TEXT(2)=TEXT(1)
+C-----
+C      COMPUTE (HIGH)FISSION ISOTOPES COEFFICIENTS  (TWO L_COMPO)
+C-----
+      ELSE IF(J.EQ.20) THEN
+      TEXT(1)='SIGNATURE'
+      CALL LCMNXT(IPLISU,TEXT(1))
+       IF(TEXT(1).NE.'POWER-UP   1') THEN
+       CALL XABORT('CFCDRV: POWER-UP COMPO EXPECTED.')
+       ENDIF
+       IPLISD=KENTRY(J+1)
+       TEXT(2)='SIGNATURE'
+       CALL LCMNXT(IPLISD,TEXT(2))
+       IF(TEXT(2).NE.'POWER-IN   1') CALL XABORT('CFCDRV:'
+     1  //'  POWER-D COMPO EXPECTED.')
+       MIXP=1
+       NB=2
+       TEXT1='FPCH1'
+       TEXT2='FPCH2'
+C-----
+C     COMPUTE LOW FISSION ISOTOPES COEFFICIENTS (TWO L_COMPO)
+C-----
+      ELSE IF(J.EQ.21) THEN
+      TEXT(1)='SIGNATURE'
+      CALL LCMNXT(IPLISU,TEXT(1))
+       IF(TEXT(1).NE.'POWER-IN   1') THEN
+       CALL XABORT('CFCDRV: POWER-UP COMPO EXPECTED.')
+       ENDIF
+       IPLISD=KENTRY(J+1)
+       TEXT(2)='SIGNATURE'
+       CALL LCMNXT(IPLISD,TEXT(2))
+       IF(TEXT(2).NE.'POWER-D    1') CALL XABORT('CFCDRV:'
+     1  //'  POWER-D COMPO EXPECTED.')
+       MIXP=1
+       NB=2
+       TEXT1='FPCL1'
+       TEXT2='FPCL2'
+      ENDIF
+         IF(ABS(IPRINT) .GT. 5) THEN
+           WRITE(IOUT,6002) TEXT1,TEXT2
+         ENDIF 
+C
+         CALL CFCFBM(TEXT1,TEXT2,IPLISU,IPLISD,IPFBM,NGRP,NBUM,NISM,
+     1   NBURN,NISO,HISO,NL,IPRINT,TOTAL,ZNUG,DIFFX,DIFFY,DIFFZ,
+     1   H,SCAT,MIJ,MNJ,TMREF,SMREF,DMRFX,DMRFY,DMRFZ,TOT2,ZN2,
+     1   DXF2, DYF2,DZF2,HF2,SCA2,WORK3,REFC,MIRCT2,MIRCS2,MICDX2,
+     1   MICDY2,MICDZ2,DELTA,DENSIT,TFR,TCR,TMR,XIR,TEXT,TEXTR,NB,
+     1   MIRCF2,MIRCH2,FMREF,HMREF,JTAB,MIXP,V2,EFJ,NXS,IXYZ,NBPARA,
+     1   DBPARA)
+ 112   CONTINUE
+       WRITE(IOUT,9002)
+C----------------------------------------------------------------------C
+C                                                                      C
+C                                                                      C
+C----------------------------------------------------------------------C
+C-----
+C        COMPUTE THE HISTORY CONCENTRATION
+C-----
+         DO 650 JJ=1,2
+         IF(JJ.EQ.1) THEN
+          IPHISU=KENTRY(21)
+          IPHISD=KENTRY(22)
+          TEXT(1)='SIGNATURE'
+          CALL LCMNXT(IPHISU,TEXT(1))
+          IF(TEXT(1).NE.'POWER-IN   1') THEN
+          CALL XABORT('CFCDRV: POWER-IN COMPO EXPECTED.')
+          ENDIF
+          TEXT(2)='SIGNATURE'
+          CALL LCMNXT(IPHISD,TEXT(2))
+          IF(TEXT(2).NE.'POWER-D    1') CALL XABORT('CFCDRV:'
+     1    //'  POWER-D COMPO EXPECTED.')
+          NB=2
+C          TEXT1='PHIS1'
+C          TEXT2='PHIS2'
+          ELSE IF(JJ.EQ.2) THEN
+          IPHISU=KENTRY(20)
+          IPHISD=KENTRY(21)
+          TEXT(1)='SIGNATURE'
+          CALL LCMNXT(IPHISU,TEXT(1))
+          IF(TEXT(1).NE.'POWER-UP   1') THEN
+          CALL XABORT('CFCDRV: POWER-UP COMPO EXPECTED.')
+          ENDIF
+          TEXT(2)='SIGNATURE'
+          CALL LCMNXT(IPHISD,TEXT(2))
+          IF(TEXT(2).NE.'POWER-IN   1') CALL XABORT('CFCDRV:'
+     1    //'  POWER-D COMPO EXPECTED.')
+          NB=2
+C          TEXT1='PHIL1'
+C          TEXT2='PHIL2'
+        ENDIF
+C-----
+C         STORE THE HISTORY COEFFICIENTS
+C-----
+         DO 730 JP=1,4
+         IF(JP.EQ.1) THEN
+           TEXT12='FPC'
+             IF(JJ.EQ.1) THEN
+               TEXT1='PHIS1'
+               TEXT2='PHIS2'
+             ELSE
+               TEXT1='PHIL1'
+               TEXT2='PHIL2'
+             ENDIF
+         ELSE IF(JP.EQ.2) THEN
+           TEXT12='XE135'
+             IF(JJ.EQ.1) THEN
+               TEXT1='PHISX1'
+               TEXT2='PHISX2'
+             ELSE
+               TEXT1='PHILX1'
+               TEXT2='PHILX2'
+             ENDIF
+         ELSE IF(JP.EQ.3) THEN
+           TEXT12='SM149'
+              IF(JJ.EQ.1) THEN
+               TEXT1='PHISS1'
+               TEXT2='PHISS2'
+             ELSE
+               TEXT1='PHILS1'
+               TEXT2='PHILS2'
+             ENDIF
+         ELSE IF(JP.EQ.4) THEN
+           TEXT12='NP239'
+             IF(JJ.EQ.1) THEN
+               TEXT1='PHISN1'
+               TEXT2='PHISN2'
+             ELSE
+               TEXT1='PHILN1'
+               TEXT2='PHILN2'
+             ENDIF
+         ENDIF
+         DO 630 JB=1,NB
+            IF(JB.EQ.1) IPHIST=IPHISU
+            IF(JB.EQ.2) IPHIST=IPHISD
+         CALL LCMSIX(IPHIST,TEXT(JB),1)
+         CALL LCMGET(IPHIST,'ISOTOPESNAME',HISO)
+         DO 621 I=1,NBURN
+         WRITE(TEXTB,'(4HBURN,4X,I4)') I
+         CALL LCMSIX(IPHIST,TEXTB,1)
+         CALL LCMGET(IPHIST,'ISOTOPESDENS',DENSIT)
+         IF(DENSIT(1).NE.1.0) CALL XABORT('FBM: DENSIT(1).NE.1.')
+      DO 649 ISO=2,NISO
+      WRITE(HMICRO,'(3A4)') (HISO((ISO-1)*3+IH),IH=1,3)
+      IF(HMICRO.EQ.TEXT12) DELTA(I,JB)=DENSIT(ISO)- REFC(I,ISO)
+ 649   CONTINUE
+      CALL LCMSIX(IPHIST,' ',2)
+ 621   CONTINUE
+      CALL LCMSIX(IPHIST,' ',2)
+ 630   CONTINUE
+       DO 622 I=1,NBURN
+        IF(NB.EQ.2) THEN
+        PV1U=0.0
+        PV2U=0.0
+        PV1D=0.0
+        PV2D=0.0
+        IF(JJ.EQ.1) THEN
+         PV1U=PWU-PWR
+         PV2U=PV1U*PV1U
+         PV1D=PWD-PWR
+         PV2D=PV1D*PV1D
+        ELSE IF(JJ.EQ.2) THEN
+         PV1U=ALOG(PWUL/PWR)
+         PV2U=1.0/PWUL - 1.0/PWR
+         PV1D=ALOG(PWDL/PWR)
+         PV2D=1.0/PWDL - 1.0/PWR
+        ENDIF
+        TX=PV2U*PV1D - PV2D*PV1U
+        DELTA(I,2)=(DELTA(I,1)*PV1D-DELTA(I,2)*PV1U)/TX
+        DELTA(I,1)=(DELTA(I,1) - DELTA(I,2)*PV2U)/PV1U
+C
+       ENDIF
+C
+         CALL LCMSIX(IPFBM,TEXTR,1)
+         WRITE(TEXTB,'(4HBURN,4X,I4)') I
+         CALL LCMSIX(IPFBM,TEXTB,1)
+         CALL LCMSIX(IPFBM,'HISTORY',1)
+         CALL LCMPUT(IPFBM,TEXT1,1,2,DELTA(I,1))
+         IF(NB.EQ.2) THEN
+         CALL LCMPUT(IPFBM,TEXT2,1,2,DELTA(I,2))
+         ENDIF
+         CALL LCMSIX(IPFBM,' ',2)
+         CALL LCMSIX(IPFBM,' ',2)
+         CALL LCMSIX(IPFBM,' ',2)
+ 622    CONTINUE
+ 730    CONTINUE
+ 650    CONTINUE
+        WRITE(IOUT,9003)
+        ELSE
+C----------------------------------------------------------------------C
+C                                                                      C
+C       MODERATOR CALCULATIONS                                         C
+C                                                                      C
+C----------------------------------------------------------------------C
+       DO 811 J=1,4
+       NB=2
+       MIXP=0
+C-----
+C     COMPUTE  MODERATOR TEMPERATURE COEFFICIENTS
+C-----
+      IF(J.EQ.1) THEN
+       IPLISU=KENTRY(24)
+       IPLISD=KENTRY(25)
+      TEXT(1)='SIGNATURE'
+      CALL LCMNXT(IPLISU,TEXT(1))
+       IF(TEXT(1).NE.'MODTP-UP   1') THEN
+       CALL XABORT('CFCDRV: MTEMP-UP COMPO EXPECTED.')
+       ENDIF
+      TEXT(2)='SIGNATURE'
+      CALL LCMNXT(IPLISD,TEXT(2))
+       IF(TEXT(2).NE.'MODTP-D    1') CALL XABORT('CFCDRV:'
+     1  //' MTEMP-D COMPO EXPECTED.')
+        TEXT1='T1M'
+        TEXT2='T2M'
+C-----
+C     COMPUTE  MODERATOR DENSITY COEFFICIENTS
+C-----
+      ELSE IF(J.EQ.2) THEN
+       IPLISU=KENTRY(26)
+       IPLISD=KENTRY(27)
+      TEXT(1)='SIGNATURE'
+      CALL LCMNXT(IPLISU,TEXT(1))
+       IF(TEXT(1).NE.'MODDEN-U   1') THEN
+       CALL XABORT('CFCDRV: MDEN-UP COMPO EXPECTED.')
+       ENDIF
+       TEXT(2)='SIGNATURE'
+       CALL LCMNXT(IPLISD,TEXT(2))
+       IF(TEXT(2).NE.'MODDEN-D   1') CALL XABORT('CFCDRV:'
+     1  //'  MDEN-D COMPO EXPECTED.')
+       TEXT1='D1M'
+       TEXT2='D2M'
+C-----
+C     COMPUTE BORON COEFFICIENTS
+C-----
+      ELSE IF(J.EQ.3) THEN
+       NB=1
+       MIXP=0
+       IPLISU=KENTRY(28)
+       TEXT(1)='SIGNATURE'
+       CALL LCMNXT(IPLISU,TEXT(1))
+        IF(TEXT(1).NE.'MODBOR     1') THEN
+        CALL XABORT('CFCDRV: BORON COMPO EXPECTED.')
+        ENDIF
+       TEXT1='BOR'
+       TEXT2='BOR'
+       TEXT(2)=TEXT(1)
+C-----
+C      COMPUTE PURITY COEFFICIENTS
+C-----
+       ELSE IF(J.EQ.4) THEN
+       NB=1
+       MIXP=0
+       IPLISU=KENTRY(29)
+       TEXT(1)='SIGNATURE'
+       CALL LCMNXT(IPLISU,TEXT(1))
+        IF(TEXT(1).NE.'MODPUR     1') THEN
+        CALL XABORT('CFCDRV: BORON COMPO EXPECTED.')
+        ENDIF
+       TEXT1='PUR'
+       TEXT2='PUR'
+       TEXT(2)=TEXT(1)
+       ENDIF
+C
+         CALL CFCFBM(TEXT1,TEXT2,IPLISU,IPLISD,IPFBM,NGRP,NBUM,NISM,
+     1   NBURN,NISO,HISO,NL,IPRINT,TOTAL,ZNUG,DIFFX,DIFFY,DIFFZ,
+     1   H,SCAT,MIJ,MNJ,TMREF,SMREF,DMRFX,DMRFY,DMRFZ,TOT2,ZN2,
+     1   DXF2, DYF2,DZF2,HF2,SCA2,WORK3,REFC,MIRCT2,MIRCS2,MICDX2,
+     1   MICDY2,MICDZ2,DELTA,DENSIT,TFR,TCR,TMR,XIR,TEXT,TEXTR,NB,
+     1   MIRCF2,MIRCH2,FMREF,HMREF,JTAB,MIXP,V2,EFJ,NXS,IXYZ,NBPARA,
+     1   DBPARA)
+C
+ 811   CONTINUE
+       WRITE(IOUT,9004)
+        ENDIF
+C-----
+C       STORE PARAM INFORMATION
+C-----
+          CALL LCMSIX(IPFBM,TEXTR,1)
+          IPAR(1)=NGRP
+          IPAR(2)=NISO
+          IPAR(3)=NL
+          IPAR(4)=NBURN
+          IPAR(5)=IXYZ
+          CALL LCMPUT(IPFBM,'PARAM',5,1,IPAR)
+          CALL LCMSIX(IPFBM,'     ',2)
+ 801   CONTINUE
+C----------------------------------------------------------------------C
+C        RELEASE MEMORY                                                C
+C----------------------------------------------------------------------C
+         DEALLOCATE(MIRCH2,MIRCF2,V2,MICDZ2,MICDY2,MICDX2,MIRCS2,
+     >   MIRCT2,SCA2,HF2,DZF2,DYF2,DXF2,ZN2,TOT2)
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
+      DEALLOCATE(DELTA,HMREF,FMREF,REFC,DMRFZ,DMRFY,DMRFX,SMREF,TMREF,
+     > EFJ,DENSIT,WORK3,SCAT,H,DIFFZ,DIFFY,DIFFX,ZNUG,TOTAL)
+      DEALLOCATE(IXS,JTAB,HISO,MNJ,MIJ,NJJ,IJJ)
+*
+      RETURN
+ 6000 FORMAT(' CPO ',I4,' for up parameter named   = ',A12/
+     >       ' CPO ',I4,' for down parameter named = ',A12)
+ 6001 FORMAT(' CPO ',I4,' with name ',A12)
+ 6002 FORMAT(' Records ',2(A8,4X))
+ 9000 FORMAT(' CELL REFERENCE (NOMINAL) PARAMETER ARE STORED')
+ 9001 FORMAT(' CELL FEEDBACK COEFFICIENTS CORRESPONDING TO:'/
+     >       ' FUEL      TEMPERATURE,'/
+     >       ' COOLANT   TEMPERATURE,'/
+     >       ' MODERATOR TEMPERATURE,'/
+     >       ' COOLANT   DENSITY    ,'/
+     >       ' MODERATOR DENSITY    ,')
+ 9002 FORMAT(' CELL FEEDBACK COEFFICIENTS CORRESPONDING TO:'/
+     >       ' BORON      CONCENTRATION,'/
+     >       ' MODERATOR  PURITY       ,'/
+     >       ' XENON      CONCENTRATION,'/
+     >       ' SAMARIUM   CONCENTRATION,'/
+     >       ' NEPTUNIUM  CONCENTRATION,'/
+     >       ' ************************,'/
+     >       ' MIXED FUEL    TEMPERATURE AND COOLANT DENSITY,'/
+     >       ' MIXED COOLANT TEMPERATURE AND COOLANT DENSITY,'/
+     >       ' *********************************************,'/
+     >       ' THE POWER HISTORY,'/)
+ 9003 FORMAT(' POWER HISTORY COEFFICIENTS FOR THE CONCENTRATION '/
+     >       ' ARE STORED')
+ 9004 FORMAT(' REFLECTOR FEEDBACK COEFFICIENTS CORRESPONDING TO:'/
+     >       ' MODERATOR  TEMPERATURE  ,'/
+     >       ' MODERATOR  DENSITY      ,'/
+     >       ' BORON      CONCENTRATION,'/
+     >       ' MODERATOR  PURITY       ,'/)
+      END

@@ -1,0 +1,136 @@
+*----
+*
+*  TEST CASE TCDR38
+*  DISTRIBUTED SELF-SHIELDING
+*  172-GROUP JEF2.2 DRAGLIB
+*  CARTESIAN CANDU6 CLUSTER WITH NXT
+*
+*  Author: G. Marleau
+*
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  LIBRARY LIBRARY2 CANDU6S CANDU6F TRACKS TRACKF SYS FLUX ;
+SEQ_BINARY
+  INTLINS INTLINF ;
+MODULE
+  GEO: NXT: LIB: USS: ASM: FLU: PSP: GREP: ABORT: END: ;
+SEQ_ASCII Geos.ps Geof.ps :: FILE './Geos.ps' './Geof.ps' ;
+REAL Kinf REFVALUE DELTA ;
+*----
+*  Microscopic cross sections from Jef 2.2 Draglib
+*----
+LIBRARY := LIB: ::
+  EDIT 0
+  NMIX 22 CTRA WIMS
+  SUBG
+*
+  MIXS LIB: DRAGON FIL: DLIB_J2
+  MIX  1  560.66   0.81212           O16      = O16      7.99449E-1
+    D2D2O    = H2_D2O   1.99768E-1   H1H2O    = H1_H2O   7.83774E-4
+  MIX  2  560.66   6.57              Nb93     = Nb93     2.50000
+    B10      = B10      4.15800E-5   B11      = B11      1.68420E-4
+    Zr90     = Zr90     5.01150E+1   Zr91     = Zr91     1.09200E+1
+    Zr92     = Zr92     1.66725E+1   Zr94     = Zr94     1.70625E+1
+  MIX  3  345.66   0.0014            He4      = He4      1.00000E+2
+  MIX  4  345.66   6.44              Fe56     = Fe56     1.60000E-1
+    Ni58     = Ni58     6.00000E-2   Cr52     = Cr52     1.10000E-1
+    B10      = B10      6.13800E-5   B11      = B11      2.48620E-4
+    Zr90     = Zr90     5.12509E+1   Zr91     = Zr91     1.11675E+1
+    Zr92     = Zr92     1.70504E+1   Zr94     = Zr94     1.74493E+1
+  MIX  5  345.66   1.082885          O16      = O16      7.98895E-1
+    D2D2O    = H2_D2O   2.01016E-1   H1H2O    = H1_H2O   8.96000E-5
+  MIX  6  941.29  10.4375010         O16      = O16      1.18473E+1
+    U235     = U235     6.27118E-1 1 IRSET 0.0 81
+    U238     = U238     8.75256E+1 1 IRSET 0.0 81
+  MIX  7 COMB 6 1.0     MIX  8 COMB 6 1.0     MIX  9 COMB 6 1.0
+  MIX 10 COMB 6 1.0     MIX 11 COMB 6 1.0     MIX 12 COMB 6 1.0
+  MIX 13 COMB 6 1.0     MIX 14 COMB 6 1.0     MIX 15 COMB 6 1.0
+  MIX 16 COMB 6 1.0     MIX 17 COMB 6 1.0     MIX 18 COMB 6 1.0
+  MIX 19 COMB 6 1.0     MIX 20 COMB 6 1.0     MIX 21 COMB 6 1.0
+  MIX 22   560.66   6.44             Fe56     = Fe56     1.60000E-1
+    Ni58     = Ni58     6.00000E-2   Cr52     = Cr52     1.10000E-1
+    B10      = B10      6.13800E-5   B11      = B11      2.48620E-4
+    Zr90     = Zr90     5.12509E+1   Zr91     = Zr91     1.11675E+1
+    Zr92     = Zr92     1.70504E+1   Zr94     = Zr94     1.74493E+1
+  ;
+*----
+*  Geometry CANDU6S
+*----
+REAL Rcomb4 := 0.6122 ; (*fuel radius*)
+REAL Rcomb1 := 0.5 SQRT Rcomb4 * ;
+REAL Rcomb2 := 0.8 SQRT Rcomb4 * ;
+REAL Rcomb3 := 0.95 SQRT Rcomb4 * ;
+REAL Rcool1 := 1.4885 2.8755 + 2. / ;
+REAL Rcool2 := 2.8755 4.3305 + 2. / ;
+CANDU6S := GEO: ::  CARCEL  6
+ X+ ALBE 1.0 X- ALBE 1.0 MESHX -14.2875 14.2875
+ Y+ ALBE 1.0 Y- ALBE 1.0 MESHY -14.2875 14.2875
+ RADIUS  0.0 <<Rcool1>> <<Rcool2>> 5.1689 5.6032 6.4478 6.5875
+ MIX     1 1 1 2 3 4 5
+ CLUSTER ROD1 ROD2 ROD3 ROD4
+ ::: ROD1 := GEO: TUBE 5 MIX 6 7 8 9 22 NPIN  1 RPIN 0.0 APIN 0.0
+          RADIUS 0.0 <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>> 0.654 ;
+ ::: ROD2 := GEO: ROD1 MIX 10 11 12 13 22 NPIN  6 RPIN 1.4885 APIN 0.0 ;
+ ::: ROD3 := GEO: ROD1 MIX 14 15 16 17 22 NPIN 12 RPIN 2.8755
+                  APIN 0.261799 ;
+ ::: ROD4 := GEO: ROD1 MIX 18 19 20 21 22 NPIN 18 RPIN 4.3305 APIN 0.0 ;
+;
+TRACKS INTLINS := NXT: CANDU6S ::
+  EDIT 0 TISO 5 10.0 ;
+Geos.ps := PSP: TRACKS ;
+*----
+*  Geometry CANDU6F
+*----
+REAL xyp := 14.0 2.0 SQRT / ;
+REAL xym := xyp -1. *  ;
+CANDU6F := GEO: ::  CARCEL  7 3 3
+ X+ REFL X- REFL MESHX -14.2875 <<xym>> <<xyp>> 14.2875
+ Y+ REFL Y- REFL MESHY -14.2875 <<xym>> <<xyp>> 14.2875
+ RADIUS  0.0 <<Rcool1>> <<Rcool2>> 5.16890 5.60320 6.44780 
+         6.58750 14.0
+ MIX     1 1 1 2 3 4 5 5 1 1 1 2 3 4 5 5 1 1 1 2 3 4 5 5
+         1 1 1 2 3 4 5 5 1 1 1 2 3 4 5 5 1 1 1 2 3 4 5 5
+         1 1 1 2 3 4 5 5 1 1 1 2 3 4 5 5 1 1 1 2 3 4 5 5
+ SPLITX 5 1 5
+ SPLITY 5 1 5
+ SPLITR 3 2 2 1 1 1 10
+ CLUSTER ROD1 ROD2 ROD3 ROD4
+ ::: ROD1 := GEO: TUBE 5 MIX 6 7 8 9 22 NPIN  1 RPIN 0.0 APIN 0.0
+          RADIUS 0.0 <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>> 0.654 ;
+ ::: ROD2 := GEO: ROD1 MIX 10 11 12 13 22 NPIN  6 RPIN 1.4885 APIN 0.0 ;
+ ::: ROD3 := GEO: ROD1 MIX 14 15 16 17 22 NPIN 12 RPIN 2.8755
+                  APIN 0.261799 ;
+ ::: ROD4 := GEO: ROD1 MIX 18 19 20 21 22 NPIN 18 RPIN 4.3305 APIN 0.0 ;
+;
+TRACKF INTLINF := NXT: CANDU6F ::
+  EDIT 0 TISO 5 10.0 ;
+Geof.ps := PSP: TRACKF ;
+*----
+*  Self-Shielding calculation NXT
+*  Transport calculation      NXT
+*  Flux calculation for critical buckling
+*----
+LIBRARY2 := USS: LIBRARY TRACKS INTLINS :: EDIT 1 PASS 2 ;
+SYS := ASM: LIBRARY2 TRACKF INTLINF :: EDIT 0 ;
+FLUX := FLU: SYS LIBRARY2 TRACKF ::
+  EDIT 2 TYPE B B1 SIGS ;
+
+GREP: FLUX :: GETVAL 'K-INFINITY' 1 >>Kinf<< ;
+ECHO "Kinf=" Kinf ;
+EVALUATE REFVALUE := 1.110458 ;
+EVALUATE DELTA := Kinf REFVALUE - REFVALUE / ABS ;
+IF DELTA 1.0E-3 < THEN
+  PRINT "TEST SUCCESSFUL; DELTA=" DELTA ;
+ELSE
+  PRINT "------------" ;
+  PRINT "TEST FAILURE" ;
+  PRINT "------------" ;
+  PRINT "REFERENCE=" REFVALUE " CALCULATED=" Kinf ;
+  ABORT: ;
+ENDIF ;
+
+ECHO "test TCDR38 completed" ;
+END: ;  
+QUIT "LIST" .

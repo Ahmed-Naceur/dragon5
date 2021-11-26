@@ -1,0 +1,294 @@
+*DECK IniCompo.c2m
+*----
+*  Name          : IniCompo.c2m
+*  Type          : DRAGON procedure
+*  Use           : Initialize multicompo object
+*  Author        : R. Chambon
+*
+*  Procedure called as: 
+*
+*  LIBRARY2 := Autop1 LIBRARY TRACKSS :: <<Fuel>> <<NbRegions>> ;
+*
+*  Input data   :
+*    LIBRARY    : Library with SUBG key word
+*    TRACKSS    : Tracking of the SS geometry
+*    Fuel       : Type of fuel (UOX/MOX)
+*    NbRegions  : Number of regions for the calculation (20/32)
+*  Output data  :
+*    LIBRARY2   : Self shielded Library
+
+
+PARAMETER COMPO ::  
+       EDIT 1 
+           ::: LINKED_LIST COMPO ; 
+   ;
+*                                                                      ;
+MODULE COMPO: END: ABORT: ;
+
+STRING TypeCompo Gff   ;
+  :: >>TypeCompo<<  >>Gff<< ;
+
+STRING NameDirAss NameDirPin NameDirHt1 NameDirHt2 :=
+       'Ass'      'Pin'      'Het1'     'Het2'     ;
+
+INTEGER FlagNew := 0 ; 
+IF TypeCompo "PinByPin" <>
+   TypeCompo "Assembly" <> *
+   TypeCompo "Heter1" <> *
+   TypeCompo "Heter2" <> *
+   TypeCompo "All" <> *
+   TypeCompo "Both" <> * THEN
+  ECHO "TypeCompo incorrect : " TypeCompo ;
+  ABORT: ;
+ENDIF ;
+
+!------------------
+! No Gff
+IF Gff "No" = THEN
+!
+IF TypeCompo "Assembly" = TypeCompo "All" = + TypeCompo "Both" = + THEN
+  COMPO := COMPO: ::
+    EDIT 10
+    STEP UP <<NameDirAss>>
+    MAXCAL 5
+    COMM 'evolution burnup Assembly' ENDC
+    PARA 'burnup' IRRA
+    PARA 'ppmBore' VALU REAL 
+    PARA 'TF' TEMP LIBRARY 9
+    PARA 'TCA' TEMP LIBRARY 4
+    PARA 'DCA' VALU REAL
+    PARA 'BARR' VALU REAL
+    INIT
+    ;
+  EVALUATE FlagNew := 1 ;
+ENDIF ;
+IF TypeCompo "PinByPin" = TypeCompo "All" = + TypeCompo "Both" = + THEN
+  IF FlagNew 0 = THEN
+  COMPO := COMPO: ::
+    EDIT 10
+    STEP UP <<NameDirPin>>
+    MAXCAL 5
+    COMM 'evolution burnup PinByPin' ENDC
+    PARA 'burnup' IRRA
+    PARA 'ppmBore' VALU REAL 
+    PARA 'TF' TEMP LIBRARY 9
+    PARA 'TCA' TEMP LIBRARY 4
+    PARA 'DCA' VALU REAL
+    PARA 'BARR' VALU REAL
+    INIT
+    ;
+  EVALUATE FlagNew := 1 ;
+  ELSE
+  COMPO := COMPO: COMPO ::
+    EDIT 10
+    STEP UP <<NameDirPin>>
+    MAXCAL 5
+    COMM 'evolution burnup PinByPin' ENDC
+    PARA 'burnup' IRRA
+    PARA 'ppmBore' VALU REAL 
+    PARA 'TF' TEMP LIBRARY 9
+    PARA 'TCA' TEMP LIBRARY 4
+    PARA 'DCA' VALU REAL
+    PARA 'BARR' VALU REAL
+    INIT
+    ;
+  ENDIF ;
+ENDIF ;
+IF TypeCompo "Heter1" = TypeCompo "All" = + THEN
+  IF FlagNew 0 = THEN
+  COMPO := COMPO: ::
+    EDIT 10
+    STEP UP <<NameDirHt1>>
+    MAXCAL 5
+    COMM 'evolution burnup Heterogene 1' ENDC
+    PARA 'burnup' IRRA
+    PARA 'ppmBore' VALU REAL 
+    PARA 'TF' TEMP LIBRARY 9
+    PARA 'TCA' TEMP LIBRARY 4
+    PARA 'DCA' VALU REAL
+    PARA 'BARR' VALU REAL
+    INIT
+    ;
+  EVALUATE FlagNew := 1 ;
+  ELSE
+  COMPO := COMPO: COMPO ::
+    EDIT 10
+    STEP UP <<NameDirHt1>>
+    MAXCAL 5
+    COMM 'evolution burnup Heterogene 1' ENDC
+    PARA 'burnup' IRRA
+    PARA 'ppmBore' VALU REAL 
+    PARA 'TF' TEMP LIBRARY 9
+    PARA 'TCA' TEMP LIBRARY 4
+    PARA 'DCA' VALU REAL
+    PARA 'BARR' VALU REAL
+    INIT
+    ;
+  ENDIF ;
+ENDIF ;
+!IF TypeCompo "Heter2" = TypeCompo "All" = + THEN
+!  IF FlagNew 0 = THEN
+!  COMPO := COMPO: ::
+!    EDIT 10
+!    STEP UP <<NameDirHt2>>
+!    MAXCAL 5
+!    COMM 'evolution burnup Heterogene 2' ENDC
+!    PARA 'burnup' IRRA
+!    PARA 'ppmBore' VALU REAL 
+!    PARA 'TF' TEMP LIBRARY 9
+!    PARA 'TCA' TEMP LIBRARY 4
+!    PARA 'DCA' VALU REAL
+!    PARA 'BARR' VALU REAL
+!    INIT
+!    ;
+!  EVALUATE FlagNew := 1 ;
+!  ELSE
+!  COMPO := COMPO: COMPO ::
+!    EDIT 10
+!    STEP UP <<NameDirHt2>>
+!    MAXCAL 5
+!    COMM 'evolution burnup Heterogene 2' ENDC
+!    PARA 'burnup' IRRA
+!    PARA 'ppmBore' VALU REAL 
+!    PARA 'TF' TEMP LIBRARY 9
+!    PARA 'TCA' TEMP LIBRARY 4
+!    PARA 'DCA' VALU REAL
+!    PARA 'BARR' VALU REAL
+!    INIT
+!    ;
+!  ENDIF ;
+!ENDIF ;
+!------------------
+! With Gff
+ELSEIF Gff "Yes" = THEN
+!
+IF TypeCompo "Assembly" = TypeCompo "All" = + TypeCompo "Both" = + THEN
+  COMPO := COMPO: ::
+    EDIT 10
+    STEP UP <<NameDirAss>>
+    MAXCAL 5
+    COMM 'evolution burnup Assembly' ENDC
+    PARA 'burnup' IRRA
+    PARA 'ppmBore' VALU REAL 
+    PARA 'TF' TEMP LIBRARY 9
+    PARA 'TCA' TEMP LIBRARY 4
+    PARA 'DCA' VALU REAL
+    PARA 'BARR' VALU REAL
+    GFF
+    INIT
+    ;
+  EVALUATE FlagNew := 1 ;
+ENDIF ;
+IF TypeCompo "PinByPin" = TypeCompo "All" = + TypeCompo "Both" = + THEN
+  IF FlagNew 0 = THEN
+  COMPO := COMPO: ::
+    EDIT 10
+    STEP UP <<NameDirPin>>
+    MAXCAL 5
+    COMM 'evolution burnup PinByPin' ENDC
+    PARA 'burnup' IRRA
+    PARA 'ppmBore' VALU REAL 
+    PARA 'TF' TEMP LIBRARY 9
+    PARA 'TCA' TEMP LIBRARY 4
+    PARA 'DCA' VALU REAL
+    PARA 'BARR' VALU REAL
+!    GFF
+    INIT
+    ;
+  EVALUATE FlagNew := 1 ;
+  ELSE
+  COMPO := COMPO: COMPO ::
+    EDIT 10
+    STEP UP <<NameDirPin>>
+    MAXCAL 5
+    COMM 'evolution burnup PinByPin' ENDC
+    PARA 'burnup' IRRA
+    PARA 'ppmBore' VALU REAL 
+    PARA 'TF' TEMP LIBRARY 9
+    PARA 'TCA' TEMP LIBRARY 4
+    PARA 'DCA' VALU REAL
+    PARA 'BARR' VALU REAL
+!    GFF
+    INIT
+    ;
+  ENDIF ;
+ENDIF ;
+IF TypeCompo "Heter1" = TypeCompo "All" = + THEN
+  IF FlagNew 0 = THEN
+  COMPO := COMPO: ::
+    EDIT 10
+    STEP UP <<NameDirHt1>>
+    MAXCAL 5
+    COMM 'evolution burnup Heterogene 1' ENDC
+    PARA 'burnup' IRRA
+    PARA 'ppmBore' VALU REAL 
+    PARA 'TF' TEMP LIBRARY 9
+    PARA 'TCA' TEMP LIBRARY 4
+    PARA 'DCA' VALU REAL
+    PARA 'BARR' VALU REAL
+    GFF
+    INIT
+    ;
+  EVALUATE FlagNew := 1 ;
+  ELSE
+  COMPO := COMPO: COMPO ::
+    EDIT 10
+    STEP UP <<NameDirHt1>>
+    MAXCAL 5
+    COMM 'evolution burnup Heterogene 1' ENDC
+    PARA 'burnup' IRRA
+    PARA 'ppmBore' VALU REAL 
+    PARA 'TF' TEMP LIBRARY 9
+    PARA 'TCA' TEMP LIBRARY 4
+    PARA 'DCA' VALU REAL
+    PARA 'BARR' VALU REAL
+    GFF
+    INIT
+    ;
+  ENDIF ;
+ENDIF ;
+!IF TypeCompo "Heter2" = TypeCompo "All" = + THEN
+!  IF FlagNew 0 = THEN
+!  COMPO := COMPO: ::
+!    EDIT 10
+!    STEP UP <<NameDirHt2>>
+!    MAXCAL 5
+!    COMM 'evolution burnup Heterogene 2' ENDC
+!    PARA 'burnup' IRRA
+!    PARA 'ppmBore' VALU REAL 
+!    PARA 'TF' TEMP LIBRARY 9
+!    PARA 'TCA' TEMP LIBRARY 4
+!    PARA 'DCA' VALU REAL
+!    PARA 'BARR' VALU REAL
+!    GFF
+!    INIT
+!    ;
+!  EVALUATE FlagNew := 1 ;
+!  ELSE
+!  COMPO := COMPO: COMPO ::
+!    EDIT 10
+!    STEP UP <<NameDirHt2>>
+!    MAXCAL 5
+!    COMM 'evolution burnup Heterogene 2' ENDC
+!    PARA 'burnup' IRRA
+!    PARA 'ppmBore' VALU REAL 
+!    PARA 'TF' TEMP LIBRARY 9
+!    PARA 'TCA' TEMP LIBRARY 4
+!    PARA 'DCA' VALU REAL
+!    PARA 'BARR' VALU REAL
+!    GFF
+!    INIT
+!    ;
+!  ENDIF ;
+!ENDIF ;
+!------------------
+ELSE
+  ECHO "Gff incorrect : " Gff ;
+  ABORT: ;
+ENDIF ;
+
+
+
+
+END: ;
+QUIT .

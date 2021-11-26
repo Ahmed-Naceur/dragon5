@@ -1,0 +1,239 @@
+*******************************************************************
+*                                                                 *
+* Procedure :  Pgeocomp.c2m                                       *
+* Purpose   :  Coarse geometry definition for VHTR annular core   *
+* Author    :  Vincent Descotes (2010)                            *
+*                                                                 *
+* CALL      :  GEOM := Pgeohex:: ;                               *
+*                                                                 *
+*******************************************************************
+PARAMETER   GEOM :: ::: LINKED_LIST GEOM ; ;
+MODULE      END: GEO: ;
+
+*------------
+*  Mix number assignments in Multicompo
+*   1 = fuel material (TRISO) 
+*   2 = graphite block with Helium; considered as "fuel"
+*   3 = reflector (Fe56)
+*-------------
+
+GEOM := GEO: :: HEXZ 91 8 EDIT 0
+  Z- REFL Z+ REFL
+  HBC COMPLETE REFL
+  SIDE 1.0854185
+  SPLITH 0
+  MIX
+
+* 1st floor
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+
+* Ring 5
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+
+*2nd floor
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+
+* Ring 5
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+
+*3rd floor
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+
+* Ring 5
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+
+*4th floor
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+
+* Ring 5
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+
+* 5th floor
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+
+* Ring 5
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+
+* sixth floor
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+
+* Ring 5
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+
+* 7th floor
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+
+* Ring 5
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+
+* 8th floor
+* Ring 0 (center cell)
+2
+* Ring 1
+1 1 1 1 1 1
+* Ring 2
+1 2 1 2 1 2
+1 2 1 2 1 2
+* Ring 3
+2 1 1 2 1 1
+2 1 1 2 1 1
+2 1 1 2 1 1
+* Ring 4
+1 1 2 1 1 1
+2 1 1 1 2 1
+1 1 2 1 1 1
+2 1 1 1 2 1
+
+* Ring 5
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+3 3 3 3 3 3
+
+
+MESHZ 0.0 0.8 1.6 2.4 3.2 4.0 4.8 5.6 6.4
+;
+
+*------------
+*  Mix number assignments in Multicompo
+*   1 = fuel material (TRISO) 
+*   2 = helium 
+*   3 = reflector (Fe56)
+*-------------
+
+END: ;
+QUIT "LIST" .

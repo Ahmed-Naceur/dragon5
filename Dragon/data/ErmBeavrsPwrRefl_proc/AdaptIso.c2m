@@ -1,0 +1,422 @@
+*DECK AdaptIsot.c2m
+*======================================================
+* Name:   AdaptIsot.c2m
+* Type:   DRAGON procedure
+* Use:    Adapt automatically the list of isotopes according
+*         to the chosen microlib
+*         Adapte automatiquement la liste des isotopes en
+*         fonction de la bibliotheque microscopique choisie
+* Author: M. Cordiez 07.2015
+*         [Altran | IRSN/PSN-EXP/SNC/LNR]
+*------------------------------------------------------
+* Procedure called as:
+*------------------------------------------------------
+*
+* A CORRIGER
+*
+* Input Required:
+*  > Nuclear_Database
+* Output Provided:
+*  < Molar_Masses
+*======================================================
+PARAMETER   ListeIsot ListeAutop ::
+            ::: LINKED_LIST ListeIsot ListeAutop ; ;
+MODULE      UTL: END: ;
+STRING      NuclData ;
+STRING      LibType ; ! Type de bibliotheque (ENDFBVII0...)
+INTEGER     NbBibli := 7 ;
+EVALUATE    NbBibli := NbBibli 2 * ; ! Nom des isotopes ecrits sur deux variables
+*------------------------------------------------------
+:: >>NuclData<< >>LibType<< ;
+
+*------------------------------------------------------
+* Identifiant numerique des bibliotheques
+*------------------------------------------------------
+INTEGER LibId ;
+STRING  LibGenre ;
+! Identifiant de la bibliotheque pour ListeIsot
+IF LibType 'ENDFVI8'    = THEN
+  EVALUATE LibId := 1 ;
+  EVALUATE LibGenre := 'DRAGON' ;
+ELSEIF LibType 'ENDFVII0'   = THEN
+  EVALUATE LibId := 8 1 * 1 + ;
+  EVALUATE LibGenre := 'DRAGON' ;
+ELSEIF LibType 'ENDFVII1'   = THEN
+  EVALUATE LibId := 8 2 * 1 + ;
+  EVALUATE LibGenre := 'DRAGON' ;
+ELSEIF LibType 'JEF22'       = THEN
+  EVALUATE LibId := 8 3 * 1 + ;
+  EVALUATE LibGenre := 'DRAGON' ;
+ELSEIF LibType 'JEFF31'      = THEN
+  EVALUATE LibId := 8 4 * 1 + ;
+  EVALUATE LibGenre := 'DRAGON' ;
+ELSEIF LibType 'JEFF311'      = THEN
+  EVALUATE LibId := 8 5 * 1 + ;
+  EVALUATE LibGenre := 'DRAGON' ;
+ELSEIF LibType 'JEFF312'      = THEN
+  EVALUATE LibId := 8 6 * 1 + ;
+  EVALUATE LibGenre := 'DRAGON' ;
+ELSE
+  ECHO "Cette bibliotheque n'est pas repertoriee..." ;
+ENDIF ;
+ECHO "LibId=" LibId ;
+
+:: <<LibId>> <<LibGenre>> ;
+
+*------------------------------------------------------
+* Rq: les listes UTL acceptent seulement les chaines de caracteres de
+*     4 caracteres. On ecrit donc les isotopes sur deux variables qui
+*     seront concatenees par la suite.
+*------------------------------------------------------
+
+* Liste des noms des isotopes
+
+! ENDFBVI8      ENDFBVII0     ENDFBVII1
+! JEF2.2      JEFF3.1       JEFF3.1.1     JEFF3.1.2
+ListeIsot := UTL:           ::  CREA 'H2O  ' <<NbBibli>> =
+'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   '
+'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'H1   ' <<NbBibli>> =
+'H1_H' '2O  ' 'H1_H' '2O  ' 'H1_H' '2O  '
+'H1_H' '2O  ' 'H1_H' '2O  ' 'H1_H' '2O  ' 'H1_H' '2O  ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'B10  ' <<NbBibli>> =
+'B10 ' '    ' 'B10 ' '    ' 'B10 ' '    '
+'B10 ' '    ' 'B10 ' '    ' 'B10 ' '    ' 'B10 ' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'B11  ' <<NbBibli>> =
+'B11 ' '    ' 'B11 ' '    ' 'B11 ' '    '
+'B11 ' '    ' 'B11 ' '    ' 'B11 ' '    ' 'B11 ' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'CNat ' <<NbBibli>> =
+'C0  ' '    ' 'C0  ' '    ' 'C0  ' '    '
+'C0  ' '    ' 'C0  ' '    ' 'C0  ' '    ' 'C0  ' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'N14  ' <<NbBibli>> =
+'N14 ' '    ' 'N14 ' '    ' 'N14 ' '    '
+'N14 ' '    ' 'N14 ' '    ' 'N14 ' '    ' 'N14 ' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'O16  ' <<NbBibli>> =
+'O16 ' '    ' 'O16 ' '    ' 'O16 ' '    '
+'O16 ' '    ' 'O16 ' '    ' 'O16 ' '    ' 'O16 ' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Al27 ' <<NbBibli>> =
+'Al27' '    ' 'Al27' '    ' 'Al27' '    '
+'Al27' '    ' 'Al27' '    ' 'Al27' '    ' 'Al27' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'SiNat' <<NbBibli>> =
+'Si0 ' '    ' 'FALS' 'E   ' 'FALS' 'E   '
+'Si0 ' '    ' 'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Si28 ' <<NbBibli>> =
+'FALS' 'E   ' 'Si28' '    ' 'Si28' '    '
+'FALS' 'E   ' 'Si28' '    ' 'Si28' '    ' 'Si28' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Si29 ' <<NbBibli>> =
+'FALS' 'E   ' 'Si29' '    ' 'Si29' '    '
+'FALS' 'E   ' 'Si29' '    ' 'Si29' '    ' 'Si29' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Si30 ' <<NbBibli>> =
+'FALS' 'E   ' 'Si30' '    ' 'Si30' '    '
+'FALS' 'E   ' 'Si30' '    ' 'Si30' '    ' 'Si30' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'TiNat' <<NbBibli>> =
+'Ti0 ' '    ' 'FALS' 'E   ' 'FALS' 'E   '
+'Ti0 ' '    ' 'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Ti46 ' <<NbBibli>> =
+'FALS' 'E   ' 'Ti46' '    ' 'Ti46' '    '
+'FALS' 'E   ' 'Ti46' '    ' 'Ti46' '    ' 'Ti46' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Ti47 ' <<NbBibli>> =
+'FALS' 'E   ' 'Ti47' '    ' 'Ti47' '    '
+'FALS' 'E   ' 'Ti47' '    ' 'Ti47' '    ' 'Ti47' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Ti48 ' <<NbBibli>> =
+'FALS' 'E   ' 'Ti48' '    ' 'Ti48' '    '
+'FALS' 'E   ' 'Ti48' '    ' 'Ti48' '    ' 'Ti48' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Ti49 ' <<NbBibli>> =
+'FALS' 'E   ' 'Ti49' '    ' 'Ti49' '    '
+'FALS' 'E   ' 'Ti49' '    ' 'Ti49' '    ' 'Ti49' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Ti50 ' <<NbBibli>> =
+'FALS' 'E   ' 'Ti50' '    ' 'Ti50' '    '
+'FALS' 'E   ' 'Ti50' '    ' 'Ti50' '    ' 'Ti50' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Cr50 ' <<NbBibli>> =
+'Cr50' '    ' 'Cr50' '    ' 'Cr50' '    '
+'Cr50' '    ' 'Cr50' '    ' 'Cr50' '    ' 'Cr50' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Cr52 ' <<NbBibli>> =
+'Cr52' '    ' 'Cr52' '    ' 'Cr52' '    '
+'Cr52' '    ' 'Cr52' '    ' 'Cr52' '    ' 'Cr52' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Cr53 ' <<NbBibli>> =
+'Cr53' '    ' 'Cr53' '    ' 'Cr53' '    '
+'Cr53' '    ' 'Cr53' '    ' 'Cr53' '    ' 'Cr53' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Cr54 ' <<NbBibli>> =
+'Cr54' '    ' 'Cr54' '    ' 'Cr54' '    '
+'Cr54' '    ' 'Cr54' '    ' 'Cr54' '    ' 'Cr54' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Mn55 ' <<NbBibli>> =
+'Mn55' '    ' 'Mn55' '    ' 'Mn55' '    '
+'Mn55' '    ' 'Mn55' '    ' 'Mn55' '    ' 'Mn55' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Fe54 ' <<NbBibli>> =
+'Fe54' '    ' 'Fe54' '    ' 'Fe54' '    '
+'Fe54' '    ' 'Fe54' '    ' 'Fe54' '    ' 'Fe54' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Fe56 ' <<NbBibli>> =
+'Fe56' '    ' 'Fe56' '    ' 'Fe56' '    '
+'Fe56' '    ' 'Fe56' '    ' 'Fe56' '    ' 'Fe56' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Fe57 ' <<NbBibli>> =
+'Fe57' '    ' 'Fe57' '    ' 'Fe57' '    '
+'Fe57' '    ' 'Fe57' '    ' 'Fe57' '    ' 'Fe57' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Fe58 ' <<NbBibli>> =
+'Fe58' '    ' 'Fe58' '    ' 'Fe58' '    '
+'Fe58' '    ' 'Fe58' '    ' 'Fe58' '    ' 'Fe58' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Co59 ' <<NbBibli>> =
+'Co59' '    ' 'Co59' '    ' 'Co59' '    '
+'Co59' '    ' 'Co59' '    ' 'Co59' '    ' 'Co59' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Ni58 ' <<NbBibli>> =
+'Ni58' '    ' 'Ni58' '    ' 'Ni58' '    '
+'Ni58' '    ' 'Ni58' '    ' 'Ni58' '    ' 'Ni58' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Ni60 ' <<NbBibli>> =
+'Ni60' '    ' 'Ni60' '    ' 'Ni60' '    '
+'Ni60' '    ' 'Ni60' '    ' 'Ni60' '    ' 'Ni60' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Ni61 ' <<NbBibli>> =
+'Ni61' '    ' 'Ni61' '    ' 'Ni61' '    '
+'Ni61' '    ' 'Ni61' '    ' 'Ni61' '    ' 'Ni61' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Ni62 ' <<NbBibli>> =
+'Ni62' '    ' 'Ni62' '    ' 'Ni62' '    '
+'Ni62' '    ' 'Ni62' '    ' 'Ni62' '    ' 'Ni62' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Ni64 ' <<NbBibli>> =
+'Ni64' '    ' 'Ni64' '    ' 'Ni64' '    '
+'Ni64' '    ' 'Ni64' '    ' 'Ni64' '    ' 'Ni64' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'ZrNat' <<NbBibli>> =
+'Zr0 ' '    ' 'FALS' 'E   ' 'FALS' 'E   '
+'Zr0 ' '    ' 'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Zr90 ' <<NbBibli>> =
+'Zr90' '    ' 'Zr90' '    ' 'Zr90' '    '
+'FALS' 'E   ' 'Zr90' '    ' 'Zr90' '    ' 'Zr90' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Zr91 ' <<NbBibli>> =
+'Zr91' '    ' 'Zr91' '    ' 'Zr91' '    '
+'FALS' 'E   ' 'Zr91' '    ' 'Zr91' '    ' 'Zr91' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Zr92 ' <<NbBibli>> =
+'Zr92' '    ' 'Zr92' '    ' 'Zr92' '    '
+'FALS' 'E   ' 'Zr92' '    ' 'Zr92' '    ' 'Zr92' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Zr93 ' <<NbBibli>> =
+'Zr93' '    ' 'Zr93' '    ' 'Zr93' '    '
+'FALS' 'E   ' 'Zr93' '    ' 'Zr93' '    ' 'Zr93' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Zr94 ' <<NbBibli>> =
+'Zr94' '    ' 'Zr94' '    ' 'Zr94' '    '
+'FALS' 'E   ' 'Zr94' '    ' 'Zr94' '    ' 'Zr94' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Zr95 ' <<NbBibli>> =
+'Zr95' '    ' 'Zr95' '    ' 'Zr95' '    '
+'FALS' 'E   ' 'Zr95' '    ' 'Zr95' '    ' 'Zr95' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Zr96 ' <<NbBibli>> =
+'Zr96' '    ' 'Zr96' '    ' 'Zr96' '    '
+'FALS' 'E   ' 'Zr96' '    ' 'Zr96' '    ' 'Zr96' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Nb93 ' <<NbBibli>> =
+'Nb93' '    ' 'Nb93' '    ' 'Nb93' '    '
+'Nb93' '    ' 'Nb93' '    ' 'Nb93' '    ' 'Nb93' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Mo95 ' <<NbBibli>> =
+'Mo95' '    ' 'Mo95' '    ' 'Mo95' '    '
+'Mo95' '    ' 'Mo95' '    ' 'Mo95' '    ' 'Mo95' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Ag107' <<NbBibli>> =
+'Ag10' '7   ' 'Ag10' '7   ' 'Ag10' '7   '
+'Ag10' '7   ' 'Ag10' '7   ' 'Ag10' '7   ' 'Ag10' '7   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Ag109' <<NbBibli>> =
+'Ag10' '9   ' 'Ag10' '9   ' 'Ag10' '9   '
+'Ag10' '9   ' 'Ag10' '9   ' 'Ag10' '9   ' 'Ag10' '9   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Cd106' <<NbBibli>> =
+'FALS' 'E   ' 'Cd10' '6   ' 'Cd10' '6   '
+'FALS' 'E   ' 'Cd10' '6   ' 'Cd10' '6   ' 'Cd10' '6   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Cd108' <<NbBibli>> =
+'FALS' 'E   ' 'Cd10' '8   ' 'Cd10' '8   '
+'FALS' 'E   ' 'Cd10' '8   ' 'Cd10' '8   ' 'Cd10' '8   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Cd110' <<NbBibli>> =
+'Cd11' '0   ' 'Cd11' '0   ' 'Cd11' '0   '
+'Cd11' '0   ' 'Cd11' '0   ' 'Cd11' '0   ' 'Cd11' '0   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Cd111' <<NbBibli>> =
+'Cd11' '1   ' 'Cd11' '1   ' 'Cd11' '1   '
+'Cd11' '1   ' 'Cd11' '1   ' 'Cd11' '1   ' 'Cd11' '1   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Cd112' <<NbBibli>> =
+'Cd11' '2   ' 'Cd11' '2   ' 'Cd11' '2   '
+'Cd11' '2   ' 'Cd11' '2   ' 'Cd11' '2   ' 'Cd11' '2   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Cd113' <<NbBibli>> =
+'Cd11' '3   ' 'Cd11' '3   ' 'Cd11' '3   '
+'Cd11' '3   ' 'Cd11' '3   ' 'Cd11' '3   ' 'Cd11' '3   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Cd114' <<NbBibli>> =
+'Cd11' '4   ' 'Cd11' '4   ' 'Cd11' '4   '
+'Cd11' '4   ' 'Cd11' '4   ' 'Cd11' '4   ' 'Cd11' '4   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Cd116' <<NbBibli>> =
+'Cd11' '6   ' 'Cd11' '6   ' 'Cd11' '6   '
+'Cd11' '6   ' 'Cd11' '6   ' 'Cd11' '6   ' 'Cd11' '6   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'In113' <<NbBibli>> =
+'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   '
+'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'In115' <<NbBibli>> =
+'FALS' 'E   ' 'In11' '5   ' 'In11' '5   '
+'In11' '5   ' 'In11' '5   ' 'In11' '5   ' 'In11' '5   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'InNat' <<NbBibli>> =
+'In0 ' '    ' 'FALS' 'E   ' 'FALS' 'E   '
+'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Sn112' <<NbBibli>> =
+'FALS' 'E   ' 'Sn11' '2   ' 'Sn11' '2   '
+'FALS' 'E   ' 'Sn11' '2   ' 'Sn11' '2   ' 'Sn11' '2   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Sn114' <<NbBibli>> =
+'FALS' 'E   ' 'Sn11' '4   ' 'Sn11' '4   '
+'FALS' 'E   ' 'Sn11' '4   ' 'Sn11' '4   ' 'Sn11' '4   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Sn115' <<NbBibli>> =
+'Sn11' '5   ' 'Sn11' '5   ' 'Sn11' '5   '
+'Sn11' '5   ' 'Sn11' '5   ' 'Sn11' '5   ' 'Sn11' '5   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Sn116' <<NbBibli>> =
+'Sn11' '6   ' 'Sn11' '6   ' 'Sn11' '6   '
+'Sn11' '6   ' 'Sn11' '6   ' 'Sn11' '6   ' 'Sn11' '6   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Sn117' <<NbBibli>> =
+'Sn11' '7   ' 'Sn11' '7   ' 'Sn11' '7   '
+'Sn11' '7   ' 'Sn11' '7   ' 'Sn11' '7   ' 'Sn11' '7   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Sn118' <<NbBibli>> =
+'Sn11' '8   ' 'Sn11' '8   ' 'Sn11' '8   '
+'Sn11' '8   ' 'Sn11' '8   ' 'Sn11' '8   ' 'Sn11' '8   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Sn119' <<NbBibli>> =
+'Sn11' '9   ' 'Sn11' '9   ' 'Sn11' '9   '
+'Sn11' '9   ' 'Sn11' '9   ' 'Sn11' '9   ' 'Sn11' '9   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Sn120' <<NbBibli>> =
+'Sn12' '0   ' 'Sn12' '0   ' 'Sn12' '0   '
+'Sn12' '0   ' 'Sn12' '0   ' 'Sn12' '0   ' 'Sn12' '0   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Sn122' <<NbBibli>> =
+'Sn12' '2   ' 'Sn12' '2   ' 'Sn12' '2   '
+'Sn12' '2   ' 'Sn12' '2   ' 'Sn12' '2   ' 'Sn12' '2   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Sn124' <<NbBibli>> =
+'Sn12' '4   ' 'Sn12' '4   ' 'Sn12' '4   '
+'Sn12' '4   ' 'Sn12' '4   ' 'Sn12' '4   ' 'Sn12' '4   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Gd154' <<NbBibli>> =
+'Gd15' '4   ' 'Gd15' '4   ' 'Gd15' '4   '
+'Gd15' '4   ' 'Gd15' '4   ' 'Gd15' '4   ' 'Gd15' '4   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Gd155' <<NbBibli>> =
+'Gd15' '5   ' 'Gd15' '5   ' 'Gd15' '5   '
+'Gd15' '5   ' 'Gd15' '5   ' 'Gd15' '5   ' 'Gd15' '5   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Gd156' <<NbBibli>> =
+'Gd15' '6   ' 'Gd15' '6   ' 'Gd15' '6   '
+'Gd15' '6   ' 'Gd15' '6   ' 'Gd15' '6   ' 'Gd15' '6   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Gd157' <<NbBibli>> =
+'Gd15' '7   ' 'Gd15' '7   ' 'Gd15' '7   '
+'Gd15' '7   ' 'Gd15' '7   ' 'Gd15' '7   ' 'Gd15' '7   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Gd158' <<NbBibli>> =
+'Gd15' '8   ' 'Gd15' '8   ' 'Gd15' '8   '
+'Gd15' '8   ' 'Gd15' '8   ' 'Gd15' '8   ' 'Gd15' '8   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Gd160' <<NbBibli>> =
+'Gd16' '0   ' 'Gd16' '0   ' 'Gd16' '0   '
+'Gd16' '0   ' 'Gd16' '0   ' 'Gd16' '0   ' 'Gd16' '0   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'U234 ' <<NbBibli>> =
+'U234' '    ' 'U234' '    ' 'U234' '    '
+'U234' '    ' 'U234' '    ' 'U234' '    ' 'U234' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'U235 ' <<NbBibli>> =
+'U235' '    ' 'U235' '    ' 'U235' '    '
+'U235' '    ' 'U235' '    ' 'U235' '    ' 'U235' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'U236 ' <<NbBibli>> =
+'U236' '    ' 'U236' '    ' 'U236' '    '
+'U236' '    ' 'U236' '    ' 'U236' '    ' 'U236' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'U238 ' <<NbBibli>> =
+'U238' '    ' 'U238' '    ' 'U238' '    '
+'U238' '    ' 'U238' '    ' 'U238' '    ' 'U238' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Pu238' <<NbBibli>> =
+'Pu23' '8   ' 'Pu23' '8   ' 'Pu23' '8   '
+'Pu23' '8   ' 'Pu23' '8   ' 'Pu23' '8   ' 'Pu23' '8   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Pu239' <<NbBibli>> =
+'Pu23' '9   ' 'Pu23' '9   ' 'Pu23' '9   '
+'Pu23' '9   ' 'Pu23' '9   ' 'Pu23' '9   ' 'Pu23' '9   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Pu240' <<NbBibli>> =
+'Pu24' '0   ' 'Pu24' '0   ' 'Pu24' '0   '
+'Pu24' '0   ' 'Pu24' '0   ' 'Pu24' '0   ' 'Pu24' '0   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Pu241' <<NbBibli>> =
+'Pu24' '1   ' 'Pu24' '1   ' 'Pu24' '1   '
+'Pu24' '1   ' 'Pu24' '1   ' 'Pu24' '1   ' 'Pu24' '1   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Pu242' <<NbBibli>> =
+'Pu24' '2   ' 'Pu24' '2   ' 'Pu24' '2   '
+'Pu24' '2   ' 'Pu24' '2   ' 'Pu24' '2   ' 'Pu24' '2   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Am241' <<NbBibli>> =
+'Am24' '1   ' 'Am24' '1   ' 'Am24' '1   '
+'Am24' '1   ' 'Am24' '1   ' 'Am24' '1   ' 'Am24' '1   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Na23 ' <<NbBibli>> =
+'Na23' '    ' 'Na23' '    ' 'Na23' '    '
+'Na23' '    ' 'Na23' '    ' 'Na23' '    ' 'Na23' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Knat ' <<NbBibli>> =
+'K0  ' '    ' 'FALS' 'E   ' 'FALS' 'E   '
+'K0  ' '    ' 'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'K39  ' <<NbBibli>> =
+'FALS' 'E   ' 'K39 ' '    ' 'K39 ' '    '
+'FALS' 'E   ' 'K39 ' '    ' 'K39 ' '    ' 'K39 ' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'K40  ' <<NbBibli>> =
+'FALS' 'E   ' 'K40 ' '    ' 'K40 ' '    '
+'FALS' 'E   ' 'K40 ' '    ' 'K40 ' '    ' 'K40 ' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'K41  ' <<NbBibli>> =
+'FALS' 'E   ' 'K41 ' '    ' 'K41 ' '    '
+'FALS' 'E   ' 'K41 ' '    ' 'K41 ' '    ' 'K41 ' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'S32  ' <<NbBibli>> =
+'S32 ' '    ' 'S32 ' '    ' 'S32 ' '    '
+'S32 ' '    ' 'S32 ' '    ' 'S32 ' '    ' 'S32 ' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'S33  ' <<NbBibli>> =
+'FALS' 'E   ' 'S33 ' '    ' 'S33 ' '    '
+'S33 ' '    ' 'S33 ' '    ' 'S33 ' '    ' 'S33 ' '    ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'S34  ' <<NbBibli>> =
+'FALS' 'E   ' 'S34 ' '    ' 'S34 ' '    '
+'S34 ' '    ' 'S34 ' '    ' 'S34 ' '    ' 'S34 ' '    ' ;
+! Hafnium
+ListeIsot := UTL: ListeIsot ::  CREA 'Hf174' <<NbBibli>> =
+'Hf17' '4   ' 'Hf17' '4   ' 'Hf17' '4   '
+'Hf17' '4   ' 'Hf17' '4   ' 'Hf17' '4   ' 'Hf17' '4   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Hf176' <<NbBibli>> =
+'Hf17' '6   ' 'Hf17' '6   ' 'Hf17' '6   '
+'Hf17' '6   ' 'Hf17' '6   ' 'Hf17' '6   ' 'Hf17' '6   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Hf177' <<NbBibli>> =
+'Hf17' '7   ' 'Hf17' '7   ' 'Hf17' '7   '
+'Hf17' '7   ' 'Hf17' '7   ' 'Hf17' '7   ' 'Hf17' '7   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Hf178' <<NbBibli>> =
+'Hf17' '8   ' 'Hf17' '8   ' 'Hf17' '8   '
+'Hf17' '8   ' 'Hf17' '8   ' 'Hf17' '8   ' 'Hf17' '8   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Hf179' <<NbBibli>> =
+'Hf17' '9   ' 'Hf17' '9   ' 'Hf17' '9   '
+'Hf17' '9   ' 'Hf17' '9   ' 'Hf17' '9   ' 'Hf17' '9   ' ;
+ListeIsot := UTL: ListeIsot ::  CREA 'Hf180' <<NbBibli>> =
+'Hf18' '0   ' 'Hf18' '0   ' 'Hf18' '0   '
+'Hf18' '0   ' 'Hf18' '0   ' 'Hf18' '0   ' 'Hf18' '0   ' ;
+
+* Liste des noms des isotopes contenant les donnees d'autoprotection
+
+ListeAutop := UTL:           ::  CREA 'ZrNat' 3 =
+'ZRSS' '_4  ' '    '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Ag107' 3 =
+'AG10' '7SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Ag109' 3 =
+'AG10' '9SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'In115' 3 =
+'IN11' '5SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Gd154' 3 =
+'GD15' '4SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Gd155' 3 =
+'GD15' '5SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Gd156' 3 =
+'GD15' '6SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Gd157' 3 =
+'GD15' '7SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Gd158' 3 =
+'GD15' '8SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Gd160' 3 =
+'GD16' '0SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'U235 ' 3 =
+'U235' 'SS_4' '    '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'U236 ' 3 =
+'U236' 'SS_3' '    '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'U238 ' 3 =
+'U238' 'SS_3' '    '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Pu238' 3 =
+'PU23' '8SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Pu239' 3 =
+'PU23' '9SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Pu240' 3 =
+'PU24' '0SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Pu241' 3 =
+'PU24' '1SS_' '3   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Pu242' 3 =
+'PU24' '2SS_' '3   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Am241' 3 =
+'AM24' '1SS_' '1   '  ;
+! Hafnium
+ListeAutop := UTL: ListeAutop ::  CREA 'Hf174' 3 =
+'HF17' '4SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Hf176' 3 =
+'HF17' '6SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Hf177' 3 =
+'HF17' '7SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Hf178' 3 =
+'HF17' '8SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Hf179' 3 =
+'HF17' '9SS_' '4   '  ;
+ListeAutop := UTL: ListeAutop ::  CREA 'Hf180' 3 =
+'HF18' '0SS_' '4   '  ;
+
+*------------------------------------------------------
+END: ;
+QUIT "LIST" .

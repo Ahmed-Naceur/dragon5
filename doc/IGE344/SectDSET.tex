@@ -1,0 +1,116 @@
+\subsection{The \moc{DSET:} module}\label{sect:dset}
+
+\vskip 0.2cm
+The \moc{DSET:} module is used to set or to update some of the devices
+parameters. The new parameters can be applied for the rod-type devices
+and/or for the liquid zone controllers, such as: the new insertion level for the
+rods or water filling level for the lzc-type devices, etc. It is possible to apply
+the new parameters to the individual user-selected devices as well as to the
+user-selected groups of devices. If the device (rod-insertion or lzc-filling) level
+is selected for the modification, then a new device position is recomputed
+accordingly. The \moc{DSET:} module can be used to perform the device
+reactivity studies and also to predict the reactivity worth of the rod-devices.\\
+
+\noindent
+The \moc{DSET:} module specification is:
+
+\begin{DataStructure}{Structure \moc{DSET:}}
+\dusa{DEVICE} \moc{:=} \moc{DSET:}
+\dusa{DEVICE} \moc{::} \dstr{descdset}
+\end{DataStructure}
+
+\noindent where
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dusa{DEVICE}] \texttt{character*12} name of the \dds{device}
+object that will be updated by the module.
+
+\item[\dstr{descdset}] structure describing the input data to
+the \moc{DSET:} module. 
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+
+\subsubsection{Input data to the \moc{DSET:} module}\label{sect:dsetstr}
+
+It is possible to set or to modify the parameters for several individual
+devices and/or for several groups of devices simultaneously.
+
+\begin{DataStructure}{Structure \dstr{descdset}}
+\moc{EDIT} \dusa{iprint} \\
+$[[$  $\{$ \moc{ROD} \dusa{irod} $|$ \moc{ROD-GROUP} \dusa{irgrp}
+$|$ \moc{LZC} \dusa{ilzc} $|$ \moc{LZC-GROUP} \dusa{ilgrp} $\}$ \\
+$[$ \moc{LEVEL} \dusa{value} $]$
+$[$ \moc{SPEED} \dusa{speed} $]$
+$[$ \moc{TIME} \dusa{time} $]$ \\
+ \moc{END}  $]]$ \\
+;
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] integer index used to control the printing on screen:
+= 0 for no print; = 1 for minimum printing; larger values produce
+increasing amounts of output.
+
+\item[\moc{ROD}] keyword used to specify the rod \dusa{irod} number.
+
+\item[\dusa{irod}] integer identification number of a rod to be modified.
+Each rod-type device has a unique \dusa{irod} number, ranging from 1 to
+\dusa{nrod}, as been defined in the \moc{DEVINI:} module (see \Sect{devrodstr}).
+
+\item[\moc{ROD-GROUP}] keyword used to specify the rod-group
+\dusa{irgrp} number.
+
+\item[\dusa{irgrp}] integer identification number of a rod-group of devices
+that will be modifed with the same parameters. Each rod-group has a unique
+\dusa{irgrp} number, ranging from 1 to \dusa{ngrp}, as been defined in the
+\moc{DEVINI:} module (see \Sect{rodgroupstr}).
+
+\item[\moc{LZC}] keyword used to specify the liquid controller
+\dusa{ilzc} number.
+
+\item[\dusa{ilzc}] integer identification number of a liquid controller to be modified.
+Each lzc-type device has a unique \dusa{ilzc} number, ranging from 1 to
+\dusa{nlzc}, as been defined in the \moc{LZC:} module (see \Sect{devlzcstr}).
+
+\item[\moc{LZC-GROUP}] keyword used to specify the lzc-group
+\dusa{ilgrp} number.
+
+\item[\dusa{ilgrp}] integer identification number of a lzc-group of devices
+that will be modifed with the same parameters. Each lzc-group has a unique
+\dusa{ilgrp} number, ranging from 1 to \dusa{ngrp}, as been defined in the
+\moc{LZC:} module (see \Sect{lzcgroupstr}).
+
+\item[\moc{LEVEL}] keyword used to specify a new level \dusa{value}.
+
+\item[\dusa{value}] real positive value of the new device level. For the
+rod-type devices this \dusa{value} must correspond to the new rod insertion
+level (see \Sect{rodgroupstr}). For the lzc-type devices this \dusa{value}
+must correspond to the new water filling level (see \Sect{devlzcstr}).
+In any case, the new level value must be: 0.0 $\leq$ \dusa{value} $\leq$ 1.0
+
+\item[\moc{SPEED}] keyword used to specify a new value for \dusa{speed}.
+
+\item[\dusa{speed}] real positive value of the device speed. For the
+rod-type devices this value must correspond to the speed of rod movement
+(insertion or extraction), given in cm/s. For the lzc-type devices this value
+must correspond to the water filling rate, given in m$^{3}$/s. The value of
+\dusa{speed} is required only for the reactor regulating purpose.
+
+\item[\moc{TIME}] keyword used to specify a new value for \dusa{time}.
+
+\item[\dusa{time}] real value of time either for the rod insertion (or extraction)
+\dusa{or} for the liquid controller filling, given in sec. The value of \dusa{time}
+is required only for the reactor regulating purpose.
+
+\item[\moc{END}] keyword used to indicate the end of input of the
+new parameters for the current device or group of devices.
+
+\end{ListeDeDescription}
+\clearpage

@@ -1,0 +1,239 @@
+\subsection{The {\tt USS:} module}\label{sect:USSData}
+
+The universal self-shielding module in DRAGON, called {\tt USS:}, allows the
+correction of the microscopic cross sections to take into account the
+self-shielding effects related to the resonant isotopes. These isotopes are
+identified as such by the \dusa{inrs}
+parameter, as defined in \Sect{LIBData}. The universal
+self-shielding module is based on the following models:
+
+\begin{itemize}
+\item The Livolant-Jeanpierre flux factorization and approximations are used to
+uncouple the self-shielding treatment from the main flux calculation;
+\item The resonant cross sections are represented using probability
+tables computed in the \moc{LIB:} module (the keyword \moc{SUBG} or \moc{PTSL} {\sl must} be
+used). Two approaches can be used to compute the probability tables:
+\begin{enumerate}
+\item Physical probability tables can be computed using a RMS approach similar
+to the one used in Wims-7 and Helios.\cite{subg} In this case, the slowing-down operator of
+each resonant isotope is represented as a pure ST\cite{st}, ST/IR or ST/WR approximation;
+\item Mathematical probability tables\cite{pt} and slowing-down correlated weight matrices
+can be computed in selected energy groups using the {\sl Ribon extended} approach.\cite{nse2004} In this case,
+an elastic slowing-down model is used and a mutual self-shielding model is
+available.
+\end{enumerate}
+\item The resonant fluxes are computed for each band of the probability tables
+using a subgroup method;
+\item The flux can be solved using collision probabilities, or using {\sl any}
+flux solution technique for which a tracking module is available;
+\item The resonant isotopes are computed one-a-time, starting from the isotopes
+with the lower values of index \dusa{inrs}, as defined in \Sect{LIBData}; If
+many isotopes have the same value of \dusa{inrs}, the isotope with the greatest
+number of resonant nuclides is self-shielded first. One or many outer iterations
+can be performed;
+\item the distributed self-shielded effect is automatically taken into account
+if different mixture indices are assigned to different regions inside the
+resonant part of the cell. The rim effect can be computed by dividing the fuel
+into "onion rings" and by assigning different mixture indices to them. 
+\item a SPH (superhomog\'en\'eisation) equivalence is performed to correct the
+self-shielded cross sections from the non-linear effects related to the
+heterogeneity of the geometry.
+\end{itemize}
+
+\vskip 0.2cm
+
+The general format of the data for this module is:
+
+\begin{DataStructure}{Structure \dstr{USS:}}
+\dusa{MICLIB} \moc{:=} \moc{USS:} \dusa{MICLIB\_SG} $[$ \dusa{MICLIB} $]$
+\dusa{TRKNAM} $[$ \dusa{TRKFIL} $]$ \moc{::} \dstr{descuss}
+\end{DataStructure}
+
+\noindent
+where
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dusa{MICLIB}] {\tt character*12} name of the \dds{microlib} that will
+contain the microscopic and macroscopic cross sections updated by the
+self-shielding module. If
+\dusa{MICLIB} appears on both LHS and RHS, it is updated; otherwise,
+\dusa{MICLIB} is created.
+
+\item[\dusa{MICLIB\_SG}] {\tt character*12} name of the \dds{microlib} builded
+by module \moc{LIB:} and containing probability table information (the keyword \moc{SUBG} {\sl must} be
+used in module {\tt LIB:}).
+
+\item[\dusa{TRKNAM}] {\tt character*12} name of the required \dds{tracking}
+data structure.
+
+\item[\dusa{TRKFIL}] {\tt character*12} name of the sequential binary tracking
+file used to store the tracks lengths. This file is given if and only if it was
+required in the previous tracking module call (see \Sect{TRKData}).
+
+\item[\dstr{descuss}] structure describing the self-shielding options.
+
+\end{ListeDeDescription}
+
+Each time the \moc{USS:} module is called, a sub-directory is updated in the
+\dds{microlib} data structure to hold the last values defined in the
+\dstr{descuss} structure. The next time this module is called,
+these values will be used as floating defaults.
+
+\subsubsection{Data input for module {\tt USS:}}\label{sect:descuss}
+
+\begin{DataStructure}{Structure \dstr{descuss}}
+$[$ \moc{EDIT} \dusa{iprint} $]$ \\
+$[$ \moc{GRMIN}  \dusa{lgrmin} $]~~[$ \moc{GRMAX}  \dusa{lgrmax} $]$~~
+$[$ \moc{PASS} \dusa{ipass} $]~~[$ \moc{NOCO} $]~~[$ \moc{NOSP} $]$~~$[$ $\{$ \moc{TRAN} $|$
+\moc{NOTR} $\}$ $]$ \\ 
+$[$ $\{$ \moc{PIJ} $|$ \moc{ARM} $\}$ $]$ \\
+$[$ \moc{MAXST} \dusa{imax} $]~[$ \moc{FLAT} $]$ \\
+$[$ \moc{CALC} \\
+~~~~$[[$ \moc{REGI} \dusa{suffix} $[[$ \dusa{isot} $\{$ \moc{ALL} $|$
+(\dusa{imix}(i),i=1,\dusa{nmix}) $\}$ $]]$ \\
+~~~~$]]$ \\
+\moc{ENDC} $]$ \\
+{\tt ;}
+\end{DataStructure}
+
+\noindent where
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to modify the print level \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing of this module. The
+amount of output produced by this tracking module will vary substantially
+depending on the print level specified. 
+
+\item[\moc{GRMIN}] keyword to specify the minimum group number considered
+during the self-shielding process.
+
+\item[\dusa{lgrmin}] first group number considered during the
+self-shielding process. By default, \dusa{lgrmin} is set to the first group
+number containing self-shielding data in the library.
+
+\item[\moc{GRMAX}]  keyword to specify the maximum group number considered
+during the self-shielding process.
+
+\item[\dusa{lgrmax}] last group number considered during the self-shielding
+process. By default, \dusa{lgrmax} is set is set to the last group
+number containing self-shielding data in the library.
+
+\item[\moc{PASS}]  keyword to specify the number of outer iterations during
+the self-shielding process.
+
+\item[\dusa{ipass}] the number of iterations. The default is
+\dusa{ipass} $=2$ if \dusa{MICLIB} is created.
+
+\item[\moc{NOCO}]  keyword to ignore the directives set by {\tt LIB} concerning
+the mutual resonance shielding model. This keyword has the effect to replace the
+mutual resonance shielding model in the subgroup projection method (SPM) by a full
+correlation approximation similar
+to the technique used in the ECCO code. This keyword can be used to avoid the message
+\begin{verbatim}
+USSIST: UNABLE TO FIND CORRELATED ISOTOPE ************.
+\end{verbatim}
+\noindent that appears with the SPM if the correlated weights matrices are missing in
+the microlib.
+
+\item[\moc{NOSP}] keyword to deactivate the SPH equivalence scheme which
+modifies the self-shielded averaged neutron fluxes in
+heterogeneous geometries. The default option is to perform SPH equivalence.
+
+\item[\moc{TRAN}] keyword to activate the transport correction option for
+self-shielding calculations (see \moc{CTRA} in \Sectand{MACData}{LIBData}). This
+is the default option.
+
+\item[\moc{NOTR}] keyword to deactivate the transport correction option for
+self-shielding calculations (see \moc{CTRA} in \Sectand{MACData}{LIBData}).
+
+\item[\moc{PIJ}] keyword to specify the use of complete collision
+probabilities in the subgroup and SPH equivalence calculations of {\tt USS:}.
+This is the default option for \moc{EXCELT:} and \moc{SYBILT:} trackings.
+This option is not available for \moc{MCCGT:} trackings.
+
+\item[\moc{ARM}] keyword to specify the use of iterative flux techniques
+in the subgroup and SPH equivalence calculations of {\tt USS:}.
+This is the default option for \moc{MCCGT:} trackings.
+
+\item[\moc{MAXST}] keyword to set the maximum number of fixed point iterations
+for the ST scattering source convergence.
+
+\item[\dusa{imax}] the maximum number of ST iterations. The default is
+\dusa{imax} $=50$. A non-iterative response matrix approach is available with
+the subgroup projection method (SPM) by setting \dusa{imax} $=0$.
+
+\item[\moc{FLAT}] keyword to force the flat-flux initialization of subgroup fluxes if \dusa{MICLIB}
+is open in modification mode.
+
+\item[\moc{CALC}] keyword to activate the simplified self-shielding
+approximation in which a single self-shielded isotope is shared by many
+resonant mixtures.
+
+\item[\moc{REGI}] keyword to specify a set of isotopes and mixtures that
+will be self-shielded together. All the self-shielded isotopes in this group
+will share the same 4--digit suffix.
+
+\item[\dusa{suffix}] {\tt character*4} suffix for the isotope names in this
+group
+
+\item[\dusa{isot}] {\tt character*8} alias name of a self-shielded isotope in this
+group
+
+\item[\moc{ALL}] keyword to specify that a unique self-shielded isotope will be
+made for the complete domain
+
+\item[\dusa{imix}] list of mixture indices that will share the same self-shielded
+isotope
+
+\item[\dusa{nmix}] number of mixtures that will share the same self-shielded
+isotope
+
+\item[\moc{ENDC}] end of \moc{CALC} data keyword
+
+\end{ListeDeDescription}
+
+\vskip 0.15cm
+
+Here is an example of the data structure corresponding to a production case where
+only $^{238}$U is assumed to show distributed self-shielding effects:
+
+\begin{verbatim}
+LIBRARY2 := USS: LIBRARY TRACK ::
+     CALC REGI W1 PU239 ALL
+          REGI W1 PU241 ALL
+          REGI W1 PU240 ALL
+          REGI W1 PU242 ALL
+          REGI W1 U235 ALL
+          REGI W1 U236 ALL
+          REGI W1 PU238 ALL
+          REGI W1 U234 ALL
+          REGI W1 AM241 ALL
+          REGI W1 NP237 ALL
+          REGI W1 ZRNAT ALL
+          REGI W1 U238 <<COMB0101>> <<COMB0201>> <<COMB0301>>
+                       <<COMB0401>> <<COMB0501>>
+          REGI W2 U238 <<COMB0102>> <<COMB0202>> <<COMB0302>>
+                       <<COMB0402>> <<COMB0502>>
+          REGI W3 U238 <<COMB0103>> <<COMB0203>> <<COMB0303>>
+                       <<COMB0403>> <<COMB0503>>
+          REGI W4 U238 <<COMB0104>> <<COMB0204>> <<COMB0304>>
+                       <<COMB0404>> <<COMB0504>>
+          REGI W5 U238 <<COMB0105>> <<COMB0205>> <<COMB0305>>
+                       <<COMB0405>> <<COMB0505>>
+          REGI W6 U238 <<COMB0106>> <<COMB0206>> <<COMB0306>>
+                       <<COMB0406>> <<COMB0506>>
+     ENDC ;
+\end{verbatim}
+
+\vskip 0.15cm
+
+In this case, $^{238}$U is self-shielded within six distributed regions (labeled
+{\tt W1} to {\tt W6}) and each of these regions are merging volumes belonging
+to five different fuel rods. The mixture indices of the 30 resonant volumes belonging
+to the fuel are CLE-2000 variables labeled {\tt <<COMB0101>>} to {\tt <<COMB0506>>}.
+
+\eject
+

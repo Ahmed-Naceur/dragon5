@@ -1,0 +1,83 @@
+\subsection{DRAGON Data Structure and Module Declarations}\label{sect:StrucMod}
+
+DRAGON is built around the GAN generalized driver.\cite{utilitaire}
+Accordingly, all the modules that will be used during the current execution must
+be first identified. One must also define the format of each data structure that
+will be processed by these modules. Then, the modules required for the specific
+DRAGON calculation are called successively, information being
+transferred from one module to the next via the data structures. Finally,
+the execution of DRAGON is terminated when it encounters the \moc{END:} module
+even if it is followed by additional data records in the input data stream. The
+general input data structure therefore follows the calling specifications given
+below:
+
+\begin{DataStructure}{Structure \dstr{DRAGON}}
+$[$ \moc{MODULE} $[[$ \dusa{MODNAME} $]]$ \moc{;} $]$ \\
+$[$ \moc{LINKED\_LIST} $[[$ \dusa{STRNAME} $]]$ \moc{;} $]$ \\
+$[$ \moc{XSM\_FILE} $[[$ \dusa{STRNAME} $]]$ \moc{;} $]$ \\
+$[$ \moc{SEQ\_BINARY} $[[$ \dusa{STRNAME} $]]$ \moc{;} $]$ \\
+$[$ \moc{SEQ\_ASCII} $[[$ \dusa{STRNAME} $]]$ \moc{;} $]$ \\
+$[[$ \dstr{module}  \moc{;} $]]$ \\
+\moc{END:} \moc{;}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{MODULE}]  keyword used to specify the list of modules to be used in
+this DRAGON execution.
+
+\item[\dusa{MODNAME}] {\tt character*12} name of a DRAGON or utility module.
+The list of DRAGON module is provided in \Sect{DragonModules} while the list of
+Utility module is described in \Sect{UtilityModules}. By default a ` ' module
+is always available (see \Sectand{UtilityModules}{EQUData}).
+
+\item[\moc{LINKED\_LIST}]  keyword used to specify which data structures will
+be stored in linked lists. 
+
+\item[\moc{XSM\_FILE}]  keyword used to specify which data structures will be
+stored on XSM format files. 
+
+\item[\moc{SEQ\_BINARY}]  keyword used to specify which data structures will be
+stored on sequential binary files. 
+
+\item[\moc{SEQ\_ASCII}]  keyword used to specify which data structures will be
+stored on sequential ASCII files. 
+
+\item[\dusa{STRNAME}] {\tt character*12} name of a DRAGON data structure.
+Note that on MVS file names are truncated to 7 characters due to a constraint of
+this operating system. The list of DRAGON data structure is presented in
+\Sect{DragonDataStructures}.
+
+\item[\dstr{module}] input specifications for a DRAGON or utility module.  For
+the DRAGON specific modules these input structures will be defined in
+\Sect{DragonModuleInput}. For utility modules, the required structures are
+described in \Sect{UtilityModuleInput}.
+
+\item[\moc{END:}] keyword to call the normal end-of-execution utility module.
+
+\item[\moc{;}] end of record keyword. This keyword is used by DRAGON to
+delimit the part of the input data stream associated with each module.
+
+\end{ListeDeDescription}
+
+Note that the user generally has the choice to declare most of the data
+structures in the format of a linked list to reduce CPU times or as a XSM
+file to reduce memory resources. Some exceptions to this general rule are
+the tracking files as we will see in \Sect{TRKData}. In general, the data
+structure are stored on the sequential ASCII files only for backup purposes.
+
+\vskip 0.2cm
+
+The input data normally ends with a call to
+the \moc{END:} module (see \Sect{ENDData}). However, the GAN driver will insert
+automatically the
+\moc{END:} module, even if it was not provided, upon reaching an end-of-file in
+the input stream.
+
+\vskip 0.2cm
+
+Each \dstr{module} specification contains a description of the execution modules to
+be called and its associated input structure. All these
+modules, except the \moc{END:} module may be called more than once.
+

@@ -1,0 +1,279 @@
+*DECK SHI
+      SUBROUTINE SHI(NENTRY,HENTRY,IENTRY,JENTRY,KENTRY)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Interpolation of nuclear properties in a lattice code library using
+* the generalized Stamm'ler method.
+*
+*Copyright:
+* Copyright (C) 2002 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): A. Hebert
+*
+*Parameters: input/output
+* NENTRY  number of LCM objects or files used by the operator.
+* HENTRY  name of each LCM object or file. The first option is:
+*         HENTRY(1) modification type(L_LIBRARY);
+*         HENTRY(2) read-only type(L_TRACK);
+*         HENTRY(3) read-only sequential binary tracking file.
+*         The second option is:
+*         HENTRY(1) creation type(L_LIBRARY);
+*         HENTRY(2) read-only type(L_LIBRARY);
+*         HENTRY(3) read-only type(L_TRACK);
+*         HENTRY(4) read-only sequential binary tracking file.
+* IENTRY  type of each LCM object or file:
+*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
+*         =4 sequential ascii file.
+* JENTRY  access of each LCM object or file:
+*         =0 the LCM object or file is created;
+*         =1 the LCM object or file is open for modifications;
+*         =2 the LCM object or file is open in read-only mode.
+* KENTRY  LCM object address or file unit number.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      INTEGER      NENTRY,IENTRY(NENTRY),JENTRY(NENTRY)
+      TYPE(C_PTR)  KENTRY(NENTRY)
+      CHARACTER    HENTRY(NENTRY)*12
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER(NSTATE=40)
+      CHARACTER HSMG*131,TEXT12*12,HSIGN*12,TEXT4*4,CDOOR*12,TITLE*72
+      INTEGER IPAR(NSTATE),IGP(NSTATE)
+      DOUBLE PRECISION DFLOTT
+      LOGICAL LEAKSW
+      TYPE(C_PTR) IPLIB,IPTRK
+*----
+*  ALLOCATABLE ARRAYS
+*----
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: MAT,IDL,MIX,LSHI,ISONR,ISONA
+      REAL, ALLOCATABLE, DIMENSION(:) :: VOL,DEN,SNGAR,SBGAR
+*----
+*  PARAMETER VALIDATION
+*----
+      IENT=1
+      IF(NENTRY.LE.1) CALL XABORT('SHI: TWO PARAMETERS EXPECTED.')
+      IF((IENTRY(1).NE.1).AND.(IENTRY(1).NE.2)) CALL XABORT('SHI: LCM '
+     1 //'OBJECT EXPECTED AT LHS.')
+      IF(JENTRY(1).EQ.0) THEN
+*        INTERNAL LIBRARY CREATION. COPY THE FIRST RHS ON THIS LHS.
+         IF(NENTRY.LE.2) CALL XABORT('SHI: THREE PARAMETERS EXPECTED.')
+         IF((JENTRY(2).NE.2).OR.((IENTRY(2).NE.1).AND.
+     1   (IENTRY(2).NE.2)))  CALL XABORT('SHI: LCM OBJECT IN READ-ONLY'
+     2   //'MODE EXPECTED AT FIRST RHS.')
+         CALL LCMEQU(KENTRY(2),KENTRY(1))
+         IENT=3
+      ELSE IF(JENTRY(1).EQ.1) THEN
+*        INTERNAL LIBRARY MODIFICATION.
+         IENT=2
+      ELSE
+         CALL XABORT('SHI: INTERNAL LIBRARY IN CREATE OR MODIFICATION M'
+     1   //'ODE EXPECTED.')
+      ENDIF
+      IPLIB=KENTRY(1)
+*----
+*  RECOVER THE TRACKING OBJECT
+*----
+      DO 10 I=IENT,NENTRY
+      IF((JENTRY(I).EQ.2).AND.(IENTRY(I).LE.2)) THEN
+         CALL LCMGTC(KENTRY(I),'SIGNATURE',12,1,HSIGN)
+         IF(HSIGN.EQ.'L_TRACK') THEN
+            IPTRK=KENTRY(I)
+            GO TO 20
+         ENDIF
+      ENDIF
+   10 CONTINUE
+      CALL XABORT('SHI: UNABLE TO FIND A TRACKING OBJECT.')
+   20 CALL LCMGTC(IPTRK,'TRACK-TYPE',12,1,CDOOR)
+*----
+*  RECOVER TRACKING FILE INFORMATION
+*----
+      IFTRAK=0
+      DO 40 I=IENT+1,NENTRY
+      IF(IENTRY(I).EQ.3) THEN
+         IFTRAK=FILUNIT(KENTRY(I))
+         TEXT12=HENTRY(I)
+         IF(JENTRY(I).NE.2) CALL XABORT('SHI: TRACKING FILE '//TEXT12//
+     1   ' NOT IN READ-ONLY MODE.')
+         GO TO 50
+      ENDIF
+   40 CONTINUE
+*----
+*  RECOVER TABULATED FUNCTIONS
+*----
+   50 CALL XDRTA2(IPTRK)
+*----
+*  RECOVER GENERAL TRACKING INFORMATION
+*----
+      CALL LCMGET(IPTRK,'STATE-VECTOR',IGP)
+      NREG=IGP(1)
+      NUN=IGP(2)
+      LEAKSW=IGP(3).EQ.0
+      IF(CDOOR.EQ.'MCCG') THEN
+         CALL LCMLEN(IPTRK,'KEYFLX',LKFL,ITYLCM)
+         NFUNL=LKFL/NREG
+      ELSE
+         NFUNL=1
+      ENDIF
+      ALLOCATE(MAT(NREG),VOL(NREG),IDL(NREG*NFUNL))
+      CALL LCMGET(IPTRK,'MATCOD',MAT)
+      CALL LCMGET(IPTRK,'VOLUME',VOL)
+      CALL LCMGET(IPTRK,'KEYFLX',IDL)
+      CALL LCMLEN(IPTRK,'TITLE',LENGT,ITYLCM)
+      IF(LENGT.GT.0) THEN
+         CALL LCMGTC(IPTRK,'TITLE',72,1,TITLE)
+      ELSE
+         TITLE='*** NO TITLE PROVIDED ***'
+      ENDIF
+*----
+*  RECOVER GENERAL INTERNAL LIBRARY INFORMATION
+*----
+      CALL LCMGTC(IPLIB,'SIGNATURE',12,1,HSIGN)
+      IF(HSIGN.NE.'L_LIBRARY') THEN
+         TEXT12=HENTRY(1)
+         CALL XABORT('SHI: SIGNATURE OF '//TEXT12//' IS '//HSIGN//
+     1   '. L_LIBRARY EXPECTED.')
+      ENDIF
+      CALL LCMGET(IPLIB,'STATE-VECTOR',IPAR)
+      NBISO=IPAR(2)
+      NGRO=IPAR(3)
+      ITRANC=IPAR(5)
+      IPROB=IPAR(6)
+      IGRMIN=IPAR(9)+1
+      IGRMAX=IPAR(10)
+      NBMIX=IPAR(14)
+      NRES=IPAR(15)
+      IF(IGP(4).GT.NBMIX) THEN
+         WRITE(HSMG,'(43HSHI: THE NUMBER OF MIXTURES IN THE TRACKING,
+     1   2H (,I5,50H) IS GREATER THAN THE NUMBER OF MIXTURES IN THE IN,
+     2   16HTERNAL LIBRARY (,I5,2H).)') IGP(4),NBMIX
+         CALL XABORT(HSMG)
+      ENDIF
+      ALLOCATE(MIX(NBISO),DEN(NBISO),LSHI(NBISO),SNGAR(NGRO*NBISO),
+     1 SBGAR(NGRO*NBISO))
+      CALL LCMGET(IPLIB,'ISOTOPESMIX',MIX)
+      CALL LCMGET(IPLIB,'ISOTOPESDENS',DEN)
+      CALL LCMGET(IPLIB,'ISOTOPESSHI',LSHI)
+      CALL LCMGET(IPLIB,'ISOTOPESDSB',SBGAR)
+      CALL LCMGET(IPLIB,'ISOTOPESDSN',SNGAR)
+*----
+*  RECOVER REFERENCE AND ALIAS ISOTOPES NAMES
+*----
+      ALLOCATE(ISONR(3*NBISO),ISONA(3*NBISO))
+      CALL LCMGET(IPLIB,'ISOTOPERNAME',ISONR)
+      CALL LCMGET(IPLIB,'ISOTOPESUSED',ISONA)
+*----
+*  READ THE INPUT DATA
+*----
+*     DEFAULT OPTIONS:
+      IMPX=1
+      CALL LCMLEN(IPLIB,'SHIBA',LENLCM,ITYLCM)
+      IF(LENLCM.NE.0) THEN
+         CALL LCMSIX(IPLIB,'SHIBA',1)
+         CALL LCMGET(IPLIB,'STATE-VECTOR',IPAR)
+         CALL LCMGET(IPLIB,'EPS-SHIBA',EPS)
+         CALL LCMSIX(IPLIB,' ',2)
+         IGRMIN=IPAR(1)
+         IGRMAX=IPAR(2)
+         MAXX0=IPAR(3)
+         IBIEFF=IPAR(4)
+         IGC=IPAR(5)
+         ITRANZ=IPAR(6)
+         LEVEL=IPAR(7)
+         IPHASE=IPAR(8)
+      ELSE
+         MAXX0=20
+         IBIEFF=0
+         IGC=1
+         ITRANZ=ITRANC
+         LEVEL=0
+         EPS=1.0E-4
+         IF(CDOOR.EQ.'SYBIL') THEN
+            IPHASE=2
+         ELSE IF(CDOOR.EQ.'EXCELL') THEN
+            IPHASE=2
+         ELSE
+            IPHASE=1
+         ENDIF
+      ENDIF
+*----
+*  READ LIBRARY DATA
+*----
+   60 CALL REDGET(INDIC,NITMA,FLOTT,TEXT4,DFLOTT)
+      IF(INDIC.EQ.10) GO TO 100
+      IF(INDIC.NE.3) CALL XABORT('SHI: CHARACTER DATA EXPECTED.')
+      IF(TEXT4.EQ.'EDIT') THEN
+*        READ THE PRINT INDEX.
+         CALL REDGET(INDIC,IMPX,FLOTT,TEXT4,DFLOTT)
+         IF(INDIC.NE.1) CALL XABORT('SHI: INTEGER DATA EXPECTED(1).')
+      ELSE IF(TEXT4.EQ.'GRMI') THEN
+         CALL REDGET(ITYPLU,IGRMIN,FLOTT,TEXT4,DFLOTT)
+         IF(ITYPLU.NE.1) CALL XABORT('SHI: INTEGER DATA EXPECTED(2).')
+      ELSE IF(TEXT4.EQ.'GRMA') THEN
+         CALL REDGET(ITYPLU,IGRMAX,FLOTT,TEXT4,DFLOTT)
+         IF(ITYPLU.NE.1) CALL XABORT('SHI: INTEGER DATA EXPECTED(3).')
+         IF(IGRMAX.GT.NGRO) THEN
+            CALL XABORT('SHI: ILLEGAL NUMBER OF GROUP IN LIBRARY.')
+         ENDIF
+      ELSE IF(TEXT4.EQ.'MXIT') THEN
+         CALL REDGET(ITYPLU,MAXX0,FLOTT,TEXT4,DFLOTT)
+         IF(ITYPLU.NE.1) CALL XABORT('SHI: INTEGER DATA EXPECTED(4).')
+      ELSE IF(TEXT4.EQ.'EPS') THEN
+         CALL REDGET(ITYPLU,NITMA,EPS,TEXT4,DFLOTT)
+         IF(ITYPLU.NE.2) CALL XABORT('SHI: REAL DATA EXPECTED.')
+      ELSE IF(TEXT4.EQ.'NOLJ') THEN
+         IBIEFF=0
+      ELSE IF(TEXT4.EQ.'LJ') THEN
+         IBIEFF=1
+      ELSE IF(TEXT4.EQ.'NOGC') THEN
+         IGC=0
+      ELSE IF(TEXT4.EQ.'GC') THEN
+         IGC=1
+      ELSE IF(TEXT4.EQ.'NOTR') THEN
+         ITRANZ=0
+      ELSE IF(TEXT4.EQ.'TRAN') THEN
+         ITRANZ=ITRANC
+      ELSE IF(TEXT4.EQ.'LEVE') THEN
+         CALL REDGET(ITYPLU,LEVEL,FLOTT,TEXT4,DFLOTT)
+         IF(ITYPLU.NE.1) CALL XABORT('SHI: INTEGER DATA EXPECTED(5).')
+         IF((LEVEL.LT.0).OR.(LEVEL.GT.2)) CALL XABORT('SHI: BAD LEVEL.')
+      ELSE IF(TEXT4.EQ.'ARM') THEN
+         IPHASE=1
+      ELSE IF(TEXT4.EQ.'PIJ') THEN
+         IPHASE=2
+      ELSE IF(TEXT4.EQ.';') THEN
+         GO TO 100
+      ELSE
+         CALL XABORT('SHI: '//TEXT4//' IS AN INVALID KEY-WORD.')
+      ENDIF
+      GO TO 60
+*
+  100 IF((CDOOR.EQ.'SYBIL').AND.(IPHASE.EQ.1)) NUN=NUN+IGP(9)
+      IF(NBMIX.EQ.0) CALL XABORT('SHI: NBMIX NOT YET DEFINED.')
+      IF(NRES.EQ.0) CALL XABORT('SHI: THERE IS NO RESONANT ISOTOPES.')
+      IF(NREG.EQ.0) CALL XABORT('SHI: NREG = 0')
+      CALL SHIDRV(IPLIB,IPTRK,IFTRAK,LEVEL,NGRO,NBISO,NBMIX,NREG,NUN,
+     1 CDOOR,NRES,IMPX,ISONR,ISONA,MIX,DEN,SNGAR,SBGAR,LSHI,IPHASE,
+     2 IPROB,MAT,VOL,IDL,LEAKSW,TITLE,IGRMIN,IGRMAX,MAXX0,IBIEFF,IGC,
+     3 ITRANZ,EPS)
+*----
+*  RELEASE GENERAL TRACKING INFORMATION
+*----
+      DEALLOCATE(IDL,VOL,MAT)
+*----
+*  RELEASE GENERAL INTERNAL LIBRARY INFORMATION
+*----
+      DEALLOCATE(ISONA,ISONR,SBGAR,SNGAR,LSHI,DEN,MIX)
+      RETURN
+      END

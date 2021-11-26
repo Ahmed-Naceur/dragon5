@@ -1,0 +1,49 @@
+*
+* Homogeneous geometry
+* Author: Dusan Calic
+* Institute Jozef Stefan
+* June 2011
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  LIBRARY LIBRARY2 GEOM TRACK SYS FLUX ;
+MODULE
+  GEO: SYBILT: LIB: SHI: ASM: FLU: END: ;
+PROCEDURE assertS ;
+*----
+* Microscopic cross sections from file iaea
+* 172-group WIMSD-formatted library based on the ENDF/B-VII.0
+*----
+LIBRARY := LIB: ::
+  EDIT 2 
+  NMIX 1
+  CTRA NONE
+  MIXS LIB: MATXS2 FIL: _matxsH2O
+   MIX 1 300.0
+     H1_H2O  = H1_H2O   4.51290E-02 THER 80 HH2O
+  MIXS LIB: MATXS2 FIL: _matxsU238
+   MIX 1 300.0
+     U238  = U238   2.2604E-2 1 THER 80 FREE
+  MIXS LIB: DRAGON FIL: DLIB_J2
+   MIX 1 300.0
+     U235   = U235 1.09380E-03 1
+  ;
+*----
+*  Geometry GEOM
+*----
+GEOM := GEO: :: HOMOGE MIX 1 ;
+*----
+*  Transport and flux calculations
+*----
+TRACK := SYBILT: GEOM :: ;
+LIBRARY2 := SHI: LIBRARY TRACK :: EDIT 0 TRAN LJ ;
+SYS := ASM: LIBRARY2 TRACK :: EDIT 0 PIJ ;
+FLUX := FLU: SYS LIBRARY2 TRACK :: EDIT 2 TYPE K EXTE 5 ;
+*----
+* End
+*----
+assertS FLUX :: 'K-EFFECTIVE' 1 1.287426 ;
+ECHO "test TMATXS22 completed" ;
+END: ;
+QUIT "LIST" .

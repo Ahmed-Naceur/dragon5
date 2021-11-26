@@ -1,0 +1,100 @@
+*======================================================================
+*  Name          : ThermaExpans.c2m
+*  Type          : DRAGON procedure
+*  Use           : Calculation of hot dimensions
+*  Made by R. Nguyen Van Ho [URANUS | IRSN/PSN-EXP/SNC/LNR]
+*          J. Taforeau [IRSN/PSN-EXP/SNC/LNR]
+*  Date          : 02/2017
+*  Procedure called as:
+*
+*  ThermaExpans ::
+*    <<ColdValue>> <<Material>> <<HotTemp>> <<DataType>>
+*    <<Model>> <<MatPlus1>> <<ColdValMoin1>> <<HotValMoin1>>
+*    <<HotTempPlus1>> >>HotValue<< ;
+*
+*  Parameter of the procedure
+*  ColdValue    : density/distance at cold temperature [19.85 °C]
+*  Material     : Material in region N : [UO2|SS304|SS316|Zr4|In718|AIC
+*                                         Pyrex|Air|Mod]
+*  HotTemp      : Hot Temperature [°C]
+*  Model        : Model for thermal expansion : [TIH]
+*                 TIH  : Tihange modeling
+*  The next 3 prameters are used only if Model="PIN"
+*  MatPlus1     : Material in region N+1
+*  ColdValMoin1 : density/distance at cold temperature in region N+1
+*  HotValMoin1  : density/distance at hot temperature in region N+1
+*  HotTempPlus1 : Hot temperature in region N+1
+*  HotValue     : density/distance at hot temperature
+*======================================================================
+
+*----
+*  Local modules
+*----
+MODULE      USPLIT: ABORT: END: ;
+
+*----
+*  Get variables
+*----
+REAL    ColdValue HotTemp ;
+REAL    ColdValMoin1 HotValMoin1 HotTempPlus1 := 0. 0. 0. ;
+STRING  Model MatPlus1 ;
+STRING  Material DataType ;
+:: >>ColdValue<< >>Material<< >>HotTemp<< >>DataType<<
+   >>Model<< >>MatPlus1<< >>ColdValMoin1<< >>HotValMoin1<<
+   >>HotTempPlus1<<   ;
+*----
+*  Data from specifications TIHANGE CEA-N-2092 p.153
+REAL Alpha Beta := 0.0 0.0 ;
+
+* Specifications TIHANGE CEA-N-2092
+IF Material "UO2" = THEN
+  EVALUATE Beta := 1.0 -3.31925E-4 +
+                   4.87957E-6 TempF * +
+                   1.37101E-11 TempF 2.0 ** * +
+                   1.6161E-13 TempF 3.0 ** * + ;
+ELSEIF Material "SS304" = THEN
+  EVALUATE Alpha := 9.8E-6 ;
+  EVALUATE Beta := Alpha TempF 70. - * 1. + ;
+ELSEIF Material "SS316" = THEN
+  EVALUATE Alpha := 9.8E-6 ;
+  EVALUATE Beta := Alpha TempF 68. - * 1. + ;
+ELSEIF Material "Zr4" = THEN
+  EVALUATE Alpha := 3.25E-6 ;
+  EVALUATE Beta := Alpha TempF 68. - * 1. + ;
+ ELSEIF Material "Pyrex" = THEN
+  EVALUATE Alpha := 0. ;
+  EVALUATE Beta := Alpha TempF 68. - * 1. + ;
+ELSEIF Material "In718" = THEN
+  EVALUATE Alpha := 6.0583333E-6
+                    7.9395882E-9 TempF * +
+                    -1.2278191E-11 TempF 2.0 ** * +
+                    8.4850913E-15 TempF 3.0 ** * +
+                    -1.9212558E-18 TempF 4.0 ** * + ;
+  EVALUATE Beta := Alpha TempF 75. - * 1. + ;
+ELSEIF Material "AIC" = THEN
+  EVALUATE Alpha := 1.25E-5 ;
+  EVALUATE Beta := Alpha TempF 68. - * 1. + ;
+ELSEIF Material "B4C" = THEN
+  EVALUATE Alpha := 0. ;
+  EVALUATE Beta := Alpha TempF 68. - * 1. + ;
+ELSE
+  ECHO "ThermaExpans: material unknown." ;
+  ABORT: ;
+ENDIF ;
+
+IF Beta 0.0 = THEN
+  ECHO "ThermaExpans internal error. Beta undefined." ;
+  ABORT: ;
+ENDIF ;
+
+IF DataType "Density" = THEN
+  EVALUATE HotValue := ColdValue Beta 3.0 ** / ;
+ELSEIF DataType "Distance" = THEN
+  EVALUATE HotValue := ColdValue Beta * ;
+ELSE
+  ECHO "DataType unknown. Must be Density or Distance." ;
+  ABORT: ;
+ENDIF ;
+:: <<HotValue>>  ;
+END: ;
+QUIT "LIST" .

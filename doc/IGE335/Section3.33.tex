@@ -1,0 +1,61 @@
+\subsection{The {\tt HEAT:} module}\label{sect:HEATData}
+
+This module is used to compute the energy and charge deposition values from many particles.
+
+\vskip 0.02cm
+
+The calling specifications are:
+
+\begin{DataStructure}{Structure \dstr{HEAT:}}
+\dusa{DEPOS}~\moc{:=}~\moc{HEAT:}~$[$~\dusa{DEPOS}~$]~[[$~\dusa{MACRO}~$]]$ \moc{::} \dstr{HEAT\_data} \\
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\dusa{DEPOS}] {\tt character*12} name of a {\sc deposition} (type {\tt L\_DEPOSITION}) object containing mixture-ordered energy and charge deposition values, summed over many extended mactolibs. This object can be created by module {\tt HEAT:} or used in modification mode to
+accumulate deposition values gathered from successive solutions of the Boltzmann and/or Boltzmann Fokker-Planck transport equations.
+
+\item[\dusa{MACRO}] {\tt character*12} name of an extended {\sc macrolib} (type {\tt L\_MACROLIB}) object containing {\tt FLUX-INTG} and {\tt H-FACTOR} values.
+{\tt C-FACTOR} values are also recovered if they are available. There are as many macrolibs on the RHS as particles contributing to the energy and charge deposition.
+
+\item[\dusa{HEAT\_data}] input data structure containing specific data (see \Sect{descHEAT}).
+
+\end{ListeDeDescription}
+
+\subsubsection{Data input for module {\tt HEAT:}}\label{sect:descHEAT}
+
+\vskip -0.5cm
+
+\begin{DataStructure}{Structure \dstr{HEAT\_data}}
+$[$~\moc{EDIT} \dusa{iprint}~$]$ \\
+$[~\{$ \moc{POWR} \dusa{power} $|$ \moc{SOUR} \dusa{snumb} $\}~]$ \\
+$[~\{$ \moc{PICKE}  {\tt >>} \dusa{esum} {\tt <<} $|$ \moc{PICKC}  {\tt >>} \dusa{csum} {\tt <<} $\}~]$ \\
+;
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing in module {\tt HEAT:}. =0 for no print; =1 for minimum printing (default value).
+
+\item[\moc{POWR}] keyword used to set \dusa{power}.
+
+\item[\dusa{power}] value of the power in MW used to normalize the flux. By default, the flux is not normalized.
+
+\item[\moc{SOUR}] keyword used to set \dusa{snumb}. Fixed source information (record {\tt FIXE}) must be available in the first extended macrolib \dusa{MACRO}.
+
+\item[\dusa{snumb}] number of source particles used to normalize the flux. By default, the flux is not normalized.
+
+\item[\moc{PICKE}]  keyword used to recover the total energy deposition value (MeV/cc/s) in a CLE-2000 variable.
+
+\item[\dusa{esum}] \texttt{character*12} CLE-2000 variable name in which the extracted total energy deposition value will be placed.
+
+\item[\moc{PICKC}]  keyword used to recover the total charge deposition value (electron/cc/s) in a CLE-2000 variable.
+
+\item[\dusa{csum}] \texttt{character*12} CLE-2000 variable name in which the total charge deposition value will be placed.
+
+\end{ListeDeDescription}
+\clearpage

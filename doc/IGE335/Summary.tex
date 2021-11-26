@@ -1,0 +1,40 @@
+\clearpage
+$ $
+\vskip 2.0cm
+
+\begin{center}
+
+SUMMARY
+
+\end{center}
+
+The computer code DRAGON contains a collection of models which can simulate the
+neutronic behaviour of a unit cell or a fuel assembly in a nuclear reactor. It
+includes all of the functions that characterize a lattice cell code, namely: the
+interpolation of microscopic cross sections  which are supplied by means of
+standard libraries; resonance self-shielding calculations in multidimensional
+geometries; multigroup and multidimensional neutron flux calculations which can
+take into account neutron leakage; transport-transport or transport-diffusion
+equivalence calculations as well as editing of condensed and homogenized nuclear
+properties for reactor calculations; and finally isotopic depletion calculations.
+
+\vskip 0.15cm
+
+The code DRAGON contains a multigroup iterator conceived to control a number of
+different algorithms for the solution of the neutron transport equation. Each of
+these algorithms is presented in the form of a one-group solution procedure
+where the contributions from other energy groups are included in a source term.
+The current version of DRAGON contains many such algorithms. The
+SYBIL option which solves the integral transport equation using the collision
+probability method for simple one-dimensional (1--D) geometries (either plane,
+cylindrical or spherical) and the interface current method for 2--D Cartesian or hexagonal
+assemblies. The EXCELL, NXT and SALT options which solves the integral transport equation
+using the collision probability method for general 2--D geometries and for
+three-dimensional (3--D) assemblies. The MCCG option solves the integro-differential
+transport equation using the long characteristics method for general 2--D and
+3--D geometries.
+
+\vskip 0.15cm
+
+The execution of DRAGON is controlled by the CLE-2000 supervisor. It is
+modular and can be interfaced easily with other production codes.

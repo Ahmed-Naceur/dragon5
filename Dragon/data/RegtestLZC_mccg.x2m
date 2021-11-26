@@ -1,0 +1,150 @@
+*----
+*  G2LZCWUM.x2m
+*  Gentilly-2 LZC simulation with WLUP 69 groups cross sections
+*  Case 01: 
+*  a) No burnup
+*  b) Self-shielding with coarse mesh 2-D XY cell 
+*     (2 fuel bundles) 
+*  c) Flux for homogenisation with fine mesh 3-D supercell geometry
+*----
+*  Define STRUCTURES and MODULES used
+*----
+MODULE       NXT: MCCGT: SHI: ASM: FLU: EDI: DELETE: END: ;
+PROCEDURE    assertS ;
+*----
+*  Geometry related structure and variables
+*----
+PROCEDURE    GeoLZCM ;
+XSM_FILE     Geometry ;
+LINKED_LIST  VolTrk Temp ;
+SEQ_BINARY   IntLine ;
+STRING       Proj Mesh  ;
+INTEGER      NbAngles ;
+REAL         Density ;
+*----
+*  Microlib related structure and variables
+*----
+PROCEDURE    MicWUC MicWULZC  ;
+*PROCEDURE    MicLZC ;
+XSM_FILE     MicLib ;
+XSM_FILE     MicNO 
+             MicOU32 MicOU21 MicOU10
+             MicIN32 MicIN21 MicIN10 ;
+STRING       LibSelect Position Type ;
+*----
+*  Transport related structure and variables
+*----
+LINKED_LIST  Pij Flux Edit ;
+INTEGER      PrtLev                 ;
+*----
+*  Select library type and get fuel cross sections
+*----
+EVALUATE    PrtLev   := 1               ;
+EVALUATE LibSelect := "WU" ;
+MicLib := MicWUC :: <<PrtLev>> ;
+*----
+*  Get coarse mesh 2-D XY geometry for self shielding
+*  And self-shield once the fuel
+*----
+EVALUATE     Mesh := "Coarse" ;
+EVALUATE     Proj := "XY"     ;
+EVALUATE    PrtLev   := 2               ;
+Geometry := GeoLZCM :: 
+  <<PrtLev>> <<Proj>> <<Mesh>> 
+  >>NbAngles<< >>Density<< ;
+EVALUATE NbAngles Density := 8 10.0 ; 
+IntLine VolTrk  := NXT: Geometry ::
+  EDIT <<PrtLev>> TISO <<NbAngles>> <<Density>> ;
+MicLib := SHI: MicLib VolTrk IntLine :: EDIT 0 NOLJ ;
+Geometry IntLine VolTrk := DELETE: Geometry IntLine VolTrk ;
+*----
+*  Add to self-shielded library the mixtures associated with
+*  the LZC for different types and position.
+*----
+EVALUATE    PrtLev   := 1               ;
+EVALUATE Position := "NO" ;
+EVALUATE Type := "32"     ;
+MicNO := MicLib ;
+MicNO := MicWULZC MicNO :: <<PrtLev>> <<Position>> <<Type>> ;
+EVALUATE Position := "OUT" ;
+EVALUATE Type := "32"     ;
+MicOU32 := MicLib ;
+MicOU32 := MicWULZC MicOU32 :: <<PrtLev>> <<Position>> <<Type>> ;
+EVALUATE Type := "21"     ;
+MicOU21 := MicLib ;
+MicOU21 := MicWULZC MicOU21 :: <<PrtLev>> <<Position>> <<Type>> ;
+EVALUATE Type := "10"     ;
+MicOU10 := MicLib ;
+MicOU10 := MicWULZC MicOU10 :: <<PrtLev>> <<Position>> <<Type>> ;
+EVALUATE Position := "IN" ;
+EVALUATE Type := "32"     ;
+MicIN32 := MicLib ;
+MicIN32 := MicWULZC MicIN32 :: <<PrtLev>> <<Position>> <<Type>> ;
+EVALUATE Type := "21"     ;
+MicIN21 := MicLib ;
+MicIN21 := MicWULZC MicIN21 :: <<PrtLev>> <<Position>> <<Type>> ;
+EVALUATE Type := "10"     ;
+MicIN10 := MicLib ;
+MicIN10 := MicWULZC MicIN10 :: <<PrtLev>> <<Position>> <<Type>> ;
+MicLib := DELETE: MicLib ;
+*----
+*  Transport calculations for homogenisation
+*  For geometry use: Mesh = Fine Type="3D"
+*----
+EVALUATE     Mesh := "Coarse" ;
+EVALUATE     Proj := "3D"     ;
+EVALUATE    PrtLev   := 2               ;
+Geometry := GeoLZCM :: 
+  <<PrtLev>> <<Proj>> <<Mesh>> 
+  >>NbAngles<< >>Density<< ;
+EVALUATE NbAngles Density := 8 10.0 ; 
+IntLine VolTrk  := NXT: Geometry ::
+  EDIT <<PrtLev>> TISO <<NbAngles>> <<Density>> ;
+Temp := VolTrk ;
+
+*----
+*  Adjuster and guide tube are absent
+*----
+EVALUATE    PrtLev   := 1               ;
+MicLib := MicNO ;
+* ACA Initialisation
+VolTrk := MCCGT: VolTrk IntLine Geometry ::
+  EDIT 1
+  MAXI 200 EPSI 1E-9
+  DIFC TMT KRYL 0 SCR 0
+  HDD 0.0 ;
+Pij := ASM: MicLib VolTrk IntLine  :: ARM ;
+Flux := FLU: Pij MicLib VolTrk IntLine ::
+  EDIT 2 TYPE K THER 5 5E-5 ;
+assertS Flux :: 'K-EFFECTIVE' 1 1.114261 ;
+Edit := EDI: Flux MicLib VolTrk ::
+  EDIT 3 COND 69 MERGE MIX
+  1  2  3  4  5  6  6  6  6  7  7  7  7  8  9 10
+ 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
+ 11 11 11 11 SAVE ;
+Edit VolTrk := DELETE: Edit VolTrk ;
+* Flux Calculation (ACA TMT)
+VolTrk := Temp ;
+VolTrk := MCCGT: VolTrk IntLine Geometry ::
+  EDIT 1
+  MAXI 1 EPSI 1E-5
+  AAC 200 TMT KRYL 0 SCR 0
+  HDD 0.0 ;
+Flux := FLU: Flux Pij MicLib VolTrk IntLine ::
+  EDIT 2 TYPE K THER 5 5E-5 ;
+assertS Flux :: 'K-EFFECTIVE' 1 1.126719 ;
+Edit := EDI: Flux MicLib VolTrk ::
+  COND 0.625 MERGE COMP SAVE ON  'NO' ;
+Pij Flux Edit Temp := DELETE: Pij Flux Edit Temp ;
+MicLib := DELETE: MicLib ;
+*----
+*  Clean up the Fine mesh geometry and tracking
+*---- 
+IntLine VolTrk Geometry := DELETE: IntLine VolTrk Geometry ;
+*----
+*  Clean up libraries
+*---- 
+MicNO MicOU10 MicOU21 MicOU32 MicIN10 MicIN21 MicIN32
+  := DELETE: MicNO MicOU10 MicOU21 MicOU32 MicIN10 MicIN21 MicIN32 ;
+END: ;
+QUIT "LIST" .

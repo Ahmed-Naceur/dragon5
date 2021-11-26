@@ -1,0 +1,119 @@
+*----
+*  TEST CASE TDCM31
+*  MACROSCOPIC CROSS SECTIONS
+*  CANDU-6 UNIT CELL WITH PIJ AND MCCG (ISOTROPIC BC)
+*----
+*  Define STRUCTURES and MODULES used
+*----
+MODULE GEO: G2S: SALT: MCCGT: FLU: ASM: MAC: END: DELETE: ; 
+PROCEDURE assertS ;
+LINKED_LIST GEOMF GEOMS MACRO FLUX T_EXC PIJ ;
+SEQ_ASCII Fil_SAL Fil_SAL.ps  ;
+SEQ_BINARY  TF_EXC ;
+REAL SIGT SIGS ;
+*
+*  access to geometry information
+*  default: CANDU-NG
+*
+GEOMF := GEO: :: CAR2D 1 1
+     X- ALBE 1.0  X+ ALBE 1.0
+     Y- ALBE 1.0  Y+ ALBE 1.0
+     MIX  C1
+     ::: C1 := GEO: CARCEL 9
+       MESHX  0.0 26.0
+       MESHY  0.0 26.0
+       RADIUS  0.0000 0.74425 2.182 3.603 5.1689
+               5.6032 6.4478 6.5875 12.7 15.75625
+       MIX             1 1 1 1 2 3 4 5 5 5
+       SPLITR          1 3 3 3 1 1 1 2 1
+       CLUSTER ROD1 ROD2 ROD3 ROD4
+       ::: ROD1 := GEO: TUBE 2
+            RADIUS 0.00000 0.6122 0.6540
+            MIX            6      10
+            NPIN  1 RPIN 0.0000 APIN 0.0000
+       ;
+       ::: ROD2 := GEO: ROD1
+            MIX    7      10
+            NPIN  6 RPIN 1.4885 APIN 0.0000
+       ;
+       ::: ROD3 := GEO: ROD1
+            MIX    8      10
+            NPIN 12 RPIN 2.8755 APIN 0.261799
+       ;
+       ::: ROD4 := GEO: ROD1
+            MIX    9      10
+            NPIN 18 RPIN 4.3305 APIN 0.0
+       ;
+  ; ;
+
+Fil_SAL Fil_SAL.ps := G2S: GEOMF ;
+T_EXC TF_EXC := SALT: Fil_SAL ::
+     EDIT 1
+     TISO 8 10.0 REND
+;
+
+EVALUATE SIGT := 0.3683 ;
+EVALUATE SIGS := 0.994026609 SIGT * ;
+MACRO := MAC: ::
+     EDIT 2 NGRO 1 NMIX 20 NIFI 1
+     READ INPUT
+     MIX 1 (*EAU LEGERE*)
+        TOTAL <<SIGT>>      SCAT 1 1 <<SIGS>>
+     MIX 2 (*PT*)
+        TOTAL 0.4029        SCAT 1 1 0.4000
+     MIX 3 (*VOID*)
+        TOTAL 0.001         SCAT 1 1 0.0
+     MIX 4 (*CT*)
+        TOTAL 0.4029        SCAT 1 1 0.4000
+     MIX 5 (*EAU LOURDE*)
+        TOTAL 0.03683        SCAT 1 1 0.03661
+     MIX 6 (*COMBUSTIBLE*)
+        TOTAL 0.3652    SCAT 1 1 0.3234
+        NUSIGF 0.05564      CHI 1.0
+     MIX 7 (*COMBUSTIBLE*)
+        TOTAL 0.3652    SCAT 1 1 0.3234
+        NUSIGF 0.05564      CHI 1.0
+     MIX 8 (*COMBUSTIBLE*)
+        TOTAL 0.3652    SCAT 1 1 0.3234
+        NUSIGF 0.05564      CHI 1.0
+     MIX 9 (*COMBUSTIBLE*)
+        TOTAL 0.3652    SCAT 1 1 0.3234
+        NUSIGF 0.05564      CHI 1.0
+     MIX 10 (*GAINE*)
+        TOTAL 0.4029        SCAT 1 1 0.4000
+;
+* 
+* flux calculation
+*
+
+PIJ := ASM: MACRO T_EXC TF_EXC :: PIJ EDIT 1     
+     ;
+FLUX := FLU: MACRO PIJ T_EXC TF_EXC :: 
+     EDIT 1 TYPE K
+     ;
+assertS FLUX :: 'K-EFFECTIVE' 1 1.144009 ;
+FLUX PIJ := DELETE: FLUX PIJ ;
+
+PIJ := ASM: MACRO T_EXC TF_EXC :: PIJ EDIT 1
+  ;
+FLUX := FLU: PIJ MACRO GEOMF T_EXC TF_EXC ::
+EDIT 2 TYPE K THER 5 5E-5
+ ; 
+assertS FLUX :: 'K-EFFECTIVE' 1 1.144009 ;
+FLUX PIJ := DELETE: FLUX PIJ ;
+
+T_EXC := MCCGT: T_EXC TF_EXC GEOMF ::
+   EDIT 2 GAUS 4
+   AAC 1 EPSI 1E-5
+   MAXI 100 KRYL 0 SCR 0 HDD 0.0
+     ;
+PIJ := ASM: MACRO T_EXC TF_EXC :: ARM EDIT 1
+  ;
+FLUX := FLU: PIJ MACRO GEOMF T_EXC TF_EXC ::
+EDIT 2 TYPE K THER 5 5E-5
+;
+assertS FLUX :: 'K-EFFECTIVE' 1 1.144001 ;
+
+ECHO "test TDCM31 completed" ;
+END: ;
+QUIT "LIST" .

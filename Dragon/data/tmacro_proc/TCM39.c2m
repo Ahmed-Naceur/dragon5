@@ -1,0 +1,87 @@
+*----
+*  TEST CASE TCM39 (OBSOLETE FORM OF INPUT)
+*  EURYDICE CASE WITH SIJ MULTICELL APPROXIMATION
+*  DOUBLE-HETEROGENEITY (BIHET) MIXTURES
+*  ONE-GROUP MACROLIB-DEFINED CROSS SECTIONS
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST MACRO ASSMB TRACK SYS FLUX ;
+MODULE GEO: SYBILT: MAC: LIB: ASM: FLU: END: ;
+PROCEDURE assertS ;
+*
+MACRO := MAC: ::
+ EDIT 2 NGRO 1 NMIX 4 NIFI 1
+     READ INPUT
+     MIX 1
+        TOTAL 0.3683        SCAT 1 1 0.3661
+     MIX 2
+        TOTAL 0.36522       SCAT 1 1 0.3234
+        NUSIGF 0.05564      CHI 1.0
+     MIX 3
+        TOTAL 0.8453        SCAT 1 1 0.5216
+     MIX 4
+        TOTAL 0.3683        SCAT 1 1 0.0
+     ;
+ASSMB := GEO: :: GROUP 13 (*ASSEMBLAGE 9 X 9*) EDIT 99
+     POURCE
+     .012345679 .049382716 .049382716 .049382716 .049382716
+                .049382716 .098765432 .098765432 .296296296
+                           .049382716 .098765432
+                                      .049382716
+                                                 .049382716
+     PROCEL
+     (*CELL 1*) 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     (*CELL 2*) 0.25 0.0 0.25 0.0 0.0 0.5 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     (*CELL 3*) 0.0 0.25 0.0 0.25 0.0 0.0 0.5 0.0 0.0 0.0 0.0 0.0 0.0
+     (*CELL 4*) 0.0 0.0 0.25 0.0 0.25 0.0 0.0 0.5 0.0 0.0 0.0 0.0 0.0
+     (*CELL 5*) 0.0 0.0 0.0 0.25 0.25 0.0 0.0 0.0 0.5 0.0 0.0 0.0 0.0
+     (*CELL 6*) 0.0 0.5 0.0 0.0 0.0 0.0 0.5 0.0 0.0 0.0 0.0 0.0 0.0
+     (*CELL 7*) 0.0 0.0 0.25 0.0 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.0 0.0
+     (*CELL 8*) 0.0 0.0 0.0 0.25 0.0 0.0 0.25 0.0 0.25 0.0 0.25 0.0 0.0
+     (*CELL 9*) 0.0 0.0 0.0 0.0 0.083333333333 0.0 0.0 0.0833333333333
+             0.5833333333 0.0 0.083333333333 0.08333333333 0.08333333333
+     (*CELL 10*) 0.0 0.0 0.0 0.0 0.0 0.0 0.5 0.0 0.0 0.0 0.5 0.0 0.0
+     (*CELL 11*) 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.25 0.25 0.25 0.0 0.25 0.0
+     (*CELL 12*) 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.5 0.0 0.5 0.0 0.0
+     (*CELL 13*) 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.5 0.0 0.0 0.0 0.5
+     CELL C1 C3 C2 C3 C3
+             C3 C3 C3 C3
+                C2 C3
+                   C3
+                      C3
+     BIHET SPHE (*NG=*) 2 (* NMILG= *) 2 (* SPHERICAL MICRO-STRUCTURE *)
+     (* NS= *) 3 3
+     (* M-S-1 *) 0.0 0.1 0.2 0.3 (* M-S 2 *) 0.0 0.2 0.4 0.5
+     (* COMPOSITE MIXTURES *)  5 6
+     (* MIXTURES SURROUNDING M-S *) 2 2
+     (* COMPOSITE MIXTURE 5 FRACT *) 0.4 0.0
+     (* REAL MIXTURE CONTENT M-S-1 *) 3 1 3
+     (* COMPOSITE MIXTURE 6 FRACT *) 0.2 0.1
+     (* REAL MIXTURE CONTENT M-S-1 *) 1 2 1
+     (* REAL MIXTURE CONTENT M-S-2 *) 2 3 1
+     ::: C1 := GEO: TUBE 1
+                RADIUS 0.0 7.1205352E-1
+                MIX 4
+     ;
+     ::: C2 := GEO: TUBE 4
+                RADIUS 0.0 3.25296E-01 4.60039E-01 5.63430E-01
+                7.1205352E-1
+                MIX 5 3 3 1
+     ;
+     ::: C3 := GEO: TUBE 2
+                RADIUS 0.0 4.12660E-01 7.1205352E-1
+                MIX 6 1
+     ;
+     ;
+TRACK := SYBILT: ASSMB ::
+     EDIT 1 MAXR 100
+     TITLE 'MULTICELL 9 X 9 PWR BENCHMARK WITH POISON' ;
+*
+SYS := ASM: MACRO TRACK :: EDIT 1 PIJ ;
+FLUX := FLU: SYS MACRO TRACK :: TYPE B B0 SIGS ;
+assertS FLUX :: 'B2  B1HOM' 1 -1.83970E-02 ;
+*
+ECHO "test TCM39 completed" ;
+END: ;
+QUIT "LIST" .

@@ -1,0 +1,19 @@
+* Regression tests for WIMS-AECL Wimslib capabilities in Dragon.
+* Running time = ~ 15m
+* G. Marleau
+*
+PROCEDURE TCW601 TCW602 TCW603 TCW604 TCW605 TCW606 TCW607 TCW608 
+          TCW609 TCW610 TCW611 TCW612  ;
+TCW601 ;
+TCW602 ;
+TCW603 ;
+TCW604 ;
+TCW605 ;
+TCW606 ;
+TCW607 ;
+TCW608 ;
+TCW609 ;
+TCW610 ;
+TCW611 ;
+TCW612 ;
+QUIT "LIST" .

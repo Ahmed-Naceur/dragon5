@@ -1,0 +1,116 @@
+*----
+*  TEST CASE TCW601
+*  MOSTELLER BENCHMARK: 1-D ANNULAR CELL AND 2-D CARTESIAN CELL
+*  WIMS-AECL 89 GROUPS LIBRARY FILE E6MLIB
+*
+*  REF: R. Mosteller et al. Nucl. Sci. Eng. 107, 265 (1991)
+*
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  MOSTELA MOSTELC DISCR LIBRARY CP CALC OUT ;
+SEQ_BINARY
+  TRKSPC ;
+MODULE
+  LIB: GEO: SYBILT: EXCELT: SHI: ASM: FLU: EDI: DELETE: END: ;
+PROCEDURE assertS ;
+*----
+*  Microscopic cross sections from file E6MLIB format WIMS-AECL
+*----
+LIBRARY := LIB: ::
+  NMIX 3 CTRA WIMS
+  MIXS LIB: WIMSAECL FIL: E6MLIB
+  MIX 1 600.0                        O16      = O16      4.61309E-2
+    U235     = U235     1.66078E-4 1
+    U238     = U238     2.28994E-2 1
+  MIX 2 600.0
+    Zr90     = ZR90     2.001E-2
+    Zr91     = ZR91     4.315E-3
+    Zr92     = ZR92     6.524E-3
+    Zr94     = ZR94     6.471E-3
+    Zr96     = ZR96     1.021E-3
+  MIX 3 600.0                        
+    H1H2O    = H1H2O    4.42326E-2   O16H2O   = O16      2.21163E-2
+    BNat10   = B10      2.03245E-6   BNat11   = B11      8.18085E-6
+  ;
+*----
+*  Geometry MOSTELA : annular 3 region geometry
+*           MOSTELC : Cartesian 3 region geometry
+*----
+MOSTELA := GEO: :: TUBE 3
+  R+ REFL RADIUS 0.0 0.39306 0.45802 0.71206 SPLITR 2 1 1
+  MIX 1 2 3 ;
+MOSTELC := GEO: :: CARCEL 2
+  X- REFL X+ REFL MESHX 0.0 1.26209
+  Y- REFL Y+ REFL MESHY 0.0 1.26209
+  RADIUS 0.0 0.39306 0.45802 SPLITR 2 1
+  MIX  1 2 3 ;
+*----
+*  Case 1 -- annular
+*  Self-Shielding calculation SYBIL
+*  Transport calculation      SYBIL
+*  Flux calculation for K no leakage
+*----
+DISCR := SYBILT: MOSTELA ::
+  TITLE 'TCW601: MOSTELLER BENCHMARK (SYBIL / SYBIL)'
+  MAXR 4 QUA1 5 ;
+LIBRARY := SHI: LIBRARY DISCR :: EDIT 0 NOLJ ;
+CP := ASM: LIBRARY DISCR ;
+CALC := FLU: CP LIBRARY DISCR ::
+  TYPE K ;
+OUT := EDI: CALC LIBRARY DISCR ::
+  EDIT 4 MERG MIX 1 2 3 COND 4.0 SAVE ;
+DISCR CP := DELETE: DISCR CP ;
+*----
+*  Case 2 -- Cartesian
+*  Self-Shielding calculation SYBIL
+*  Transport calculation      SYBIL
+*  Flux calculation for K no leakage
+*----
+DISCR := SYBILT: MOSTELC ::
+  TITLE 'TCW601: MOSTELLER BENCHMARK (SYBIL / SYBIL)'
+  MAXR 4 QUA1 5 QUA2 6 5 ;
+LIBRARY := SHI: LIBRARY DISCR :: EDIT 0 NOLJ ;
+CP := ASM: LIBRARY DISCR ;
+CALC := FLU: CALC CP LIBRARY DISCR ::
+  TYPE K ;
+OUT := EDI: OUT CALC LIBRARY DISCR ::
+  EDIT 1 MERG MIX 1 2 3 COND 4.0 STAT ALL REFE 1 ;
+DISCR CP := DELETE: DISCR CP ;
+*----
+*  Case 3 -- annular
+*  Self-Shielding calculation EXCEL-ISO
+*  Transport calculation      EXCEL-ISO
+*  Flux calculation for K no leakage
+*----
+DISCR TRKSPC := EXCELT: MOSTELC ::
+  TITLE 'TCW601: MOSTELLER BENCHMARK (EXCELL)'
+  MAXR 4 TRAK TISO 12 20.0 ;
+LIBRARY := SHI: LIBRARY DISCR TRKSPC :: EDIT 0 NOLJ ;
+CP := ASM: LIBRARY DISCR TRKSPC ;
+CALC := FLU: CALC CP LIBRARY DISCR ::
+  TYPE K ;
+OUT := EDI: OUT CALC LIBRARY DISCR ::
+  EDIT 1 MERG MIX 1 2 3 COND 4.0 STAT ALL REFE 1 ;
+DISCR TRKSPC CP := DELETE: DISCR TRKSPC CP ;
+*----
+*  Case 4 -- Cartesian
+*  Self-Shielding calculation EXCEL-SPC
+*  Transport calculation      EXCEL-SPC
+*  Flux calculation for K no leakage
+*----
+DISCR TRKSPC := EXCELT: MOSTELC ::
+  TITLE 'TCW601: MOSTELLER BENCHMARK (EXCELL)'
+  MAXR 4 TRAK TSPC 12 20.0 ;
+LIBRARY := SHI: LIBRARY DISCR TRKSPC :: EDIT 0 NOLJ ;
+CP := ASM: LIBRARY DISCR TRKSPC ;
+CALC := FLU: CALC CP LIBRARY DISCR ::
+  TYPE K ;
+assertS CALC :: 'K-EFFECTIVE' 1 0.8330397 ;
+OUT := EDI: OUT CALC LIBRARY DISCR ::
+  EDIT 1 MERG MIX 1 2 3 COND 4.0 STAT ALL REFE 1 ;
+DISCR TRKSPC CP := DELETE: DISCR TRKSPC CP ;
+ECHO "test TCW601 completed" ;
+END: ; 
+QUIT "LIST" .

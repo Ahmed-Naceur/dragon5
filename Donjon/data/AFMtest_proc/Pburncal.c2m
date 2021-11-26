@@ -1,0 +1,161 @@
+!***********************************************************************
+!*    Main Input File for DONJON                                      **
+!*    2 zone only                                                     **
+!*                                                                    **
+!*    W. Shen  Nov. 11, 1998                                          **
+!*    B. Dionne (2001/03/04) (pour cours ENE6209)                     **
+!*    E. Varin  (2004/02/23) (pour Reingenierie)                      **
+!*    A. Hebert (11/11/11) (pour DONJON4)                             **
+!*                                                                    **
+!***********************************************************************
+ PARAMETER G23D2 INDEX MACRO DEVICE RESEAU DBASE ::
+           :::
+       LINKED_LIST   G23D2 INDEX MACRO DEVICE RESEAU DBASE ;
+                 ;
+
+ PROCEDURE    PgeoG2 Pmacfix PdevT Pinires PcritAx ;
+
+ MODULE       DSET: RESINI: DELETE: FIND0: END: ;
+
+ LINKED_LIST  INFOF ;
+
+!* Declaration et initialisation des variables
+!*********************************************
+ INTEGER Maxreg := 27700 ;
+ INTEGER Iter := 0 ;
+ !* Numeros de melange des devices
+ INTEGER  m23M m23E m23F m12M m12E m12F m01M m01E m01F :=
+           17   18   19    20   21   22   23   24   25 ;
+ INTEGER  mRai  mRao  mRbi  mRci  mRco  mRdi
+         mNRai mNRao mNRbi mNRci mNRco mNRdi  :=
+           5     6      7     8     9    10
+           11   12     13    14    15    16  ;
+ INTEGER  mRbs mNobs :=
+           26   27  ;
+ !***
+
+ LOGICAL Conv ;
+
+ REAL Fact BCinout Eps1 Keff fmean ;
+ REAL Timbc := 60.0 ;
+ REAL Kref := 1.0  ;
+ REAL B1 B2 Burn Precf Pow ;
+ REAL Dk1 Dk2 BP1 Aux Out ;
+
+ EVALUATE Pow := 2064.0 ; ! Puissance totale de fission
+ EVALUATE fmean :=  0.50   ;
+ EVALUATE Precf := 1.E-6 ; !* Precision du calcul de flux
+
+!* Lecture des arguments de la procedure
+!***************************************
+ :: >>Fact<<  >>BCinout<< >>Maxreg<< ;
+
+!* Definition de la geometrie
+!****************************
+ G23D2 INDEX := PgeoG2 :: <<Maxreg>> ;
+
+!* Definition initiale des melanges (sections efficaces macroscopiques)
+!**********************************************************************
+!proprietes fixes=independant du burnup
+ MACRO := Pmacfix ;
+
+!proprietes dependantes du burnup
+ EVALUATE B1 := 4000.0 ;
+ EVALUATE B2 := B1 Fact / ;
+ RESEAU INDEX := Pinires INDEX :: <<B1>> <<B2>> ;
+
+!* Definition des devices (ADJUSTER,LZC, ...) et leurs mouvements
+*****************************************************************
+ DEVICE INDEX := PdevT INDEX :: <<fmean>>
+     <<m23M>> <<m12M>> <<m01M>> <<mNRai>> <<mNRao>> <<mNRbi>>
+     <<mNRci>> <<mNRco>> <<mNRdi>> <<mNobs>> ;
+
+!* Positions initiales de devices
+!********************************
+
+DEVICE := DSET: DEVICE ::
+  EDIT 5
+  ROD-GROUP 1 LEVEL <<BCinout>> TIME <<Timbc>> END
+  LZC 1 LEVEL <<fmean>> TIME 60. END
+  LZC 2 LEVEL <<fmean>> TIME 36. END
+  LZC 3 LEVEL <<fmean>> TIME 36. END
+  LZC 4 LEVEL <<fmean>> TIME 36. END
+  LZC 5 LEVEL <<fmean>> TIME 36. END
+  LZC 6 LEVEL <<fmean>> TIME 60. END
+  LZC 7 LEVEL <<fmean>> TIME 36. END
+  LZC 8 LEVEL <<fmean>> TIME 60. END
+  LZC 9 LEVEL <<fmean>> TIME 36. END
+  LZC 10 LEVEL <<fmean>> TIME 36. END
+  LZC 11 LEVEL <<fmean>> TIME 36. END
+  LZC 12 LEVEL <<fmean>> TIME 36. END
+  LZC 13 LEVEL <<fmean>> TIME 60. END
+  LZC 14 LEVEL <<fmean>> TIME 36. END
+ ;
+
+!* Calculs de flux et convergence vers le burnup de sortie
+!*********************************************************
+ !* Calcul de la borne positive
+ RESEAU := PcritAx RESEAU DBASE INDEX MACRO DEVICE G23D2 ::
+ <<Precf>> <<B1>> <<B2>> <<Maxreg>> <<Pow>> >>Keff<< >>Eps1<< ;
+
+ EVALUATE Dk1 := Keff Kref - ;
+ EVALUATE BP1 := B1 ;
+
+ !* Calcul de la borne negative
+ EVALUATE B1 := 12000.0 ;
+ EVALUATE B2 := B1 Fact / ;
+
+ RESEAU := PcritAx RESEAU DBASE INDEX MACRO DEVICE G23D2 ::
+ <<Precf>> <<B1>> <<B2>> <<Maxreg>> <<Pow>> >>Keff<< >>Eps1<< ;
+
+ ECHO "Pburncal init Keff=" Keff ;
+
+ EVALUATE Dk2 := Keff Kref - ;
+
+ !* Recherche de la racine avec methode de Brent
+ EVALUATE B1 BP1 := B1 1000.0 / BP1 1000.0 / ;
+
+ INFOF := FIND0: :: TOL 5.0E-4 ITMAX 10
+                    POINT X <<BP1>>   Y <<Dk1>>
+                    POINT X <<B1>>    Y <<Dk2>>
+                    >>Conv<< >>Burn<< ;
+
+ EVALUATE Aux := Burn 1000.0 * ;
+
+!* Boucle pour faire converger les burnup de sorties
+!* pour un coeur critique
+!***************************************************
+ REPEAT
+
+   EVALUATE Iter := Iter 1 + ;
+
+   EVALUATE B1 := Aux ;
+   EVALUATE B2 := Aux Fact / ;
+
+   RESEAU := PcritAx RESEAU DBASE INDEX MACRO DEVICE G23D2 ::
+   <<Precf>> <<B1>> <<B2>> <<Maxreg>> <<Pow>> >>Keff<< >>Eps1<< ;
+
+   ECHO "Pburncal iter=" Iter "Keff=" Keff ;
+
+   EVALUATE Out := Keff Kref - ;
+
+   INFOF := FIND0: INFOF :: Y <<Out>> >>Conv<< >>Burn<< ;
+
+   EVALUATE Aux := Burn 1000.0 * ;
+
+ UNTIL Conv ;
+
+ ECHO "BURNUP ET FORME AXIALE DU FLUX CONVERGES" ;
+ ECHO "-----------------------------------------" ;
+ ECHO "NBRE ITERATIONS EXTERNES    = " Iter ;
+ ECHO "KEFF FINAL                  = " Keff ;
+ ECHO "ERREUR FORME AXIALE DU FLUX = " Eps1 ;
+ ECHO "-----------------------------------------" ;
+ ECHO "THE FINAL T/A EXIT BURNUP B1,B2: " B1 B2 ;
+ ECHO "AT THE CONVERGENCE" ;
+
+ RESEAU := RESINI: RESEAU :: TIMAV-BVAL  <<B1>> <<B2>> ;
+
+ END: ;
+
+QUIT .

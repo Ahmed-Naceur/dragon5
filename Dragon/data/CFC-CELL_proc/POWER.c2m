@@ -1,0 +1,67 @@
+* DRAGON POWER PROCEDURE DECK
+***********************************************************************
+* Purpose:
+* set nominal and pertubed power for cross-section of 2-D cell 
+* of CANDU reactor.
+*
+* author:
+* MAJID FASSI FEHRI 09/09/10
+* CNSC
+*
+* Modified:
+* Richard CHAMBON 11/04/29 
+* Ecole Polytechnique
+*
+* Note:
+*  - by default (CALCU>0) only current and nominal values of properties 
+*       are returned 
+*  - for CALCU=0 nominal bundle power and its range of perturbation are 
+*       returned.
+*  PowFB = 0 power feedback is NOT computed in the FBM database
+*             in that case arbitrary values of power are used in CFC
+*             to compute feedback coeficients all equal to 0
+*        = 1 power feedback is computed in the FBM database
+*
+***********************************************************************
+REAL POW PowRef PowU PowI PowD ;
+REAL PowBundRef PowBundU PowBundI PowBundD ;
+INTEGER CALCU ;
+INTEGER PowFB := 1 ;
+MODULE END: ;
+IF PowFB 0 = THEN
+EVALUATE PowRef  PowU    PowI    PowD    := 
+         31.9713 31.9713 31.9713 31.9713 ;
+ELSE
+EVALUATE PowRef  PowU    PowI    PowD    := 
+         31.9713 49.3866 27.2926 3.4656  ;
+ENDIF ;
+EVALUATE PowBundRef := 615.0 ;
+IF PowFB 0 = THEN
+EVALUATE PowBundU   := PowRef 1.5 * ;
+EVALUATE PowBundI   := PowRef 0.8 * ;
+EVALUATE PowBundD   := PowRef 0.15 * ;
+ELSE
+EVALUATE PowBundU   := PowBundRef PowU * PowRef / ;
+EVALUATE PowBundI   := PowBundRef PowI * PowRef / ;
+EVALUATE PowBundD   := PowBundRef PowD * PowRef / ;
+ENDIF ;
+
+:: >>CALCU<< ;
+
+IF CALCU 21 = THEN
+ EVALUATE POW :=  PowD ; 
+ELSEIF CALCU 20 = THEN 
+ EVALUATE POW :=  PowI ; 
+ELSEIF CALCU 19 = THEN
+ EVALUATE POW :=  PowU ; 
+ELSE
+ EVALUATE POW := PowRef ; 
+ENDIF ;
+
+:: <<POW>> <<PowRef>> ;
+
+* Needed for the CFC: module only
+IF CALCU 0 = THEN
+ :: <<PowBundRef>> <<PowBundU>> <<PowBundI>> <<PowBundD>> ;
+ENDIF ;
+END: ;

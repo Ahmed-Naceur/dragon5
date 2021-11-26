@@ -1,0 +1,157 @@
+****************************************************************
+*                                                              *
+* Procedure :  SPH_Optim.c2m                                   *
+* Purpose   :  Compute SPH factorss using the implicit OPTEX   *
+*              approach                                        *
+* Author    :  A. Hebert                                       *
+*                                                              *
+* CALL      :                                                  *
+*  Macro2 Optim := SPH_Optim Macro1 Macrogeom Track            *
+*                     :: (data) ;                              *
+*                                                              *
+*  Output object:                                              *
+*    Macro2    : Corrected macrolib                            *
+*    Optim     : L_OPTIMIZE object                             *
+*                                                              *
+*  Input objects:                                              *
+*    Macro1    : Reference macrolib for the macro-geometry     *
+*    Macrogeom : Macro-geometry                                *
+*    Track     : Tracking of the macro-geometry                *
+*                                                              *
+*  Input data:                                                 *
+*    fmin      : minimum acceptable correction factor          *
+*    fmax      : maximum acceptable correction factor          *
+*    epsout    : convergence criterion for outer iterations    *
+*    IterEmax  : maximum number of iterations                  *
+*                                                              *
+****************************************************************
+PARAMETER  MACRO2 OPTIM MACRO1 MACROGEOM TRACK ::
+  ::: LINKED_LIST MACRO2 OPTIM MACRO1 MACROGEOM TRACK ; ;
+MODULE DSPH: TRIVAA: FLUD: GREP: OUT: DREF: GPTFLU: DELETE:
+       DLEAK: DELTA: GRAD: PLQ: MAC: ERROR: END: ;
+LINKED_LIST DMACRO1 SYSTEM CALC EDIT DSYSTEM GPTD GPTA DCALCA ;
+INTEGER LConv IterE nlf ;
+REAL Keff rmsval ;
+LOGICAL Conv ;
+REAL fmin fmax epsout ;
+INTEGER IterEmax ;
+  :: >>fmin<< >>fmax<< >>epsout<< >>IterEmax<< ;
+
+!****************************************
+!****************************************
+!*******   EXTERNAL ITERATIONS   ********
+!****************************************
+!****************************************
+
+DMACRO1 OPTIM := DSPH: MACRO1 :: EDIT 1 SPH PN ;
+     
+MACRO2 := MACRO1 ;
+
+EVALUATE IterE := 0 ;
+REPEAT
+
+  EVALUATE IterE := IterE 1 + ;
+  ECHO "#------------------------------" ;
+  IF IterE 10 < THEN
+    ECHO "#-------------" IterE "--------------" ;
+  ELSE
+    ECHO "#------------" IterE "--------------" ;
+  ENDIF ;
+  ECHO "#------------------------------" ;
+
+  SYSTEM := TRIVAA: MACRO2 TRACK :: EDIT 0 ;
+  IF IterE 1 = THEN
+    CALC := FLUD: SYSTEM TRACK ::
+      EDIT 0 ADI 5 EXTE 50 1.0E-6 ACCE 5 3 ADJ ;
+  ELSE
+    CALC := FLUD: CALC SYSTEM TRACK ::
+      EDIT 0 ADI 5 EXTE 50 1.0E-6 ACCE 5 3 ADJ ;
+  ENDIF ;
+      
+  GREP: CALC :: GETVAL 'K-EFFECTIVE ' 1 >>Keff<< ;
+
+  EDIT := OUT: CALC MACROGEOM MACRO2 TRACK ::
+      EDIT 0 INTG MIX ;
+  IF IterE 1 = THEN
+     ECHO "Error statistics before correction" ;
+     ERROR: MACRO1 EDIT :: HREA 'NFTOT' ;
+  ENDIF ;
+*----
+* IMPLICIT SOLUTION.
+* SOLUTION OF AN ADJOINT FIXED SOURCE EIGENVALUE PROBLEM.
+*----
+  GPTA OPTIM := DREF: OPTIM CALC TRACK EDIT MACRO1 ::
+      EDIT 1 RMS >>rmsval<< ;
+  IF IterE 1 = THEN
+    DCALCA := GPTFLU: GPTA CALC SYSTEM TRACK ::
+      EDIT 0 ADI 5 EXTE 50 5.0E-5 ACCE 5 3 GMRES 10
+      IMPLICIT FROM-TO ALL ;
+  ELSE
+    DCALCA := GPTFLU: DCALCA GPTA CALC SYSTEM TRACK ::
+      EDIT 0 ADI 5 EXTE 50 5.0E-5 ACCE 5 3 GMRES 10
+      IMPLICIT FROM-TO ALL ;
+  ENDIF ;
+  ECHO "iter=" IterE "rmsval=" rmsval "Keff=" Keff ;
+  EDIT := DELETE: EDIT ;
+*----
+* DIRECT SOURCE CALCULATION
+*----
+  DSYSTEM := TRIVAA: MACRO2 TRACK DMACRO1 :: EDIT 0 DERI ;
+  GPTD := DELTA: CALC SYSTEM DSYSTEM TRACK :: EDIT 0 ;
+  SYSTEM DSYSTEM GPTA := DELETE: SYSTEM DSYSTEM GPTA ;
+*----
+* IMPLICIT GRADIENT CALCULATION
+*----
+  OPTIM := GRAD: OPTIM DCALCA GPTD :: EDIT 0
+       VAR-VAL-MIN ALL <<fmin>>
+       VAR-VAL-MAX ALL <<fmax>>
+  ;
+  GPTD := DELETE: GPTD ;
+*----
+* COMPUTE NEW CONTROL VARIABLES BY SOLVING A QUASI-LINEAR PROBLEM
+*----
+  IF IterE 1 = THEN
+    OPTIM := PLQ: OPTIM ::
+       EDIT 1
+       METHOD SIMPLEX
+       STEP-REDUCT PARABOLIC
+       OUT-STEP-LIM 0.1
+       OUT-STEP-EPS <<epsout>>
+       CST-QUAD-EPS <<epsout>>
+       CALCUL-DX
+       OUT-CONV-TST >>Conv<<
+    ;
+  ELSE
+    OPTIM := PLQ: OPTIM ::
+       EDIT 1
+       CALCUL-DX
+       OUT-CONV-TST >>Conv<<
+    ;
+  ENDIF ;
+  GREP: OPTIM :: GETVAL STATE-VECTOR 4 >>LConv<< ; 
+  ECHO "Convergence" Conv LConv ;
+
+  IF LConv 1 <  THEN
+    ECHO "Outer iteration --> no convergence" ;
+  ENDIF ;
+*----
+* UPDATE MACROLIB WITH NEW CONTROL VARIABLES
+*----
+  MACRO2 := MACRO2 MACRO1 ;
+  MACRO2 := MAC: MACRO2 OPTIM ;
+
+UNTIL Conv IterE IterEmax > + ;
+CALC DCALCA := DELETE: CALC DCALCA ;
+*----
+* VERIFICATION CALCULATION
+*----
+SYSTEM := TRIVAA: MACRO2 TRACK :: EDIT 0 ;
+CALC := FLUD: SYSTEM TRACK ::
+      EDIT 0 ADI 5 EXTE 50 1.0E-6 ACCE 5 3 ;
+
+EDIT := OUT: CALC MACROGEOM MACRO2 TRACK ::
+      EDIT 0 INTG MIX ;
+
+ECHO "Error statistics after correction" ;
+ERROR: MACRO1 EDIT :: HREA 'NFTOT' ;
+END: ;

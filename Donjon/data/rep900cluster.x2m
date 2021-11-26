@@ -1,0 +1,435 @@
+*
+* Input file to compute diffusion flux on a homogenized assembly in an
+* infinite space. Homogenization can be homogeneous or heterogeneous
+*
+* Author : R. Chambon (06/2014)
+*
+SEQ_ASCII ACOMPOU :: FILE '_ACompoHetUOX' ;
+SEQ_ASCII ACOMPOM :: FILE '_ACompoHetMOX' ;
+SEQ_ASCII ACOMPOR :: FILE '_REFL_ASC' ;
+*
+LINKED_LIST UOX MOX CpoR DONNEES Geo1
+   GeoH MatexH FmapH MacroFH Macro2H
+   GeoP MatexP FmapP MacroFP Macro2P
+   CpoRefl Micro MacroRefl
+   Track System Flux TrackP SystemP FluxP
+;
+
+PROCEDURE GetCaseCond ;
+PROCEDURE assertS ;
+*
+MODULE GEO: USPLIT: RESINI: MACINI: NCR: NAP: TRIVAA: TRIVAT: FLUD:
+       DELETE: GREP: ABORT: END: ;
+*
+STRING Fuel := "UOX"    ; ! UOX/MOX
+
+! Case Specific data
+INTEGER CaseNumber := 0 ; ! 0, 1, 2, 3
+INTEGER Split := 1 ;
+STRING TypeCompo := "Heter0" ; ! Heter0, Heter1, Heter2, Heter3
+INTEGER rt := 2 ;
+
+STRING  ClusType1 ClusType2 ClusType3  := "MOX" "MOX" "MOX" ; ! UOX/MOX
+INTEGER ClusBStp1 ClusBStp2 ClusBStp3  := 1 1 1 ;
+REAL    ClusBurn1 ClusBurn2 ClusBurn3  := 0. 0. 0. ;
+REAL ppmBore := 600. ;
+
+ GetCaseCond ::  <<CaseNumber>>
+   >>ClusType1<< >>ClusType2<< >>ClusType3<< 
+   >>ClusBStp1<< >>ClusBStp2<< >>ClusBStp3<< 
+   >>ClusBurn1<< >>ClusBurn2<< >>ClusBurn3<< 
+   >>ppmBore<< ;
+ECHO "CaseNumber :" CaseNumber ;
+ECHO   ClusType1 ClusType2 ClusType3 ;
+ECHO   ClusBStp1 ClusBStp2 ClusBStp3 ;
+ECHO   ClusBurn1 ClusBurn2 ClusBurn3 ;
+
+INTEGER npin ;
+REAL Cote Lame mx1 mx2 mx3 mx4 mx5 mx6 Size wat ;
+
+EVALUATE npin := 17 ;
+*
+EVALUATE Cote      := 1.26  ;
+EVALUATE Lame      := 0.04  ;
+EVALUATE wat       := 0.   ;
+EVALUATE Size := npin I_TO_R Cote * Lame 2. * + ;
+EVALUATE mx1 := Size -1.5 * ;
+EVALUATE mx2 := Size -0.5 * ;
+EVALUATE mx3 := Size 0.5 * ;
+EVALUATE mx4 := Size 1.5 * ;
+
+*
+STRING DirHet ;
+INTEGER ifx ifx2 ;
+IF     TypeCompo "Heter0" = THEN
+  EVALUATE DirHet := "EDI2A       " ;
+  EVALUATE ifx := 0 ;
+ELSEIF     TypeCompo "Heter1" = THEN
+  EVALUATE DirHet := "EDI2C       " ;
+  EVALUATE ifx := 1 ;
+ELSEIF TypeCompo "Heter2" = THEN
+  EVALUATE DirHet := "EDI2D       " ;
+  EVALUATE ifx := 2 ;
+ELSEIF TypeCompo "Heter3" = THEN
+  EVALUATE DirHet := "EDI2E       " ;
+  EVALUATE ifx := 3 ;
+ENDIF ;
+STRING DirPin := "EDI2B       " ;
+STRING DirR   := "EDI2B       " ;
+*
+UOX := ACOMPOU ;
+MOX := ACOMPOM ;
+CpoR := ACOMPOR ;
+
+IF ifx 0 = THEN
+  EVALUATE ifx2 := 0 ;
+ELSE
+  EVALUATE ifx2 := ifx 100 * Split 10 * + rt + ;
+ENDIF ;
+
+!--------------------------
+! Test NAP: Geometry part
+!--------------------------
+! Build geometry for homogeneous assembly
+Geo1 := GEO: :: CAR3D 3 3 1 
+  EDIT 1 
+  X- REFL X+ REFL
+  Y- REFL Y+ REFL
+  Z- REFL Z+ REFL
+  
+  MIX 
+PLANE 1
+    3 2 3 
+    2 1 2 
+    3 2 3 
+  MESHX <<mx1>> <<mx2>> <<mx3>> <<mx4>> 
+  MESHY <<mx1>> <<mx2>> <<mx3>> <<mx4>> 
+  MESHZ 0. 1. 
+  SPLITX 1 1 1 
+  SPLITY 1 1 1 
+  SPLITZ 1 
+;
+
+! Build geometry for heterogeneous assembly
+IF     TypeCompo "Heter0" = THEN
+  IF Split 1 = THEN
+GeoH := NAP: Geo1 UOX ::
+  EDIT 10
+  DIRGEO <<DirHet>>
+  MIXASS 3 1 2 3
+  SPLITX-ASS 4
+  SPLITY-ASS 4
+;
+  ELSEIF Split 2 = THEN
+GeoH := NAP: Geo1 UOX ::
+  EDIT 10
+  DIRGEO <<DirHet>>
+  MIXASS 3 1 2 3
+  SPLITX-ASS 8
+  SPLITY-ASS 8
+;
+  ENDIF ;
+
+ELSE
+  IF Split 1 = THEN
+GeoH := NAP: Geo1 UOX ::
+  EDIT 10
+  DIRGEO <<DirHet>>
+  MIXASS 3 1 2 3
+  SPLITX-ASS 1 2 1
+  SPLITY-ASS 1 2 1
+;
+  ELSEIF Split 2 = THEN
+GeoH := NAP: Geo1 UOX ::
+  EDIT 10
+  DIRGEO <<DirHet>>
+  MIXASS 3 1 2 3
+  SPLITX-ASS 2 4 2
+  SPLITY-ASS 2 4 2
+;
+  ENDIF ;
+ENDIF ;
+! Build geometry for pin-by-pin assembly (needed by NAP: PPR)
+GeoP := NAP: Geo1 UOX ::
+  EDIT 10
+  DIRGEO <<DirPin>>
+  MIXASS 3 1 2 3
+;
+
+* Max reg=(4*3)^2*1=144 or (8*3)^2*1=576
+INTEGER maxr ;
+IF Split 1 = THEN
+  EVALUATE maxr := 144 ;
+ELSEIF Split 2 = THEN
+  EVALUATE maxr := 576 ;
+ENDIF ;
+GeoH MatexH := USPLIT: GeoH :: NGRP 2 MAXR <<maxr>>
+!                                          !---
+!              NFUEL 12  FMIX 1  4 5 6     !
+!                             2  7 8 9     !
+!                             3  10 11 12  !
+!                                          !---or
+               NFUEL ASBLY                 !
+!                                          !---
+;
+Track := TRIVAT: GeoH ::
+   EDIT 1
+   MAXR <<maxr>> DUAL <<rt>> 3 ;
+
+! Max reg=(17*3)^2*1=2601
+GeoP MatexP := USPLIT: GeoP :: NGRP 2 MAXR 18150
+!               NREFL 1  RMIX 4
+!                                          !---
+!              NFUEL 12  FMIX 1  4 5 6     !
+!                             2  7 8 9     !
+!                             3  10 11 12  !
+!                                          !---or
+               NFUEL ASBLY                 !
+!                                          !---
+;
+TrackP := TRIVAT: GeoP ::
+   MAXR 18150 DUAL 2 3 ;
+
+!--------------------------
+! Test NAP: Geometry part embedded in RESINI:
+!--------------------------
+! Build map object for heterogeneous assembly
+IF     TypeCompo "Heter0" = THEN
+FmapH MatexH := RESINI: MatexH UOX ::
+  EDIT 10
+  ::: 
+    SPLIT-NAP: 
+    GEO: 
+      CAR3D 3 3 1
+      EDIT  10
+      X- VOID      X+ VOID
+      Y- VOID      Y+ VOID
+      Z- VOID      Z+ VOID
+      MIX
+      PLANE 1
+        3 2 3 
+        2 1 2 
+        3 2 3 
+      MESHX <<mx1>> <<mx2>> <<mx3>> <<mx4>> 
+      MESHY <<mx1>> <<mx2>> <<mx3>> <<mx4>> 
+      MESHZ 0. 1. 
+    ;
+    ::: NAP:
+      DIRGEO <<DirHet>>
+      MIXASS 3 1 2 3
+      MAX-MIX-GEO 3
+    ;
+  ASSEMBLY 9 3 3
+    A-ZONE
+       ASBLY
+    AXNAME '1' '2' '3'
+    AYNAME 'A' 'B' 'C'
+  NXNAME '1' '2' '3'  
+  NYNAME 'A' 'B' 'C'  
+  NCOMB ASBLY
+  ADD-PARAM PNAME 'C-BORE' PARKEY 'ppmBore' GLOBAL
+;
+
+ELSE
+FmapH MatexH := RESINI: MatexH UOX ::
+  EDIT 1
+  ::: 
+    SPLIT-NAP: 
+    GEO: 
+      CAR3D 3 3 1
+      EDIT  10
+      X- VOID      X+ VOID
+      Y- VOID      Y+ VOID
+      Z- VOID      Z+ VOID
+      MIX
+      PLANE 1
+        3 2 3 
+        2 1 2 
+        3 2 3 
+      MESHX <<mx1>> <<mx2>> <<mx3>> <<mx4>> 
+      MESHY <<mx1>> <<mx2>> <<mx3>> <<mx4>> 
+      MESHZ 0. 1. 
+    ;
+    ::: NAP:
+      DIRGEO <<DirHet>>
+      MIXASS 3 1 2 3
+      MAX-MIX-GEO 3
+    ;
+  ASSEMBLY 9 3 3
+    A-ZONE
+       ASBLY
+    AXNAME '1' '2' '3'
+    AYNAME 'A' 'B' 'C'
+  NXNAME '1' '1' '1' '2' '2' '2' '3' '3' '3'  
+  NYNAME 'A' 'A' 'A' 'B' 'B' 'B' 'C' 'C' 'C'  
+  NCOMB ASBLY
+  ADD-PARAM PNAME 'C-BORE' PARKEY 'ppmBore' GLOBAL
+;
+ENDIF ;
+FmapH := RESINI: FmapH :: EDIT 0
+
+   BTYPE INST-BURN
+   INST-BVAL ASBL 
+  <<ClusBurn3>> <<ClusBurn2>> <<ClusBurn3>> 
+  <<ClusBurn2>> <<ClusBurn1>> <<ClusBurn2>> 
+  <<ClusBurn3>> <<ClusBurn2>> <<ClusBurn3>> 
+
+  SET-PARAM 'C-BORE' <<ppmBore>>
+;
+
+! Build map object for pin-by-pin assembly (needed by NAP: PPR)
+FmapP MatexP := RESINI: MatexP UOX ::
+  EDIT 0
+  ::: 
+    SPLIT-NAP: 
+    GEO: 
+      CAR3D 3 3 1
+      EDIT  10
+      X- VOID      X+ VOID
+      Y- VOID      Y+ VOID
+      Z- VOID      Z+ VOID
+      MIX
+      PLANE 1
+        3 2 3 
+        2 1 2 
+        3 2 3 
+      MESHX <<mx1>> <<mx2>> <<mx3>> <<mx4>> 
+      MESHY <<mx1>> <<mx2>> <<mx3>> <<mx4>> 
+      MESHZ 0. 1. 
+    ;
+    ::: NAP:
+      DIRGEO <<DirPin>>
+      MIXASS 3 1 2 3
+      MAX-MIX-GEO 3
+    ;
+  ASSEMBLY 9 3 3
+    A-ZONE
+       ASBLY
+*      1 ...17x... 1 2 ...17x... 2 3 ...17x... 3
+*      ...
+*      17x
+*      ...
+*      1 ...17x... 1 2 ...17x... 2 3 ...17x... 3
+*      4 ...17x... 4 5 ...17x... 5 6 ...17x... 6
+*      ...
+*      17x
+*      ...
+*      4 ...17x... 4 5 ...17x... 5 6 ...17x... 6
+*      7 ...17x... 7 8 ...17x... 8 9 ...17x... 9
+*      ...
+*      17x
+*      ...
+*      7 ...17x... 7 8 ...17x... 8 9 ...17x... 9
+    AXNAME '1' '2' '3'
+    AYNAME 'A' 'B' 'C'
+  NXNAME  '1' '1' '1' '1' '1' '1' '1' '1' '1' 
+          '1' '1' '1' '1' '1' '1' '1' '1' 
+          '2' '2' '2' '2' '2' '2' '2' '2' '2' 
+          '2' '2' '2' '2' '2' '2' '2' '2'
+          '3' '3' '3' '3' '3' '3' '3' '3' '3' 
+          '3' '3' '3' '3' '3' '3' '3' '3' 
+  NYNAME  'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 
+          'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 
+          'B' 'B' 'B' 'B' 'B' 'B' 'B' 'B' 'B' 
+          'B' 'B' 'B' 'B' 'B' 'B' 'B' 'B'
+          'C' 'C' 'C' 'C' 'C' 'C' 'C' 'C' 'C' 
+          'C' 'C' 'C' 'C' 'C' 'C' 'C' 'C' 
+  NCOMB ASBLY
+  ADD-PARAM PNAME 'C-BORE' PARKEY 'ppmBore' GLOBAL
+;
+FmapP := RESINI: FmapP :: EDIT 2
+
+   BTYPE INST-BURN
+   INST-BVAL ASBL 
+  <<ClusBurn3>> <<ClusBurn2>> <<ClusBurn3>> 
+  <<ClusBurn2>> <<ClusBurn1>> <<ClusBurn2>> 
+  <<ClusBurn3>> <<ClusBurn2>> <<ClusBurn3>> 
+
+  SET-PARAM 'C-BORE' <<ppmBore>>
+;
+
+!--------------------------
+! Test NCR: assembly related keywords
+!--------------------------
+! Compute cross-section for heterogeneous assembly
+Micro := NCR: UOX MOX FmapH ::
+  EDIT 0
+  LINEAR
+  TABLE <<ClusType1>> <<DirHet>> 'burnup'
+    MIX 1 ASBLY INST-BURN ENDMIX 
+  TABLE <<ClusType2>> <<DirHet>> 'burnup'
+    MIX 2 ASBLY INST-BURN ENDMIX 
+  TABLE <<ClusType3>> <<DirHet>> 'burnup'
+    MIX 3 ASBLY INST-BURN ENDMIX 
+;
+
+MacroFH := Micro :: STEP UP MACROLIB ;
+Micro := DELETE: Micro ;
+
+STRING Palier MethodRefl := 'CP0_900' 'Lefebvre-Leb' ;
+MacroRefl := NCR: CpoR ::
+  EDIT 1
+  MACRO LINEAR
+  NMIX 3
+  COMPO CpoR 'Radial'
+  MIX 1 FROM 1
+      SET 'C-BORE' <<ppmBore>>
+      SET 'Method' <<MethodRefl>>
+      SET 'Palier' <<Palier>>
+      SET 'dBaffleBarrl' 14.4
+  ENDMIX
+;
+
+Macro2H MatexH := MACINI: MatexH MacroRefl MacroFH ::
+EDIT 2 
+;
+
+! Compute cross-section for pin-by-pin assembly
+Micro := NCR: UOX MOX FmapP ::
+  EDIT 0
+  LINEAR
+  TABLE <<ClusType1>> <<DirPin>> 'burnup'
+    MIX 1 ASBLY INST-BURN ENDMIX 
+  TABLE <<ClusType2>> <<DirPin>> 'burnup'
+    MIX 2 ASBLY INST-BURN ENDMIX 
+  TABLE <<ClusType3>> <<DirPin>> 'burnup'
+    MIX 3 ASBLY INST-BURN ENDMIX 
+;
+
+MacroFP := Micro :: STEP UP MACROLIB ;
+
+Macro2P MatexP := MACINI: MatexP MacroRefl MacroFP ::
+EDIT 2 
+*FUEL-ONLY 
+;
+
+! Compute flux distribution
+System := TRIVAA: Macro2H Track ;
+
+Flux := FLUD: System Track ::
+  EDIT 0 
+  EXTE 1.E-5 ADI 4
+;
+
+REAL keff1 ;
+GREP: Flux :: GETVAL 'K-EFFECTIVE ' 1  >>keff1<< ;
+ECHO "ppmBore=" ppmBore "K-effective  2 = " keff1 ;
+
+assertS Flux :: 'K-EFFECTIVE' 1 1.307310 ;
+!
+SystemP := TRIVAA: Macro2P TrackP ;
+
+FluxP := FLUD: SystemP TrackP ::
+  EDIT 0 
+  EXTE 1.E-5 ADI 4
+;
+
+REAL keff2 ;
+GREP: FluxP :: GETVAL 'K-EFFECTIVE ' 1  >>keff2<< ;
+ECHO "ppmBore=" ppmBore "K-effective  2 = " keff2 ;
+
+assertS FluxP :: 'K-EFFECTIVE' 1 1.307324 ;
+
+ECHO "test rep900cluster.x2m completed" ;
+END: ;
+QUIT .

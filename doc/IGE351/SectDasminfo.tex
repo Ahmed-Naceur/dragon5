@@ -1,0 +1,318 @@
+\section{Contents of a \dir{asminfo} directory}\label{sect:asminfodir}
+
+This directory contains the multigroup collision probabilities and response matrices 
+required in the solution of the transport equation.
+
+\subsection{State vector content for the \dir{asminfo} data structure}\label{sect:asminfostate}
+
+The dimensioning parameters for this data structure, which are stored in the state vector
+$\mathcal{S}^{a}_{i}$, represent:
+
+\begin{itemize}
+\item The type of collision probabilities considered $I_{T}=\mathcal{S}^{a}_{1}$ where
+
+\begin{displaymath}
+I_{T} = \left\{
+\begin{array}{rl}
+ 1 & \textrm{Scattering reduced collision probability or response matrix}\\
+ 2 & \textrm{Direct collision probability or response matrix} \\ 
+ 3 & \textrm{Scattering reduced directional collision probability} \\ 
+ 4 & \textrm{Direct directional collision probability}  
+\end{array} \right.
+\end{displaymath}
+
+\item The type of collision probability closure relation used $I_{C}=\mathcal{S}^{a}_{2}$
+(see \moc{NORM} keyword in \moc{ASM:} operator input option)
+
+\begin{displaymath}
+I_{C} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{No closure relation used} \\
+ 1 & \textrm{Total reflection closure relation} 
+\end{array} \right.
+\end{displaymath}
+
+\item A parameter related to the albedo leakage model $I_{\beta}=\mathcal{S}^{a}_{3}$
+(see \moc{ALSB} keyword in \moc{ASM:} operator input option)
+
+\begin{displaymath}
+I_{\beta} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{No information is stored} \\
+ 1 & \textrm{Groupwise escape matrices \moc{WIS} are stored} 
+\end{array} \right.
+\end{displaymath}
+
+\item $\mathcal{S}^{a}_{4}$ (not used)
+
+\item The option to indicate whether response matrix or collision probability matrices are stored
+on the structure $I_{p}=\mathcal{S}^{a}_{5}$ (see \moc{PIJ} and \moc{ARM}
+keyword in \moc{ASM:} operator input option)
+
+\begin{displaymath}
+I_{p} = \left\{
+\begin{array}{rl}
+ 1 & \textrm{Response matrices will be stored (the \moc{ARM} keyword was
+selected)} \\
+ 2 & \textrm{Collision probability matrices will be stored (the \moc{PIJ} keyword was
+selected)} 
+\end{array} \right.
+\end{displaymath}
+
+\item The option to indicate the type of streaming model used $I_{k}=\mathcal{S}^{a}_{6}$ (see \moc{PIJK} and \moc{ECCO} 
+keyword in \moc{ASM:} operator input option)
+
+\begin{displaymath}
+I_{k} = \left\{
+\begin{array}{rl}
+ 1 & \textrm{No streaming model used (a leakage model may or may not be used)} \\
+ 2 & \textrm{Isotropic streaming model used (ECCO model)} \\
+ 3 & \textrm{Anisotropic streaming model used (TIB\`ERE model)} 
+\end{array} \right.
+\end{displaymath}
+
+\item The type of collision probability normalization method used $I_{n}=\mathcal{S}^{a}_{7}$ (see
+\moc{PNOR}  keyword in \moc{ASM:} operator input option)
+
+\begin{displaymath}
+I_{n} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{No normalization} \\
+ 1 & \textrm{Gelbard normalization algorithm} \\
+ 2 & \textrm{Diagonal element normalization} \\
+ 3 & \textrm{Non-linear normalization} \\
+ 4 & \textrm{Helios type normalization} 
+\end{array} \right.
+\end{displaymath}
+
+\item Number of energy groups
+$G=\mathcal{S}^{a}_{8}$
+ 
+\item Number of unknown in flux system $N_{u}=\mathcal{S}^{a}_{9}$ 
+
+\item Number of mixtures $N_{m}=\mathcal{S}^{a}_{10}$
+
+\item Number of Legendre orders of the scattering cross sections used in the
+main transport solution. $N_{\rm ans}=\mathcal{S}^{a}_{11}$
+
+\item Flag for the availability of diffusion coefficients. $I_{\rm diff}=\mathcal{S}^{a}_{12}$
+
+\begin{displaymath}
+I_{\rm diff} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{No diffusion coefficients available;} \\
+ 1 & \textrm{Diffusion coefficients are available.}
+\end{array} \right.
+\end{displaymath}
+
+\item Type of equation solved. $I_{\rm bfp}=\mathcal{S}^{a}_{13}$
+\begin{displaymath}
+\mathcal{S}^{t}_{13} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{Boltzmann transport equation} \\
+ 1 & \textrm{Boltzmann Fokker-Planck equation with Galarkin energy propagation factors} \\
+ 2 & \textrm{Boltzmann Fokker-Planck equation with Przybylski and Ligou energy propagation} \\
+  & \textrm{factors.}
+\end{array} \right.
+\end{displaymath}
+
+\end{itemize}
+
+\subsection{The main \dir{asminfo} directory}\label{sect:asminfodirmain}
+
+On its first level, the
+following records and sub-directories will be found in the \dir{asminfo} directory:
+
+\begin{DescriptionEnregistrement}{Main records and sub-directories in \dir{asminfo}}{8.0cm}
+\CharEnr
+  {SIGNATURE\blank{3}}{$*12$}
+  {Signature of the data structure ($\mathsf{SIGNA}=${\tt L\_PIJ\blank{7}}).}
+\CharEnr
+  {LINK.MACRO\blank{2}}{$*12$}
+  {Name of the {\sc macrolib} on which the collision probabilities are based.}
+\CharEnr
+  {LINK.TRACK\blank{2}}{$*12$}
+  {Name of the {\sc tracking} on which the collision probabilities are based.}
+\IntEnr
+  {STATE-VECTOR}{$40$}
+  {Vector describing the various parameters associated with this data structure $\mathcal{S}^{a}_{i}$,
+  as defined in \Sect{asminfostate}.}
+\DirlEnr
+  {GROUP\blank{7}}{$\mathcal{S}^{a}_{8}$}
+  {List of energy-group sub-directories. Each component of the list is a directory containing
+  the multigroup collision probabilities and response matrices associated with an energy group.
+  The specification of this directory is given in Sect.~\ref{sect:asminfodhdirgroup} or~\ref{sect:asminfodirgroup}
+  depending if a double-heterogeneity is present or not. A double-heterogeneity is present if $\mathcal{S}^{t}_{40}=1$
+  in the {\sc tracking} object.}
+\end{DescriptionEnregistrement}
+
+\clearpage
+
+\subsection{The \moc{GROUP} double-heterogeneity group sub-directory}\label{sect:asminfodhdirgroup}
+
+This directory is containing the following records, corresponding to a single energy group:
+
+\begin{DescriptionEnregistrement}{Records and sub-directories in \moc{GROUP}}{7.0cm}
+
+\RealEnr
+  {DRAGON-TXSC\blank{1}}{$N_{m}+1$}{cm$^{-1}$}
+  {where $N_{m}=\mathcal{P}_{1}$. The total cross section $\Sigma_{m}^{g}$ for $N_{m}+1$ composite mixtures assuming that the first mixture
+   represents void ($\Sigma_{m}^{g}=0$). A transport correction may or may not
+   be included. The first component of this array is always equal to 0.}
+\RealEnr
+  {DRAGON-S0XSC}{$N_{m}+1,N_{\rm ans}$}{cm$^{-1}$}
+  {The within group scattering cross section $\Sigma_{0,m,w}$ (see \Sect{macrolibdirgroup})
+   for $N_{m}+1$ composite mixtures assuming that the first mixture
+   represents void ($\Sigma_{0,m,w}^{g}=0$). A transport correction may or may not
+   be included. Many Legendre orders may be given. The first component of this
+   array, for each Legendre order, is always equal to 0.}
+\IntEnr
+  {NCO\blank{9}}{${\cal M}$}
+  {where ${\cal M}=\mathcal{P}_{2}-\mathcal{P}_{1}$. Number of composite mixtures in each macro-mixture.}
+\OptRealEnr
+  {RRRR\blank{8}}{${\cal M}$}{$\mathcal{P}_{6}=1,2$}{}
+  {Group-dependent double-heterogeneity information.}
+\OptRealEnr
+  {QKOLD\blank{7}}{$\mathcal{P}_{4},\mathcal{P}_{5},{\cal M}$}{$\mathcal{P}_{6}=1$}{}
+  {Group-dependent double-heterogeneity information related to the escape probabilities in the micro-structures.}
+\OptRealEnr
+  {QKDEL\blank{7}}{$\mathcal{P}_{4},\mathcal{P}_{5},{\cal M}$}{$\mathcal{P}_{6}=1,2$}{}
+  {Group-dependent double-heterogeneity information related to the escape probabilities in the micro-structures.}
+\OptRealEnr
+  {PKL\blank{9}}{$\mathcal{P}_{4},\mathcal{P}_{5},\mathcal{P}_{5},{\cal M}$}{$\mathcal{P}_{6}=1,2$}{}
+  {Group-dependent double-heterogeneity information related to the collision probabilities in the micro-structures.}
+\OptDbleEnr
+  {COEF\blank{8}}{${\cal F},{\cal F},{\cal M}$}{$\mathcal{P}_{6}=1,2$}{}
+  {where ${\cal F}=1+\mathcal{P}_{4}\times\mathcal{P}_{5}$. Group-dependent double-heterogeneity information.}
+\OptRealEnr
+  {P1I\blank{9}}{$\mathcal{P}_{4},{\cal M}$}{$\mathcal{P}_{6}=3$}{}
+  {Group-dependent double-heterogeneity information related to the escape probabilities through the composite.}
+\OptRealEnr
+  {P1DI\blank{8}}{$\mathcal{P}_{4},{\cal M}$}{$\mathcal{P}_{6}=3$}{}
+  {Group-dependent double-heterogeneity information related to the escape probabilities from the matrix.}
+\OptRealEnr
+  {P1KI\blank{8}}{$\mathcal{P}_{4},\mathcal{P}_{5},{\cal M}$}{$\mathcal{P}_{6}=3$}{}
+  {Group-dependent double-heterogeneity information related to the escape probabilities from the micro-structures.}
+\OptRealEnr
+  {SIGA1\blank{7}}{$\mathcal{P}_{4},{\cal M}$}{$\mathcal{P}_{6}=3$}{}
+  {Group-dependent double-heterogeneity information related to the equivalent total cross-section.}
+\DirEnr
+  {BIHET\blank{7}}
+  {Directory containing collision probability or response matrix information related to the macro-geometry (i.$\,$e., 
+  the geometry with homogenized micro-structures). The specification of this directory is given in \Sect{asminfodirgroup}.
+  Note that the value of $N_{m}=\mathcal{P}_{2}$ in this object is set to take into account the macro-mixtures. Similarly,
+  the value $N_{r}=\mathcal{P}_{3}$ is the number of macro-volumes.}
+\end{DescriptionEnregistrement}
+
+\vskip -0.5cm
+
+\subsection{The \moc{GROUP} or \moc{BIHET} group sub-directory}\label{sect:asminfodirgroup}
+
+This directory is containing the following records, corresponding to a single energy group:
+
+\begin{DescriptionEnregistrement}{Records and sub-directories in \moc{GROUP}}{7.0cm}
+\OptRealEnr
+  {ALBEDO\blank{6}}{$\mathcal{S}^{M}_{8}$}{$\mathcal{S}^{M}_{8}>0$}{}
+  {Surface ordered physical albedos in \moc{GROUP}. The number of physical albedos $\mathcal{S}^{M}_{8}$ is defined
+  in \Sect{macrolibstate}.}
+\OptRealEnr
+  {ALBEDO-FU\blank{3}}{$\mathcal{S}^{M}_{8}$}{$\mathcal{S}^{M}_{8}>0$}{}
+  {Surface ordered physical albedo functions in \moc{GROUP}. The number of physical albedos $\mathcal{S}^{M}_{8}$ is defined
+  in \Sect{macrolibstate}.}
+\RealEnr
+  {DRAGON-TXSC\blank{1}}{$N_{m}+1$}{cm$^{-1}$}
+  {The total cross section $\Sigma_{m}^{g}$ for $N_{m}+1$ mixtures assuming that the first mixture
+   represents void ($\Sigma_{m}^{g}=0$). A transport correction may or may not
+   be included. The first component of this array is always equal to 0.}
+\OptRealEnr
+  {DRAGON-T1XSC}{$N_{m}+1$}{*}{cm$^{-1}$}
+  {where $N_{m}=\mathcal{P}_{1}$. The current-weighted total cross section $\Sigma_{1,m}^{g}$ for $N_{m}+1$ composite mixtures assuming that the first mixture
+   represents void ($\Sigma_{1,m}^{g}=0$). The first component of this array is always equal to 0.}
+\OptRealEnr
+  {DRAGON-T2XSC}{$N_{m}+1$}{*}{cm$^{-1}$}
+  {where $N_{m}=\mathcal{P}_{1}$. The second moment-weighted total cross section $\Sigma_{2,m}^{g}$ for $N_{m}+1$ composite mixtures assuming that the first mixture
+   represents void ($\Sigma_{2,m}^{g}=0$). The first component of this array is always equal to 0.}
+\RealEnr
+  {DRAGON-S0XSC}{$N_{m}+1,N_{\rm ans}$}{cm$^{-1}$}
+  {The within group scattering cross section $\Sigma_{0,m,w}$ (see \Sect{macrolibdirgroup})
+   for $N_{m}+1$ mixtures assuming that the first mixture
+   represents void ($\Sigma_{0,m,w}^{g}=0$). A transport correction may or may not
+   be included. Many Legendre orders may be given. The first component of this
+   array, for each Legendre order, is always equal to 0.}
+\OptRealEnr
+  {DRAGON-DIFF\blank{1}}{$N_{m}+1$}{$I_{\rm diff}=1$}{cm}
+  {Diffusion coefficients $D_{m}^{g}$ for $N_{m}+1$ mixtures assuming that the first mixture
+   represents void ($D_{m}^{g}=1.0\times 10^{10}$). The first component of this array is always equal to $1.0\times 10^{10}$.}
+\OptDirEnr
+  {STREAMING\blank{3}}{$I_{k}=2$}
+  {Directory containing P1 information to be used with the ECCO isotropic
+  streaming model. This directory uses the same specification as \moc{GROUP}
+  where P0 information is replaced with P1 information. Cross sections
+  used in this directory are {\sl not}--transport corrected.} 
+\end{DescriptionEnregistrement}
+
+\vskip -0.5cm
+
+\subsubsection{The \moc{trafict} dependent records on a
+\moc{GROUP} directory}\label{sect:traficgrpdiringdir}
+
+If a collision probability method is used, the following records will also be
+found on the group sub-directory:
+
+\begin{DescriptionEnregistrement}{Collision probability records in \moc{GROUP}}{7.0cm}
+\OptRealEnr
+  {DRAGON-PCSCT}{$N_{r},N_{r}$}{$I_{p}=2$}{} 
+  {The scattering-reduced ($I_{T}=1,3$)  collision probability matrix ${\bf W}_{g}$ or direct
+   ($I_{T}=2,4$) collision probability matrix ${\bf p}_{g}$}
+\OptRealEnr
+  {DRAGON1PCSCT}{$N_{r},N_{r}$}{$I_{k}=3$}{} 
+{The $x-$directed P1 scattering-reduced ($I_{T}=3$) collision probability matrix ${\bf Y}_{x,g}$
+   or direct ($I_{T}=4$) collision probability matrix ${\bf p}_{x,g}$}
+\OptRealEnr
+  {DRAGON2PCSCT}{$N_{r},N_{r}$}{$I_{k}=3$}{} 
+  {The $y-$directed P1 scattering-reduced ($I_{T}=3$) collision probability matrix ${\bf Y}_{y,g}$
+   or direct ($I_{T}=4$) collision probability matrix ${\bf p}_{y,g}$}
+\OptRealEnr
+  {DRAGON3PCSCT}{$N_{r},N_{r}$}{$I_{k}=3$}{} 
+  {The $z-$directed P1 scattering-reduced ($I_{T}=3$) collision probability matrix ${\bf Y}_{z,g}$
+   or direct ($I_{T}=4$) collision probability matrix ${\bf p}_{z,g}$}
+\OptRealEnr
+  {DRAGON1P*SCT}{$N_{r},N_{r}$}{$I_{k}=3$}{} 
+  {The $x-$directed matrix ${\bf p}_g^{-1}{\bf p}_{x,g}^*$}
+\OptRealEnr
+  {DRAGON2P*SCT}{$N_{r},N_{r}$}{$I_{k}=3$}{} 
+  {The $y-$directed matrix ${\bf p}_g^{-1}{\bf p}_{y,g}^*$}
+\OptRealEnr
+  {DRAGON3P*SCT}{$N_{r},N_{r}$}{$I_{k}=3$}{} 
+  {The $z-$directed matrix ${\bf p}_g^{-1}{\bf p}_{z,g}^*$}
+\OptRealEnr
+  {DRAGON-WIS\blank{2}}{$N_{r}$}{$I_{\beta}=1$}{} 
+  {The scattering-reduced leakage matrix $W_{is}^{g}$ }
+\end{DescriptionEnregistrement}
+
+\goodbreak
+\noindent where
+\begin{itemize}
+\item the reduced collision probability matrix is defined as
+$${\bf p}_{g}=\{p_{ij,g}\> ;\> \forall i \ {\rm and} \ j \}$$
+\item the reduced directional probability matrix, used in the first
+TIB\`ERE equation, is defined as
+$${\bf p}_{k,g}^*=\{p_{ij,k,g}^*\> ;\> \forall i \ {\rm and} \ j \} \ \ ; \ \
+k=x, \ y, \ {\rm or } \ z$$
+\item the reduced directional probability matrix, used in the second
+TIB\`ERE equation, is defined as
+$${\bf p}_{k,g}=\{p_{ij,k,g}\> ;\> \forall i \ {\rm and} \ j \} \ \ ; \ \
+k=x, \ y, \ {\rm or } \ z \ \ \ .$$
+The total cross sections used to compute this matrix are {\sl not}--transport
+corrected.
+\item the P0 scattering reduced collision probability matrix is defined as
+$${\bf W}_{g}=[{\bf I}-{\bf p}_{g} \ {\bf\Sigma}_{{\rm s}0,g\gets g}]^{-1} {\bf p}_{g}$$
+\item the P1 scattering reduced directionnal collision probability matrix is defined as
+$${\bf Y}_{k,g}=[{\bf I}-{\bf p}_{k,g} \ {\bf\Sigma}_{{\rm s}1,g\gets g}]^{-1} {\bf p}_{k,g} \ \ ; \ \
+k=x, \ y, \ {\rm or } \ z$$
+\end{itemize}
+
+\eject
+
+\input{SectDasmsybil.tex}       % Description of Sybil response matrices
+\input{SectDasmmccg.tex}        % Description of MCCG response matrices

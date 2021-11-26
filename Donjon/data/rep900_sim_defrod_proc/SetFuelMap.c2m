@@ -1,0 +1,179 @@
+***********************************************************
+*                                                         *
+* Procedure :  SetFuelMap.c2m                             *
+* Purpose   :  Fuel-map specifications for REP900         *
+* Author(s) :  M. Guyot (2010)                            *
+* Modified by : A. Hebert (2011)                          *
+*                                                         *
+* CALL      :  FMAP MATEX := SetFuelMap MATEX ;           *
+*                                                         *
+***********************************************************
+
+PARAMETER FMAP MATEX ::
+      ::: LINKED_LIST
+          FMAP MATEX ; ;
+
+MODULE RESINI: END: ;
+
+*----
+*  Get calculation options
+*----
+REAL    dx ;
+:: >>dx<< ;
+
+REAL  x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
+      x15 x16 x17 :=
+      1. dx *  2. dx *  3. dx *  4. dx *  5. dx *  6. dx *
+      7. dx *  8. dx *  9. dx *  10. dx * 11. dx * 12. dx * 
+      13. dx * 14. dx * 15. dx * 16. dx * 17. dx * ;
+
+REAL dz := 360.0 29.0 / ;
+
+REAL  z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14 
+      z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 
+      z26 z27 z28 z29 z30 z31 :=
+      1. dz *  2. dz *  3. dz *  4. dz *  5. dz *  6. dz *
+      7. dz *  8. dz *  9. dz *  10. dz * 11. dz * 12. dz * 
+      13. dz * 14. dz * 15. dz * 16. dz * 17. dz * 18. dz *
+      19. dz * 20. dz * 21. dz * 22. dz * 23. dz * 24. dz *
+      25. dz * 26. dz * 27. dz * 28. dz * 29. dz * 30. dz *
+      31. dz * ;
+      
+ECHO 'SetFuelMap: elementary length=' dx 'cm' ;
+
+FMAP MATEX := RESINI: MATEX ::
+      ::: GEO: CAR3D 17 17 31
+                EDIT  0
+                X- VOID      X+ VOID
+                Y- VOID      Y+ VOID
+                Z- VOID      Z+ VOID
+MIX
+PLANE    1
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+                       
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+                       
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+!
+PLANE 2
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 4   4   4 0 0 0 0 0 0 0
+  0 0 0 0 0 4 4 5   4   5 4 4 0 0 0 0 0
+  0 0 0 0 4 5 4 4   4   4 4 5 4 0 0 0 0
+  0 0 0 4 4 4 4 5   4   5 4 4 4 4 0 0 0
+  0 0 4 5 4 4 5 4   4   4 5 4 4 5 4 0 0
+  0 0 4 4 4 5 4 4   4   4 4 5 4 4 4 0 0
+  0 4 5 4 5 4 4 4   4   4 4 4 5 4 5 4 0
+                       
+  0 4 4 4 4 4 4 4   4   4 4 4 4 4 4 4 0
+                       
+  0 4 5 4 5 4 4 4   4   4 4 4 5 4 5 4 0
+  0 0 4 4 4 5 4 4   4   4 4 5 4 4 4 0 0
+  0 0 4 5 4 4 5 4   4   4 5 4 4 5 4 0 0
+  0 0 0 4 4 4 4 5   4   5 4 4 4 4 0 0 0
+  0 0 0 0 4 5 4 4   4   4 4 5 4 0 0 0 0
+  0 0 0 0 0 4 4 5   4   5 4 4 0 0 0 0 0
+  0 0 0 0 0 0 0 4   4   4 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0   0   0 0 0 0 0 0 0 0
+
+PLANE 3 SAME 2
+PLANE 4 SAME 2
+PLANE 5 SAME 2
+PLANE 6 SAME 2
+PLANE 7 SAME 2
+PLANE 8 SAME 2
+PLANE 9 SAME 2
+PLANE 10 SAME 2
+PLANE 11 SAME 2
+PLANE 12 SAME 2
+PLANE 13 SAME 2
+PLANE 14 SAME 2
+PLANE 15 SAME 2
+PLANE 16 SAME 2
+PLANE 17 SAME 2
+PLANE 18 SAME 2
+PLANE 19 SAME 2
+PLANE 20 SAME 2
+PLANE 21 SAME 2
+PLANE 22 SAME 2
+PLANE 23 SAME 2
+PLANE 24 SAME 2
+PLANE 25 SAME 2
+PLANE 26 SAME 2
+PLANE 27 SAME 2
+PLANE 28 SAME 2
+PLANE 29 SAME 2
+PLANE 30 SAME 2
+PLANE 31 SAME 1
+!
+MESHX 0.0 <<x1>> <<x2>> <<x3>> <<x4>> <<x5>> <<x6>> <<x7>> 
+          <<x8>>  <<x9>>  <<x10>> <<x11>> <<x12>> <<x13>> <<x14>>
+          <<x15>> <<x16>> <<x17>>
+
+MESHY 0.0 <<x1>> <<x2>> <<x3>> <<x4>> <<x5>> <<x6>> <<x7>> 
+          <<x8>>  <<x9>>  <<x10>> <<x11>> <<x12>> <<x13>> <<x14>>
+          <<x15>> <<x16>> <<x17>>
+
+
+MESHZ 0.0 <<z1>> <<z2>> <<z3>> <<z4>> <<z5>> <<z6>> <<z7>> 
+          <<z8>>  <<z9>>  <<z10>> <<z11>> <<z12>> <<z13>> <<z14>>
+          <<z15>> <<z16>> <<z17>> <<z18>> <<z19>> <<z20>> <<z21>>
+          <<z22>> <<z23>> <<z24>> <<z25>> <<z26>> <<z27>> <<z28>>
+          <<z29>> <<z30>> <<z31>> ;
+!
+NXNAME '-'  'R' 'P' 'N' 'M' 'L' 'K' 'J' 'H' 'G' 'F' 'E'
+        'D' 'C' 'B' 'A' '-'
+!
+NYNAME  '--' '01' '02' '03' '04' '05' '06' '07' '08' '09'
+        '10' '11' '12' '13' '14' '15' '--'
+!
+
+SIM 15 15
+                           J01 H01 G01
+                   L02 K02 J02 H02 G02 F02 E02
+               M03 L03 K03 J03 H03 G03 F03 E03 D03
+           N04 M04 L04 K04 J04 H04 G04 F04 E04 D04 C04
+       P05 N05 M05 L05 K05 J05 H05 G05 F05 E05 D05 C05 B05
+       P06 N06 M06 L06 K06 J06 H06 G06 F06 E06 D06 C06 B06
+   R07 P07 N07 M07 L07 K07 J07 H07 G07 F07 E07 D07 C07 B07 A07 
+   R08 P08 N08 M08 L08 K08 J08 H08 G08 F08 E08 D08 C08 B08 A08 
+   R09 P09 N09 M09 L09 K09 J09 H09 G09 F09 E09 D09 C09 B09 A09 
+       P10 N10 M10 L10 K10 J10 H10 G10 F10 E10 D10 C10 B10
+       P11 N11 M11 L11 K11 J11 H11 G11 F11 E11 D11 C11 B11
+           N12 M12 L12 K12 J12 H12 G12 F12 E12 D12 C12
+               M13 L13 K13 J13 H13 G13 F13 E13 D13
+                   L14 K14 J14 H14 G14 F14 E14
+                           J15 H15 G15
+
+FOLLOW 8 XE135PF I135PF
+         ND147PF PM147PF PM148PF PM148MPF PM149PF SM149PF
+NCOMB ALL                            
+
+FUEL WEIGHT 46. 46. ! values needed for SIM:
+BTYPE INST-BURN
+ADD-PARAM PNAME 'C-BORE' PARKEY 'CBOR' GLOBAL
+ADD-PARAM PNAME 'T-FUEL' PARKEY 'TCOM' GLOBAL
+ADD-PARAM PNAME 'D-COOL' PARKEY 'DMOD' GLOBAL
+* Initialization values needed for THM:
+SET-PARAM 'T-FUEL' 286.00055
+SET-PARAM 'D-COOL' .753915906
+!SET-PARAM 'T-COOL' 300.0
+*--------------------------------------------------------
+;
+
+END: ;
+QUIT .

@@ -1,0 +1,210 @@
+\subsection{The \moc{SIM:} module}\label{sect:sim}
+
+\vskip 0.2cm
+The \moc{SIM:} module can perform a sequence of operations related to
+fuel management in PWRs:
+\begin{itemize}
+\item simulate a refuelling and shuffling scheme and update the burnup distribution
+accordingly. The refuelling scheme is specified directly in \moc{SIM:}.
+\item increase the burnup using the power available in the \dusa{POWER} object
+and compute the final instantaneous burnup of each assembly subdivision
+\item modify a local parameter such as the Boron concentration in the coolant.
+\end{itemize}
+
+\noindent
+The \moc{SIM:} module specification is:
+
+\begin{DataStructure}{Structure \moc{SIM:}}\label{table:tsim}
+\dusa{FMAP} $[$ \dusa{MLIB} $]$ \moc{:=} \moc{SIM:} \dusa{FMAP} $[$ \dusa{MLIB} $]~[$ \dusa{POWER} $]$ \\
+\moc{::} \dstr{descsim}
+\end{DataStructure}
+
+\noindent where
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dusa{FMAP}] \texttt{character*12} name of a \dds{fmap} object,
+that will be updated by the \moc{SIM:} module. The \dusa{FMAP} object
+must contain the instantaneous burnups for each assembly subdivision, a basic naval-coordinate
+assembly layout and the weight of each assembly subdivision.
+
+\item[\dusa{MLIB}] {\tt character*12} name of a {\sc microlib} (type {\tt L\_LIBRARY}) containing particularized isotope data. If this
+object also appears on the RHS, it is open in modification mode and updated. Number densities of isotopes present in list \dusa{HISOT}
+(see Sect.~\ref{sect:resinimain}) are recovered from a fuel cycle information directory of \dusa{FMAP} and saved in \dusa{MLIB} or
+recovered from \dusa{MLIB} and saved in a fuel cycle information directory of \dusa{FMAP}.
+
+\item[\dusa{POWER}] \texttt{character*12} name of a \dds{power} object
+containing the channel and powers of the assembly subdivisions, previously computed by the
+\moc{FLPOW:} module. The channel and powers of the assembly subdivisions are used by the
+\moc{SIM:} module to compute the new burn-up of each assembly subdivision. If the powers
+of the assembly subdivisions are previously specified with the module \moc{RESINI:}, you can burn
+your core without a \dusa{POWER} object.
+
+\item[\dstr{descsim}] structure describing the input data to the \moc{SIM:} module.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+\subsubsection{Input data to the \moc{SIM:} module}\label{sect:strsim}
+
+\noindent
+Note that the input order must be respected.
+
+\begin{DataStructure}{Structure \dstr{descsim}}
+$[$ \moc{EDIT} \dusa{iprint} $]$ \\
+$[$ \moc{CYCLE} \dusa{hcnew} $[$ \moc{FROM}  \dusa{hcold} $[$ \moc{BURN} $\{$ \dusa{indcycle} $|$ \dusa{burncycle} $\}~]~]$ \\
+~~~~~$[~\{$ \moc{MAP} (\dusa{hx}(i), i=1, \dusa{lx} ) \\
+~~~~~~~~~~~~       (\dusa{hy}(j), (\dusa{hcase}(i,j), i=1, \dusa{lx} ), j=1,ly ) $|$ \\
+~~~~~~ \moc{QMAP} (\dusa{hx}(i), i=\dusa{lx}/2+1, \dusa{lx} ) \\
+~~~~~~~~~~~~~       (\dusa{hy}(j), (\dusa{hcase}(i,j), i=\dusa{lx}/2+1, \dusa{lx} ), j=\dusa{ly}/2+1,ly ) $\}~]$ \\
+~~~~~$[$ \moc{SPEC} $[[~[[$ \dusa{asmb1} $]]$ \\
+~~~~~~~~$\{$ \moc{SET} \moc{AVGB} \dusa{avburn} $|$ \moc{SET} \moc{FUEL} \dusa{ifuel} $|$ \moc{FROM} \dusa{hcold2} \moc{AT} \dusa{asmb2} $[$ \moc{BURN} $\{$ \dusa{indcycle} $|$ \dusa{burncycle} $\}~]~\}$ \\
+~~~~~~~~~~~~~~$]]~]$ \\
+~~~~~$[$ \moc{DIST-AX} $[[~[[$ \dusa{asmb1} $]]$ \\
+~~~~~~~~$\{$  \moc{SET} (\dusa{axn}(i), i=1,\dusa{nb}) $|$ \moc{FROM} \dusa{hcold2} \moc{AT} \dusa{asmb2} $[$ \moc{BURN} $\{$ \dusa{indcycle} $|$ \dusa{burncycle} $\}~]~\}$ \\
+~~~~~~~~~~~~~~~~~~~$]]~]$ \\
+~~~~~$[$ \moc{BURN-STEP} \dusa{rburn}  $|$ \moc{TIME} \dusa{rtime} $\{$ \moc{DAY} $|$ \moc{HOUR} $|$ \moc{MINUTE} $|$ \moc{SECOND} $\}$ $]$ \\
+~~~~~$[$ \moc{SET-FOLLOW} $[$ \moc{BURN} $\{$ \dusa{indcycle} $|$ \dusa{burncycle} $\}~]~]$ \\
+\moc{ENDCYCLE} $]$ \\
+$[[$ \moc{COMPARE} \dusa{hc1} $[$ \moc{BURN} $\{$ \dusa{indcycle1} $|$ \dusa{burncycle1} $\}~]$ \dusa{hc2} $[$ \moc{BURN} $\{$ \dusa{indcycle2} $|$ \dusa{burncycle2} $\}~]$ \\
+~~~~~~~$\{$ \moc{DIST-BURN}  {\tt >>} \dusa{epsburn} {\tt <<}  $|$ \moc{DIST-POWR}  {\tt >>} \dusa{epspowr} {\tt <<} $\}~]]$ \\
+$[[$ \moc{SET-PARAM} \dusa{PNAME} \dusa{pvalue} $]]$ \\
+;
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] integer index used to control the printing on screen:
+ = 0 for no print; = 1 for minimum printing (default value); for larger values of
+\dusa{iprint} everything will be printed.
+
+\item[\moc{CYCLE}] keyword defining operations based on the actual fuel cycle.
+
+\item[\dusa{hcnew}] \texttt{character*12} identification name of the specific fuel cycle.
+
+\item[\moc{FROM}] keyword defining the previous fuel cycle in case that some information
+needs to be transmitted to the actual fuel cycle.
+
+\item[\dusa{hcold}] \texttt{character*12} identification name of the previous fuel cycle.
+
+\item[\moc{BURN}] keyword defining the burnup at which the assembly is recycled in the previous fuel cycle. By default, the
+last burnup step is used.
+
+\item[\dusa{indcycle}] integer index of the burnup step in the previous fuel cycle.
+
+\item[\dusa{burncycle}] real value of the burnup in the previous fuel cycle.
+
+\item[\moc{MAP}] keyword defining the assembly layout in naval-coordinate positions in the
+actual fuel cycle. Here, \dusa{lx} and \dusa{ly} values are those defined in the fuel map
+(see \Sect{resiniaram}).
+
+\item[\moc{QMAP}] keyword defining the assembly layout in naval-coordinate positions using
+quarter-core symmetry conditions. Here, the lower-right quarter is defined.
+The full map is reconstructed through rotations around the center.
+
+\item[\dusa{hx}] ordered list of available \texttt{character*1} prefixes for the $X$-oriented
+naval-coordinate positions. Values are generally chosen between {\tt A} and {\tt T}.
+
+\item[\dusa{hy}] ordered list of available \texttt{character*2} suffixes for the $Y$-oriented
+naval-coordinate positions. Values are generally chosen between {\tt 01} and {\tt 17}.
+
+\item[\dusa{hcase}] \texttt{character*4} or integer identification value for the (i,j) position. Accepted
+values are:
+\begin{itemize}
+\item \moc{|}, \moc{-} or \moc{-|-} for a position outside the core,
+\item \moc{NEW} for a new assembly (at zero burnup) selected according to the fuel map specified in Sect.~\ref{sect:resini},
+\item \moc{SPC} for an assembly described later in the dataset using a \moc{SPEC} specification,
+\item or a naval-coordinate position referring to the position of an assembly in cycle \dusa{hcold} that is
+recycled in the current cycle,
+\item \dusa{imix} for an assembly (at zero burnup) made of fuel mixture \dusa{imix}. The fuel mixture should be selected among integer values defined
+in the fuel map {\tt GEO:/MIX} data of Table~\ref{table:descresini1}.
+\end{itemize}
+
+\item[\moc{SPEC}] keyword defining specifications related to all assemblies previously identified with
+the \moc{SPC} keyword. If \moc{QMAP} keyword has been used with \moc{SPC} values, the 4 equivalent
+assemblies must be specified (i.e. not only the lower-right quarter assembly).
+
+\item[\dusa{asmb1}] \texttt{character*3} naval-coordinate position of an assembly identified with a \moc{SPC} keyword. Up to 30 coordinates can be set aside
+if many assemblies have the same specification.
+
+\item[\moc{SET}] keyword indicating that a user-defined value will be assigned to the assembly.
+
+\item[\moc{AVGB}] keyword indicating that an averaged burnup will be assigned to the assembly.
+
+\item[\dusa{avburn}] real value of the average burnup in MWd/t.
+
+\item[\moc{FUEL}] keyword indicating that a new fuel assembly will be used.
+
+\item[\dusa{fuel}] integer index of the fuel type corresponding to the new fuel assembly. Fuel type indices are those used in the
+{\tt RESINI:} {\tt PLANE} descriptions of Sect.~\ref{sect:resini}.
+
+\item[\moc{FROM}] keyword indicating that a value recovered from another assembly will be assigned to the current assembly.
+
+\item[\dusa{hcold2}] \texttt{character*12} identification name of a previous fuel cycle.
+
+\item[\moc{AT}] keyword indicating that the naval-coordinate position of the other assembly will be given.
+
+\item[\dusa{asmb2}] \texttt{character*3} naval-coordinate position of the other assembly in cycle \dusa{hcold2}.
+
+\item[\moc{DIST-AX}] keyword used to impose an axial burnup distribution to the assembly. The burnup distribution is recovered from an existing assembly or is set to
+user-suppled values.
+
+\item[\dusa{axn}] real values of the axial burnup distribution.
+
+\item[\moc{BURN-STEP}] keyword used to indicate an increase of core average burn-up.
+
+\item[\dusa{rburn}] keyword used to indicate in MWd/t the average increase
+of burn-up in the core.
+
+\item[\moc{TIME}] keyword used to indicate the time of combustion at the power specified
+in \dusa{POWER} structure.
+
+\item[\dusa{rtime}] keyword used to set the time combustion value in \moc{DAY} or \moc{HOUR}
+or \moc{MINUTE} or \moc{SECOND}.
+
+\item[\moc{DAY}] keyword used to specify that \dusa{rtime} is a number of days.
+
+\item[\moc{HOUR}] keyword used to specify that \dusa{rtime} is a number of hours.
+
+\item[\moc{MINUTE}] keyword used to specify that \dusa{rtime} is a number of minutes.
+
+\item[\moc{SECOND}] keyword used to specify that \dusa{rtime} is a number of seconds.
+
+\item[\moc{SET-FOLLOW}] keyword used to reset the number densities of particularized isotopes in the \dusa{hcnew} fuel cycle
+information directory of the fuel map. The burnup step indicated by \moc{BURN} structure is used to store the particularized isotopes. By default,
+the last burnup step is used. The {\sc microlib} \dusa{MLIB} must be defined in read-only mode in Table~\ref{table:tsim}.
+
+\item[\moc{ENDCYCLE}] keyword indicating the end of data specific to the actual fuel cycle.
+
+\item[\moc{COMPARE}] keyword for obtaining a CLE-2000 variable that is a measure of the discrepancy between two
+cycles.
+
+\item[\dusa{hc1}] \texttt{character*12} identification name of the first fuel cycle to compare.
+
+\item[\dusa{hc2}] \texttt{character*12} identification name of the second fuel cycle to compare.
+
+\item[\moc{DIST-BURN}]  keyword used to recover the discrepancy on burnup distribution in a CLE-2000 variable.
+
+\item[\dusa{epsburn}] \texttt{character*12} CLE-2000 variable name in which the extracted burnup discrepancy (expressed in MW-day/tonne) will be placed.
+
+\item[\moc{DIST-POWR}]  keyword used to recover the relative error on power distribution in a CLE-2000 variable.
+
+\item[\dusa{epspowr}] \texttt{character*12} CLE-2000 variable name in which the extracted power relative error will be placed.
+
+\item[\moc{SET-PARAM}] keyword used to indicate the input (or modification)
+of the actual values for a parameter specified using its \dusa{PNAME}.
+
+\item[\moc{PNAME}] keyword used to specify \dusa{PNAME}.
+
+\item[\dusa{PNAME}] \texttt{character*12} name of a parameter.
+
+\item[\dusa{pvalue}] single real value containing the actual
+parameter's values. Note that this value will not be checked for consistency
+by the module. It is the user responsibility to provide the valid parameter's value
+which should be consistent with those recorded in the multicompo or Saphyb database.
+
+\end{ListeDeDescription}
+\clearpage

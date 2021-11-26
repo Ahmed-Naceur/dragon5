@@ -1,0 +1,1671 @@
+*DECK CreaGeo.c2m
+*======================================================
+* Name:   CreaGeo.c2m
+* Type:   DRAGON procedure
+* Use:    Create various geometry & tracking objects
+* Author: A. Bruneau 03.2015, 04.2015
+*         [CS-SI | IRSN/PSN-EXP/SNC/LNR]
+*         V. Salino 05.2016 : ajout des cas 17x17 Pyrex
+*                             (Fessenheim, CP1, N4)
+*------------------------------------------------------
+* Procedure called as:
+*------------------------------------------------------
+* Input Required:
+*  > Gestion [STR] AssType [STR] ConfigPyrex [STR]
+* Output Provided:
+*  < Tracking objects for assembly & self-shielding
+*======================================================
+PARAMETER   Discr DiscrAu ::
+        ::: LINKED_LIST
+            Discr DiscrAu ; ;
+PROCEDURE   ThermaExpans ;
+MODULE      GEO: SYBILT: ABORT: END: DELETE: ;
+LINKED_LIST Evo AuEvo AICN AuAICN AICG AuAICG B4C AuB4C
+            GeoTemplate GeoTempGado GeoTempPy
+            UOX UOX_SS UOX_BLACK UOX_BLACK_SS UOX_GRAY UOX_GRAY_SS
+            MOX MOX_SS MOX_BLACK MOX_BLACK_SS MOX_GRAY MOX_GRAY_SS
+            UGD UGD_SS UGD_BLACK UGD_BLACK_SS UGD_GRAY UGD_GRAY_SS
+            UOX_B4C UOX_B4C_SS
+            MOX_B4C MOX_B4C_SS
+            UGD_B4C UGD_B4C_SS 
+            UOX_Py UOX_Py_SS ;
+*------------------------------------------------------
+* Variables & Parameters
+*------------------------------------------------------
+STRING  Gestion AssType ConfigPyrex ;
+INTEGER ThermExp BarType ;
+REAL tcom tmod tclad ;
+INTEGER imax := 1000000 ;
+REAL    Rpellet
+        Rfuel1  Rfuel2  Rfuel3  Rfuel4
+        RBPIn   RBPEx   RBPCladIn       RBPCladEx
+        RGd1    RGd2    RGd3    RGd4    RGd5    RGd6
+        RClad   RTubeIn RTubeEx RRod    RSteel  RRodB4C RRodClad
+        Lame    Cote    CoteL  ;
+REAL    RpelletHot RBPInHot RBPExHot RBPClInHot RBPClExHot 
+        RTubeInHot RTubeExHot RCladHot RRodHot 
+        CoteHot LameHot AssPitch ;
+STRING Material := "UO2" ;
+STRING Model := "PIN" ;
+
+*------------------------------------------------------
+* Gestion provided: PMOX, CYCL [900MWe]
+*                   BEAVRS     [1100MWe]
+*                   GEMM, GALI [1300MWe]
+*                   ALCA       [1450MWe]
+*                   FA3 TSN    [1650MWe]
+* Assembly type provided: UOX MOX UGd
+* Pyrex configuration provided : None Py8 Py12a Py12b
+*                                Py16 Py20 Py24
+*------------------------------------------------------
+:: >>Gestion<< >>AssType<< >>ConfigPyrex<< >>ThermExp<<
+   >>BarType<< >>tcom<< >>tmod<< ;
+EVALUATE tclad := 0.12 tcom * 0.88 tmod * + ;
+
+*------------------------------------------------------
+* Data from don_techno_rep.proc & don_techno_rep_m.proc
+* Values for UOX, MOX & UGd in 900MWe [SLB] AFA 2G assembly structure
+* and 1300MWe [PAL] AFA 3G and 1450MWe [SLB] AFA3G
+* All in [cm]
+*
+* Clad:  Mix description includes void between fuel/rod & clad
+*     => RClad = External Cladding Radius
+*
+* Lame:  Assembly "half" pitch [adjusted to hot conditions]
+* Cote:  Central pin cell side length
+* CoteL: Side pin cell side length [cote+lame]
+*------------------------------------------------------
+EVALUATE Rpellet :=  .41266    ; ! TOPT.'DIM'.'RCOMB'
+EVALUATE RClad   :=  .474364   ; ! TOPT.'DIM'.'RGAINC'
+
+IF Gestion "ALCA" = THEN 
+EVALUATE RTubeIn :=  .583446    ; ! TOPT.'DIM'.'RTUBI'
+EVALUATE RTubeEx :=  .623529    ; ! TOPT.'DIM'.'RTUBE'
+ELSE
+*EVALUATE RTubeIn :=  .56342    ; ! TOPT.'DIM'.'RTUBI'
+EVALUATE RTubeIn :=  .573446    ; ! TOPT.'DIM'.'RTUBI'
+*EVALUATE RTubeEx :=  .60349    ; ! TOPT.'DIM'.'RTUBE'
+EVALUATE RTubeEx :=  .623529    ; ! TOPT.'DIM'.'RTUBE'
+ENDIF ;
+EVALUATE RSteel  :=  .37184541 ; ! TOPT.'DIM'.'RACIER'
+EVALUATE Lame    :=  .07792594 ; ! TOPT.'DIM'.'LAME' [hot half-pitch]
+EVALUATE Cote    := 1.262082   ; ! TOPT.'DIM'.'COTE'
+
+IF Gestion "PMOX" = Gestion "CYCL" = + THEN
+  EVALUATE RRod     := .436 ; ! TOPT.'DIM'.'RABSO'
+  EVALUATE RRodB4C  := RRod ; ! Dummy value (unused)
+  EVALUATE RRodClad := .486 ; ! TOPT.'DIM'.'RGAINA'
+ELSEIF Gestion "GEMM" = Gestion "GALI" = Gestion "ALCA" = 
+       Gestion "N4" = Gestion "FA3" = + + + + THEN
+  EVALUATE RRod     := .3825   ; ! TOPT.'DIM'.'RABSO' for AIC
+  EVALUATE RRodB4C  := .3735   ; ! TOPT.'DIM'.'RABSO' for B4C
+  EVALUATE RRodClad := .486414 ; ! TOPT.'DIM'.'RGAINA'
+ELSEIF Gestion "BEAV" = THEN
+  EVALUATE RRod     := .43310   ; ! TOPT.'DIM'.'RABSO' for AIC
+  EVALUATE RRodB4C  := .3735   ; ! TOPT.'DIM'.'RABSO' for B4C
+  EVALUATE RRodClad := .48387 ; ! TOPT.'DIM'.'RGAINA'
+ELSE
+  ECHO "ERROR --- Gestion:" Gestion "not recognized." ;
+  ABORT: ;
+ENDIF ;
+IF Gestion "CP1" = THEN
+  EVALUATE RBPIn := .2415 ;
+  EVALUATE RBPEx := .4265 ;
+  EVALUATE RBPCladIn := .2375 ;
+  EVALUATE RBPCladEx := .4840 ;
+ELSEIF Gestion "N4" = THEN
+  EVALUATE RBPIn := .2500 ;
+  EVALUATE RBPEx := .4270 ;
+  EVALUATE RBPCladIn := .2310 ;
+  EVALUATE RBPCladEx := .4840 ;
+  EVALUATE Rpellet :=  .4095    ; ! TOPT.'DIM'.'RCOMB'
+  EVALUATE RClad   :=  .475   ; ! TOPT.'DIM'.'RGAINC'
+  EVALUATE RTubeIn :=  .5625    ; ! TOPT.'DIM'.'RTUBI'
+  EVALUATE RTubeEx :=  .6025    ; ! TOPT.'DIM'.'RTUBE'
+  EVALUATE Lame := 21.504 1.260 17.0 * - 2.0 / ;
+  EVALUATE Cote    := 1.26   ; ! TOPT.'DIM'.'COTE'
+ELSEIF Gestion "BEAV" = THEN
+  EVALUATE RBPIn := .2413 ;
+  EVALUATE RBPEx := .4267 ;
+  EVALUATE RBPCladIn := .2310 ;
+  EVALUATE RBPCladEx := .4839 ;  
+  EVALUATE Rpellet :=  .39218    ; 
+  EVALUATE RClad   :=  .45720    ; 
+  EVALUATE RTubeIn :=  .56134    ; 
+  EVALUATE RTubeEx :=  .60198    ;   
+  EVALUATE Lame    :=  .04318 ; ! TOPT.'DIM'.'LAME' [hot half-pitch]
+  EVALUATE Cote    := 1.25984   ; ! TOPT.'DIM'.'COTE'
+ENDIF ;
+
+EVALUATE CoteL   := Cote Lame + ;
+*------------------------------------------------------
+* Evaluate Radii:
+* Fuel: r1 = ( .5  x Rpellet^2 )^1/2  ['OPTIMUM2']
+*       r2 = ( .8  x Rpellet^2 )^1/2
+*       r3 = ( .95 x Rpellet^2 )^1/2
+*       r4 =         Rpellet
+*
+* Gado: r1 = ( .2  x Rpellet^2 )^1/2  ['OPTIMUMGD']
+*       r2 = ( .4  x Rpellet^2 )^1/2
+*       r3 = ( .6  x Rpellet^2 )^1/2
+*       r4 = ( .8  x Rpellet^2 )^1/2
+*       r5 = ( .95 x Rpellet^2 )^1/2
+*       r6 =         Rpellet
+*------------------------------------------------------
+*------------------------------------------------------
+* Thermal Expansion of distances (If requested)
+*------------------------------------------------------
+IF ThermExp 1 = THEN
+EVALUATE tclad := 0.12 tcom * 0.88 tmod * + ; ! Default CASMO-5 value
+EVALUATE Model := "PIN" ;
+* EVALUATE tclad := tgain ; 
+
+*------------------------------------------------------
+* Pin combustible
+*------------------------------------------------------
+ ThermaExpans ::  <<Rpellet>> "UO2" <<tcom>>    "Distance"  
+                  <<Model>>       "NONE" 0.         0.
+                  <<tclad>> >>RpelletHot<<               ;
+* Le coefficient de dilatation du M5 est suppose identique au Zr4                 
+ ThermaExpans ::  <<RClad>>   "Zr4" <<tclad>>   "Distance" 
+                  <<Model>>       "UO2" <<Rpellet>> <<RpelletHot>>
+                  <<tmod>> >>RCladHot<<                  ;      
+*------------------------------------------------------
+* Tube guide / instrumenation
+*------------------------------------------------------  
+ ThermaExpans ::  <<RTubeIn>> "Mod" <<tmod>>    "Distance" 
+                  <<Model>>       "Zr4" 0.         0. 
+                  <<tmod>> >>RTubeInHot<<                ;
+ ThermaExpans ::  <<RTubeEx>> "Zr4" <<tmod>> "Distance" 
+                  <<Model>>       "Mod"  <<RTubeIn>> <<RTubeInHot>>
+                  <<tmod>> >>RTubeExHot<<                ;
+*------------------------------------------------------
+* Poison consommable pyrex
+*------------------------------------------------------                    
+  ThermaExpans ::  <<RBPCladIn>> "Air" <<tmod>>    "Distance" 
+                  <<Model>>     "SS304" 0.         0. 
+                  <<tmod>> >>RBPClInHot<<                ;  
+  ThermaExpans ::  <<RBPIn>>   "SS304" <<tmod>>    "Distance" 
+                  <<Model>>        "Pyrex" <<RBPCladIn>>  <<RBPClInHot>> 
+                  <<tmod>> >>RBPInHot<<                    ;    
+  ThermaExpans ::  <<RBPEx>>   "Pyrex" <<tmod>>    "Distance" 
+                  <<Model>>        "SS304" <<RBPIn>>   <<RBPInHot>> 
+                  <<tmod>> >>RBPExHot<<                    ;    
+  ThermaExpans ::  <<RBPCladEx>> "SS304" <<tmod>>  "Distance" 
+                  <<Model>>        "Mod" <<RBPEx>>   <<RBPExHot>> 
+                  <<tmod>> >>RBPClExHot<<                    ; 
+*------------------------------------------------------
+* Pin barre de controle
+*------------------------------------------------------   
+  ThermaExpans ::  <<RRod>> "AIC" <<tmod>>    "Distance" 
+                  <<Model>>     "SS304 " 0.         0. 
+                  <<tmod>> >>RRodHot<<                ;      
+  ThermaExpans ::  <<RRodB4C>> "B4C" <<tmod>>    "Distance" 
+                  <<Model>>     "SS304 " 0.         0. 
+                  <<tmod>> >>RRodB4C<<                ;  
+  ThermaExpans ::  <<RSteel>> "SS304" <<tmod>>    "Distance" 
+                  <<Model>>     "SS304 " 0.         0. 
+                  <<tmod>> >>RSteel<<                ;    
+  ThermaExpans ::  <<RRodClad>> "SS304" <<tmod>>    "Distance" 
+                  <<Model>>     "SS304 " <<RRod>>    <<RRodHot>> 
+                  <<tmod>> >>RRodClad<<                ;                    
+*------------------------------------------------------
+* Pin Pitch et lame d'eau
+*------------------------------------------------------  
+ EVALUATE AssPitch := Cote 17. * Lame 2. *  + ;
+ EVALUATE Model := "PITCH" ;
+  ThermaExpans ::  <<Cote>> "SS304" <<tmod>>  "Distance" 
+                  <<Model>>   "NONE"   0.       0. 
+                  0. >>CoteHot<<                       ;
+ EVALUATE Model := "LAME" ;
+  ThermaExpans ::  <<AssPitch>> "SS304" <<tmod>>  "Distance" 
+                  <<Model>>   "NONE"   0.       0. 
+                  0. >>AssPitch<<                       ;
+  EVALUATE LameHot := AssPitch CoteHot 17. * - 2. / ;  
+  
+  EVALUATE  Rpellet   := RpelletHot   ;
+  EVALUATE  RClad     := RCladHot     ;
+  EVALUATE  RTubeIn   := RTubeInHot   ;
+  EVALUATE  RTubeEx   := RTubeExHot   ;
+  EVALUATE  RBPCladIn := RBPClInHot   ;
+  EVALUATE  RBPCladEx := RBPClExHot   ;
+  EVALUATE  RRod      := RRodHot      ;
+  EVALUATE  Cote      := CoteHot      ;
+  EVALUATE  Lame      := LameHot      ;
+                       
+ ECHO "---------------THERMAL EXPANSION OF DISTANCES------------" ;
+ ECHO " Rpellet   =  " Rpellet    " at " tcom  "C." ;
+ ECHO " RClad     =  " RClad      " at " tclad "C." ;
+ ECHO " RTubeIn   =  " RTubeIn    " at " tmod  "C." ;
+ ECHO " RTubeEx   =  " RTubeEx    " at " tmod  "C." ;
+ ECHO " RBPCladIn =  " RBPCladIn  " at " tmod  "C." ;
+ ECHO " RBPCladEx =  " RBPCladEx  " at " tmod  "C." ;
+ ECHO " RRod      =  " RRod       " at " tmod  "C." ;
+ ECHO " RRodB4C   =  " RRodB4C    " at " tmod  "C." ;
+ ECHO " RRodClad  =  " RRodClad   " at " tmod  "C." ;
+ ECHO " RSteel    =  " RSteel     " at " tmod  "C." ;
+ ECHO " Cote      =  " Cote       " at " tmod  "C." ;
+ ECHO " Lame      =  " Lame       " at " tmod  "C." ;
+ENDIF ;
+
+EVALUATE Rfuel1 := Rpellet .5  SQRT * ;
+EVALUATE Rfuel2 := Rpellet .8  SQRT * ;
+EVALUATE Rfuel3 := Rpellet .95 SQRT * ;
+EVALUATE Rfuel4 := Rpellet ;
+
+EVALUATE RGd1   := Rpellet .2  SQRT * ;
+EVALUATE RGd2   := Rpellet .4  SQRT * ;
+EVALUATE RGd3   := Rpellet .6  SQRT * ;
+EVALUATE RGd4   := Rpellet .8  SQRT * ;
+EVALUATE RGd5   := Rpellet .95 SQRT * ;
+EVALUATE RGd6   := Rpellet ;
+*------------------------------------------------------
+* Materiaux de base:      1 ->    9
+* Moderateurs:           10 ->   19
+* Structures:   Tubes    20
+*               Barres   21 ->   29
+*               Gaines   30 ->   39
+* Combustibles: UOX     100 ->  109
+*               MOX     110 ->  139
+*               UGd     140 -> Nmix
+*------------------------------------------------------
+* Materiaux de base
+*    1 - SS304
+*    2 - Inconel
+*    3 - Zircalloy-4
+*    4 - Grilles issues d'APOLLO2
+*    5 - Eau boree
+*    6 - Isotopes de barre virtuelle
+*    7 - Eau boree tube instrumentation
+* Moderateurs
+*   10 - MODE   [moderateur cellule centrale]
+*   11 - MODEL  [moderateur cellule en peripherie (avec lame d'eau)]
+*   12 - MODEC  [moderateur cellule en coin (double lame d'eau)]
+*   13 - MODETI [moderateur cellule tube (interieur du tube)+Isotopes de barres AIC a 0]
+*   14 - MODETE [moderateur cellule tube (exterieur du tube)]
+*   15 - MODETII [moderateur cellule tube (interieur du tube d'instrumentation)]
+* Structures: Tubes
+*   20 - TUBE
+* Structures: Barres
+*   21 - AIC    [Barres AIC]
+*   22 - ACIER  [Barres acier]
+*   23 - B4C    [Barres B4C]
+* Structures: Gaines
+*   30 - GAINC  [Gaine combustible UOX/MOX/UGd]
+*   31 - GAINA  [Gaine Barres AIC]
+*   32 - GAINS  [Gaine Barres ACIER]
+*   33 - GAINB  [Gaine Barres B4C]
+*   34 - GAINE BP INT ACIER SS304
+*   35 - GAINE BP EXT ACIER SS304
+*   36 - GAINC M5 [Gaine combustible gestion ALCADE]
+* Poison consommable (Pyrex)
+*   60 - PYREX
+* Combustibles UOX
+*  100 - COMB   [UOX 1ere couronne (centre a Rcomb*0.5^1/2) <=> 0 a r1]
+*  101 - COMB   [UOX 2e couronne]
+*  102 - COMB   [UOX 3e couronne]
+*  103 - COMB   [UOX 4e couronne (r3 a Rcomb)]
+* Combustibles MOX
+*  110 - COMB1  [MOX 'faible' 1ere couronne]
+*  111 - COMB1  [MOX 'faible' 2e couronne]
+*  112 - COMB1  [MOX 'faible' 3e couronne]
+*  113 - COMB1  [MOX 'faible' 4e couronne]
+*  120 - COMB2  [MOX 'moyen' 1ere couronne]
+*  121 - COMB2  [MOX 'moyen' 2e couronne]
+*  122 - COMB2  [MOX 'moyen' 3e couronne]
+*  123 - COMB2  [MOX 'moyen' 4e couronne]
+*  130 - COMB3  [MOX 'fort' 1ere couronne]
+*  131 - COMB3  [MOX 'fort' 2e couronne]
+*  132 - COMB3  [MOX 'fort' 3e couronne]
+*  133 - COMB3  [MOX 'fort' 4e couronne]
+* Combustibles UGd
+*  140 - COMB   [UOX+Gd 1ere couronne (centre a Rcomb*0.2^1/2)]
+*  141 - COMB   [UOX+Gd 2e couronne]
+*  142 - COMB   [UOX+Gd 3e couronne]
+*  143 - COMB   [UOX+Gd 4e couronne]
+*  144 - COMB   [UOX+Gd 5e couronne]
+* Nmix - COMB   [UOX+Gd 6e couronne] --- Nmix = 145
+*------------------------------------------------------
+* GeoTemplate: Template for UOX & MOX basis
+* Regular (unrodded) UOX & MOX are of this type
+*------------------------------------------------------
+IF Gestion "ALCA" = THEN
+GeoTemplate := GEO: :: CAR2D 9 9 
+X- DIAG X+ REFL
+Y- SYME Y+ DIAG
+CELL FC C1 C1 T  C1 C1 T  C1 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 C1 C1 C1 C2
+              T  C1 C1 T  C1 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       C1 C1 C2
+                          C1 C2
+                             C3
+::: T  := GEO: CARCEL 2 
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RTubeIn>> <<RTubeEx>>
+  MIX    13  20  14 ;
+::: FC  := GEO: CARCEL 2
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RTubeIn>> <<RTubeEx>>
+  MIX    15  20  14 ;
+
+::: C1 := GEO: CARCEL 5 
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<Rfuel1>> <<Rfuel2>> <<Rfuel3>> <<Rfuel4>> <<RClad>>
+  MIX    100  101  102  103  36  10 ;
+
+::: C2 := GEO: C1  MESHX 0. <<CoteL>> MIX 100 101 102 103 36 11 ;
+::: C3 := GEO: C2  MESHY 0. <<CoteL>> MIX 100 101 102 103 36 12 ;
+;
+*------------------------------------------------------
+* GeoTempGado: Template with each type of pins for UOX+Gd
+*------------------------------------------------------
+GeoTempGado := GEO: GeoTemplate ::
+CELL FC C1 C1 T  C1 C1 T  C1 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 G  C1 C1 C2
+              T  C1 C1 T  C1 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       G  C1 C2
+                          C1 C2
+                             C3
+::: G  := GEO: CARCEL 7
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RGd1>> <<RGd2>> <<RGd3>>
+            <<RGd4>> <<RGd5>> <<RGd6>> <<RClad>>
+  MIX    140  141  142  143  144  145  36  10 ;
+;
+ELSEIF Gestion "FA3" = THEN
+GeoTemplate := GEO: :: CAR2D 9 9 
+X- DIAG X+ REFL
+Y- SYME Y+ DIAG
+CELL FC C1 C1 T  C1 C1 T  C1 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 C1 C1 C1 C2
+              T  C1 C1 T  C1 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       C1 C1 C2
+                          C1 C2
+                             C3
+::: T  := GEO: CARCEL 2 
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+* RADIUS 0. <<RTubeIn>> <<RTubeEx>>
+  RADIUS 0. <<Rfuel4>> <<RClad>>
+  MIX    10  30  10 ;
+  
+::: FC  := GEO: CARCEL 2
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+* RADIUS 0. <<RTubeIn>> <<RTubeEx>>
+  RADIUS 0. <<Rfuel4>> <<RClad>>
+*  MIX    15  20  14 ;
+  MIX    10  30  10 ;
+
+::: C1 := GEO: CARCEL 5 
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<Rfuel1>> <<Rfuel2>> <<Rfuel3>> <<Rfuel4>> <<RClad>>
+  MIX    100  101  102  103  30  10 ;
+
+::: C2 := GEO: C1  MESHX 0. <<Cote>> MIX 100 101 102 103 30 10 ;
+::: C3 := GEO: C2  MESHY 0. <<Cote>> MIX 100 101 102 103 30 10 ;
+;
+*------------------------------------------------------
+* GeoTempGado: Template with each type of pins for UOX+Gd
+*------------------------------------------------------
+IF AssType "UGd8" = THEN
+GeoTempGado := GEO: GeoTemplate ::
+CELL FC C1 C1 T  C1 C1 T  C1 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 G  C1 C1 C1 C2
+              T  C1 C1 T  C1 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       C1 C1 C2
+                          C1 C2
+                             C3
+::: G  := GEO: CARCEL 7
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RGd1>> <<RGd2>> <<RGd3>>
+            <<RGd4>> <<RGd5>> <<RGd6>> <<RClad>>
+  MIX    140  141  142  143  144  145  30  10 ;
+;
+* UOX ou UGd 
+ELSE
+GeoTempGado := GEO: GeoTemplate ::
+CELL FC C1 C1 T  C1 C1 T  C1 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 G  C1 C1 C2
+              T  C1 C1 T  C1 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       G  C1 C2
+                          C1 C2
+                             C3
+::: G  := GEO: CARCEL 7
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RGd1>> <<RGd2>> <<RGd3>>
+            <<RGd4>> <<RGd5>> <<RGd6>> <<RClad>>
+  MIX    140  141  142  143  144  145  30  10 ;
+;
+ENDIF ;
+
+ELSE
+
+GeoTemplate := GEO: :: CAR2D 9 9
+X- DIAG X+ REFL
+Y- SYME Y+ DIAG
+CELL FC C1 C1 T  C1 C1 T  C1 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 C1 C1 C1 C2
+              T  C1 C1 T  C1 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       C1 C1 C2
+                          C1 C2
+                             C3
+::: T  := GEO: CARCEL 2
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RTubeIn>> <<RTubeEx>>
+  MIX    13  20  14 ;
+::: FC  := GEO: CARCEL 2
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RTubeIn>> <<RTubeEx>>
+  MIX    15  20  14 ;
+
+::: C1 := GEO: CARCEL 5 
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<Rfuel1>> <<Rfuel2>> <<Rfuel3>> <<Rfuel4>> <<RClad>>
+  MIX    100  101  102  103  30  10 ;
+
+::: C2 := GEO: C1  MESHX 0. <<CoteL>> MIX 100 101 102 103 30 11 ;
+::: C3 := GEO: C2  MESHY 0. <<CoteL>> MIX 100 101 102 103 30 12 ;
+;
+
+*------------------------------------------------------
+* GeoTempGado: Template with each type of pins for UOX+Gd
+*------------------------------------------------------
+GeoTempGado := GEO: GeoTemplate ::
+CELL FC C1 C1 T  C1 C1 T  C1 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 G  C1 C1 C2
+              T  C1 C1 T  C1 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       G  C1 C2
+                          C1 C2
+                             C3
+::: G  := GEO: CARCEL 7
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RGd1>> <<RGd2>> <<RGd3>>
+            <<RGd4>> <<RGd5>> <<RGd6>> <<RClad>>
+  MIX    140  141  142  143  144  145  30  10 ;
+;
+ENDIF ;
+  *------------------------------------------------------
+  * UOX Assembly
+  *  17 X 17 UOX 900MWe/1300MWe PWR assembly without Rods
+  *  contains  T  : TUBE_GUIDE
+  *            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+  *            C2 : CELLULE_COMBUSTIBLE_LATERALE
+  *            C3 : CELLULE_COMBUSTIBLE_COIN
+  *------------------------------------------------------
+UOX := GeoTemplate ;
+UOX_SS := GEO: UOX ::
+MERGE 5  2  2  1  2  2  1  2  4
+         2  2  2  2  2  2  2  4
+            2  2  2  2  2  2  4
+               1  2  2  1  2  4
+                  2  2  2  2  4
+                     1  2  2  4
+                        2  2  4
+                           2  4
+                              3 ;
+
+
+*------------------------------------------------------
+* GeoTempPy: Template with each type of pins for Pyrex
+*------------------------------------------------------
+IF ConfigPyrex "Py8" = ConfigPyrex "Py12a" = ConfigPyrex "Py12b"
+   = ConfigPyrex "Py16" = ConfigPyrex "Py20" = ConfigPyrex "Py24"
+   = ConfigPyrex "Py15c" = ConfigPyrex "Py15d" = + + + + + + + THEN 
+GeoTempPy := GEO: GeoTemplate ::
+CELL FC C1 C1 T  C1 C1 T  C1 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 C1 C1 C1 C2
+              T  C1 C1 Py C1 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       C1 C1 C2
+                          C1 C2
+                             C3
+
+  ::: Py := GEO: CARCEL 6
+    MESHX  0. <<Cote>>
+    MESHY  0. <<Cote>>
+    RADIUS 0. <<RBPCladIn>> <<RBPIn>> <<RBPEx>>
+           <<RBPCladEx>> <<RTubeIn>> <<RTubeEx>>
+    MIX    59  34  60  35  13 20 14 ;
+;
+ENDIF ;
+
+IF ConfigPyrex "Py8" = THEN
+  *------------------------------------------------------
+  * UOX Assembly
+  *  17 X 17 UOX 900MWe/1300MWe PWR assembly with 8 pyrex rods
+  *  contains  T  : TUBE_GUIDE
+  *            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+  *            C2 : CELLULE_COMBUSTIBLE_LATERALE
+  *            C3 : CELLULE_COMBUSTIBLE_COIN
+  *            Py : Pyrex rod
+  *------------------------------------------------------
+  UOX_Py := GeoTempPy ;
+  UOX_Py_SS := GEO: UOX_Py ::
+  * Merging region #5 = Pyrex
+  MERGE 6  2  2  1  2  2  1  2  4
+           2  2  2  2  2  2  2  4
+              2  2  2  2  2  2  4
+                 1  2  2  5  2  4
+                    2  2  2  2  4
+                       1  2  2  4
+                          2  2  4
+                             2  4
+                                3 ;
+
+ELSEIF ConfigPyrex "Py12a" = THEN
+  *------------------------------------------------------
+  * UOX Assembly
+  *  17 X 17 UOX 900MWe/1300MWe PWR assembly with 12 pyrex rods
+  *  contains  T  : TUBE_GUIDE
+  *            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+  *            C2 : CELLULE_COMBUSTIBLE_LATERALE
+  *            C3 : CELLULE_COMBUSTIBLE_COIN
+  *            Py : Pyrex rod
+  *------------------------------------------------------
+  UOX_Py := GEO: GeoTempPy ::
+    CELL FC C1 C1 Py C1 C1 T  C1 C2
+            C1 C1 C1 C1 C1 C1 C1 C2
+               C1 C1 C1 C1 C1 C1 C2
+                  T  C1 C1 Py C1 C2
+                     C1 C1 C1 C1 C2
+                        T  C1 C1 C2
+                           C1 C1 C2
+                              C1 C2
+                                 C3
+    ;
+  UOX_Py_SS := GEO: UOX_Py ::
+  * Merging region #5 = Pyrex
+  MERGE 6  2  2  5  2  2  1  2  4
+           2  2  2  2  2  2  2  4
+              2  2  2  2  2  2  4
+                 1  2  2  5  2  4
+                    2  2  2  2  4
+                       1  2  2  4
+                          2  2  4
+                             2  4
+                                3 ;
+ELSEIF ConfigPyrex "Py12b" = THEN
+  *------------------------------------------------------
+  * UOX Assembly
+  *  17 X 17 UOX 900MWe/1300MWe/BEAVRS PWR assembly with 12 pyrex rods
+  *  contains  T  : TUBE_GUIDE
+  *            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+  *            C2 : CELLULE_COMBUSTIBLE_LATERALE
+  *            C3 : CELLULE_COMBUSTIBLE_COIN
+  *            Py : Pyrex rod
+  *------------------------------------------------------
+  UOX_Py := GEO: GeoTempPy ::
+    CELL FC C1 C1 T  C1 C1 T  C1 C2
+            C1 C1 C1 C1 C1 C1 C1 C2
+               C1 C1 C1 C1 C1 C1 C2
+                  T  C1 C1 Py C1 C2
+                     C1 C1 C1 C1 C2
+                        Py C1 C1 C2
+                           C1 C1 C2
+                              C1 C2
+                                 C3
+    ;
+  UOX_Py_SS := GEO: UOX_Py ::
+  * Merging region #5 = Pyrex
+  MERGE 6  2  2  1  2  2  1  2  4
+           2  2  2  2  2  2  2  4
+              2  2  2  2  2  2  4
+                 1  2  2  5  2  4
+                    2  2  2  2  4
+                       5  2  2  4
+                          2  2  4
+                             2  4
+                                3 ;
+
+ELSEIF ConfigPyrex "Py6" = THEN
+  *------------------------------------------------------
+  * UOX Assembly
+  *  17 X 17 UOX 1100MWe PWR assembly with 15 pyrex rods (FULL)
+  *  Partie Sud Ouest
+  *  contains  T  : TUBE_GUIDE
+  *            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+  *            C2 : CELLULE_COMBUSTIBLE_LATERALE
+  *            C3 : CELLULE_COMBUSTIBLE_COIN
+  *            Py : Pyrex rod
+  *------------------------------------------------------
+  UOX_Py := GEO: :: CAR2D 17 17
+  X- REFL X+ REFL
+  Y- REFL Y+ REFL
+  CELL C3 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C3
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C2 C1 C1 C1 C1 Py C1 C1 T  C1 C1 Py C1 C1 C1 C1 C2
+       C2 C1 C1 Py C1 C1 C1 C1 C1 C1 C1 C1 C1 Py C1 C1 C2
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C2 C1 Py C1 C1 T  C1 C1 T  C1 C1 T  C1 C1 Py C1 C2
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C2 C1 T  C1 C1 T  C1 C1 FC C1 C1 T  C1 C1 T  C1 C2
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C2 C1 T  C1 C1 T  C1 C1 T  C1 C1 T  C1 C1 T  C1 C2
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C2 C1 C1 T  C1 C1 C1 C1 C1 C1 C1 C1 C1 T  C1 C1 C2
+       C2 C1 C1 C1 C1 T  C1 C1 T  C1 C1 T  C1 C1 C1 C1 C2
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C3 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C3
+::: T  := GEO: CARCEL 2
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RTubeIn>> <<RTubeEx>>
+  MIX    13  20  14 ;
+
+::: C1 := GEO: CARCEL 5
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<Rfuel1>> <<Rfuel2>> <<Rfuel3>> <<Rfuel4>> <<RClad>>
+  MIX    100  101  102  103  30  10 ;
+
+::: C2 := GEO: C1  MESHX 0. <<CoteL>> MIX 100 101 102 103 30 11 ;
+::: C3 := GEO: C2  MESHY 0. <<CoteL>> MIX 100 101 102 103 30 12 ;
+::: C4 := GEO: C1  MESHY 0. <<CoteL>> MIX 100 101 102 103 30 11 ;
+::: Py := GEO: CARCEL 6
+    MESHX  0. <<Cote>>
+    MESHY  0. <<Cote>>
+    RADIUS 0. <<RBPCladIn>> <<RBPIn>> <<RBPEx>>
+           <<RBPCladEx>> <<RTubeIn>> <<RTubeEx>>
+    MIX    59  34  60  35  13 20 14 ;
+::: FC  := GEO: CARCEL 2
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RTubeIn>> <<RTubeEx>>
+  MIX    15  20  14 ;
+    ;
+UOX_Py_SS := GEO: UOX_Py ::
+
+  MERGE  1 6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  1
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         2 3  3  3  3  4  3  3  5  3  3  4  3  3  3  3  2
+         2 3  3  4  3  3  3  3  3  3  3  3  3  4  3  3  2
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         2 3  4  3  3  5  3  3  5  3  3  5  3  3  4  3  2
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         2 3  5  3  3  5  3  3  7  3  3  5  3  3  5  3  2
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         2 3  5  3  3  5  3  3  5  3  3  5  3  3  5  3  2
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         2 3  3  5  3  3  3  3  3  3  3  3  3  5  3  3  2
+         2 3  3  3  3  5  3  3  5  3  3  5  3  3  3  3  2
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         1 6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  1 ;
+
+ELSEIF ConfigPyrex "Py15" = THEN
+  *------------------------------------------------------
+  * UOX Assembly
+  *  17 X 17 UOX 1100MWe PWR assembly with 15 pyrex rods (FULL)
+  *  Partie Sud Ouest
+  *  contains  T  : TUBE_GUIDE
+  *            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+  *            C2 : CELLULE_COMBUSTIBLE_LATERALE
+  *            C3 : CELLULE_COMBUSTIBLE_COIN
+  *            Py : Pyrex rod
+  *------------------------------------------------------
+  UOX_Py := GEO: :: CAR2D 17 17
+  X- REFL X+ REFL
+  Y- REFL Y+ REFL
+  CELL C3 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C3
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C2 C1 C1 C1 C1 Py C1 C1 Py C1 C1 Py C1 C1 C1 C1 C2
+       C2 C1 C1 Py C1 C1 C1 C1 C1 C1 C1 C1 C1 T  C1 C1 C2
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C2 C1 Py C1 C1 Py C1 C1 Py C1 C1 Py C1 C1 T  C1 C2
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C2 C1 Py C1 C1 Py C1 C1 FC C1 C1 Py C1 C1 T  C1 C2
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C2 C1 Py C1 C1 Py C1 C1 Py C1 C1 Py C1 C1 T  C1 C2
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C2 C1 C1 T  C1 C1 C1 C1 C1 C1 C1 C1 C1 T  C1 C1 C2
+       C2 C1 C1 C1 C1 T  C1 C1 T  C1 C1 T  C1 C1 C1 C1 C2
+       C2 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C2
+       C3 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4 C3
+::: T  := GEO: CARCEL 2
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RTubeIn>> <<RTubeEx>>
+  MIX    13  20  14 ;
+
+::: C1 := GEO: CARCEL 5
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<Rfuel1>> <<Rfuel2>> <<Rfuel3>> <<Rfuel4>> <<RClad>>
+  MIX    100  101  102  103  30  10 ;
+
+::: C2 := GEO: C1  MESHX 0. <<CoteL>> MIX 100 101 102 103 30 11 ;
+::: C3 := GEO: C2  MESHY 0. <<CoteL>> MIX 100 101 102 103 30 12 ;
+::: C4 := GEO: C1  MESHY 0. <<CoteL>> MIX 100 101 102 103 30 11 ;
+::: Py := GEO: CARCEL 6
+    MESHX  0. <<Cote>>
+    MESHY  0. <<Cote>>
+    RADIUS 0. <<RBPCladIn>> <<RBPIn>> <<RBPEx>>
+           <<RBPCladEx>> <<RTubeIn>> <<RTubeEx>>
+    MIX    59  34  60  35  13 20 14 ;
+::: FC  := GEO: CARCEL 2
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RTubeIn>> <<RTubeEx>>
+  MIX    15  20  14 ;
+    ;
+UOX_Py_SS := GEO: UOX_Py ::
+  MERGE  1 6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  1
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         2 3  3  3  3  4  3  3  4  3  3  4  3  3  3  3  2
+         2 3  3  4  3  3  3  3  3  3  3  3  3  5  3  3  2
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         2 3  4  3  3  4  3  3  4  3  3  4  3  3  5  3  2
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         2 3  4  3  3  4  3  3  7  3  3  4  3  3  5  3  2
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         2 3  4  3  3  4  3  3  4  3  3  4  3  3  5  3  2
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         2 3  3  5  3  3  3  3  3  3  3  3  3  5  3  3  2
+         2 3  3  3  3  5  3  3  5  3  3  5  3  3  3  3  2
+         2 3  3  3  3  3  3  3  3  3  3  3  3  3  3  3  2
+         1 6  6  6  6  6  6  6  6  6  6  6  6  6  6  6  1 ;
+
+ELSEIF ConfigPyrex "Py15a" = THEN
+  *------------------------------------------------------
+  * UOX Assembly
+  *  17 X 17 UOX 1100MWe PWR assembly with 15 pyrex rods (Config a)
+  *  Partie Sud Ouest
+  *  contains  T  : TUBE_GUIDE
+  *            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+  *            C2 : CELLULE_COMBUSTIBLE_LATERALE
+  *            C3 : CELLULE_COMBUSTIBLE_COIN
+  *            Py : Pyrex rod
+  *------------------------------------------------------
+  UOX_Py := GEO: :: CAR2D 9 9
+X- SYME X+ REFL
+Y- SYME Y+ REFL
+CELL FC C1 C1 Py C1 C1 Py C1 C2
+     C1 C1 C1 C1 C1 C1 C1 C1 C2
+     C1 C1 C1 C1 C1 C1 C1 C1 C2
+     Py C1 C1 Py C1 C1 Py C1 C2
+     C1 C1 C1 C1 C1 C1 C1 C1 C2
+     C1 C1 C1 C1 C1 T  C1 C1 C2
+     T  C1 C1 T  C1 C1 C1 C1 C2
+     C1 C1 C1 C1 C1 C1 C1 C1 C2
+     C4 C4 C4 C4 C4 C4 C4 C4 C3
+::: T  := GEO: CARCEL 2
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RTubeIn>> <<RTubeEx>>
+  MIX    13  20  14 ;
+
+::: C1 := GEO: CARCEL 5
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<Rfuel1>> <<Rfuel2>> <<Rfuel3>> <<Rfuel4>> <<RClad>>
+  MIX    100  101  102  103  30  10 ;
+
+::: C2 := GEO: C1  MESHX 0. <<CoteL>> MIX 100 101 102 103 30 11 ;
+::: C3 := GEO: C2  MESHY 0. <<CoteL>> MIX 100 101 102 103 30 12 ;
+::: C4 := GEO: C1  MESHY 0. <<CoteL>> MIX 100 101 102 103 30 11 ;
+::: Py := GEO: CARCEL 6
+    MESHX  0. <<Cote>>
+    MESHY  0. <<Cote>>
+    RADIUS 0. <<RBPCladIn>> <<RBPIn>> <<RBPEx>>
+           <<RBPCladEx>> <<RTubeIn>> <<RTubeEx>>
+    MIX    59  34  60  35  13 20 14 ;
+::: FC  := GEO: CARCEL 2
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RTubeIn>> <<RTubeEx>>
+  MIX    15  20  14 ;
+    ;
+
+  UOX_Py_SS := GEO: UOX_Py ::
+  * Merging region #5 = Pyrex
+  MERGE  7  2  2  5  2  2  5  2  4
+         2  2  2  2  2  2  2  2  4
+         2  2  2  2  2  2  2  2  4
+         5  2  2  5  2  2  5  2  4
+         2  2  2  2  2  2  2  2  4
+         2  2  2  2  2  1  2  2  4
+         1  2  2  1  2  2  2  2  4
+         2  2  2  2  2  2  2  2  4
+         6  6  6  6  6  6  6  6  3 ;
+ELSEIF ConfigPyrex "Py15b" = THEN
+  *------------------------------------------------------
+  * UOX Assembly
+  *  17 X 17 UOX 1100MWe PWR assembly with 15 pyrex rods (Config b)
+  *  Partie Nord Est
+  *  contains  T  : TUBE_GUIDE
+  *            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+  *            C2 : CELLULE_COMBUSTIBLE_LATERALE
+  *            C3 : CELLULE_COMBUSTIBLE_COIN
+  *            Py : Pyrex rod
+  *------------------------------------------------------
+  UOX_Py := GEO: :: CAR2D 9 9 
+X- SYME X+ REFL
+Y- SYME Y+ REFL
+
+CELL FC C1 C1 Py C1 C1 T  C1 C2
+     C1 C1 C1 C1 C1 C1 C1 C1 C2
+     C1 C1 C1 C1 C1 C1 C1 C1 C2
+     Py C1 C1 Py C1 C1 T  C1 C2
+     C1 C1 C1 C1 C1 C1 C1 C1 C2
+     C1 C1 C1 C1 C1 T  C1 C1 C2
+     Py C1 C1 Py C1 C1 C1 C1 C2
+     C1 C1 C1 C1 C1 C1 C1 C1 C2
+     C4 C4 C4 C4 C4 C4 C4 C4 C3
+::: T  := GEO: CARCEL 2
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RTubeIn>> <<RTubeEx>>
+  MIX    13  20  14 ;
+
+::: C1 := GEO: CARCEL 5
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<Rfuel1>> <<Rfuel2>> <<Rfuel3>> <<Rfuel4>> <<RClad>>
+  MIX    100  101  102  103  30  10 ;
+
+::: C2 := GEO: C1  MESHX 0. <<CoteL>> MIX 100 101 102 103 30 11 ;
+::: C3 := GEO: C2  MESHY 0. <<CoteL>> MIX 100 101 102 103 30 12 ;
+::: C4 := GEO: C1  MESHY 0. <<CoteL>> MIX 100 101 102 103 30 11 ;
+::: Py := GEO: CARCEL 6
+    MESHX  0. <<Cote>>
+    MESHY  0. <<Cote>>
+    RADIUS 0. <<RBPCladIn>> <<RBPIn>> <<RBPEx>>
+           <<RBPCladEx>> <<RTubeIn>> <<RTubeEx>>
+    MIX    59  34  60  35  13 20 14 ;
+::: FC  := GEO: CARCEL 2
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RTubeIn>> <<RTubeEx>>
+  MIX    15  20  14 ;
+    ;
+  UOX_Py_SS := GEO: UOX_Py ::
+  * Merging region #5 = Pyrex
+  MERGE  7  2  2  5  2  2  1  2  4
+         2  2  2  2  2  2  2  2  4
+         2  2  2  2  2  2  2  2  4
+         5  2  2  5  2  2  1  2  4
+         2  2  2  2  2  2  2  2  4
+         2  2  2  2  2  1  2  2  4
+         5  2  2  5  2  2  2  2  4
+         2  2  2  2  2  2  2  2  4
+         6  6  6  6  6  6  6  6  3 ;
+
+ELSEIF ConfigPyrex "Py15c" = THEN
+  *------------------------------------------------------
+  * UOX Assembly
+  *  17 X 17 UOX 1100MWe PWR assembly with 15 pyrex rods (Config c)
+  *  Partie Sud Est
+  *  contains  FC : CHAMBRE FISSION
+  *            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+  *            C2 : CELLULE_COMBUSTIBLE_LATERALE
+  *            C3 : CELLULE_COMBUSTIBLE_COIN
+  *            Py : Pyrex rod
+  *            T  : TUBE_GUIDE
+  *------------------------------------------------------
+UOX_Py := GEO: GeoTempPy ::
+CELL FC C1 C1 Py C1 C1 T  C1 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 C1 C1 C1 C2
+              Py C1 C1 T  C1 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       C1 C1 C2
+                          C1 C2
+                             C3
+;
+UOX_Py_SS := GEO: UOX_Py ::
+  MERGE  6 2 2 5 2 2 1 2 4
+           2 2 2 2 2 2 2 4
+             2 2 2 2 2 2 4
+               5 2 2 1 2 4
+                 2 2 2 2 4
+                   1 2 2 4
+                     2 2 4
+                       2 4
+                         3 ;
+ELSEIF ConfigPyrex "Py15d" = THEN
+  *------------------------------------------------------
+  * UOX Assembly
+  *  17 X 17 UOX 1100MWe PWR assembly with 15 pyrex rods (Config d)
+  *  Partie Nord Ouest
+  *  contains  FC : CHAMBRE FISSION
+  *            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+  *            C2 : CELLULE_COMBUSTIBLE_LATERALE
+  *            C3 : CELLULE_COMBUSTIBLE_COIN
+  *            T  : Pyrex rod
+  *------------------------------------------------------
+UOX_Py := GEO: :: CAR2D 9 9 
+X- DIAG X+ REFL
+Y- SYME Y+ DIAG
+CELL FC C1 C1 Py C1 C1 Py C1 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 C1 C1 C1 C2
+              Py C1 C1 Py C1 C2
+                 C1 C1 C1 C1 C2
+                    Py C1 C1 C2
+                       C1 C1 C2
+                          C1 C2
+                             C3
+::: FC  := GEO: CARCEL 2
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RTubeIn>> <<RTubeEx>>
+  MIX    15  20  14 ;
+::: Py := GEO: CARCEL 6
+    MESHX  0. <<Cote>>
+    MESHY  0. <<Cote>>
+    RADIUS 0. <<RBPCladIn>> <<RBPIn>> <<RBPEx>>
+           <<RBPCladEx>> <<RTubeIn>> <<RTubeEx>>
+    MIX    59  34  60  35  13 20 14 ;
+::: C1 := GEO: CARCEL 5 
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<Rfuel1>> <<Rfuel2>> <<Rfuel3>> <<Rfuel4>> <<RClad>>
+MIX    100  101  102  103  30  10 ;
+::: C2 := GEO: C1  MESHX 0. <<CoteL>> MIX 100 101 102 103 30 11 ;
+::: C3 := GEO: C2  MESHY 0. <<CoteL>> MIX 100 101 102 103 30 12 ;
+;
+UOX_Py_SS := GEO: UOX_Py ::
+  MERGE  1 2 2 5 2 2 5 2 4
+           2 2 2 2 2 2 2 4
+             2 2 2 2 2 2 4
+               5 2 2 5 2 4
+                 2 2 2 2 4
+                   5 2 2 4
+                     2 2 4
+                       2 4
+                         3 ;
+
+ELSEIF ConfigPyrex "Py16" = THEN
+  *------------------------------------------------------
+  * UOX Assembly
+  *  17 X 17 UOX 900MWe/1300MWe PWR assembly with 16 pyrex rods
+  *  contains  T  : TUBE_GUIDE
+  *            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+  *            C2 : CELLULE_COMBUSTIBLE_LATERALE
+  *            C3 : CELLULE_COMBUSTIBLE_COIN
+  *            Py : Pyrex rod
+  *------------------------------------------------------
+  UOX_Py := GEO: GeoTempPy ::
+    CELL FC C1 C1 T  C1 C1 Py C1 C2
+            C1 C1 C1 C1 C1 C1 C1 C2
+               C1 C1 C1 C1 C1 C1 C2
+                  T  C1 C1 Py C1 C2
+                     C1 C1 C1 C1 C2
+                        Py C1 C1 C2
+                           C1 C1 C2
+                              C1 C2
+                                 C3
+    ;
+  UOX_Py_SS := GEO: UOX_Py ::
+  * Merging region #5 = Pyrex
+  MERGE 6  2  2  1  2  2  5  2  4
+           2  2  2  2  2  2  2  4
+              2  2  2  2  2  2  4
+                 1  2  2  5  2  4
+                    2  2  2  2  4
+                       5  2  2  4
+                          2  2  4
+                             2  4
+                                3 ;
+ELSEIF ConfigPyrex "Py20" = THEN
+  *------------------------------------------------------
+  * UOX Assembly
+  *  17 X 17 UOX 900MWe/1300MWe PWR assembly with 20 pyrex rods
+  *  contains  T  : TUBE_GUIDE
+  *            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+  *            C2 : CELLULE_COMBUSTIBLE_LATERALE
+  *            C3 : CELLULE_COMBUSTIBLE_COIN
+  *            Py : Pyrex rod
+  *------------------------------------------------------
+  UOX_Py := GEO: GeoTempPy ::
+    CELL FC C1 C1 T  C1 C1 Py C1 C2
+            C1 C1 C1 C1 C1 C1 C1 C2
+               C1 C1 C1 C1 C1 C1 C2
+                  Py C1 C1 Py C1 C2
+                     C1 C1 C1 C1 C2
+                        Py C1 C1 C2
+                           C1 C1 C2
+                              C1 C2
+                                 C3
+    ;
+  UOX_Py_SS := GEO: UOX_Py ::
+  * Merging region #5 = Pyrex
+  MERGE 6  2  2  1  2  2  5  2  4
+           2  2  2  2  2  2  2  4
+              2  2  2  2  2  2  4
+                 5  2  2  5  2  4
+                    2  2  2  2  4
+                       5  2  2  4
+                          2  2  4
+                             2  4
+                                3 ;
+ELSEIF ConfigPyrex "Py24" = THEN
+  *------------------------------------------------------
+  * UOX Assembly
+  *  17 X 17 UOX 900MWe/1300MWe PWR assembly with 24 pyrex rods
+  *  contains  T  : TUBE_GUIDE
+  *            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+  *            C2 : CELLULE_COMBUSTIBLE_LATERALE
+  *            C3 : CELLULE_COMBUSTIBLE_COIN
+  *            Py : Pyrex rod
+  *------------------------------------------------------
+  UOX_Py := GEO: GeoTempPy ::
+    CELL FC C1 C1 Py C1 C1 Py C1 C2
+            C1 C1 C1 C1 C1 C1 C1 C2
+               C1 C1 C1 C1 C1 C1 C2
+                  Py C1 C1 Py C1 C2
+                     C1 C1 C1 C1 C2
+                        Py C1 C1 C2
+                           C1 C1 C2
+                              C1 C2
+                                 C3
+    ;
+  UOX_Py_SS := GEO: UOX_Py ::
+  * Merging region #5 = Pyrex
+  MERGE 1  2  2  5  2  2  5  2  4
+           2  2  2  2  2  2  2  4
+              2  2  2  2  2  2  4
+                 5  2  2  5  2  4
+                    2  2  2  2  4
+                       5  2  2  4
+                          2  2  4
+                             2  4
+                                3 ;
+ENDIF ;
+*------------------------------------------------------
+* UOX Assembly with 'Black' Rods
+*  17 X 17 UOX 900MWe/1300MWe PWR assembly with AIC Control Rods
+*  contains  T  : TUBE_GUIDE
+*            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+*            C2 : CELLULE_COMBUSTIBLE_LATERALE
+*            C3 : CELLULE_COMBUSTIBLE_COIN
+*            T  : CELLULE_ABSORBANT_AIC
+*------------------------------------------------------
+UOX_BLACK := GEO: UOX ::
+CELL FC C1 C1 T  C1 C1 T  C1 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 C1 C1 C1 C2
+              T  C1 C1 T  C1 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       C1 C1 C2
+                          C1 C2
+                             C3
+::: T  := GEO: CARCEL 4
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RRod>> <<RRodClad>> <<RTubeIn>> <<RTubeEx>>
+  MIX    21 31 13 20 14 ;
+;
+
+UOX_BLACK_SS := GEO: UOX_BLACK ::
+* Merging region #5 = AIC
+MERGE 1  2  2  5  2  2  5  2  4
+         2  2  2  2  2  2  2  4
+            2  2  2  2  2  2  4
+               5  2  2  5  2  4
+                  2  2  2  2  4
+                     5  2  2  4
+                        2  2  4
+                           2  4
+                              3 ;
+*------------------------------------------------------
+* UOX Assembly with 'Gray' Rods
+*  17 X 17 UOX 900MWe/1300MWe PWR assembly with AIC+Steel Control Rods
+*  contains  T  : TUBE_GUIDE
+*            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+*            C2 : CELLULE_COMBUSTIBLE_LATERALE
+*            C3 : CELLULE_COMBUSTIBLE_COIN
+*            R  : CELLULE_ABSORBANT_AIC
+*            S  : CELLULE_ABSORBANT_ACIER
+*------------------------------------------------------
+IF Gestion "ALCA" = THEN
+* Les positions des barres sont differentes par rapport aux 900/1300.
+* Les nouvelles positions sont coherentes par rapport a APOLLO2.
+ UOX_GRAY := GEO: UOX_BLACK ::
+ CELL FC C1 C1 T  C1 C1 S  C1 C2
+         C1 C1 C1 C1 C1 C1 C1 C2
+            C1 C1 C1 C1 C1 C1 C2
+               S  C1 C1 T  C1 C2
+                  C1 C1 C1 C1 C2
+                     S  C1 C1 C2
+                        C1 C1 C2
+                           C1 C2
+                              C3
+ ::: S  := GEO: T
+   RADIUS 0. <<RSteel>> <<RRodClad>> <<RTubeIn>> <<RTubeEx>>
+   MIX  22  32  13  20  14 ;
+ ;
+
+ UOX_GRAY_SS := GEO: UOX_GRAY ::
+ * Merging region #5 = AIC
+ *                #6 = Steel
+ MERGE 1  2  2  5  2  2  6  2  4
+          2  2  2  2  2  2  2  4
+             2  2  2  2  2  2  4
+                6  2  2  5  2  4
+                   2  2  2  2  4
+                      6  2  2  4
+                         2  2  4
+                            2  4
+                               3 ;
+ELSE
+ UOX_GRAY := GEO: UOX_BLACK ::
+ CELL FC C1 C1 S  C1 C1 T  C1 C2
+         C1 C1 C1 C1 C1 C1 C1 C2
+            C1 C1 C1 C1 C1 C1 C2
+               S  C1 C1 S  C1 C2
+                  C1 C1 C1 C1 C2
+                     T  C1 C1 C2
+                        C1 C1 C2
+                           C1 C2
+                              C3
+
+ ::: S  := GEO: T
+   RADIUS 0. <<RSteel>> <<RRodClad>> <<RTubeIn>> <<RTubeEx>>
+   MIX  22  32  13  20  14 ;
+ ;
+
+ UOX_GRAY_SS := GEO: UOX_GRAY ::
+ * Merging region #5 = AIC
+ *                #6 = Steel
+ MERGE 1  2  2  6  2  2  5  2  4
+          2  2  2  2  2  2  2  4
+             2  2  2  2  2  2  4
+                6  2  2  6  2  4
+                   2  2  2  2  4
+                      5  2  2  4
+                         2  2  4
+                            2  4
+                               3 ;
+ENDIF ;
+*------------------------------------------------------
+* UOX Assembly with B4C Rods
+*  17 X 17 UOX 1300MWe only PWR assembly with B4C Control Rods
+*  contains  T  : TUBE_GUIDE
+*            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+*            C2 : CELLULE_COMBUSTIBLE_LATERALE
+*            C3 : CELLULE_COMBUSTIBLE_COIN
+*            B  : CELLULE_ABSORBANT_B4C
+*------------------------------------------------------
+UOX_B4C := GEO: UOX ::
+CELL FC C1 C1 T  C1 C1 T  C1 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 C1 C1 C1 C2
+              T  C1 C1 T  C1 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       C1 C1 C2
+                          C1 C2
+                             C3
+::: T  := GEO: CARCEL 4
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RRodB4C>> <<RRodClad>> <<RTubeIn>> <<RTubeEx>>
+  MIX  23  33  13 20 14 ;
+;
+
+UOX_B4C_SS := GEO: UOX_B4C ::
+* Merging region #5 = B4C
+MERGE 1  2  2  5  2  2  5  2  4
+         2  2  2  2  2  2  2  4
+            2  2  2  2  2  2  4
+               5  2  2  5  2  4
+                  2  2  2  2  4
+                     5  2  2  4
+                        2  2  4
+                           2  4
+                              3 ;
+*------------------------------------------------------
+* MOX Assembly
+*  17 X 17 MOX 900MWe PWR assembly without Rods
+*  contains  T  : TUBE_GUIDE
+*            C1 : CELLULE_COMBUSTIBLE_CENTRALE (HIGH PU)
+*            C2 : CELLULE_COMBUSTIBLE_LATERALE (AVG PU)
+*            C3 : CELLULE_COMBUSTIBLE_COIN     (LOW PU)
+*            C4 : CELLULE_COMBUSTIBLE_CENTRALE (AVG PU)
+*            C5 : CELLULE_COMBUSTIBLE_LATERALE (LOW PU)
+*------------------------------------------------------
+MOX := GEO: GeoTemplate ::
+CELL FC C1 C1 T  C1 C1 T  C4 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 C1 C1 C1 C2
+              T  C1 C1 T  C4 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       C1 C1 C2
+                          C4 C5
+                             C3
+::: C1 := GEO: C1  MIX  130  131  132  133  30  10 ;
+::: C2 := GEO: C2  MIX  120  121  122  123  30  11 ;
+::: C3 := GEO: C3  MIX  110  111  112  113  30  12 ;
+::: C4 := GEO: C1  MIX  120  121  122  123  30  10 ;
+::: C5 := GEO: C2  MIX  110  111  112  113  30  11 ;
+;
+
+MOX_SS := GEO: MOX ::
+MERGE 7  5  5  1  5  5  1  4  3
+         5  5  5  5  5  5  5  3
+            5  5  5  5  5  5  3
+               1  5  5  1  4  3
+                  5  5  5  5  3
+                     1  5  5  3
+                        5  5  3
+                           4  6
+                              2 ;
+*------------------------------------------------------
+* MOX Assembly with 'Black' rods
+*  17 X 17 MOX 900MWe/1300MWe PWR assembly with AIC Control Rods
+*  contains  T  : TUBE_GUIDE
+*            C1 : CELLULE_COMBUSTIBLE_CENTRALE (HIGH PU)
+*            C2 : CELLULE_COMBUSTIBLE_LATERALE (AVG PU)
+*            C3 : CELLULE_COMBUSTIBLE_COIN     (LOW PU)
+*            C4 : CELLULE_COMBUSTIBLE_CENTRALE (AVG PU)
+*            C5 : CELLULE_COMBUSTIBLE_LATERALE (LOW PU)
+*            T  : CELLULE_ABSORBANT_AIC
+*------------------------------------------------------
+MOX_BLACK := GEO: MOX ::
+CELL FC C1 C1 T  C1 C1 T  C4 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 C1 C1 C1 C2
+              T  C1 C1 T  C4 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       C1 C1 C2
+                          C4 C5
+                             C3
+::: T  := GEO: CARCEL 4
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RRod>> <<RRodClad>> <<RTubeIn>> <<RTubeEx>>
+  MIX  21  31  13 20 14 ;
+;
+
+MOX_BLACK_SS := GEO: MOX_BLACK ::
+* Merging region #7 = AIC
+MERGE 1  5  5  7  5  5  7  4  3
+         5  5  5  5  5  5  5  3 
+            5  5  5  5  5  5  3
+               7  5  5  7  4  3
+                  5  5  5  5  3
+                     7  5  5  3
+                        5  5  3
+                           4  6
+                              2 ;
+*------------------------------------------------------
+* MOX Assembly with 'Gray' rods
+*  17 X 17 MOX 900MWe/1300MWe PWR assembly with AIC+Steel Control Rods
+*  contains  FC : CHAMBRE A FISSION
+*            C1 : CELLULE_COMBUSTIBLE_CENTRALE (HIGH PU)
+*            C2 : CELLULE_COMBUSTIBLE_LATERALE (AVG PU)
+*            C3 : CELLULE_COMBUSTIBLE_COIN     (LOW PU)
+*            C4 : CELLULE_COMBUSTIBLE_CENTRALE (AVG PU)
+*            C5 : CELLULE_COMBUSTIBLE_LATERALE (LOW PU)
+*            T  : CELLULE_ABSORBANT_AIC
+*            S  : CELLULE_ABSORBANT_ACIER
+*------------------------------------------------------
+MOX_GRAY := GEO: MOX_BLACK ::
+CELL FC C1 C1 S  C1 C1 T  C4 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 C1 C1 C1 C2
+              S  C1 C1 S  C4 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       C1 C1 C2
+                          C4 C5
+                             C3
+::: S  := GEO: T
+  RADIUS 0. <<RSteel>> <<RRodClad>> <<RTubeIn>> <<RTubeEx>>
+  MIX  22  32  13 20 14 ;
+;
+
+MOX_GRAY_SS := GEO: MOX_GRAY ::
+* Merging region #7 = AIC
+*                #8 = Steel
+MERGE 1  5  5  8  5  5  7  4  3
+         5  5  5  5  5  5  5  3
+            5  5  5  5  5  5  3
+               8  5  5  8  4  3
+                  5  5  5  5  3
+                     7  5  5  3
+                        5  5  3
+                           4  6
+                              2 ;
+*------------------------------------------------------
+* MOX Assembly with B4C rods
+*  17 X 17 MOX 1300MWe PWR assembly with B4C Control Rods
+*  contains  FC : CHAMBRE FISSION
+*            C1 : CELLULE_COMBUSTIBLE_CENTRALE (HIGH PU)
+*            C2 : CELLULE_COMBUSTIBLE_LATERALE (AVG PU)
+*            C3 : CELLULE_COMBUSTIBLE_COIN     (LOW PU)
+*            C4 : CELLULE_COMBUSTIBLE_CENTRALE (AVG PU)
+*            C5 : CELLULE_COMBUSTIBLE_LATERALE (LOW PU)
+*            T  : CELLULE_ABSORBANT_B4C
+*------------------------------------------------------
+MOX_B4C := GEO: MOX ::
+CELL FC C1 C1 T  C1 C1 T  C4 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 C1 C1 C1 C2
+              T  C1 C1 T  C4 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       C1 C1 C2
+                          C4 C5
+                             C3
+::: T  := GEO: CARCEL 4
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RRodB4C>> <<RRodClad>> <<RTubeIn>> <<RTubeEx>>
+  MIX  23  33  13 20 14 ;
+;
+
+MOX_B4C_SS := GEO: MOX_B4C ::
+* Merging region #7 = B4C
+MERGE 1  5  5  7  5  5  7  4  3
+         5  5  5  5  5  5  5  3
+            5  5  5  5  5  5  3
+               7  5  5  7  4  3
+                  5  5  5  5  3
+                     7  5  5  3
+                        5  5  3
+                           4  6
+                              2 ;
+*------------------------------------------------------
+* UGd Assembly (see GeoTempGado)
+*  17 X 17 UOX+Gd 900MWe/1300MWe PWR assembly without Rods
+*  contains  T  : TUBE_GUIDE
+*            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+*            C2 : CELLULE_COMBUSTIBLE_LATERALE
+*            C3 : CELLULE_COMBUSTIBLE_COIN
+*            G  : CELLULE_COMBUSTIBLE_CENTRALE (GADO)
+*------------------------------------------------------
+UGD := GeoTempGado ;
+IF AssType "UGd" = THEN
+UGD_SS := GEO: UGD ::
+MERGE 7  2  2  1  2  2  1  2  4
+         2  2  2  2  2  2  2  4
+            2  2  2  6  2  2  4
+               1  2  2  1  2  4
+                  2  2  2  2  4
+                     1  2  2  4
+                        5  2  4
+                           2  4
+                              3 ;
+ELSEIF AssType "UGd8" = THEN
+UGD_SS := GEO: UGD ::
+MERGE 6  2  2  1  2  2  1  2  4
+         2  2  2  2  2  2  2  4
+            2  2  5  2  2  2  4
+               1  2  2  1  2  4
+                  2  2  2  2  4
+                     1  2  2  4
+                        2  2  4
+                           2  4
+                              3 ;
+ENDIF ;
+*------------------------------------------------------
+* UGd Assembly with 'Black' rods
+*  17 X 17 UOX+Gd 900MWe/1300MWe PWR assembly with AIC Control Rods
+*  contains  FC : CHAMBRE FISSION
+*            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+*            C2 : CELLULE_COMBUSTIBLE_LATERALE
+*            C3 : CELLULE_COMBUSTIBLE_COIN
+*            G  : CELLULE_COMBUSTIBLE_CENTRALE (GADO)
+*            T  : CELLULE_ABSORBANT_AIC
+*------------------------------------------------------
+UGD_BLACK := GEO: UGD ::
+CELL FC C1 C1 T  C1 C1 T  C1 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 G  C1 C1 C2
+              T  C1 C1 T  C1 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       G  C1 C2
+                          C1 C2
+                             C3
+::: T  := GEO: CARCEL 4
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RRod>> <<RRodClad>> <<RTubeIn>> <<RTubeEx>>
+  MIX  21  31  13 20 14 ;
+;
+
+UGD_BLACK_SS := GEO: UGD_BLACK ::
+* Merge Region #7 = AIC
+MERGE 1  2  2  7  2  2  7  2  4
+         2  2  2  2  2  2  2  4
+            2  2  2  6  2  2  4
+               7  2  2  7  2  4
+                  2  2  2  2  4
+                     7  2  2  4
+                        5  2  4
+                           2  4
+                              3 ;
+*------------------------------------------------------
+* UGd Assembly with 'Gray' rods
+*  17 X 17 UOX+Gd 900MWe/1300MWe PWR assembly with AIC+Steel Control Rods
+*  contains  FC : CHAMBRE FISSION
+*            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+*            C2 : CELLULE_COMBUSTIBLE_LATERALE
+*            C3 : CELLULE_COMBUSTIBLE_COIN
+*            G  : CELLULE_COMBUSTIBLE_CENTRALE (GADO)
+*            T  : CELLULE_ABSORBANT_AIC
+*            S  : CELLULE_ABSORBANT_ACIER
+*------------------------------------------------------
+IF Gestion "ALCA" = THEN
+ UGD_GRAY := GEO: UGD_BLACK ::
+ CELL FC C1 C1 T  C1 C1 S  C1 C2
+         C1 C1 C1 C1 C1 C1 C1 C2
+            C1 C1 C1 G  C1 C1 C2
+               S  C1 C1 T  C1 C2
+                  C1 C1 C1 C1 C2
+                     S  C1 C1 C2
+                        G  C1 C2
+                           C1 C2
+                              C3
+ ::: S  := GEO: T
+   RADIUS 0. <<RSteel>> <<RRodClad>> <<RTubeIn>> <<RTubeEx>>
+   MIX  22  32  13 20 14 ;
+ ;
+
+ UGD_GRAY_SS := GEO: UGD_GRAY ::
+ * Merge Region #7 = AIC
+ *              #8 = Steel
+ MERGE 1  2  2  7  2  2  8  2  4
+          2  2  2  2  2  2  2  4
+             2  2  2  6  2  2  4
+                8  2  2  7  2  4
+                   2  2  2  2  4
+                      8  2  2  4
+                         5  2  4
+                            2  4
+                               3 ;
+ELSE
+ UGD_GRAY := GEO: UGD_BLACK ::
+ CELL FC C1 C1 S  C1 C1 T  C1 C2
+         C1 C1 C1 C1 C1 C1 C1 C2
+            C1 C1 C1 G  C1 C1 C2
+               S  C1 C1 S  C1 C2
+                  C1 C1 C1 C1 C2
+                     T  C1 C1 C2
+                        G  C1 C2
+                           C1 C2
+                              C3
+ ::: S  := GEO: T
+   RADIUS 0. <<RSteel>> <<RRodClad>> <<RTubeIn>> <<RTubeEx>>
+   MIX  22  32  13 20 14 ;
+ ;
+
+ UGD_GRAY_SS := GEO: UGD_GRAY ::
+ * Merge Region #7 = AIC
+ *              #8 = Steel
+ MERGE 1  2  2  8  2  2  7  2  4
+          2  2  2  2  2  2  2  4
+             2  2  2  6  2  2  4
+                8  2  2  8  2  4
+                   2  2  2  2  4
+                      7  2  2  4
+                         5  2  4
+                            2  4
+                               3 ;
+ENDIF ;
+*------------------------------------------------------
+* UGd Assembly with B4C rods
+*  17 X 17 UOX+Gd 1300MWe PWR assembly with B4C Control Rods
+*  contains  FC : CHAMBRE FISSION
+*            C1 : CELLULE_COMBUSTIBLE_CENTRALE
+*            C2 : CELLULE_COMBUSTIBLE_LATERALE
+*            C3 : CELLULE_COMBUSTIBLE_COIN
+*            G  : CELLULE_COMBUSTIBLE_CENTRALE (GADO)
+*            T  : CELLULE_ABSORBANT_B4C
+*------------------------------------------------------
+UGD_B4C := GEO: UGD ::
+CELL FC C1 C1 T  C1 C1 T  C1 C2
+        C1 C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 G  C1 C1 C2
+              T  C1 C1 T  C1 C2
+                 C1 C1 C1 C1 C2
+                    T  C1 C1 C2
+                       G  C1 C2
+                          C1 C2
+                             C3
+::: T  := GEO: CARCEL 4
+  MESHX  0. <<Cote>>
+  MESHY  0. <<Cote>>
+  RADIUS 0. <<RRodB4C>> <<RRodClad>> <<RTubeIn>> <<RTubeEx>>
+  MIX  23  33  13 20 14 ;
+;
+
+UGD_B4C_SS := GEO: UGD_B4C ::
+* Merge Region #7 = B4C
+MERGE 1  2  2  7  2  2  7  2  4
+         2  2  2  2  2  2  2  4
+            2  2  2  6  2  2  4
+               7  2  2  7  2  4
+                  2  2  2  2  4
+                     7  2  2  4
+                        5  2  4
+                           2  4
+                              3 ;
+*------------------------------------------------------
+* Assembly Type
+*------------------------------------------------------
+
+IF ConfigPyrex "None" = NOT THEN
+  UOX UOX_SS := DELETE: UOX UOX_SS ;
+  UOX := UOX_Py ;
+  UOX_SS := UOX_Py_SS ;
+ENDIF ;
+IF AssType "UOX" = THEN
+  Evo    := UOX ;
+  AuEvo  := UOX_SS ;
+  AICN   := UOX_BLACK ;
+  AuAICN := UOX_BLACK_SS ;
+  AICG   := UOX_GRAY ;
+  AuAICG := UOX_GRAY_SS ;
+  B4C    := UOX_B4C ;
+  AuB4C  := UOX_B4C_SS ;
+ELSEIF AssType "MOX" = THEN
+  Evo    := MOX ;
+  AuEvo  := MOX_SS ;
+  AICN   := MOX_BLACK ;
+  AuAICN := MOX_BLACK_SS ;
+  AICG   := MOX_GRAY ;
+  AuAICG := MOX_GRAY_SS ;
+  B4C    := MOX_B4C ;
+  AuB4C  := MOX_B4C_SS ;
+ELSEIF AssType "UGd" = AssType "UGd8" = + THEN
+  Evo    := UGD ;
+  AuEvo  := UGD_SS ;
+  AICN   := UGD_BLACK ;
+  AuAICN := UGD_BLACK_SS ;
+  AICG   := UGD_GRAY ;
+  AuAICG := UGD_GRAY_SS ;
+  B4C    := UGD_B4C ;
+  AuB4C  := UGD_B4C_SS ;
+ELSE
+  ECHO "ERROR -- AssType:" AssType "Not recognized" ;
+  ABORT: ;
+ENDIF ;
+
+*------------------------------------------------------
+* Discretization settings
+*------------------------------------------------------
+
+! /////////////////////////////////////////////////////////////////////
+! /// BARR TYPE SELECTOR ///
+! /////////////////////////////////////////////////////////////////////
+IF BarType 1 = THEN ! 1 = Pas de BARR [nominal]
+  Discr    := SYBILT: Evo :: MAXZ <<imax>> MAXR <<imax>>
+                      QUA2 3 3 GAUSS DP01 ;
+
+  DiscrAu  := SYBILT: AuEvo :: MAXZ <<imax>> MAXR <<imax>>
+                      QUA2 3 3 GAUSS DP01 ;
+
+ELSEIF BarType 2 = THEN ! 2 = AICN
+  Discr   := SYBILT: AICN :: MAXZ <<imax>> MAXR <<imax>>
+                     QUA2 3 3 GAUSS DP01 ;
+
+  DiscrAu := SYBILT: AuAICN :: MAXZ <<imax>> MAXR <<imax>>
+                     QUA2 3 3 GAUSS DP01 ;
+ELSEIF BarType 3 = THEN ! 2 = AICG
+  Discr   := SYBILT: AICG :: MAXZ <<imax>> MAXR <<imax>>
+                     QUA2 3 3 GAUSS DP01 ;
+  DiscrAu := SYBILT: AuAICG :: MAXZ <<imax>> MAXR <<imax>>
+                     QUA2 3 3 GAUSS DP01 ;
+ELSEIF BarType 4 = THEN  ! 4 = PY (Pyrex)
+  Discr    := SYBILT: B4C :: MAXZ <<imax>> MAXR <<imax>>
+                      QUA2 3 3 GAUSS DP01 ;
+  DiscrAu  := SYBILT: AuB4C :: MAXZ <<imax>> MAXR <<imax>>
+                      QUA2 3 3 GAUSS DP01 ;
+ELSE
+  ECHO "Unknown BarType" ;
+  ABORT: ;
+ENDIF ;
+*------------------------------------------------------
+END: ;
+QUIT "LIST" .
+s

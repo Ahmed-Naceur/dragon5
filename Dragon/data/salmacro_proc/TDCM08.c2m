@@ -1,0 +1,82 @@
+*----
+* TEST CASE TDCM08
+* MACROSCOPIC CROSS SECTIONS
+* Linear Discontinuous Characteristics (LDC) with specular tracking
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  MACRO GEOM TRACK SYS FLUX ;
+SEQ_BINARY SEQTRK ;
+MODULE
+  GEO: G2S: SALT: MCCGT: MAC: ASM: FLU: DELETE: END: ;
+SEQ_ASCII Fil_SAL.tdt Fil_SAL.ps ;
+REAL densur := 50.0 ;
+INTEGER an2d := 12 ;
+PROCEDURE assertS ;
+*----
+* Macroscopic XS
+*----
+MACRO :=  MAC: ::
+  NGRO 1 NMIX 2 NIFI 1
+  READ INPUT
+  MIX 1 TOTAL  1.250  SCAT 1 1  1.242  
+        NUSIGF 0.37  CHI 1.0
+  MIX 2 TOTAL  0.625  SCAT 1 1  0.355
+  ;
+*----
+GEOM := GEO: :: CARCEL 1
+    X- REFL X+ REFL Y- REFL Y+ REFL
+    SECT 1 1
+    RADIUS 0.000 0.450
+    MIX 1  2 2 2 2
+    MESHX -0.625  0.625
+    MESHY -0.725  0.725 ;
+
+Fil_SAL.tdt Fil_SAL.ps := G2S: GEOM ;
+*----
+* LDC
+*----
+TRACK SEQTRK := SALT: Fil_SAL.tdt ::
+     EDIT 1
+     TSPC <<an2d>> <<densur>> REND
+;
+TRACK := MCCGT: TRACK SEQTRK GEOM ::
+  EDIT 2 LCMD 3
+  AAC 150 TMT SCR 0 EPSI 1E-4
+  MAXI 1 KRYL 0 HDD 0.0 LDC ;
+
+SYS := ASM: MACRO TRACK SEQTRK :: EDIT 1 ARM ;
+*---- 
+*  Solution : K-EFFECTIVE
+*  Editing  : Compute reference reaction rates
+*----
+FLUX := FLU: SYS MACRO TRACK SEQTRK ::
+  TYPE K
+  ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.8991836 ;
+TRACK SEQTRK SYS FLUX := DELETE: TRACK SEQTRK SYS FLUX ;
+*----
+* DD1
+*----
+TRACK SEQTRK := SALT: Fil_SAL.tdt ::
+     EDIT 1
+     TSPC <<an2d>> <<densur>> REND
+;
+TRACK := MCCGT: TRACK SEQTRK GEOM ::
+  EDIT 2 LCMD 3
+  AAC 150 TMT SCR 0 EPSI 1E-4
+  MAXI 1 KRYL 0 HDD 1.0 LDC ;
+
+SYS := ASM: MACRO TRACK SEQTRK :: EDIT 1 ARM ;
+*---- 
+*  Solution : K-EFFECTIVE
+*  Editing  : Compute reference reaction rates
+*----
+FLUX := FLU: SYS MACRO TRACK SEQTRK ::
+  TYPE K
+  ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9020699 ;
+TRACK SEQTRK SYS FLUX := DELETE: TRACK SEQTRK SYS FLUX ;
+ECHO "test TDCM08 completed" ;
+END: ;

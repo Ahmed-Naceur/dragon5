@@ -1,0 +1,215 @@
+*DECK NSST
+      SUBROUTINE NSST(NENTRY,HENTRY,IENTRY,JENTRY,KENTRY)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Nodal expansion method (NEM) tracking operator.
+*
+*Copyright:
+* Copyright (C) 2020 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): A. Hebert
+*
+*Parameters: input/output
+* NENTRY  number of LCM objects or files used by the operator.
+* HENTRY  name of each LCM object or file:
+*         HENTRY(1): create or modification type(L_TRACK);
+*         HENTRY(2): read-only type(L_GEOM).
+* IENTRY  type of each LCM object or file:
+*         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
+*         =4 sequential ascii file.
+* JENTRY  access of each LCM object or file:
+*         =0 the LCM object or file is created;
+*         =1 the LCM object or file is open for modifications;
+*         =2 the LCM object or file is open in read-only mode.
+* KENTRY  LCM object address or file unit number.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      INTEGER NENTRY,IENTRY(NENTRY),JENTRY(NENTRY)
+      CHARACTER HENTRY(NENTRY)*12
+      TYPE(C_PTR) KENTRY(NENTRY)
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER (NSTATE=40)
+      CHARACTER TEXT4*4,TEXT12*12,TITLE*72,HSIGN*12
+      DOUBLE PRECISION DFLOTT
+      LOGICAL CYLIND
+      INTEGER ISTATE(NSTATE),NCODE(6),ICODE(6)
+      REAL YYY(2),ZZZ(2),ZCODE(6)
+      TYPE(C_PTR) IPGEO,IPTRK
+*----
+*  ALLOCATABLE ARRAYS
+*----
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: MAT,IDL
+      INTEGER, ALLOCATABLE, DIMENSION(:,:) :: KN,IQFR
+      REAL, ALLOCATABLE, DIMENSION(:) :: XXX,XX,YY,ZZ,DD,VOL
+      REAL, ALLOCATABLE, DIMENSION(:,:) :: QFR
+*----
+*  PARAMETER VALIDATION.
+*----
+      IF(NENTRY.NE.2) CALL XABORT('NSST: TWO PARAMETERS EXPECTED.')
+      IF((IENTRY(1).NE.1).AND.(IENTRY(1).NE.2)) CALL XABORT('NSST: L'
+     1 //'CM OBJECT EXPECTED AT LHS.')
+      IF((JENTRY(1).NE.0).AND.(JENTRY(1).NE.1)) CALL XABORT('NSST: E'
+     1 //'NTRY IN CREATE OR MODIFICATION MODE EXPECTED.')
+      IF((JENTRY(2).NE.2).OR.((IENTRY(2).NE.1).AND.(IENTRY(2).NE.2)))
+     1 CALL XABORT('NSST: LCM OBJECT IN READ-ONLY MODE EXPECTED AT R'
+     2 //'HS.')
+      CALL LCMGTC(KENTRY(2),'SIGNATURE',12,1,HSIGN)
+      IF(HSIGN.NE.'L_GEOM') THEN
+         TEXT12=HENTRY(2)
+         CALL XABORT('NSST: SIGNATURE OF '//TEXT12//' IS '//HSIGN//
+     1   '. L_GEOM EXPECTED.')
+      ENDIF
+      IPTRK=KENTRY(1)
+      IPGEO=KENTRY(2)
+      HSIGN='L_TRACK'
+      CALL LCMPTC(IPTRK,'SIGNATURE',12,1,HSIGN)
+      HSIGN='TRIVAC'
+      CALL LCMPTC(IPTRK,'TRACK-TYPE',12,1,HSIGN)
+      CALL LCMGET(IPGEO,'STATE-VECTOR',ISTATE)
+      IF(ISTATE(1).NE.2) CALL XABORT('NSST: 1D SLAB GEOMETRY EXPECTED.')
+      LX1=ISTATE(3)
+      CALL LCMLEN(IPGEO,'BIHET',ILONG,ITYLCM)
+      IF(ILONG.NE.0) CALL XABORT('NSST: DOUBLE-HETEROGENEITY NOT SUP'
+     1 //'PORTED.')
+*
+      IMPX=1
+      TITLE=' '
+      IGMAX=0
+      IF(JENTRY(1).EQ.1) THEN
+         CALL LCMGTC(IPTRK,'SIGNATURE',12,1,HSIGN)
+         IF(HSIGN.NE.'L_TRACK') THEN
+            TEXT12=HENTRY(1)
+            CALL XABORT('NSST: SIGNATURE OF '//TEXT12//' IS '//HSIGN//
+     1      '. L_TRACK EXPECTED.')
+         ENDIF
+         CALL LCMGTC(IPTRK,'TRACK-TYPE',12,1,HSIGN)
+         IF(HSIGN.NE.'TRIVAC') THEN
+            TEXT12=HENTRY(3)
+            CALL XABORT('NSST: TRACK-TYPE OF '//TEXT12//' IS '//HSIGN
+     1      //'. TRIVAC EXPECTED.')
+         ENDIF
+         CALL LCMGET(IPTRK,'STATE-VECTOR',ISTATE)
+         IGMAX=ISTATE(39)
+         CALL LCMLEN(IPTRK,'TITLE',LENGT,ITYLCM)
+         IF(LENGT.GT.0) CALL LCMGTC(IPTRK,'TITLE',72,1,TITLE)
+      ENDIF
+   10 CALL REDGET(INDIC,NITMA,FLOTT,TEXT4,DFLOTT)
+      IF(INDIC.EQ.10) GO TO 30
+      IF(INDIC.NE.3) CALL XABORT('NSST: CHARACTER DATA EXPECTED.')
+      IF(TEXT4.EQ.'EDIT') THEN
+         CALL REDGET(INDIC,IMPX,FLOTT,TEXT4,DFLOTT)
+         IF(INDIC.NE.1) CALL XABORT('NSST: INTEGER DATA EXPECTED(1).')
+      ELSE IF(TEXT4.EQ.'TITL') THEN
+         CALL REDGET(INDIC,NITMA,FLOTT,TITLE,DFLOTT)
+         IF(INDIC.NE.3) CALL XABORT('NSST: TITLE EXPECTED.')
+      ELSE IF(TEXT4.EQ.'HYPE') THEN
+        CALL REDGET(INDIC,IGMAX,FLOTT,TEXT4,DFLOTT)
+        IF(INDIC.NE.1) CALL XABORT('NSST: INTEGER DATA EXPECTED(1).')
+      ELSE IF(TEXT4.EQ.';') THEN
+         GO TO 30
+      ELSE
+         CALL XABORT('NSST: '//TEXT4//' IS AN INVALID KEYWORD.')
+      ENDIF
+      GO TO 10
+*----
+*  SCRATCH STORAGE ALLOCATION
+*----
+   30 ALLOCATE(XXX(LX1+1),MAT(LX1),IDL(LX1),VOL(LX1),XX(LX1),YY(LX1),
+     1 ZZ(LX1),DD(LX1),KN(6,LX1),QFR(6,LX1),IQFR(6,LX1))
+*----
+*  RECOVER TRACKING INFORMATION
+*----
+      CALL LCMGET(IPGEO,'NCODE',NCODE)
+      CALL LCMGET(IPGEO,'ICODE',ICODE)
+      CALL LCMGET(IPGEO,'ZCODE',ZCODE)
+      CALL LCMGET(IPGEO,'MESHX',XXX)
+      CALL LCMGET(IPGEO,'MIX',MAT)
+*     1D GEOMETRY
+      LY=1
+      NCODE(3)=2
+      NCODE(4)=5
+      ZCODE(3)=1.0
+      ZCODE(4)=1.0
+      YYY(1)=0.0
+      YYY(2)=2.0
+*     1D OR 2D GEOMETRY
+      LZ=1
+      NCODE(5)=2
+      NCODE(6)=5
+      ZCODE(5)=1.0
+      ZCODE(6)=1.0
+      ZZZ(1)=0.0
+      ZZZ(2)=2.0
+*----
+*  SET TRACKING INFORMATION
+*----
+      CYLIND=.FALSE.
+      CALL TRIDFC(IMPX,LX1,LY,LZ,CYLIND,NCODE,ICODE,ZCODE,MAT,XXX,
+     1 YYY,ZZZ,LL0,VOL,XX,YY,ZZ,DD,KN,QFR,IQFR)
+      DO KEL=1,LX1
+        IDL(KEL)=(KEL-1)*5+1
+      ENDDO
+      ISTATE(:)=0
+      ISTATE(1)=LX1
+      ISTATE(2)=5*LX1
+      ISTATE(4)=MAXVAL(MAT(:LX1))
+      ISTATE(6)=2
+      ISTATE(12)=4 ! Nodal expansion method
+      ISTATE(14)=LX1
+      ISTATE(39)=IGMAX
+      CALL LCMPUT(IPTRK,'STATE-VECTOR',NSTATE,1,ISTATE)
+      CALL LCMPUT(IPTRK,'NCODE',6,1,NCODE)
+      CALL LCMPUT(IPTRK,'ZCODE',6,2,ZCODE)
+      CALL LCMPUT(IPTRK,'ICODE',6,1,ICODE)
+      CALL LCMPUT(IPTRK,'MATCOD',LX1,1,MAT)
+      CALL LCMPUT(IPTRK,'VOLUME',LX1,2,VOL)
+      CALL LCMPUT(IPTRK,'KEYFLX',LX1,1,IDL)
+      CALL LCMPUT(IPTRK,'XX',LX1,2,XX)
+      CALL LCMPUT(IPTRK,'KN',6*LX1,1,KN)
+      CALL LCMPUT(IPTRK,'QFR',6*LX1,2,QFR)
+      CALL LCMPUT(IPTRK,'IQFR',6*LX1,1,IQFR)
+      DEALLOCATE(DD,ZZ,YY,XXX)
+      IF(TITLE.NE.' ') CALL LCMPTC(IPTRK,'TITLE',72,1,TITLE)
+      TEXT12=HENTRY(2)
+      CALL LCMPTC(IPTRK,'LINK.GEOM',12,1,TEXT12)
+      IF(IMPX.GT.1) THEN
+         WRITE(6,100) TITLE
+         CALL LCMGET(IPTRK,'STATE-VECTOR',ISTATE)
+         WRITE(6,110) ISTATE(1:2),ISTATE(4),ISTATE(14:16),ISTATE(39)
+      ENDIF
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
+      DEALLOCATE(IQFR,QFR,KN,XX,VOL,IDL,MAT)
+      RETURN
+*
+  100 FORMAT(1H1,24HNN     NN  SSSSS   SSSSS,
+     1  97(1H*)/26H NNN    NN SSSSSSS SSSSSSS,
+     2 58(1H*),38H MULTIGROUP VERSION.  A. HEBERT (2021)/
+     3 26H NNNN   NN SS   SS SS   SS/26H NN NN  NN  SSS     SSS   /
+     4 26H NN  NN NN    SSS     SSS /26H NN   NNNN SS   SS SS   SS/
+     5 26H NN    NNN SSSSSSS SSSSSSS/26H NN     NN  SSSSS   SSSSS //
+     6 1X,A72//)
+  110 FORMAT(/14H STATE VECTOR:/
+     1 7H NREG  ,I8,22H   (NUMBER OF REGIONS)/
+     2 7H NUN   ,I8,23H   (NUMBER OF UNKNOWNS)/
+     3 7H NMIX  ,I8,23H   (NUMBER OF MIXTURES)/
+     4 7H LX    ,I8,40H   (NUMBER OF ELEMENTS ALONG THE X AXIS)/
+     5 7H LY    ,I8,40H   (NUMBER OF ELEMENTS ALONG THE Y AXIS)/
+     6 7H LZ    ,I8,40H   (NUMBER OF ELEMENTS ALONG THE Z AXIS)/
+     7 7H IGMAX ,I8,47H   (ENERGY GROUP LIMIT WITH HYPERBOLIC TRIAL FU,
+     8 8HNCTIONS))
+      END

@@ -1,0 +1,55 @@
+\def\fig(#1){\ref{fig:#1}}
+\def\eq(#1){Eq.~(\ref{eq:#1})}
+\def\bff(#1){\mbox{\boldmath $#1$}}
+\DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
+\DeclareMathSymbol{\shadowA}{\mathbin}{AMSb}{'101}
+\DeclareMathSymbol{\shadowB}{\mathbin}{AMSb}{'102}
+\DeclareMathSymbol{\shadowD}{\mathbin}{AMSb}{'104}
+\documentclass{report}
+%
+%  Black and white
+%
+\usepackage{IGNrapport,GuideBW}
+\usepackage{makeidx}
+\setlength{\textheight}{23.5cm}
+\topmargin -1.0cm
+
+\makeindex
+\begin{document}
+
+\title{A USER GUIDE FOR TRIVAC VERSION5}
+
+\author{A.~H\'ebert}
+
+\date{\today}
+
+\RapportIGN{IGE--369}
+
+\GuideVersion{5.00}
+                
+\input{Copyright}
+\input{Acknowledgments}
+\input{Summary.tex}
+
+\clearpage
+\phantomsection
+\tableofcontents
+\clearpage
+\phantomsection
+\listoffigures
+\clearpage
+\phantomsection
+\listoftables
+
+\Debutdutexte
+
+\input{Section1.tex}
+\input{Section2.tex}
+\clearpage
+\phantomsection
+\input{Bibliography.tex}
+\clearpage
+\phantomsection
+\printindex
+
+\end{document}

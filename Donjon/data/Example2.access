@@ -1,0 +1,10 @@
+#!/bin/sh
+if [ $# = 0 ]
+   then
+   echo "usage: Example2.access directory" 1>&2
+   exit 1
+fi
+ln -s "$1"/data/proc/P*.c2m .
+ln -s "$1"/data/compo/M* .
+ls
+echo "Example2 access script terminated"

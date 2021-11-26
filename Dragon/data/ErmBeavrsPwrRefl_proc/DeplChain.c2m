@@ -1,0 +1,26 @@
+*DECK DeplChain.c2m
+*======================================================
+* Name:   DeplChain.c2m
+* Type:   DRAGON procedure
+* Use:    Create depletion chain depending on library.
+* Author: G. Tixier  03.2017
+*         [CS-SI | IRSN/PSN-EXP/SNC/LNR]
+*------------------------------------------------------
+* Input Required:
+*  > Nmix (INT) Type transport correction (STR)
+*    Autoprotection (STR)
+* Output Provided:
+*  < Library
+*======================================================
+PARAMETER Library :: ::: LINKED_LIST Library ; ;
+MODULE    LIB: GREP: ABORT: UTL: END: ;
+
+INTEGER  Nmix ;
+STRING NuclData LibType LibGenre CTRA Autop ;
+:: >>Nmix<< >>NuclData<< >>LibType<< >>LibGenre<<
+   >>CTRA<< >>Autop<< ;
+
+Library := LIB: :: EDIT 10 ANIS 2 NMIX <<Nmix>> CTRA <<CTRA>>
+  <<Autop>>
+  DEPL LIB: <<LibGenre>> FIL: <<NuclData>>
+;

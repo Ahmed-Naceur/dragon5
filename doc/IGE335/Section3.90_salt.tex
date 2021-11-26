@@ -1,0 +1,192 @@
+\subsection{The {\tt {\tt SALT:}} tracking module}\label{sect:SALTData1}
+
+The \moc{{\tt SALT:}} module can process general 2-D 
+geometries. It is used to compute the tracking information requested in
+the method of collision probabilities or in the method of characteristics.
+
+\vskip 0.2cm
+
+The calling specification for this module is:
+\begin{DataStructure}{Structure \dstr{SALT:}}
+\dusa{TRKNAM} \dusa{TRKFIL}
+\moc{:=} \moc{SALT:}~\dusa{SURFIL} $[$ \dusa{GEONAM} $]$ \moc{::} \dstr{desctrack} \dstr{descsalt}
+\end{DataStructure}
+
+\noindent  where
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\dusa{TRKNAM}] \texttt{character*12} name of the SALT \dds{tracking} data
+structure that will contain region volume and surface area vectors in
+addition to region identification pointers and other tracking information.
+
+\item[\dusa{TRKFIL}] \texttt{character*12} name of the sequential binary tracking
+file used to store the tracks lengths.
+
+\item[\dusa{SURFIL}] \texttt{character*12} name of the sequential {\sc ascii}
+file used to store the surfacic elements of the geometry. This file may be build
+using the operator {\tt G2S:} (see \Sect{G2SData}) or recovered from SALOME.
+
+\item[\dusa{GEONAM}] {\tt character*12} name of the \dds{geometry} data
+structure containing the double heterogeneity (Bihet) data.
+
+\item[\dstr{desctrack}] structure describing the general tracking data (see
+\Sect{TRKData})
+
+\item[\dstr{descsalt}] structure describing the transport tracking data
+specific to \moc{SALT:}.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+
+All information for the modelization used can be found in \citen{salt}.
+The \moc{{\tt SALT:}} specific tracking data in \dstr{descsalt} is defined as :
+
+\begin{DataStructure}{Structure \dstr{descsalt}}
+$[$ \moc{ANIS} \dusa{nanis} $]$ \\
+$[~\{$  \moc{ONEG} $|$ \moc{ALLG} $\}~]$ \\
+$[~[$ \moc{QUAB} \dusa{iquab} $]~[~\{$ \moc{SAPO} $|$ \moc{HEBE} $|$ \moc{SLSI} $[$ \dusa{frtm} $]~\}~]~]$ \\
+$[~\{$ \moc{PISO} $|$ \moc{PSPC} $[$ \moc{CUT} \dusa{pcut} $]$ $\}~]$ \\
+$[$ $\{$ \moc{GAUS}  $|$ \moc{CACA} $|$ \moc{CACB} $|$ \moc{LCMD} $|$ \moc{OPP1} $|$ \moc{OGAU} $\}~[$ \dusa{nmu} $]~]$ \\
+$\{$ \moc{TISO} $[~\{$ \moc{EQW} $|$ \moc{GAUS} $|$ \moc{PNTN} $|$ \moc{SMS} $|$ \moc{LSN} $|$ \moc{QRN} $\}~]$ \dusa{nangl} \dusa{dens} \\
+$~~~~~|$ \moc{TSPC} $[~\{$ \moc{MEDI} $|$ \moc{EQW2} $\}~]$ \dusa{nangl} \dusa{dens} $\}$ \\
+$[$ \moc{CORN} \dusa{pcorn} $]$ \\
+$[$ \moc{NOTR} $]$\\
+$[$ \moc{NBSLIN} \dusa{nbslin} $]$ \\
+$[$ \moc{LONG} $]$\\
+{\tt ;}
+\end{DataStructure}
+
+\noindent
+where
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{ANIS}] keyword to specify the order of scattering anisotropy. 
+
+\item[\dusa{nanis}] order of anisotropy in transport calculation.
+A default value of 1 represents isotropic (or transport-corrected) scattering while a value of 2
+correspond to linearly anisotropic scattering.
+
+\item[\moc{ONEG}] keyword to specify that the tracking is read before computing each group-dependent collision
+probability or algebraic collapsing matrix (default value if \dusa{TRKFIL} is set). The tracking file is
+read in each energy group if the method of characteristics (MOC) is used.
+
+\item[\moc{ALLG}] keyword to specify that the tracking is read once and the collision
+probability or algebraic collapsing matrices are computed in many energy groups.  The tracking file is
+read once if the method of characteristics (MOC) is used.
+ 
+\item[\moc{QUAB}] keyword to specify the number of basis point for the
+numerical integration of each micro-structure in cases involving double
+heterogeneity (Bihet).
+
+\item[\dusa{iquab}] the number of basis point for the numerical integration of
+the collision probabilities in the micro-volumes using the Gauss-Jacobi
+formula. The values permitted are: 1 to 20, 24, 28, 32 or 64. The default value
+is \dusa{iquab} = 5.
+
+\item[\moc{SAPO}] use the Sanchez-Pomraning double-heterogeneity model.\cite{sapo}
+
+\item[\moc{HEBE}] use the Hebert double-heterogeneity model (default option).\cite{BIHET}
+
+\item[\moc{SLSI}] use the She-Liu-Shi double-heterogeneity model without shadow effect.\cite{She2017}
+
+\item[\dusa{frtm}] the minimum microstructure volume fraction used to compute the size of the equivalent cylinder in She-Liu-Shi approach. The default value is \dusa{frtm} $=0.05$.
+
+\item[\moc{PISO}] keyword to specify that a collision probability calculation with isotropic reflection boundary 
+conditions is required. It is the default option if a \moc{TISO} type integration is chosen. To obtain accurate
+transmission probabilities for the isotropic case it is recommended that the normalization 
+options in the \moc{ASM:} module be used. 
+
+\item[\moc{PSPC}] keyword to specify that a collision probability calculation with mirror like reflection or periodic 
+boundary conditions is required; this is the default option if a \moc{TSPC} type integration is chosen. 
+This calculation is only possible if the file was initially constructed using the \moc{TSPC} option. 
+
+\item[\moc{CUT}] keyword to specify the input of cutting parameters for the specular collision probability
+of characteristic integration. 
+
+\item[\dusa{pcut}] real value representing the maximum error allowed on the exponential function used
+for specular collision probability calculations. Tracks will be cut at a length such that the error in the 
+probabilities resulting from this reduced track will be of the order of pcut. By default, the tracks 
+are extended to infinity and \dusa{pcut} = 0.0. If this option is used in an entirely reflected case, it is 
+recommended to use the \moc{NORM} command in the \moc{ASM:} module. 
+
+\item[\moc{GAUS}] keyword to specify that Gauss-Legendre polar integration angles are to be selected for the polar quadrature when a prismatic tracking is considered. The conservation is ensured up to $P_{\dusa{nmu}-1}$ scattering.
+
+\item[\moc{CACA}] keyword to specify that CACTUS type equal weight polar integration angles are to be
+selected for the polar quadrature when a prismatic tracking is considered.\cite{CACTUS} The conservation is ensured only for isotropic scattering.
+
+\item[\moc{CACB}] keyword to specify that CACTUS type uniformly distributed integration polar angles
+are to be selected for the polar quadrature when a prismatic tracking is considered.\cite{CACTUS} The conservation is ensured only for isotropic scattering.
+
+\item[\moc{LCMD}] keyword to specify that optimized (McDaniel--type) polar integration angles are to be
+selected for the polar quadrature when a prismatic tracking is considered.\cite{LCMD} This is the default option. The conservation is ensured only for isotropic scattering.
+
+\item[\moc{OPP1}] keyword to specify that $P_1$ constrained optimized (McDaniel--type) polar integration angles are to be selected for the polar quadrature when a prismatic tracking is considered.\cite{LeTellierpa} The conservation is ensured only for isotropic and linearly anisotropic scattering.
+
+\item[\moc{OGAU}] keyword to specify that Optimized Gauss polar integration angles are to be
+selected for the method of characteristics.\cite{LCMD,LeTellierpa} The conservation is ensured up to $P_{\dusa{nmu}-1}$ scattering.
+
+\item[\dusa{nmu}]  user-defined number of polar angles. By default, a value consistent with \dusa{nangl} is computed by the code. For \moc{LCMD}, \moc{OPP1}, \moc{OGAU} quadratures, \dusa{nmu} is limited to 2, 3 or 4.
+
+\item[\moc{TISO}] keyword to specify that isotropic tracking parameters will be supplied. This is the
+default tracking option for cluster geometries. 
+
+\item[\moc{TSPC}] keyword to specify that specular tracking parameters will be
+supplied.
+
+\item[\moc{EQW}] keyword to specify the use of equal weight quadrature.\cite{eqn} The conservation is ensured up to $P_{\dusa{nangl}/2}$ scattering.
+
+\item[\moc{GAUS}] (after \moc{TISO} keyword) keyword to specify the use of the Gauss-Legendre quadrature. This option is valid only if an 
+hexagonal geometry is considered.
+
+\item[\moc{PNTN}] keyword to specify that Legendre-Techbychev quadrature quadrature will be selected.\cite{pntn} The conservation is ensured only for isotropic and linearly anisotropic scattering.
+
+\item[\moc{SMS}] keyword to specify that Legendre-trapezoidal quadrature quadrature will be selected.\cite{sms} The conservation is ensured up to $P_{\dusa{nangl}-1}$ scattering.
+
+\item[\moc{LSN}] keyword to specify the use of the $\mu_1$--optimized level-symmetric quadrature. The conservation is ensured up to $P_{\dusa{nangl}/2}$ scattering.
+
+\item[\moc{QRN}] keyword to specify the use of the quadrupole range (QR) quadrature.\cite{quadrupole}
+
+\item[\moc{MEDI}] keyword to specify the use of a median angle quadrature in \moc{TSPC} cases. For
+a rectangular Cartesian domain of size $X \times Y$, the azimuthal angles in $(0,\pi/2)$ interval are obtained from formula
+$$
+\phi_k=\tan^{-1}{\displaystyle kY\over\displaystyle (2p+2-k)X} \, , \ \ k=1,\, 3,\, 5, \, \dots, \, 2p+1 .
+$$
+
+\item[\moc{EQW2}] keyword to specify the use of a standard cyclic quadrature without angles $\phi=0$ and $\phi=\pi/2$ in \moc{TSPC} cases. For
+a rectangular Cartesian domain of size $X \times Y$, the azimuthal angles in $(0,\pi/2)$ interval are obtained from formula
+$$
+\phi_k=\tan^{-1}{\displaystyle k Y\over\displaystyle (p+2-k)X} \, , \ \ k=1,\, 2,\, 3, \, \dots, \, p+1 .
+$$
+This is the default option.
+
+\item[\dusa{nangl}] angular quadrature parameter. For a 3-D \moc{EQW} option, the choices are \dusa{nangl} = 2, 4, 8, 10, 12, 14 
+or 16. For a 3-D \moc{PNTN} or \moc{SMS} option, \dusa{nangl} is an even number smaller than 46.\cite{ige260} For 2-D 
+isotropic applications, any value of \dusa{nangl} may be used, equidistant angles will be selected.
+
+For 2-D specular applications the input value must be of the form $p + 1$ where $p$ is a prime number, as proposed
+in Ref.~\citen{DragonPIJS3}. In this case, the choice of \dusa{nangl} = 8, 12, 14, 18, 20, 24, or 30 are allowed.
+
+\item[\dusa{dens}] real value representing the density of the integration lines (in cm$^{-1}$ for 2-D Cartesian cases.
+This choice of density along the plan perpendicular to each angle depends on the geometry of the cell to be analyzed. If there 
+are zones of very small volume, a high line density is essential. This value will be readjusted by 
+\moc{SALT:}.
+
+\item[\moc{CORN}] keyword to specify the meaningful distance (cm) between a tracking line and a surfacic element.
+
+\item[\dusa{pcorn}] meaningful distance (cm) between a tracking line and a surfacic element. By default, \dusa{pcorn} $=1.0 \times 10^{-5}$ cm.
+
+\item[\moc{NOTR}] keyword to specify that the geometry will not be tracked. This is useful for 2-D geometries 
+to generate a tracking data structure that can be used by the \moc{PSP:} module (see \Sect{PSPData}). 
+One can then verify visually if the geometry is adequate before the tracking process as such is 
+undertaken.
+
+\item[\moc{NBSLIN}] keyword to set the maximum number of segments in a single tracking line.
+
+\item[\dusa{nbsl}] integer value representing the maximum number of segments in a single tracking line. The default value is \dusa{nbsl} = 100000.
+
+\item[\moc{LONG}] keyword to specify that a ``long'' tracking file will be generated. This option is required if the tracking file is to be used by the \moc{TLM:} module (see \Sect{TLMData}).
+
+\end{ListeDeDescription}
+\clearpage

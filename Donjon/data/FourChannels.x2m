@@ -1,0 +1,250 @@
+******************************************************************
+!*                                                              **
+!* DONJON calculation for a simplified 4-channel test reactor   **
+!* used to develop CANDU capabilities in module THM:            **
+!*                                                              **
+!*****************************************************************
+!* R. Chambon (23/11/2007)                                      **
+!* M. Fassi Fehri (28/01/2007)                                  **
+!* A. Hebert (27/08/2018)                                       **
+!*****************************************************************
+MODULE GREP: CRE: DELETE: TAVG: FLPOW: MACINI: RESINI: FLUD:
+       GEO: USPLIT: TRIVAA: TRIVAT: THM: AFM: UTL: END: ;
+MODULE ABORT: ;
+
+SEQ_ASCII fnat rnat neutrodata thermodata macfme5 ;
+
+LINKED_LIST NFUEL NREFL GEOM INDEX MACRO DEVICE PROCEDE RESEAU
+            GEOM2 SYSTEM POWER MACRO2 MACRES FLUX TRACK THER DBASE ;
+
+!* AFM database
+!*******************************************
+DBASE := macfme5 ;
+UTL:  DBASE :: DIR ;
+
+!* Neutronics variables
+!*******************************************
+INTEGER Maxreg  ;
+REAL    B1     := 7500.0 ;
+REAL    Keff             ;
+INTEGER Iter Edit := 0 0 ;
+REAL    Precf := 1.0E-6 ;
+REAL    Pow := 2064.0 380.0 / 4.0 * ;
+REAL    Eps1 := 1.0 ;
+STRING  NamCpo1 NamCpo2 ;
+EVALUATE NamCpo1 := "FULBU7114WGT" ;
+EVALUATE NamCpo2 := "FULBU5135WGT" ;
+
+!* Thermalhydraulics variables
+!************************************************
+REAL theta rufc := 1.570796320E0 3.0E-7 ;
+REAL pout tinit tcini := 1.1205836E7 5.3552E2 6.0E2 ;
+REAL erra1 tmax ;
+LOGICAL CONV ;
+EVALUATE Maxreg := 27700 ; ! number of regions in the geometry
+
+!* Define the two-zone geometry
+!***************************************
+GEOM := GEO: :: CAR3D 4 4 12
+ EDIT 0
+ X- ZERO X+ ZERO
+ Y- ZERO Y+ ZERO
+ Z- ZERO Z+ ZERO
+ MIX
+  PLANE 1
+  2 2 2 2
+  2 1 1 2
+  2 1 1 2
+  2 2 2 2
+  PLANE 2  SAME 1
+  PLANE 3  SAME 1
+  PLANE 4  SAME 1
+  PLANE 5  SAME 1
+  PLANE 6  SAME 1
+  PLANE 7  SAME 1
+  PLANE 8  SAME 1
+  PLANE 9  SAME 1
+  PLANE 10 SAME 1
+  PLANE 11 SAME 1
+  PLANE 12 SAME 1
+MESHX 68.525 97.100 125.675 154.250 182.825
+MESHY 68.525 97.100 125.675 154.250 182.825
+MESHZ 3.940 53.470 103.000 152.530 202.060 251.590 301.120 350.650
+      400.180 449.710 499.240 548.770 598.30
+;
+
+!* Link material index and geometry:
+!****************************************
+GEOM2 INDEX := USPLIT: GEOM :: EDIT 0  NGRP 2
+              MAXR <<Maxreg>>
+              NREFL 1 RMIX 2
+              NFUEL 1 FMIX 1 ;
+
+!* Import compo files
+!****************************************
+ NFUEL := fnat ;
+ NREFL := rnat ;
+
+!* Macroscopic cross sections of the mixtures
+!*************************************************************
+ MACRO := CRE: NREFL  ::
+   EDIT 0  NMIX 2
+   READ
+     COMPO NREFL   MIX    2      'MIXTMOD    1'  ENDMIX
+ ;
+
+!* Create the fuelmap
+!**************************************
+ RESEAU INDEX := RESINI: INDEX ::
+   ::: GEO:  CAR3D 4 4 12
+  EDIT 9
+  X- VOID X+ VOID
+  Y- VOID Y+ VOID
+  Z- VOID Z+ VOID
+  MIX PLANE 1
+   0 0 0 0
+   0 1 1 0
+   0 1 1 0
+   0 0 0 0
+  PLANE 2  SAME 1
+  PLANE 3  SAME 1
+  PLANE 4  SAME 1
+  PLANE 5  SAME 1
+  PLANE 6  SAME 1
+  PLANE 7  SAME 1
+  PLANE 8  SAME 1
+  PLANE 9  SAME 1
+  PLANE 10 SAME 1
+  PLANE 11 SAME 1
+  PLANE 12 SAME 1
+MESHX 68.525 97.100 125.675 154.250 182.825
+MESHY 68.525 97.100 125.675 154.250 182.825
+MESHZ 3.940 53.470 103.000 152.530 202.060 251.590 301.120
+      350.650 400.180 449.710 499.240 548.770 598.30 ;
+NXNAME  '-' '1' '2' '-'
+NYNAME  '-' 'A' 'B' '-'
+NCOMB 1
+B-ZONE
+ 1 1
+ 1 1
+BTYPE TIMAV-BURN
+REF-SHIFT 8 
+TIMAV-BVAL <<B1>>
+ADD-PARAM PNAME 'T-FUEL' PARKEY 'TF' GLOBAL
+;
+
+!* Tracking
+!**************************************
+ TRACK := TRIVAT: GEOM2 ::
+     EDIT 0
+     TITLE 'G2 3D '
+     MAXR <<Maxreg>> MCFD 1 ;
+
+!* set global parameters:
+!********************
+RESEAU := RESINI: RESEAU :: EDIT 2
+  SET-PARAM 'T-FUEL' <<tcini>>
+;
+
+!* Coupling loop
+!********************
+INTEGER iterc := 1 ;
+REPEAT
+!* Iteration loop on axial flux shape
+!***************************************************
+ REPEAT
+   EVALUATE Iter := Iter 1 + ;
+
+!* Interpolate cross sections
+!***************************************************
+   MACRES := AFM: DBASE RESEAU  ::
+    MAP
+    INFOR SISSAOUI_ENDFB5_CANDU6_FEBRUARY_98
+    DNAME 2 <<NamCpo1>> <<NamCpo1>>
+    EDIT 0
+    REFT  1 <<NamCpo1>> 3 <<NamCpo1>> ;
+   MACRO2 INDEX := MACINI: INDEX MACRO MACRES ;
+
+!* Creatte finite-element matrices
+!***************************************************
+   SYSTEM := TRIVAA: MACRO2 TRACK :: EDIT 0 ;
+
+!* Compute the neutron flux
+!***********************************************
+   FLUX := FLUD: SYSTEM TRACK :: EDIT 1
+           ACCE 3 3  ADI 4  EXTE 1000 <<Precf>> ;
+!*--
+!* flux and power:
+!*--
+   POWER RESEAU := FLPOW: RESEAU FLUX TRACK INDEX MACRO2 ::
+         EDIT 1 PTOT <<Pow>> ;
+!*--
+!* core-average exit burnup:
+!*--
+   RESEAU := TAVG: RESEAU POWER :: EDIT 999 AX-SHAPE B-EXIT ;
+
+!* Recover exit variables
+!***************************************************
+   GREP: RESEAU :: GETVAL EPS-AX 1 >>Eps1<< ;
+   GREP: FLUX :: GETVAL K-EFFECTIVE 1 >>Keff<< ;
+   POWER MACRO2 MACRES SYSTEM FLUX := DELETE:
+   POWER MACRO2 MACRES SYSTEM FLUX ;
+
+UNTIL Eps1 0.001 <  Iter 10 = + ;
+
+!* Initialization of the thermalhydraulics calculation
+!************************************************************
+ IF iterc 2 < THEN
+  THER RESEAU := THM: RESEAU ::
+   EDIT 5
+   FLUID D2O
+   FPUISS 0.945
+   CRITFL 1.80E+6 (* W/m^2 *)
+   INLET <<pout>> (* Pa *) <<tinit>> (* K *) 
+   INLET-Q 1.3809E-2 (* m2 *) 96.7718 (* kg/s *)
+   CLUSTER 1.4885E-2 (* m *) 37
+   RADIUS 0.0056 0.00598 0.00654 0.0 (* m *)
+   RODMESH 15 20
+   F-RUG <<rufc>> THETA <<theta>>
+   HGAP 10.0E3 (* W/m2/K *)
+   SAHA
+  ;
+ ELSE
+
+!* Thermalhydraulics calculation
+!************************************************************
+ THER RESEAU := THM: THER RESEAU ::
+  EDIT 4
+ ;
+ ENDIF ;
+
+!* Convergence test
+!************************************************************
+ EVALUATE iterc := iterc 1 + ;
+ GREP: THER :: GETVAL 'ERROR-T-FUEL' 1  >>erra1<< ;
+ ECHO "error on fuel temperature at iteration" iterc "=" erra1 ;
+ EVALUATE CONV := erra1 1.0 < iterc 50 > + ;
+ ECHO "CONV =" CONV ;
+ ECHO "-------------------------------" ;
+UNTIL CONV ;
+ECHO "at convergence, iter=" iterc ;
+thermodata := THER ;
+neutrodata := RESEAU ;
+
+!* Non-regression test
+!************************************************************
+REAL REFVALUE := 1143.495 ;
+GREP: THER  :: MAXVAL 'MAX-T-FUEL' 1 >>tmax<< ;
+REAL DELTA := tmax REFVALUE - REFVALUE / ABS ;
+IF DELTA 1.0E-3 < THEN
+  ECHO "TEST SUCCESSFUL; DELTA=" DELTA ;
+ELSE
+  ECHO "------------" ;
+  ECHO "TEST FAILURE" ;
+  ECHO "------------" ;
+  ECHO "REFERENCE=" REFVALUE " CALCULATED=" tmax ;
+  ABORT: ;
+ENDIF ;
+ECHO "test FourChannels completed" ;
+END: ;
+QUIT .

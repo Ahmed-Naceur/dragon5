@@ -1,0 +1,852 @@
+*DECK GetTechData.c2m
+*======================================================
+* Name:   GetTechData.c2m
+* Type:   DRAGON procedure
+* Author: G. Drouard 03/2018
+*         [CS-SI | IRSN/PSN-EXP/SNC/LNR]
+*------------------------------------------------------
+* Use:
+*   -Gather technical data for the studied gestions :
+
+*   -return a set of data packed into LINKED_LIST according to
+*    the type of data required
+*------------------------------------------------------
+* Structure of Procedure Appeal :
+* TechData := GetTechData :: <<Gestion>> <<AssType>> <<Teneur_I>>
+*  <<ConfigPyrex>> <<DataType>> ;                      !<<<< Mod-GD 04/05/2018
+*
+* INPUT Required:
+*  > <<Gestion>> [STR] :
+*       -BEAVRS        called as   "BEAV"
+*       -TIHANGE       called as   "TIH"
+*  > <<AssType>> [STR] :
+*       -UOX Assembly  called as   "UOX"
+*       -UGd Assembly  called as   "UGd"
+*       -MOX Assembly  called as   "MOX"
+*  > <<Teneur_I>> [INT] :
+*       -Main enrich given in the name of assembly : TIH_UOX_310
+*       -Given in [WIthout Unit x 100 x 100] 400 => 4% => 0.04 [WU]
+*  > <<ConfigPyrex>> [INT] :
+*       - ConfigPyrex of the Assembly
+*       - struct : PyXX
+*  > <<DataType>> [STR] :
+*       -Type of Data the users wants to get
+*       -DataTypes Available:
+*         -Average Depletion Parameters as "DEPLPARAM" (*)
+*         -List of Rod Types            as "RODLIST" :
+*         -General Information          as "GENERAL"
+*         -Temperatures data            as "TEMPERATURES"
+*         -Enrichments/composition      as "COMPOSITIONS"
+*         -Distances                    as "DISTANCES"
+*         -Densities                    as "DENSITIES"
+*         -Data for Grid Dilution       as "GRIDDILUTION"
+*
+* DUMMY VALUES (If INPUT values does not matter / is not known ):
+*    - <<Teneur_I>> [INT] : 0
+*    - <<ConfigPyrex>> [INT] : "None" or "NONE" (eq a "pas de pyrex")
+*
+* (*) As "DEPLPARAM" data ar all linked with other Data Types,
+*     they can be provided through other DataTypes
+*     Ex : Tmod can be provide both with DataType keyword 'DEPLPARAM' and
+*     DataType Keyword 'TEMPERATURES'
+*
+* OUTPUT Provided:
+*  < TechData [LINKED_LIST] :
+*       -List of technical data provided
+*
+*======================================================
+PROCEDURE ThermaExpans ;
+PARAMETER TechData :: ::: LINKED_LIST TechData ; ;
+MODULE UTL: ABORT: END: ADD: GREP: BACKUP: ;
+
+! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+! $$$ INPUT DECLARATION $$$
+! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+STRING Gestion ;
+STRING AssType ;
+STRING ConfigPyrex ;
+STRING DataType ;
+INTEGER Teneur_I ;
+:: >>Gestion<< >>AssType<< >>Teneur_I<< >>ConfigPyrex<< >>DataType<<   ;
+
+! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+! $$$ OPTIONS $$$
+! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+! $$$ VAR DECLARATION $$$
+! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  REAL NbAss ;
+  REAL NbFuelPin ;
+  REAL NbPinAssXY ;           ! Nb of Pins/Assembly XY-direction (square lattice)
+  REAL CoreFlowRate ;         ! [kg/hr] Core Flow Rate
+  REAL CoreFlowByp ;          !         Core Flow Bypass
+  REAL OpePressure ;          ! [Pa]    Operative Pressure
+  REAL CoreHML ;              ! [MT] Core Initial Heavy Metal Loading
+  REAL cbor ;
+  REAL PowMWth ;
+  REAL pAss ;
+  REAL rFuel ; ! uniformiser non variable
+  REAL rCladFuel ;
+  REAL rTubeIn ;
+  REAL rTubeEx  ;
+  REAL rRodSSIn  ;
+  REAL rRodSSEx  ;
+  REAL rRodAICg  ;
+  REAL rRodAICn  ;
+  REAL rRodB4C  ;
+  REAL rCladRod  ;
+  REAL rRodBPIn  ;
+  REAL rRodBPEx  ;
+  REAL rCladBPIn  ;
+  REAL rCladBPEx  ;
+  REAL rRodHf   ;
+  REAL eCladFuel ;
+  REAL eCladRod ;
+  REAL eCladBPIn ;
+  REAL eCladBPEx ;
+  REAL hWaterGap  ;
+  REAL pPin  ;
+  REAL pPinWaterGap  ; ! à enlever ? deja presente dans Geo17*17: pPin + hWaterGap$
+  REAL hActiv  ;
+  REAL CoefPoro ;
+  REAL CoefVoid ;
+  REAL dmod ;
+  REAL dUGd ;
+  REAL dUO2  ;
+  REAL dMOX ;
+  REAL dInc ;
+  REAL dZr4 ;
+  REAL dRodAIC ;
+  REAL dSS ;
+  REAL dCladFuel ;
+  REAL dCladAIC ;
+  REAL dCladSS ;
+  REAL dCladBPIn ;
+  REAL dCladBPEx ;
+  REAL dCladB4C ;
+  REAL dGrid ;
+  REAL dTube ;
+  REAL dRodB4C ;
+  REAL dRodSS ;
+  REAL dRodBP ;
+  REAL dRodHf ;
+  REAL InGridfPre ;
+  REAL Z4GridfPre ;
+  REAL SSGridfPre ;
+  REAL NbGridInt ;
+  REAL NbGridExt ;
+  REAL hGridInt  ;
+  REAL hGridExt  ;
+  REAL wZrGr_In_Sl  ;
+  REAL wZrGr_In_Cr  ;
+  REAL wIncGr_In_Sl ;
+  REAL wIncGr_In_Cr ;
+  REAL wSSGr_In_Sl  ;
+  REAL wSSGr_In_Cr  ;
+  REAL wZrGr_Ex_Sl  ;
+  REAL wZrGr_Ex_Cr  ;
+  REAL wIncGr_Ex_Sl ;
+  REAL wIncGr_Ex_Cr ;
+  REAL wSSGr_Ex_Sl  ;
+  REAL wSSGr_Ex_Cr  ;
+  REAL ss304Cntr ;
+  REAL ss304Side ;
+  REAL ss304Corn ;
+  REAL ss304Tube ;
+  REAL IncTube ;
+  REAL IncCntr ;
+  REAL IncSide ;
+  REAL IncCorn ;
+  REAL Zr4Corn ;
+  REAL Zr4Tube ;
+  REAL Zr4Cntr ;
+  REAL Zr4Side ;
+  REAL H2OTube ;
+  REAL H2OCntr ;
+  REAL H2OSide ;
+  REAL H2OCorn ;
+  REAL H2OTubePre ;
+  REAL H2OCntrPre ;
+  REAL H2OSidePre ;
+  REAL H2OCornPre ;
+  REAL U5FC ; !Vérifier ce que c'est
+  REAL Main_enri := 0.0 ; !Initialisation : var util si Teneur_I has Value
+  REAL U4enri ;
+  REAL U6enri ;
+  REAL U5enri  ;
+  REAL U8enri  ;
+  REAL Pu8enri ;
+  REAL Pu9enri ;
+  REAL Pu0enri ;
+  REAL Pu1enri ;
+  REAL Pu2enri ;
+  REAL Am1enri ;
+  REAL enriUGd ;
+  REAL enriGd ;
+  REAL NbGdPin ;
+  REAL NbNoGdPin ;
+  REAL U4eGd ;
+  REAL U5eGd ;
+  REAL U6eGd ;
+  REAL Pu9eGd ;
+  REAL Pu0eGd ;
+  REAL Pu1eGd ;
+  REAL Pu2eGd ;
+  REAL U8eGd  ;
+  REAL enriU ;
+  REAL enriPu ;
+  REAL NbCornPin ;
+  REAL NbSidePin ;
+  REAL NbCntrPin ;
+  REAL f_corn ;
+  REAL f_side ;
+  REAL f_cntr ;
+  REAL f_cornPin  ;
+  REAL f_sidePin  ;
+  REAL f_cntrPin  ;
+  REAL tmod ;
+  REAL tcom ;
+  REAL TempC Beta ;
+
+! /////////////////////////////////////////////////////////////////////
+! /// LOCAL LINKED LIST AND VAR DECLARATION ///
+! /////////////////////////////////////////////////////////////////////
+  LINKED_LIST RodListTmp ;
+  RodListTmp := UTL: :: CREA 'Gestion' 1 = <<Gestion>> ;
+       !               -  1 = No Rod
+       !               -  2 = AICN
+       !               -  0 = AICG
+       !               -  3 = B4C
+       !               -  4 = PYREX << MOD-LL
+  STRING AssStruct ;
+
+! /////////////////////////////////////////////////////////////////////
+! /// DUMMIES EVALUATION ///
+! /////////////////////////////////////////////////////////////////////
+! ---------------------------------------------------------------------
+! --- DUMMIES UNUSED ---
+! ---------------------------------------------------------------------
+  REAL DUMMY_R0   := 0.0     ;
+  REAL DUMMY_R1   := 1.E-20  ;
+  REAL DUMMY_R2   := 2.E-20  ;
+  REAL DUMMY_R3   := 3.E-20  ;
+  REAL DUMMY_R4   := 4.E-20  ;
+  REAL DUMMY_R10  := 1.E-1   ;
+  REAL DUMMY_R20  := 2.E-1   ;
+  REAL DUMMY_R30  := 3.E-1   ;
+  REAL DUMMY_R40  := 4.E-1   ;
+  INTEGER DUMMY_I := 0       ;
+! ---------------------------------------------------------------------
+! --- DUMMIES USED ---
+! ---------------------------------------------------------------------
+  EVALUATE enriUGd   := 0.0 ; !Initialisation : var util dans Asstype = Gd,Gd8
+  EVALUATE enriGd    := 0.0 ; !Initialisation : var util dans Asstype = Gd,Gd8
+  EVALUATE NbGdPin   := 0.0 ; !Initialisation : var util dans Asstype  = Gd,Gd8
+  EVALUATE NbNoGdPin := 0.0 ; !Initialisation : var util dans Asstype = Gd,Gd8
+  EVALUATE U4eGd     := 0.0 ; !Initialisation : var util dans Asstype = Gd,Gd8
+  EVALUATE U5eGd     := 0.0 ; !Initialisation : var util dans Asstype = Gd,Gd8
+  EVALUATE U6eGd     := 0.0 ; !Initialisation : var util dans Asstype = Gd,Gd8
+  EVALUATE Pu9eGd    := 0.0 ; !Initialisation : var util dans Asstype = Gd,Gd8
+  EVALUATE Pu0eGd    := 0.0 ; !Initialisation : var util dans Asstype = Gd,Gd8
+  EVALUATE Pu1eGd    := 0.0 ; !Initialisation : var util dans Asstype = Gd,Gd8
+  EVALUATE Pu2eGd    := 0.0 ; !Initialisation : var util dans Asstype = Gd,Gd8
+  EVALUATE U8eGd     := 0.0 ; !Initialisation : var util dans Asstype = Gd,Gd8
+  EVALUATE enriU     := 0.0 ; !Initialisation : var util dans Asstype = MOX
+  EVALUATE enriPu    := 0.0 ; !Initialisation : var util dans Asstype = MOX
+  EVALUATE NbCornPin := 0.0 ; !Initialisation : var util dans Asstype = MOX
+  EVALUATE NbSidePin := 0.0 ; !Initialisation : var util dans Asstype = MOX
+  EVALUATE NbCntrPin := 0.0 ; !Initialisation : var util dans Asstype = MOX
+  EVALUATE f_corn    := 0.0 ; !Initialisation : var util dans Asstype = MOX
+  EVALUATE f_side    := 0.0 ; !Initialisation : var util dans Asstype = MOX
+  EVALUATE f_cntr    := 0.0 ; !Initialisation : var util dans Asstype = MOX
+  EVALUATE f_cornPin := 0.0 ; !Initialisation : var util dans Asstype = MOX
+  EVALUATE f_sidePin := 0.0 ; !Initialisation : var util dans Asstype = MOX
+  EVALUATE f_cntrPin := 0.0 ; !Initialisation : var util dans Asstype = MOX
+
+! /////////////////////////////////////////////////////////////////////
+! /// PROC INPUT TREATMENT ///
+! /////////////////////////////////////////////////////////////////////
+IF Teneur_I 0 <> THEN
+EVALUATE Main_enri := Teneur_I I_TO_R 100. / ;
+ELSE
+!EVALUATE Main_enri := 0.0 ; ! à modifier éventuellement
+ECHO "Teneur_I 0.0 renseignee <=> Teneur_I non prise en compte" ;
+ENDIF ;
+
+! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+! $$$ GESTION SPECIFICITIES $$$
+! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+! /////////////////////////////////////////////////////////////////////
+! /// BEAVRS ///
+! /////////////////////////////////////////////////////////////////////
+IF Gestion "BEAV" = THEN
+! ---------------------------------------------------------------------
+! --- DEPLETION PARAMETERS AVG ---
+! ---------------------------------------------------------------------
+  EVALUATE tmod := 306.85   ; ! [degC] (= 580 K)
+  EVALUATE tcom := 650.     ; ! [degC]
+  EVALUATE dmod := .7118974 ; ! [g.cm-3] (density at 2250 psia and 580 K)
+  EVALUATE cbor := 500.     ; ! [ppm]
+! ---------------------------------------------------------------------
+! --- ROD LIST ---
+! ---------------------------------------------------------------------
+  IF ConfigPyrex "None" = ConfigPyrex "NONE" = + THEN
+  RodListTmp := UTL: RodListTmp :: CREA 'Rods' 3 =
+                1. 2. 3. ; ! <<< mod 04/05/2018 ajout de "3."
+  ELSE
+  RodListTmp := UTL: RodListTmp :: CREA 'Rods' 4 =
+                4. 1. 2. 3. ; ! <<< mod 04/05/2018 ajout de "3."
+  ENDIF ;
+! ---------------------------------------------------------------------
+! --- GENERAL INFORMATION ---
+! ---------------------------------------------------------------------
+  EVALUATE NbAss      :=  193.       ; ! [1100MWe]   a verifier
+  EVALUATE NbFuelPin  :=  264.       ;
+  EVALUATE PowMWth    := 3411.       ; ! [MW] (SLB 1100MWe)
+  EVALUATE NbPinAssXY :=   17.       ;
+  EVALUATE CoreFlowRate := 61.5E+9   ;
+  EVALUATE CoreFlowByp  := 0.05      ;
+  EVALUATE OpePressure := 1.55132E+7 ;
+  EVALUATE CoreHML     :=   81.8     ;
+  EVALUATE AssStruct := "BEAV_ASS"   ;
+! ---------------------------------------------------------------------
+! --- DISTANCES ---
+! ---------------------------------------------------------------------
+! ***gen***
+  EVALUATE pAss      := 21.50364  ; ! [cm] [VF]
+  EVALUATE pPin      := 1.25984   ; ! [cm] [VF]
+  EVALUATE hActiv    := 365.76    ; ! [cm] [VF]
+! ***radius pin content***
+  EVALUATE rFuel     := .39218    ; ! [cm] [VF]
+  EVALUATE rRodSSIn  := DUMMY_R1  ; ! [cm] [VF] [DUMMY]
+  EVALUATE rRodSSEx  := DUMMY_R2  ; ! [cm] [VF] [DUMMY]
+  EVALUATE rRodAICg  := DUMMY_R20 ; ! [cm] [VF] [DUMMY]
+  EVALUATE rRodAICn  := .38227    ; ! [cm] [VF]
+  EVALUATE rRodB4C   := .37338    ; ! [cm] [VF]
+  EVALUATE rRodBPIn  := .24130    ; ! [cm] [VF]
+  EVALUATE rRodBPEx  := .42672    ; ! [cm] [VF]
+  EVALUATE rRodHf    := DUMMY_R1  ; ! [cm] [VF] [DUMMY]
+! ***radius clad***
+  EVALUATE rCladFuel := .45720    ; ! [cm] [VF]
+  EVALUATE rCladRod  := .48387    ; ! [cm] [VF]
+  EVALUATE rCladBPIn := .21400    ; ! [cm] [VF]
+  EVALUATE rCladBPEx := .48387    ; ! [cm] [VF]
+! ***thickness clad***
+  EVALUATE eCladFuel := .05715    ; ! [cm] [VF]
+  EVALUATE eCladRod  := .09779    ; ! [cm] [VF]
+  EVALUATE eCladBPIn := .01651    ; ! [cm] [VF]
+  EVALUATE eCladBPEx := .04699    ; ! [cm] [VF]
+! --------------------------------------------------------------------
+! --- DENSITIES ---
+! --------------------------------------------------------------------
+! *** fuel ***
+! ************
+  EVALUATE CoefPoro := DUMMY_R0                 ; ! [SU] [VF] [DUMMY]
+  EVALUATE CoefVoid := DUMMY_R0                 ; ! [SU] [VF] [DUMMY]
+! ************
+  IF Teneur_I 160 = THEN
+    EVALUATE dUO2 := 10.31341 ;
+  ELSEIF Teneur_I 240 = THEN
+    EVALUATE dUO2 := 10.29748 ;
+  ELSEIF Teneur_I 310 = THEN
+    EVALUATE dUO2 := 10.30166 ;
+  ELSEIF Teneur_I 320 = THEN
+    EVALUATE dUO2 := 10.34115 ;
+  ELSEIF Teneur_I 340 = THEN
+    EVALUATE dUO2 := 10.35917 ;
+  ELSEIF Teneur_I 0 = THEN
+    EVALUATE dUO2 := 0.0 ;
+    ECHO "Attention : pas de teneur_I rensignée" ;
+    ECHO "=> valeurs enrichissements non definies" ;
+  ELSE
+    ECHO "BEAVRS dispose d'enrichissements specifiques. Les seuls " ;
+    ECHO "enrichissements disponibles sont 1,60, 2,40 et 3,10 " ;
+    ECHO "pourcents. Specifier l'un de ces trois enrichissements. " ;
+    ECHO "Actuellement :" ;
+    ECHO Main_enri ;
+    ABORT: ;
+  ENDIF ;
+  EVALUATE dUGd  := DUMMY_R0   ; ! [g/cm3] [VF] [DUMMY]
+  EVALUATE dMOX  := DUMMY_R0   ; ! [g/cm3] [VF] [DUMMY]
+! *** material ***
+  EVALUATE dInc  := 8.2        ; ! [g/cm3] [VF]
+  EVALUATE dZr4  := 6.55       ; ! [g/cm3] [VF]
+  EVALUATE dSS   := 8.03       ; ! [g/cm3] [VF]
+! *** rods ***
+  EVALUATE dRodSS  := dSS      ; ! [g/cm3] [VF]
+  EVALUATE dRodAIC := 10.16    ; ! [g/cm3] [VF]
+  EVALUATE dRodB4C := 1.79     ; ! [g/cm3] [VF]
+  EVALUATE dRodBP  := 2.26     ; ! [g/cm3] [VF]
+  EVALUATE dRodHf  := DUMMY_R0 ; ! [g/cm3] [VF] [DUMMY]
+! *** clads ***
+  EVALUATE dCladFuel := dZr4   ; ! [g/cm3] [VF]
+  EVALUATE dCladAIC  := dSS    ; ! [g/cm3] [VF]
+  EVALUATE dCladSS   := dSS    ; ! [g/cm3] [VF]
+  EVALUATE dCladBPIn := dSS    ; ! [g/cm3] [VF]
+  EVALUATE dCladBPEx := dSS    ; ! [g/cm3] [VF]
+  EVALUATE dCladB4C  := dSS    ; ! [g/cm3] [VF]
+! *** structure ***
+  EVALUATE dTube := dZr4       ; ! [g/cm3] [VF]
+  EVALUATE dGrid := 6.69       ; ! [g/cm3] [VF]
+! ---------------------------------------------------------------------
+! --- ENRICHISSEMENT/TENEURS/CONCENTRATIONS ---
+! ---------------------------------------------------------------------
+  !DIVERS -----------------------------------------------------------
+  EVALUATE U5FC     := 1E-9 ;
+  !COMB UOX -----------------------------------------------------------
+  IF AssType "UOX" = THEN
+    IF Teneur_I 160 = THEN
+      EVALUATE U4enri  := 0.01288048 100.0 / ;
+      EVALUATE U6enri  := 0.0 ;
+      EVALUATE Main_enri   := 1.61 ; !enriU=161 equivalent à mainenri=.61
+    ELSEIF Teneur_I 240 = THEN
+      EVALUATE U4enri  :=  0.01919944 100.0 / ;
+      EVALUATE U6enri  := 0.0 ;
+    ELSEIF Teneur_I 310 = THEN
+      EVALUATE U4enri  :=  0.02481768 100.0 / ;
+      EVALUATE U6enri  := 0.0 ;
+    ELSEIF Teneur_I 320 = THEN
+      EVALUATE U4enri  :=  0.0256620 100.0 / ;
+      EVALUATE U6enri  := 0.0 ;
+    ELSEIF Teneur_I 340 = THEN
+      EVALUATE U4enri  :=  0.0273992E 100.0 / ;
+      EVALUATE U6enri  := 0.0 ;
+    ELSEIF Teneur_I 0 = THEN
+      EVALUATE U4enri  := 0.0  ;
+      EVALUATE U6enri  := 0.0 ;
+      ECHO "Attention : pas de teneur_I rensignée" ;
+      ECHO "=> valeurs enrichissements non definies" ;
+    ELSE
+      ECHO "BEAVRS dispose d'enrichissements specifiques. Les seuls " ;
+      ECHO "enrichissements disponibles sont 1,60, 2,40 et 3,10 " ;
+      ECHO "pourcents. Specifier l'un de ces trois enrichissements. " ;
+      ECHO "Actuellement :" ;
+      ECHO Main_enri ;
+      ABORT: ;
+    ENDIF ;
+    EVALUATE U5enri  := Main_enri 100. / ; ! X.XX % => 0.0XXX
+    EVALUATE U8enri  := 1. U6enri - U5enri - U4enri - ;
+    EVALUATE Pu8enri := 1.E-15 ; ! pourquoi pas 0 ?
+    EVALUATE Pu9enri := 1.E-15 ; ! pourquoi pas 0 ?
+    EVALUATE Pu0enri := 1.E-15 ; ! pourquoi pas 0 ?
+    EVALUATE Pu1enri := 1.E-15 ; ! pourquoi pas 0 ?
+    EVALUATE Pu2enri := 1.E-15 ; ! pourquoi pas 0 ?
+    EVALUATE Am1enri := 1.E-15 ; ! pourquoi pas 0 ?
+  ! SI AUCUN des types d'assemblage --------------------------------------------------------
+  ELSE
+   ECHO "Error --- AssType:" AssType "not recognized." ;
+   ABORT: ;
+  ENDIF ;
+*---------------------------------------------------------------------------
+
+! /////////////////////////////////////////////////////////////////////
+! /// TIHANGE ///
+! /////////////////////////////////////////////////////////////////////
+ELSEIF Gestion "TIH" = THEN
+! La majorite des informations sont extraites de la note CEA-N-2092.
+! Certaines informations, plus precises, proviennent d'autres sources
+! plus precises, afin d'etre en accord avec les dimensions des pages
+! 155 a 159 de CEA-N-2092.
+! Lien : https://inis.iaea.org/
+! collection/NCLCollectionStore/_Public/11/511/11511367.pdf
+! ---------------------------------------------------------------------
+! --- DEPLETION PARAMETERS AVG ---
+! ---------------------------------------------------------------------
+! Les essais de demarrage de Tihange sont effectues a 547F. Les
+! temperatures qui suivent sont fixes a 547F, car, en l'etat actuel,
+! elles sont utilisees pour l'expansion thermique des dimensions et
+! densites de MakeBib (il n'y a pas encore de recalcul dynamique de
+! l'expansion thermique dans MakeBib). Cette temperature de 547F, plus
+! precise que la temperature de 286C mentionnee dans CEA-N-2092, est
+! retrouvee dans de multiples references de Westinghouse et permet
+! d'etre en meilleur accord avec les dimensions des pages 155 a 159 de
+! CEA-N-2092, en particulier pour les materiaux a forte dilatation
+! (AIC, SS304, ...). Exemple d'une source Westinghouse (p.104) :
+! 'Westinghouse Technology Advanced Manual', Chapter 4.
+! Lien : https://www.nrc.gov/docs/ML0230/ML023030318.pdf
+  EVALUATE tmod := 547.0 32.0 - 1.8 / ; ! [degC]
+  EVALUATE tcom := tmod ;
+  EVALUATE dmod := .716403 ; ! [g.cm-3] !NOMINAL VALUE
+  EVALUATE cbor := 600.    ; ! [ppm] !NOMINAL VALUE
+! ---------------------------------------------------------------------
+! --- ROD LIST ---
+! ---------------------------------------------------------------------
+  IF ConfigPyrex "None" = ConfigPyrex "NONE" = + THEN
+    RodListTmp := UTL: RodListTmp :: CREA 'Rods' 2 =
+                  1. 2. ;
+  ELSE
+    RodListTmp := UTL: RodListTmp :: CREA 'Rods' 1 =
+                  4. ;
+  ENDIF ;
+! ---------------------------------------------------------------------
+! --- GENERAL INFORMATION ---
+! ---------------------------------------------------------------------
+  EVALUATE NbAss        := 157.       ; ! [900MWe]
+  EVALUATE NbFuelPin    := 204.       ;
+  EVALUATE PowMWth      := 2652.      ; ! [MW] (CEA-N-2092)
+  EVALUATE NbPinAssXY   := 15.        ;
+  EVALUATE CoreFlowRate := 61.5E+9    ;
+  EVALUATE CoreFlowByp  := 0.05       ;
+  EVALUATE OpePressure  := 1.55132E+7 ;
+  EVALUATE CoreHML      := DUMMY_R1   ;
+  EVALUATE AssStruct    := "TIH_ASS"  ;
+! ---------------------------------------------------------------------
+! --- DISTANCES ---
+! ---------------------------------------------------------------------
+! ***gen***
+! La valeur qui suit, plus precise que celle de CEA-N-2092, est
+! extraite de la ref. 'LWR nuclear fuel bundle data for use in fuel
+! bundle handling', PNL-2575 UC-85, Weihermiller et Allison, 1979. p26.
+! Lien : https://inis.iaea.org/
+! collection/NCLCollectionStore/_Public/11/522/11522856.pdf
+  EVALUATE pPin      := 0.563 2.54 * ; ! [cm] [VF]
+! Les deux valeurs qui suivent, plus precises que celles de CEA-N-2092,
+! sont extraites de la ref. 'In-core fuel management code package
+! validation for PWRs', IAEA-TECDOC-815, 1995. Resp. pages 17 et 18.
+! Lien : https://inis.iaea.org/
+! collection/NCLCollectionStore/_Public/26/077/26077395.pdf
+  EVALUATE pAss      := 8.466 2.54 * ; ! [cm] [VF]
+  EVALUATE hActiv    := 144.0 2.54 * ; ! [cm] [VF]
+! ***radius pin content***
+  EVALUATE rFuel     := .464693    ; ! [cm] [VF]
+  EVALUATE rRodSSIn  := DUMMY_R1   ; ! [cm] [VF] [DUMMY]
+  EVALUATE rRodSSEx  := DUMMY_R2   ; ! [cm] [VF] [DUMMY]
+  EVALUATE rRodAICg  := DUMMY_R1   ; ! [cm] [VF] [DUMMY]
+  EVALUATE rRodAICn  := .504825    ; ! [cm] [VF]
+  EVALUATE rRodB4C   := DUMMY_R1   ; ! [cm] [VF]
+  EVALUATE rRodBPIn  := 0.31115    ; ! [cm] [VF]
+  EVALUATE rRodBPEx  := 0.49784    ; ! [cm] [VF]
+  EVALUATE rRodHf    := DUMMY_R1   ; ! [cm] [VF] [DUMMY]
+! ***radius clad***
+  EVALUATE rCladFuel := .53594     ; ! [cm] [VF]
+  EVALUATE rCladRod  := .55753     ; ! [cm] [VF]
+  EVALUATE rCladBPIn := .283845    ; ! [cm] [VF]
+  EVALUATE rCladBPEx := .55753     ; ! [cm] [VF]
+! ***thickness clad
+  EVALUATE eCladFuel := .061722    ; ! [cm] [VF]
+  EVALUATE eCladRod  := .048895    ; ! [cm] [VF]
+  EVALUATE eCladBPIn := .01651     ; ! [cm] [VF]
+  EVALUATE eCladBPEx := .048895    ; ! [cm] [VF]
+! ---------------------------------------------------------------------
+! --- DENSITIES ---
+! ---------------------------------------------------------------------
+! *** fuel ***
+! ************
+  EVALUATE CoefPoro  := 0.95                        ; ! [SU] [VF]
+  EVALUATE CoefVoid  := 0.9881                      ; ! [SU] [VF]
+! ************
+  EVALUATE dUO2      := 10.96 CoefPoro * CoefVoid * ; ! [g/cm3] [VF]
+  EVALUATE dUGd      := DUMMY_R0                    ; ! [g/cm3] [VF] [DUMMY]
+  EVALUATE dMOX      := DUMMY_R0                    ; ! [g/cm3] [VF] [DUMMY]
+! *** material ***
+  EVALUATE dInc      := 8.18                        ; ! [g/cm3] [VF]
+  EVALUATE dZr4      := 6.55                        ; ! [g/cm3] [VF]
+  EVALUATE dSS       := 7.90                        ; ! [g/cm3] [VF]
+! *** rods ***
+  EVALUATE dRodSS    := dSS                         ; ! [g/cm3] [VF]
+  EVALUATE dRodAIC   := 10.17                       ; ! [g/cm3] [VF]
+  EVALUATE dRodB4C   := 1.79                        ; ! [g/cm3] [VF]
+  EVALUATE dRodBP    := 2.27                        ; ! [g/cm3] [VF]
+  EVALUATE dRodHf    := DUMMY_R0                    ; ! [g/cm3] [VF] [DUMMY]
+! *** clads ***
+  EVALUATE dCladFuel := dZr4                        ; ! [g/cm3] [VF]
+  EVALUATE dCladAIC  := dSS                         ; ! [g/cm3] [VF]
+  EVALUATE dCladSS   := dSS                         ; ! [g/cm3] [VF]
+  EVALUATE dCladBPIn := dSS                         ; ! [g/cm3] [VF]
+  EVALUATE dCladBPEx := dSS                         ; ! [g/cm3] [VF]
+  EVALUATE dCladB4C  := dSS                         ; ! [g/cm3] [VF]
+! *** structure ***
+  EVALUATE dTube     := dZr4                        ; ! [g/cm3] [VF]
+  EVALUATE dGrid     := 6.69                        ; ! [g/cm3] [VF]
+! ---------------------------------------------------------------------
+! --- ENRICHISSEMENT/TENEURS/CONCENTRATIONS ---
+! ---------------------------------------------------------------------
+  !DIVERS -----------------------------------------------------------
+  EVALUATE U5FC     := 1E-9 ;
+  !COMB UOX -----------------------------------------------------------
+  IF AssType "UOX" = THEN
+    IF Teneur_I 195 = THEN
+      EVALUATE U4enri  := 0.019 100.0 / ;
+      EVALUATE U6enri  := 0.012 100.0 / ;
+    ELSEIF Teneur_I 255 = THEN
+      EVALUATE U4enri  := 0.025 100.0 / ;
+      EVALUATE U6enri  := 0.016 100.0 / ;
+    ELSEIF Teneur_I 310 = THEN
+      EVALUATE U4enri  := 0.031 100.0 / ;
+      EVALUATE U6enri  := 0.019 100.0 / ;
+    ELSEIF Teneur_I 0 = THEN
+      ECHO "Attention : pas de teneur_I rensignée" ;
+      ECHO "=> valeurs enrichissements non definies" ;
+    ELSE
+      ECHO "Tihange dispose d'enrichissements specifiques (uranium " ;
+      ECHO "de retraitement re-enrichi). Les seuls enrichissements " ;
+      ECHO "disponibles sont 1,95, 2,55 et 3,10 pourcents. Specifier" ;
+      ECHO " l'un de ces trois enrichissements. Actuellement :" ;
+      ECHO Main_enri ;
+      ABORT: ;
+    ENDIF ;
+    EVALUATE U5enri  := Main_enri 100. / ; ! X.XX % => 0.0XXX
+    EVALUATE U8enri  := 1. U6enri - U5enri - U4enri - ;
+    EVALUATE Pu8enri := 1.E-15 ; ! pourquoi pas 0 ?
+    EVALUATE Pu9enri := 1.E-15 ; ! pourquoi pas 0 ?
+    EVALUATE Pu0enri := 1.E-15 ; ! pourquoi pas 0 ?
+    EVALUATE Pu1enri := 1.E-15 ; ! pourquoi pas 0 ?
+    EVALUATE Pu2enri := 1.E-15 ; ! pourquoi pas 0 ?
+    EVALUATE Am1enri := 1.E-15 ; ! pourquoi pas 0 ?
+  ! SI AUCUN des types d'assemblage --------------------------------------------------------
+  ELSE
+   ECHO "Error --- AssType:" AssType "not recognized." ;
+   ABORT: ;
+  ENDIF ;
+*---------------------------------------------------------------------------
+ELSE
+   ECHO "Error --- Gestion:" Gestion "not recognized." ;
+   ABORT: ;
+ENDIF ;
+
+! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+! $$$ STRUCTURES SPECIFICITIES $$$
+! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+! TIHASS : Assembly structure for Tihange
+! BEAVASS : Assembly structure for BEAVRS
+! /////////////////////////////////////////////////////////////////////
+! /// ASSEMBLY BEAVRS ///
+! /////////////////////////////////////////////////////////////////////
+IF AssStruct "BEAV_ASS" = THEN
+*---------------------------------------------------------------------------
+  ! GRID DILUTION --------------------------------------------------------
+  !EVALUATE wSleeCra := 0.108088952 ;
+  ! GRID NOTE --------
+  EVALUATE NbGridInt := 6. ;
+  EVALUATE NbGridExt := 1. ;
+
+  EVALUATE hGridInt := 5.715 ;
+  EVALUATE hGridExt := 3.358 ;
+
+  EVALUATE wZrGr_In_Sl  := 126.380845 ;
+  EVALUATE wZrGr_In_Cr  := 1042.84915 ;
+  EVALUATE wIncGr_In_Sl := 1.E-20 ;
+  EVALUATE wIncGr_In_Cr := 1.E-20 ;
+  EVALUATE wSSGr_In_Sl  := 1.E-20 ;
+  EVALUATE wSSGr_In_Cr  := 1.E-20 ;
+
+  EVALUATE wZrGr_Ex_Sl  := 1.E-20 ;
+  EVALUATE wZrGr_Ex_Cr  := 1.E-20 ;
+  EVALUATE wIncGr_Ex_Sl := 1.E-20 ;
+  EVALUATE wIncGr_Ex_Cr := 780.272 ;
+  EVALUATE wSSGr_Ex_Sl  := 91.0329 ;
+  EVALUATE wSSGr_Ex_Cr  := 1.E-20 ;
+
+  ! GRID PREC -------
+  EVALUATE InGridfPre := .131668 ; ! DUMMY VALUE
+  EVALUATE Z4GridfPre := .868332 ; ! DUMMY VALUE
+  EVALUATE SSGridfPre := 0.0     ; ! DUMMY VALUE
+
+  EVALUATE H2OTubePre :=  1.E-20  ; ! DUMMY VALUE
+  EVALUATE H2OCntrPre :=  1.E-20  ; ! DUMMY VALUE
+  EVALUATE H2OSidePre :=  1.E-20  ; ! DUMMY VALUE
+  EVALUATE H2OCornPre :=  1.E-20  ; ! DUMMY VALUE
+
+  ! TUBE DATA --------------------------------------------------------
+  EVALUATE rTubeIn := 0.56134 ;
+  EVALUATE rTubeEx := 0.60198 ;
+
+! /////////////////////////////////////////////////////////////////////
+! /// ASSEMBLY TIHANGE ///
+! /////////////////////////////////////////////////////////////////////
+ELSEIF AssStruct "TIH_ASS" = THEN
+*---------------------------------------------------------------------------
+  ! GRID DILUTION --------------------------------------------------------
+
+  ! GRID NOTE ------------
+  EVALUATE NbGridInt := 6. ;! DUMMY VALUE
+  EVALUATE NbGridExt := 1. ;! DUMMY VALUE
+
+  EVALUATE hGridInt := 5.715 ; ! DUMMY VALUE
+  EVALUATE hGridExt := 3.358 ; ! DUMMY VALUE
+
+  EVALUATE wZrGr_In_Sl  := 1.E-20 ;! DUMMY VALUE
+  EVALUATE wZrGr_In_Cr  := 1.E-20 ;! DUMMY VALUE
+  EVALUATE wIncGr_In_Sl := 1.E-20 ;! DUMMY VALUE
+  EVALUATE wIncGr_In_Cr := 1.E-20 ;! DUMMY VALUE
+  EVALUATE wSSGr_In_Sl  := 1.E-20 ;! DUMMY VALUE
+  EVALUATE wSSGr_In_Cr  := 1.E-20 ;! DUMMY VALUE
+
+  EVALUATE wZrGr_Ex_Sl  := 1.E-20 ;! DUMMY VALUE
+  EVALUATE wZrGr_Ex_Cr  := 1.E-20 ;! DUMMY VALUE
+  EVALUATE wIncGr_Ex_Sl := 1.E-20 ;! DUMMY VALUE
+  EVALUATE wIncGr_Ex_Cr := 1.E-20 ;! DUMMY VALUE
+  EVALUATE wSSGr_Ex_Sl  := 1.E-20 ;! DUMMY VALUE
+  EVALUATE wSSGr_Ex_Cr  := 1.E-20 ;! DUMMY VALUE
+
+  ! GRID PREC -------
+  EVALUATE InGridfPre := .131668 ; ! DUMMY VALUE
+  EVALUATE Z4GridfPre := .868332 ; ! DUMMY VALUE
+  EVALUATE SSGridfPre := 0.0     ; ! DUMMY VALUE
+
+  EVALUATE H2OTubePre :=  1.E-20  ; ! DUMMY VALUE
+  EVALUATE H2OCntrPre :=  1.E-20  ; ! DUMMY VALUE
+  EVALUATE H2OSidePre :=  1.E-20  ; ! DUMMY VALUE
+  EVALUATE H2OCornPre :=  1.E-20  ; ! DUMMY VALUE
+
+  ! TUBE DATA --------------------------------------------------------
+  EVALUATE rTubeIn := 0.65024 ;
+  EVALUATE rTubeEx := 0.69342 ;
+
+ELSE
+  ECHO "AssStruct : " AssStruct ;
+  ECHO "Not recognized" ;
+  ABORT: ;
+ENDIF ;
+
+! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+! $$$ LINKED LIST CREATION $$$
+! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+TechData := UTL: :: CREA 'Gestion' 1 = <<Gestion>> ;!à modifier : mettre
+! toutes les caractéristiques
+
+INTEGER LRodList ;
+REAL Rod1 Rod2 Rod3 Rod4 Rod5 Rod6 ;
+
+IF DataType "RODLIST" = THEN
+  TechData :=  TechData RodListTmp ;
+  !ATTENTION : dans RodListTmp, le premier item du block rods doit etre
+  !la configuration NOMINALE AVERAGE : cf CreaStepList
+ELSEIF DataType "DEPLPARAMAVG" = THEN
+!les valeurs de DEPLPARAM sont aussi dans les autres LINKED_LIST
+  TechData := UTL: TechData :: CREA 'cbor' 1 = <<cbor>> ;
+  TechData := UTL: TechData :: CREA 'tcom' 1 = <<tcom>> ;
+  TechData := UTL: TechData :: CREA 'tmod' 1 = <<tmod>> ;
+  TechData := UTL: TechData :: CREA 'dmod' 1 = <<dmod>> ;
+
+ELSEIF DataType "GENERAL" = THEN
+  TechData := UTL: TechData :: CREA 'NbAss' 1 = <<NbAss>> ;
+  TechData := UTL: TechData :: CREA 'NbFuelPin' 1 = <<NbFuelPin>> ;
+  TechData := UTL: TechData :: CREA 'PowMWth' 1 = <<PowMWth>> ;
+  TechData := UTL: TechData :: CREA 'NbPinAssXY' 1 = <<NbPinAssXY>> ;
+  TechData := UTL: TechData :: CREA 'CoreFlowRate' 1 = <<CoreFlowRate>> ;
+  TechData := UTL: TechData :: CREA 'CoreFlowByp' 1 = <<CoreFlowByp>> ;
+  TechData := UTL: TechData :: CREA 'OpePressure' 1 = <<OpePressure>> ;
+  TechData := UTL: TechData :: CREA 'CoreHML' 1 = <<CoreHML>> ;
+
+ELSEIF DataType "DISTANCES" = THEN
+  TechData := UTL: TechData :: CREA 'pAss' 1 = <<pAss>>           ;
+  TechData := UTL: TechData :: CREA 'pPin' 1 = <<pPin>>           ;
+  TechData := UTL: TechData :: CREA 'hActiv' 1 = <<hActiv>>       ;
+  TechData := UTL: TechData :: CREA 'rFuel' 1 = <<rFuel>>         ;
+  TechData := UTL: TechData :: CREA 'rRodSSIn' 1 = <<rRodSSIn>>   ;
+  TechData := UTL: TechData :: CREA 'rRodSSEx' 1 = <<rRodSSEx>>   ;
+  TechData := UTL: TechData :: CREA 'rRodAICg' 1 = <<rRodAICg>>   ;
+  TechData := UTL: TechData :: CREA 'rRodAICn' 1 = <<rRodAICn>>   ;
+  TechData := UTL: TechData :: CREA 'rRodB4C' 1 = <<rRodB4C>>     ;
+  TechData := UTL: TechData :: CREA 'rRodBPIn' 1 = <<rRodBPIn>>   ;
+  TechData := UTL: TechData :: CREA 'rRodBPEx' 1 = <<rRodBPEx>>   ;
+  TechData := UTL: TechData :: CREA 'rRodHf' 1 = <<rRodHf>>       ;
+  TechData := UTL: TechData :: CREA 'rCladFuel' 1 = <<rCladFuel>> ;
+  TechData := UTL: TechData :: CREA 'rCladRod' 1 = <<rCladRod>>   ;
+  TechData := UTL: TechData :: CREA 'rCladBPIn' 1 = <<rCladBPIn>> ;
+  TechData := UTL: TechData :: CREA 'rCladBPEx' 1 = <<rCladBPEx>> ;
+  TechData := UTL: TechData :: CREA 'eCladFuel' 1 = <<eCladFuel>> ;
+  TechData := UTL: TechData :: CREA 'eCladRod' 1 = <<eCladRod>>   ;
+  TechData := UTL: TechData :: CREA 'eCladBPIn' 1 = <<eCladBPIn>> ;
+  TechData := UTL: TechData :: CREA 'eCladBPEx' 1 = <<eCladBPEx>> ;
+  TechData := UTL: TechData :: CREA 'rTubeIn' 1 = <<rTubeIn>> ;
+  TechData := UTL: TechData :: CREA 'rTubeEx' 1 = <<rTubeEx>> ;
+
+ELSEIF DataType "DENSITIES" = THEN
+  TechData := UTL: TechData :: CREA 'dUGd' 1 = <<dUGd>> ;
+  TechData := UTL: TechData :: CREA 'dUO2 ' 1 = <<dUO2>> ;
+  TechData := UTL: TechData :: CREA 'dMOX' 1 = <<dMOX>> ;
+  TechData := UTL: TechData :: CREA 'dInc' 1 = <<dInc>> ;
+  TechData := UTL: TechData :: CREA 'dZr4' 1 = <<dZr4>> ;
+  TechData := UTL: TechData :: CREA 'dRodAIC' 1 = <<dRodAIC>> ;
+  TechData := UTL: TechData :: CREA 'dSS' 1 = <<dSS>> ;
+  TechData := UTL: TechData :: CREA 'dCladFuel' 1 = <<dCladFuel>> ;
+  TechData := UTL: TechData :: CREA 'dCladAIC' 1 = <<dCladAIC>> ;
+  TechData := UTL: TechData :: CREA 'dCladSS' 1 = <<dCladSS>> ;
+  TechData := UTL: TechData :: CREA 'dCladBPIn' 1 = <<dCladBPIn>> ;
+  TechData := UTL: TechData :: CREA 'dCladBPEx' 1 = <<dCladBPEx>> ;
+  TechData := UTL: TechData :: CREA 'dCladB4C' 1 = <<dCladB4C>> ;
+  TechData := UTL: TechData :: CREA 'dGrid' 1 = <<dGrid>> ;
+  TechData := UTL: TechData :: CREA 'dTube' 1 = <<dTube>> ;
+  TechData := UTL: TechData :: CREA 'dRodB4C' 1 = <<dRodB4C>> ;
+  TechData := UTL: TechData :: CREA 'dRodSS' 1 = <<dRodSS>> ;
+  TechData := UTL: TechData :: CREA 'dRodBP' 1 = <<dRodBP>> ;
+  TechData := UTL: TechData :: CREA 'dRodHf' 1 = <<dRodHf>> ;
+
+ELSEIF DataType "GRIDDATA" = THEN
+  TechData := UTL: TechData :: CREA 'NbGridInt' 1 = <<NbGridInt>> ;
+  TechData := UTL: TechData :: CREA 'NbGridExt' 1 = <<NbGridExt>> ;
+  TechData := UTL: TechData :: CREA 'hGridInt' 1 = <<hGridInt>> ;
+  TechData := UTL: TechData :: CREA 'hGridExt' 1 = <<hGridExt>> ;
+  TechData := UTL: TechData :: CREA 'wZrGr_In_Sl' 1 =  <<wZrGr_In_Sl>> ;
+  TechData := UTL: TechData :: CREA 'wZrGr_In_Cr' 1 =  <<wZrGr_In_Cr>> ;
+  TechData := UTL: TechData :: CREA 'wIncGr_In_Sl' 1 = <<wIncGr_In_Sl>> ;
+  TechData := UTL: TechData :: CREA 'wIncGr_In_Cr' 1 = <<wIncGr_In_Cr>> ;
+  TechData := UTL: TechData :: CREA 'wSSGr_In_Sl' 1 =  <<wSSGr_In_Sl>> ;
+  TechData := UTL: TechData :: CREA 'wSSGr_In_Cr' 1 =  <<wSSGr_In_Cr>> ;
+  TechData := UTL: TechData :: CREA 'wZrGr_Ex_Sl' 1 =  <<wZrGr_Ex_Sl>> ;
+  TechData := UTL: TechData :: CREA 'wZrGr_Ex_Cr' 1 =  <<wZrGr_Ex_Cr>> ;
+  TechData := UTL: TechData :: CREA 'wIncGr_Ex_Sl' 1 = <<wIncGr_Ex_Sl>> ;
+  TechData := UTL: TechData :: CREA 'wIncGr_Ex_Cr' 1 = <<wIncGr_Ex_Cr>> ;
+  TechData := UTL: TechData :: CREA 'wSSGr_Ex_Sl' 1 =  <<wSSGr_Ex_Sl>> ;
+  TechData := UTL: TechData :: CREA 'wSSGr_Ex_Cr' 1 =  <<wSSGr_Ex_Cr>> ;
+
+  TechData := UTL: TechData :: CREA 'InGridfPre' 1 = <<InGridfPre>> ;
+  TechData := UTL: TechData :: CREA 'Z4GridfPre' 1 = <<Z4GridfPre>> ;
+  TechData := UTL: TechData :: CREA 'SSGridfPre' 1 = <<SSGridfPre>> ;
+  TechData := UTL: TechData :: CREA 'H2OTubePre' 1 = <<H2OTubePre>> ;
+  TechData := UTL: TechData :: CREA 'H2OCntrPre' 1 = <<H2OCntrPre>> ;
+  TechData := UTL: TechData :: CREA 'H2OSidePre' 1 = <<H2OSidePre>> ;
+  TechData := UTL: TechData :: CREA 'H2OCornPre' 1 = <<H2OCornPre>> ;
+
+ELSEIF DataType "COMPOSITIONS" = THEN
+  TechData := UTL: TechData :: CREA 'U5FC' 1 = <<U5FC>> ;
+
+  TechData := UTL: TechData :: CREA 'Main_enri' 1 = <<Main_enri>> ;
+  TechData := UTL: TechData :: CREA 'U4enri' 1 = <<U4enri>> ;
+  TechData := UTL: TechData :: CREA 'U6enri' 1 = <<U6enri>> ;
+  TechData := UTL: TechData :: CREA 'U5enri' 1 = <<U5enri>> ;
+  TechData := UTL: TechData :: CREA 'U8enri' 1 = <<U8enri>> ;
+  TechData := UTL: TechData :: CREA 'Pu8enri' 1 = <<Pu8enri>> ;
+  TechData := UTL: TechData :: CREA 'Pu9enri' 1 = <<Pu9enri>> ;
+  TechData := UTL: TechData :: CREA 'Pu0enri' 1 = <<Pu0enri>> ;
+  TechData := UTL: TechData :: CREA 'Pu1enri' 1 = <<Pu1enri>> ;
+  TechData := UTL: TechData :: CREA 'Pu2enri' 1 = <<Pu2enri>> ;
+  TechData := UTL: TechData :: CREA 'Am1enri' 1 = <<Am1enri>> ;
+
+  TechData := UTL: TechData :: CREA 'enriUGd' 1 = <<enriUGd>> ;
+  TechData := UTL: TechData :: CREA 'enriGd' 1 = <<enriGd>> ;
+  TechData := UTL: TechData :: CREA 'NbGdPin' 1 = <<NbGdPin>> ;
+  TechData := UTL: TechData :: CREA 'NbNoGdPin' 1 = <<NbNoGdPin>> ;
+  TechData := UTL: TechData :: CREA 'U4eGd' 1 = <<U4eGd>> ;
+  TechData := UTL: TechData :: CREA 'U5eGd' 1 = <<U5eGd>> ;
+  TechData := UTL: TechData :: CREA 'U6eGd' 1 = <<U6eGd>> ;
+  TechData := UTL: TechData :: CREA 'U8eGd' 1 = <<U8eGd>> ;
+  TechData := UTL: TechData :: CREA 'Pu9eGd' 1 = <<Pu9eGd>> ;
+  TechData := UTL: TechData :: CREA 'Pu0eGd' 1 = <<Pu0eGd>> ;
+  TechData := UTL: TechData :: CREA 'Pu1eGd' 1 = <<Pu1eGd>> ;
+  TechData := UTL: TechData :: CREA 'Pu2eGd' 1 = <<Pu2eGd>> ;
+
+  TechData := UTL: TechData :: CREA 'enriU' 1 = <<enriU>> ;
+  TechData := UTL: TechData :: CREA 'enriPu' 1 = <<enriPu>> ;
+  TechData := UTL: TechData :: CREA 'NbCornPin' 1 = <<NbCornPin>> ;
+  TechData := UTL: TechData :: CREA 'NbSidePin' 1 = <<NbSidePin>> ;
+  TechData := UTL: TechData :: CREA 'NbCntrPin' 1 = <<NbCntrPin>> ;
+  TechData := UTL: TechData :: CREA 'f_corn' 1 = <<f_corn>> ;
+  TechData := UTL: TechData :: CREA 'f_side' 1 = <<f_side>> ;
+  TechData := UTL: TechData :: CREA 'f_cntr' 1 = <<f_cntr>> ;
+  TechData := UTL: TechData :: CREA 'f_cornPin' 1 = <<f_cornPin>> ;
+  TechData := UTL: TechData :: CREA 'f_sidePin' 1 = <<f_sidePin>> ;
+  TechData := UTL: TechData :: CREA 'f_cntrPin' 1 = <<f_cntrPin>> ;
+
+ELSE
+   ECHO "Error --- DataType:" DataType "not recognized." ;
+   ABORT: ;
+ENDIF ;
+
+*------------------------------------------------------
+
+END: ;
+QUIT "LIST" .

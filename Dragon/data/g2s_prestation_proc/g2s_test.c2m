@@ -1,0 +1,221 @@
+*----
+* Windmill geometry constructed with G2S:
+* UOX or MOX assembly with control rods out
+*----
+SEQ_ASCII UOX_TBH :: FILE './UOX_TBH_G2S.dat' ;
+SEQ_ASCII FIG.ps :: FILE './UOX_TBH_FIG.ps' ;
+SEQ_ASCII Lines.m :: FILE './Lines.m' ;
+SEQ_BINARY  TF_EXC  ;
+LINKED_LIST  GEON2 TRACKN2 ;
+MODULE GEO: G2S: SALT: TLM: END: ;
+REAL densur := 1.0 ;
+INTEGER an2d := 8 ;
+*
+REAL cote := 1.26 ;
+REAL lame := 0.042 ;
+REAL Rcomb1 := 0.288712 ;
+REAL Rcomb2 := 0.365195 ;
+REAL Rcomb3 := 0.397962 ;
+REAL Rcomb4 := 0.4083 ;
+REAL R_int_G := 0.4165 ;
+REAL R_ext_G := 0.4775 ;
+REAL Rtub1 := 0.1897 ;
+REAL Rtub2 := 0.3794 ;
+REAL R_int_TI := 0.5691 ;
+REAL R_ext_TI := 0.6095 ;
+REAL mesh1 := cote ;
+REAL mesh2 := mesh1 cote + ;
+REAL mesh3 := mesh2 cote + ;
+REAL mesh4 := mesh3 cote + ;
+REAL mesh5 := mesh4 cote + ;
+REAL mesh6 := mesh5 cote + ;
+REAL mesh7 := mesh6 cote + ;
+REAL mesh8 := mesh7 cote + ;
+REAL mesh9 := mesh8 cote + ;
+REAL mesh10 := mesh9 lame + ;
+*
+GEON2 := GEO: :: CAR2D 10 10
+  EDIT 0
+  X- DIAG X+ ALBE 1.0
+  Y- SYME Y+ DIAG
+  CELL
+  TI C0201 C0301     TG  C0501  C0601     TG   C0801 C0901 Lame_V
+     C0202 C0302  C0402  C0502  C0602  C0702   C0802 C0902 Lame_V
+           C0303  C0403  C0503  C0603  C0703   C0803 C0903 Lame_V
+                     TG  C0504  C0604     TG   C0804 C0904 Lame_V
+                         C0505  C0605  C0705   C0805 C0905 Lame_V
+                                   TG  C0706   C0806 C0906 Lame_V
+                                       C0707   C0807 C0907 Lame_V
+                                               C0808 C0908 Lame_V
+                                                     C0909 Lame_V
+                                                           Lame_C
+  MESHX 0.0 <<mesh1>> <<mesh2>> <<mesh3>> <<mesh4>> <<mesh5>> <<mesh6>>
+        <<mesh7>> <<mesh8>> <<mesh9>> <<mesh10>>
+  MESHY 0.0 <<mesh1>> <<mesh2>> <<mesh3>> <<mesh4>> <<mesh5>> <<mesh6>>
+        <<mesh7>> <<mesh8>> <<mesh9>> <<mesh10>>
+  ::: Lame_C := GEO: CAR2D 1 1
+    MESHX 0.0 <<lame>> MESHY 0.0 <<lame>>
+    MIX 1 ;
+
+  ::: Lame_V := GEO: CAR2D 1 1
+    MESHX 0.0 <<lame>> MESHY 0.0 <<cote>>
+    SPLITY 3 MIX 1 ;
+
+  ::: C0201 := GEO: CARCEL 6
+         MESHX 0.0 <<cote>>
+         MESHY 0.0 <<cote>>
+         SECT 2 6
+         RADIUS 0.0 <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>>
+                <<R_int_G>> <<R_ext_G>>
+         MIX  3 4 5 6   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0202 := GEO: C0201
+         MIX  9 10 11 12   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0301 := GEO: C0201
+         MIX  13 14 15 16   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0302 := GEO: C0201
+         MIX  17 18 19 20   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0303 := GEO: C0201
+         MIX  21 22 23 24   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0402 := GEO: C0201
+         MIX  26 27 28 29   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0403 := GEO: C0201
+         MIX  30 31 32 33   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0501 := GEO: C0201
+         MIX  34 35 36 37   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0502 := GEO: C0201
+         MIX  38 39 40 41   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0503 := GEO: C0201
+         MIX  42 43 44 45   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0504 := GEO: C0201
+         MIX  46 47 48 49   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0505 := GEO: C0201
+         MIX  50 51 52 53   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0601 := GEO: C0201
+         MIX  54 55 56 57   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0602 := GEO: C0201
+         MIX  58 59 60 61   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0603 := GEO: C0201
+         MIX  62 63 64 65   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0604 := GEO: C0201
+         MIX  66 67 68 69   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0605 := GEO: C0201
+         MIX  70 71 72 73   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0702 := GEO: C0201
+         MIX  74 75 76 77   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0703 := GEO: C0201
+         MIX  78 79 80 81   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0705 := GEO: C0201
+         MIX  82 83 84 85   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0706 := GEO: C0201
+         MIX  86 87 88 89   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0707 := GEO: C0201
+         MIX  90 91 92 93   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0801 := GEO: C0201
+         MIX  94 95 96 97   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0802 := GEO: C0201
+         MIX  98 99 100 101   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0803 := GEO: C0201
+         MIX  102 103 104 105   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0804 := GEO: C0201
+         MIX  106 107 108 109   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0805 := GEO: C0201
+         MIX  110 111 112 113   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0806 := GEO: C0201
+         MIX  114 115 116 117   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0807 := GEO: C0201
+         MIX  118 119 120 121   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0808 := GEO: C0201
+         MIX  122 123 124 125   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0901 := GEO: C0201
+         MIX  126 127 128 129   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0902 := GEO: C0201
+         MIX  130 131 132 133   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0903 := GEO: C0201
+         MIX  134 135 136 137   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0904 := GEO: C0201
+         MIX  138 139 140 141   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0905 := GEO: C0201
+         MIX  142 143 144 145   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0906 := GEO: C0201
+         MIX  146 147 148 149   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0907 := GEO: C0201
+         MIX  150 151 152 153   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0908 := GEO: C0201
+         MIX  154 155 156 157   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: C0909 := GEO: C0201
+         MIX  158 159 160 161   7 8 1 1 1 1 1 1 1 1 ;
+
+  ::: TG := GEO: CARCEL 4
+         MESHX 0.0 <<cote>>
+         MESHY 0.0 <<cote>>
+         SECT 2 0
+         RADIUS 0.0 <<Rtub1>> <<Rtub2>> <<R_int_TI>> <<R_ext_TI>>
+         MIX 1  1  1  1  1  1  1  1
+             1  1  1  1  1  1  1  1
+             1  1  1  1  1  1  1  1
+             25 25 25 25 25 25 25 25
+             1  1  1  1  1  1  1  1 ;
+
+  ::: TI := GEO: CARCEL 4
+         MESHX 0.0 <<cote>>
+         MESHY 0.0 <<cote>>
+         SECT 2 0
+         RADIUS 0.0 <<Rtub1>> <<Rtub2>> <<R_int_TI>> <<R_ext_TI>>
+         MIX 1  1  1  1  1  1  1  1
+             1  1  1  1  1  1  1  1
+             1  1  1  1  1  1  1  1
+             2  2  2  2  2  2  2  2
+             1  1  1  1  1  1  1  1 ;
+;
+
+UOX_TBH FIG.ps := G2S: GEON2 :: DRAWMIX ;
+TRACKN2 TF_EXC := SALT: UOX_TBH ::
+     EDIT 1
+     REND LONG TISO <<an2d>> <<densur>>
+;
+
+Lines.m := TLM: TRACKN2 TF_EXC ::
+  EDIT 99
+  NTPO 1
+  DIRECTIONS NoPause DIR 0 ;
+
+ECHO "test g2s_test completed" ;
+END: ;

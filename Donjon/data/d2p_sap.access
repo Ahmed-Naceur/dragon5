@@ -1,0 +1,12 @@
+#!/bin/sh
+accessname=$(basename $0 | cut -d"." -f1)
+if [ $# = 0 ]
+   then
+   echo "usage: "$accessname".access directory" 1>&2
+   exit 1
+fi
+
+# ASCII Multicompo
+cp "$1"/data/d2p_xslib/_Sap_nonXe ./XSLIB
+ls -l
+echo $accessname".access script completed"

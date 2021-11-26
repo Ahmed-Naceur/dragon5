@@ -1,0 +1,394 @@
+*----
+*  TEST CASE TCA131
+*  DEPLETION OF A PWR ASSEMBLY (NO CONTROL BAR; 3.7% ENRICHMENT)
+*----
+*
+REAL POW := 3.016E17 ; (*flux norm. factor in Mev/(s*cm) *)
+REAL evobeg evoend ;
+INTEGER istep := 1 ;
+INTEGER iautop := 1 ;
+STRING n2 n3 n4 n5 n6 n7 n8 n9 n10 n11 n12 n13 n14 n15 n16 n17 n18
+n19 n20 n21 n22 n23 n24 n25 n26 n27 n28 n29 n30 n31 n32 n33 n34 n35
+n36 n37 n38 n39 n40 n41 n42 n43 n44 n45 n46 n47 := 
+" 2"  " 3"  " 4"  " 5"  " 6"  " 7"  " 8"  " 9"  "10"  "11"  "12"  "13"
+"14"  "15"  "16"  "17"  "18"  "19"  "20"  "21"  "22"  "23"  "24"  "25"
+"26"  "27"  "28"  "29"  "30"  "31"  "32"  "33"  "34"  "35"  "36"  "37"
+"38"  "39"  "40"  "41"  "42"  "43"  "44"  "45"  "46"  "47"  ;
+REAL step2 step3 step4 step5 step6 step7 step8 step9 step10 step11
+step12 step13 step14 step15 step16 step17 step18 step19 step20 step21
+step22 step23 step24 step25 step26 step27 step28 step29 step30 step31
+step32 step33 step34 step35 step36 step37 step38 step39 step40 step41
+step42 step43 step44 step45 step46 step47 
+:= 18.75 37.50 56.25 75.0 112.5 150.0 325.0 500.0 750.0 1000.0 1500.0
+2000.0 3000.0 4000.0 5000.0 6000.0 7000.0 8000.0 8500.0 9000.0 9500.0
+10000.0 11250.0 12500.0 13750.0 15000.0 16250.0 17500.0 18750.0
+20000.0 21250.0 22500.0 23750.0 25000.0 26250.0 27500.0 28750.0
+30000.0 31250.0 32500.0 33750.0 35000.0 36250.0 37500.0 38750.0
+40000.0 ;
+REAL ss2 ss3 ss4 ss5 ss6 ss7 ss8 ss9 ss10 ss11 ss12 ss13 ss14 ss15
+:= 150.0 500.0 1000.0 2000.0 4000.0 6000.0 8000.0 10000.0 15000.0
+20000.0 25000.0 30000.0 35000.0 40000. ;
+STRING step_g := "EDITCDAT  "   n2   + ; 
+LINKED_LIST LIBRARY LIBRARY2 ASSMB TRACK MACRO SYS FLUX EDIT
+            BURNUP COMPO ;
+MODULE GEO: SYBILT: USS: MAC: LIB: ASM: FLU: EDI: EVO: DELETE: END: ;
+PROCEDURE CEA93_V2_DPL ;
+PROCEDURE assertS ;
+INTEGER COMB0101 COMB0102 COMB0103 COMB0104 COMB0105 COMB0106 GAIN1
+        TROU1 TUBT1 MODT1 CENTK DETEK MODE1 MODE6 MODE7 := 
+        1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 ; (* DISTRIBUTED S-S *)
+REAL RCOMB1 RCOMB2 RCOMB3 RCOMB4 RCOMB5 RCOMB6 RG RM1 RM6 RM7 RTR
+     RTU RCEK RDEK COTE LAME VOL_ASS NORM_FCT ;
+SEQ_ASCII MIXFUEL ;
+*
+LIBRARY := CEA93_V2_DPL ;
+LIBRARY := LIB: LIBRARY ::
+ EDIT 1
+ NMIX 15   (*MAXIMUM OF MATERIAL MIXTURES*)
+ CTRA APOL (*APOLLO TYPE TRANSPORT CORRECTION*)
+ SUBG      (*HELIOS TYPE PROBABILITY TABLES*)
+*
+ MIXS LIB: APLIB1 FIL: CEA93
+ MIX <<COMB0101>> 873.6 (*COMB0101*)
+  U238     = '92238' 2.2089E-02 1 SHIB '192238' IRSET 0.3 35
+  U235     = '92235' 8.5978E-04 1 SHIB '192235' IRSET 0.3 35
+  U234     = '92234' 6.4760E-06
+  U236     = '92236' 0.0 1 SHIB '192236' IRSET 0.3 35
+  PU238    = '94238' 0.0 1 SHIB '194238' IRSET 0.3 35
+  PU239    = '94239' 0.0 1 SHIB '194239' IRSET 0.3 35
+  PU240    = '94240' 0.0 1 SHIB '194240' IRSET 0.3 35
+  PU241    = '94241' 0.0 1 SHIB '194241' IRSET 0.3 35
+  PU242    = '94242' 0.0 1 SHIB '194242' IRSET 0.3 35
+  AM241    = '95241' 0.0 1 SHIB '195241' IRSET 0.3 35
+  O16      = '8016'  4.5910E-02
+  NP237    = '93237' 0.0 1 SHIB '193237' IRSET 0.3 35
+ MIX <<COMB0102>> COMB <<COMB0101>> 1.0 (*COMB0102*)
+ MIX <<COMB0103>> COMB <<COMB0101>> 1.0 (*COMB0103*)
+ MIX <<COMB0104>> COMB <<COMB0101>> 1.0 (*COMB0104*)
+ MIX <<COMB0105>> COMB <<COMB0101>> 1.0 (*COMB0105*)
+ MIX <<COMB0106>> COMB <<COMB0101>> 1.0 (*COMB0106*)
+ MIX <<GAIN1>> 578.9 (*GAIN1*)
+  ZRNAT    = '40000' 3.7274E-02 2 SHIB '140000' IRSET 0.3 35
+  FE54     = '26054' 7.5583E-06
+  FE56     = '26056' 1.1953E-04
+  FE57     = '26057' 2.8669E-06
+  FE58     = '26058' 3.6488E-07
+  CR50     = '24050' 2.8993E-06
+  CR52     = '24052' 5.5847E-05
+  CR53     = '24053' 6.3319E-06
+  CR54     = '24054' 1.5730E-06
+  O16      = '8016'  2.7083E-04
+ MIX <<TROU1>> 578.9 (*TROU1/ENVELK*)
+  H2O      = '18' 2.3934E-02
+ MIX <<TUBT1>> 578.9 (*TUBT1/TUBIK*)
+  ZRNAT    = '40000' 4.2424E-02 2 SHIB '140000' IRSET 0.3 35
+  FE54     = '26054' 8.6028E-06
+  FE56     = '26056' 1.3604E-04
+  FE57     = '26057' 3.2631E-06
+  FE58     = '26058' 4.1531E-07
+  CR50     = '24050' 3.3000E-06
+  CR52     = '24052' 6.3565E-05
+  CR53     = '24053' 7.2069E-06
+  CR54     = '24054' 1.7903E-06
+  O16      = '8016'  3.0826E-04
+ MIX <<MODT1>> 578.9 (*MODT1/MODK/BORD_C4/BORD_C5*)
+  H2O      = '18' 2.3400E-02
+  ZRNAT    = '40000' 8.4423E-04
+  FE54     = '26054' 2.4247E-06
+  FE56     = '26056' 3.8343E-05
+  FE57     = '26057' 9.1970E-07
+  FE58     = '26058' 1.1705E-07
+  CR50     = '24050' 1.9576E-06
+  CR52     = '24052' 3.7708E-05
+  CR53     = '24053' 4.2753E-06
+  CR54     = '24054' 1.0621E-06
+  O16      = '8016'  6.1343E-06
+  NI58     = '28058' 7.2690E-05
+  NI60     = '28060' 2.7790E-05
+  NI61     = '28061' 1.2032E-06
+  NI62     = '28062' 3.8224E-06
+  NI64     = '28064' 9.6892E-07
+  MO95     = '42095' 3.8249E-06
+  NB93     = '41093' 6.6364E-06
+  TINAT    = '22000' 2.2378E-06
+  MN55     = '25055' 3.8997E-07
+ MIX <<CENTK>> 578.9 (*CENTK*)
+  FE54     = '26054' 1.8874E-03
+  FE56     = '26056' 2.9848E-02
+  FE57     = '26057' 7.1593E-04
+  FE58     = '26058' 9.1118E-05
+  CR50     = '24050' 3.8765E-04
+  CR52     = '24052' 7.4669E-03
+  CR53     = '24053' 8.4659E-04
+  CR54     = '24054' 2.1031E-04
+  NI58     = '28058' 2.9945E-03
+  NI60     = '28060' 1.1448E-03
+  NI61     = '28061' 4.9564E-05
+  NI62     = '28062' 1.5747E-04
+  NI64     = '28064' 3.9915E-05
+  MN55     = '25055' 4.6856E-04
+ MIX <<DETEK>> 578.9 (*DETEK*)
+  FE54     = '26054' 1.8876E-03
+  FE56     = '26056' 2.9851E-02
+  FE57     = '26057' 7.1600E-04
+  FE58     = '26058' 9.1127E-05
+  CR50     = '24050' 3.8769E-04
+  CR52     = '24052' 7.4676E-03
+  CR53     = '24053' 8.4667E-04
+  CR54     = '24054' 2.1033E-04
+  NI58     = '28058' 2.9948E-03
+  NI60     = '28060' 1.1449E-03
+  NI61     = '28061' 4.9569E-05
+  NI62     = '28062' 1.5748E-04
+  NI64     = '28064' 3.9919E-05
+  MN55     = '25055' 4.6861E-04
+ MIX <<MODE1>> 578.9 (*MODE1/BORD_C1/BORD_C2/BORD_C3*)
+  H2O      = '18' 2.3663E-02
+  ZRNAT    = '40000' 4.2949E-04
+  FE54     = '26054' 1.2335E-06
+  FE56     = '26056' 1.9507E-05
+  FE57     = '26057' 4.6789E-07
+  FE58     = '26058' 5.9550E-08
+  CR50     = '24050' 9.9593E-07
+  CR52     = '24052' 1.9184E-05
+  CR53     = '24053' 2.1750E-06
+  CR54     = '24054' 5.4032E-07
+  O16      = '8016'  3.1208E-06
+  NI58     = '28058' 3.6980E-05
+  NI60     = '28060' 1.4138E-05
+  NI61     = '28061' 6.1210E-07
+  NI62     = '28062' 1.9446E-06
+  NI64     = '28064' 4.9293E-07
+  MO95     = '42095' 1.9459E-06
+  NB93     = '41093' 3.3762E-06
+  TINAT    = '22000' 1.1385E-06
+  MN55     = '25055' 1.9840E-07
+ MIX <<MODE6>> 578.9 (*MODE6/BORD_C6*)
+  H2O      = '18' 2.3683E-02
+  ZRNAT    = '40000' 3.9695E-04
+  FE54     = '26054' 1.1401E-06
+  FE56     = '26056' 1.8029E-05
+  FE57     = '26057' 4.3244E-07
+  FE58     = '26058' 5.5037E-08
+  CR50     = '24050' 9.2047E-07
+  CR52     = '24052' 1.7730E-05
+  CR53     = '24053' 2.0102E-06
+  CR54     = '24054' 4.9938E-07
+  O16      = '8016' 2.8843E-06
+  NI58     = '28058' 3.4178E-05
+  NI60     = '28060' 1.3067E-05
+  NI61     = '28061' 5.6572E-07
+  NI62     = '28062' 1.7973E-06
+  NI64     = '28064' 4.5558E-07
+  MO95     = '42095' 1.7985E-06
+  NB93     = '41093' 3.1204E-06
+  TINAT    = '22000' 1.0522E-06
+  MN55     = '25055' 1.8336E-07
+ MIX <<MODE7>> 578.9 (*MODE7/BORD_C7*)
+  H2O      = '18' 2.3673E-02
+  ZRNAT    = '40000' 4.1284E-04
+  FE54     = '26054' 1.1857E-06
+  FE56     = '26056' 1.8751E-05
+  FE57     = '26057' 4.4975E-07
+  FE58     = '26058' 5.7241E-08
+  CR50     = '24050' 9.5732E-07
+  CR52     = '24052' 1.8440E-05
+  CR53     = '24053' 2.0907E-06
+  CR54     = '24054' 5.1937E-07
+  O16      = '8016' 2.9998E-06
+  NI58     = '28058' 3.5547E-05
+  NI60     = '28060' 1.3590E-05
+  NI61     = '28061' 5.8837E-07
+  NI62     = '28062' 1.8692E-06
+  NI64     = '28064' 4.7382E-07
+  MO95     = '42095' 1.8705E-06
+  NB93     = '41093' 3.2453E-06
+  TINAT    = '22000' 1.0943E-06
+  MN55     = '25055' 1.9070E-07
+*
+ MIXS LIB: APLIB1 FIL: CEA861
+ MIX <<GAIN1>> 578.9 (*GAIN1*)
+  SN117    = '50117' 1.9876E-04
+  SN119    = '50119' 2.2491E-04
+  BIDON    = '6' 2.3014E-04
+ MIX <<TROU1>> 578.9 (*TROU1/ENVELK*)
+  BNAT     = '5000' 1.9920E-05
+ MIX <<TUBT1>> 578.9 (*TUBT1/TUBIK*)
+  SN117    = '50117' 2.2622E-04
+  SN119    = '50119' 2.5599E-04
+  BIDON    = '6' 2.6194E-04
+ MIX <<MODT1>> 578.9 (*MODT1/MODK/BORD_C4/BORD_C5*)
+  BNAT     = '5000' 1.9509E-05
+  SN117    = '50117' 4.5017E-06
+  SN119    = '50119' 5.0941E-06
+  BIDON    = '6' 1.1814E-04
+ MIX <<CENTK>> 578.9 (*CENTK*)
+  BIDON    = '6' 1.0208E-02
+ MIX <<DETEK>> 578.9 (*DETEK*)
+  BIDON    = '6' 1.0209E-02
+ MIX <<MODE1>> 578.9 (*MODE1/BORD_C1/BORD_C2/BORD_C3*)
+  BNAT     = '5000' 1.9711E-05
+  SN117    = '50117' 2.2902E-06
+  SN119    = '50119' 2.5916E-06
+  BIDON    = '6' 6.0103E-05
+ MIX <<MODE6>> 578.9 (*MODE6/BORD_C6*)
+  BNAT     = '5000' 1.9727E-05
+  SN117    = '50117' 2.1167E-06
+  SN119    = '50119' 2.3952E-06
+  BIDON    = '6' 5.5549E-05
+ MIX <<MODE7>> 578.9 (*MODE7/BORD_C7*)
+  BNAT     = '5000' 1.9719E-05
+  SN117    = '50117' 2.2014E-06
+  SN119    = '50119' 2.4911E-06
+  BIDON    = '6' 5.7773E-05
+ ;
+EVALUATE RCOMB1 RCOMB2 RCOMB3 RCOMB4 RCOMB5 RCOMB6 := 0.25899 0.34261
+ 0.36627 0.38849 0.39913 0.4095 ;
+EVALUATE RG RM1 RM6 RM7 RTR RTU RCEK RDEK := 0.4750 0.692879 0.714875
+0.703877 0.5625 0.6025 0.0750 0.3750 ;
+EVALUATE COTE LAME := 1.26 1.30 ;
+EVALUATE VOL_ASS := COTE 15.0 * LAME 2.0 * + ;
+EVALUATE VOL_ASS := VOL_ASS VOL_ASS * ;
+EVALUATE NORM_FCT := POW 1.60207E-13 * 2.7288 / VOL_ASS / ;
+ECHO "assembly volume=" VOL_ASS "cm**3  normalization=" NORM_FCT
+      "MW/tonne" ;
+ASSMB := GEO: :: CAR2D 9 9 (*17 X 17 ASSEMBLY*)
+          X- DIAG X+ REFL
+          Y- SYME Y+ DIAG
+          CELL C1 C3 C3 C2 C3 C3 C2 C3 C4
+                  C3 C3 C3 C3 C3 C3 C3 C4
+                     C3 C3 C3 C3 C3 C3 C4
+                        C2 C3 C3 C2 C3 C4
+                           C3 C3 C3 C3 C4
+                              C2 C3 C3 C4
+                                 C3 C3 C4
+                                    C3 C4
+                                       C5
+          MERGE 5  2  1  4  1  1  4  1  7
+                   3  3  1  3  3  1  3  7
+                      3  1  3  3  1  3  7
+                         4  1  1  4  1  7
+                            3  1  1  3  7
+                               4  1  3  7
+                                  3  3  7
+                                     3  7
+                                        6
+          ::: C1 := GEO: CARCEL 5
+                MESHX 0.0 <<COTE>>
+                MESHY 0.0 <<COTE>>
+                RADIUS 0.0 <<RCEK>> <<RDEK>> <<RTR>> <<RTU>> <<RM1>>
+                MIX <<CENTK>> <<DETEK>> <<TROU1>> <<TUBT1>> <<MODT1>>
+                    <<MODT1>>
+          ;
+          ::: C2 := GEO: CARCEL 3
+                MESHX 0.0 <<COTE>>
+                MESHY 0.0 <<COTE>>
+                RADIUS 0.0 <<RTR>> <<RTU>> <<RM1>>
+                MIX <<TROU1>> <<TUBT1>> <<MODT1>> <<MODT1>>
+          ;
+          ::: C3 := GEO: CARCEL 8
+                MESHX 0.0 <<COTE>>
+                MESHY 0.0 <<COTE>>
+                RADIUS 0.0 <<RCOMB1>> <<RCOMB2>> <<RCOMB3>> <<RCOMB4>>
+                       <<RCOMB5>> <<RCOMB6>> <<RG>> <<RM1>>
+                MIX <<COMB0101>> <<COMB0102>> <<COMB0103>> <<COMB0104>>
+                    <<COMB0105>> <<COMB0106>> <<GAIN1>> <<MODE1>>
+                    <<MODE1>>
+          ;
+          ::: C4 := GEO: C3
+                MESHX 0.0 <<LAME>>
+                RADIUS 0.0 <<RCOMB1>> <<RCOMB2>> <<RCOMB3>> <<RCOMB4>>
+                       <<RCOMB5>> <<RCOMB6>> <<RG>> <<RM7>>
+                MIX <<COMB0101>> <<COMB0102>> <<COMB0103>> <<COMB0104>>
+                    <<COMB0105>> <<COMB0106>> <<GAIN1>> <<MODE7>>
+                    <<MODE7>>
+          ;
+          ::: C5 := GEO: C4
+                MESHY 0.0 <<LAME>>
+                RADIUS 0.0 <<RCOMB1>> <<RCOMB2>> <<RCOMB3>> <<RCOMB4>>
+                       <<RCOMB5>> <<RCOMB6>> <<RG>> <<RM6>>
+                MIX <<COMB0101>> <<COMB0102>> <<COMB0103>> <<COMB0104>>
+                    <<COMB0105>> <<COMB0106>> <<GAIN1>> <<MODE6>>
+                    <<MODE6>>
+          ;
+          ;
+TRACK := SYBILT: ASSMB ::
+     EDIT 1
+     MAXR 400  (*MAXIMUM OF 400 REGIONS*)
+     TITLE 'MULTICELL 17 X 17 PWR ASSEMBLY' ROTH ASKE ;
+LIBRARY2 := USS: LIBRARY TRACK :: EDIT 2 TRAN ;
+*
+SYS := ASM: LIBRARY2 TRACK :: PIJ ;
+FLUX := FLU: SYS LIBRARY2 TRACK :: TYPE B B1 SIGS ;
+
+EDIT := EDI: LIBRARY2 TRACK FLUX :: EDIT 3
+   COND 55 99 MERGE COMP SAVE ON 'EDITCDAT   1' ;
+
+EVALUATE evoend := 0.0 ;
+WHILE evoend step2 NORM_FCT / < DO
+
+  EVALUATE evobeg := evoend ;
+  EVALUATE evoend := step2 NORM_FCT / ;
+  ECHO "Burnup step" istep "between" evobeg "and" evoend "day:" ;
+  IF istep 1 = THEN
+    BURNUP LIBRARY2 := EVO: LIBRARY2 FLUX TRACK :: EDIT 3 RUNG
+         DEPL <<evobeg>> <<evoend>> DAY POWR <<NORM_FCT>> (*MW/TONNE*)
+         EXPM 1.0E15 ;
+  ELSE
+    IF iautop 1 = THEN
+      BURNUP LIBRARY2 := EVO: BURNUP LIBRARY2 FLUX TRACK :: EDIT 2
+        DEPL <<evobeg>> <<evoend>> DAY POWR <<NORM_FCT>> (*MW/TONNE*)
+        RUNG NOEX EXPM 1.0E15 ;
+    ELSE
+      BURNUP LIBRARY2 := EVO: BURNUP LIBRARY2 FLUX TRACK :: EDIT 2
+        DEPL <<evobeg>> <<evoend>> DAY POWR <<NORM_FCT>> (*MW/TONNE*)
+        RUNG EXTR EXPM 1.0E15 ;
+    ENDIF ;
+  ENDIF ;
+  IF step2 ss2 = THEN
+     ECHO "Self-shielding calculation" istep "at" evoend "DAY:" ;
+     LIBRARY2 := USS: LIBRARY2 LIBRARY TRACK :: EDIT 2 PASS 1 ;
+     EVALUATE ss2 ss3 ss4 ss5 ss6 ss7 ss8 ss9 ss10 ss11 ss12 ss13 ss14
+     ss15 := ss3 ss4 ss5 ss6 ss7 ss8 ss9 ss10 ss11 ss12 ss13 ss14 ss15
+     ss2 ;
+     EVALUATE iautop := 1 ;
+  ELSE
+     EVALUATE iautop := 2 ;
+  ENDIF ;
+  SYS := DELETE: SYS ;
+  SYS := ASM: LIBRARY2 TRACK :: PIJ ;
+  FLUX := FLU: FLUX SYS LIBRARY2 TRACK :: TYPE B B1 SIGS ;
+
+  EDIT := EDI: EDIT LIBRARY2 TRACK FLUX :: EDIT 3 SAVE ON <<step_g>> ;
+
+  EVALUATE step_g := step_g n2 - n3 + ; 
+
+  EVALUATE n2 n3 n4 n5 n6 n7 n8 n9 n10 n11 n12 n13 n14 n15 n16 n17 n18
+  n19 n20 n21 n22 n23 n24 n25 n26 n27 n28 n29 n30 n31 n32 n33 n34 n35
+  n36 n37 n38 n39 n40 n41 n42 n43 n44 n45 n46 n47 := 
+  n3 n4 n5 n6 n7 n8 n9 n10 n11 n12 n13 n14 n15 n16 n17 n18
+  n19 n20 n21 n22 n23 n24 n25 n26 n27 n28 n29 n30 n31 n32 n33 n34 n35
+  n36 n37 n38 n39 n40 n41 n42 n43 n44 n45 n46 n47 n2 ; 
+
+  EVALUATE step2 step3 step4 step5 step6 step7 step8 step9 step10
+  step11 step12 step13 step14 step15 step16 step17 step18 step19
+  step20 step21 step22 step23 step24 step25 step26 step27 step28
+  step29 step30 step31 step32 step33 step34 step35 step36 step37
+  step38 step39 step40 step41 step42 step43 step44 step45 step46
+  step47 := step3 step4 step5 step6 step7 step8 step9 step10 step11
+  step12 step13 step14 step15 step16 step17 step18 step19 step20
+  step21 step22 step23 step24 step25 step26 step27 step28 step29
+  step30 step31 step32 step33 step34 step35 step36 step37 step38
+  step39 step40 step41 step42 step43 step44 step45 step46 step47
+  step2 ; 
+
+  EVALUATE istep := istep 1 + ;
+
+ENDWHILE ;
+assertS FLUX :: 'K-INFINITY' 1 0.9192253 ;
+
+BURNUP LIBRARY2 := EVO: BURNUP LIBRARY2 FLUX TRACK :: EDIT 2
+        SAVE <<evoend>> DAY POWR <<NORM_FCT>> (*MW/TONNE*) ;
+
+ECHO "test TCA131 completed" ;
+END: ;

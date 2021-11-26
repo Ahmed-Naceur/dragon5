@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+# SAVE FILE OF CONVERSION DATA SET a2b_drglib_endfb6.x2m
+#
+if [ $# = 0 ]
+   then
+   echo "usage: a2b_drglib_endfb6.save directory" 1>&2
+   exit 1
+fi
+echo access a2b_drglib_endfb6.save
+MACH=`uname -s`
+Sysx="`echo $MACH | cut -b -6`"
+if [ $Sysx = "CYGWIN" ]; then
+   MACH=`uname -o`
+elif [ $Sysx = "Darwin" ]; then
+   MACH=`uname -sm | sed 's/[ ]/_/'`
+elif [ $Sysx = "SunOS" ]; then
+   MACH=`uname -sm | sed 's/[ ]/_/'`
+fi
+if [ "$MACH" = "Linux" -o "$MACH" = "OSF1" -o "$MACH" = "Cygwin" -o "$MACH" = "SunOS_i86pc" -o "$MACH" = "Darwin_i386" -o "$MACH" = "Darwin_x86_64" ]
+ then
+  echo 'use little endian libraries'
+  pos=$1/../../libraries/l_endian
+else
+  echo 'use big endian libraries'
+  pos=$1/../../libraries/b_endian
+fi
+mv DRGLIB $pos/draglibendfb6r8_2012
+ls -l

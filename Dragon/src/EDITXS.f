@@ -1,0 +1,601 @@
+*DECK EDITXS
+      SUBROUTINE EDITXS(IWGOXS,IUTYPE,IPRINT,NGCOND,NL    ,NBNISO,
+     >                  CTITLE,IMRG  ,ENERGY,ISNNAM,ISNNRF,IPISO ,
+     >                  MIXISN,AWRISN,DENISN,TMPISN,EMJISN)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Transfer information from edit to isotxs.
+*
+*Copyright:
+* Copyright (C) 2002 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): M. T. Sissaoui
+*
+*Parameters: input
+* IWGOXS  unit for ISOTXS file.
+* IUTYPE  type of ISOTXS file:  =2 sequential binary file;
+*         =3 sequential ascii file.
+* IPRINT  print level.
+* NGCOND  number of energy group.
+* NL      anisotropy order.
+* NBNISO  number of edit isotopes.
+* CTITLE  title.
+* IMRG    mixture to consider.
+* ENERGY  energy groups.
+* ISNNAM  names of edit isotopes.
+* ISNNRF  reference names of edit isotopes.
+* IPISO   pointers to isotope libraries.
+* MIXISN  mixture number for edit isotopes.
+* AWRISN  AWR values for edit isotopes.
+* DENISN  density for edit isotopes.
+* TMPISN  temperature for edit isotopes.
+* EMJISN  energy for edit isotopes (Mega-joules for 10**24 fission).
+*
+*-----------------------------------------------------------------------
+*
+      USE         GANLIB
+      IMPLICIT    NONE
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      TYPE(C_PTR) IPISO(NBNISO)
+      INTEGER     IWGOXS,IUTYPE,IPRINT,NGCOND,NL,NBNISO,IMRG
+      INTEGER     ISNNAM(3,NBNISO),ISNNRF(3,NBNISO),MIXISN(NBNISO)
+      CHARACTER   CTITLE*72
+      REAL        ENERGY(NGCOND+1),AWRISN(NBNISO),DENISN(NBNISO),
+     >            TMPISN(NBNISO),EMJISN(NBNISO)
+*----
+*  LOCAL VARIABLES
+*----
+      INTEGER     IOUT,ILCMUP,ILCMDN,NFILNA,NFILCN,MXMULT,NFILMD,MAXA
+      PARAMETER  (MAXA=10000)
+      REAL        A(MAXA)
+      INTEGER     IA(MAXA)
+      CHARACTER   NAMSBR*6,HSMG*131
+      PARAMETER  (IOUT=6,ILCMUP=1,ILCMDN=2,NFILNA=3,NFILCN=8,MXMULT=2,
+     >            NFILMD=1+NFILNA*MXMULT,NAMSBR='EDITXS')
+      TYPE(C_PTR) KPEDIT
+      EQUIVALENCE (A(1),IA(1))
+*----
+* EXTERNAL FUNCTIONS
+*----
+      DOUBLE PRECISION XDRCST
+*----
+*  ALLOCATABLE ARRAYS
+*----
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: LOCISO,IJJ,NJJ,IRECGI,IREC
+      REAL, ALLOCATABLE, DIMENSION(:) :: AVGVEL,RICHI,RJCHI,RECPX,RECPS
+*----
+*  LOCAL PARAMETERS
+*----
+      CHARACTER     CM*2,NAMISO*12,FMTRD*5,CIDENT*8,HABSID*8,
+     >              HIDENT*8,HMAT*8,CDUM*8,CISO(10)*6
+      INTEGER       I,IFILID(NFILMD),IFILCN(NFILCN),NEXTRI,
+     >              MXGDSC,MXGUSC,ICHIST,ISO,IFIL,JSO,KSO,IGROUP,
+     >              IL,INFL,IFTL,IRECG,IRECNB,IRECIB,
+     >              MRECGI,MRECPX,MRECPS,IRECP,ILCMTY,
+     >              ILENG,IRECW,IW,IGR,NRECWR,JFZ,
+     >              JFX,ITC,NBISO,MULTA6,IRECL,
+     >              ITITLE,IC6TIT,JVAR,IRECWR,MRECWR
+      DOUBLE PRECISION NMASS
+      LOGICAL       LFIRST
+*----
+*  SET ISOTXS FILE DIMENSIONING RECORD
+*  MULTA6 = NUMBER OF INTEGER WORDS TO STORE
+*           CHARACTER*6 VARIABLE
+*  FMTRD  = FORMAT TO STORE CHARACTER*6 VARIABLE
+*           IN INTEGER WORDS
+*----
+      PARAMETER  (MULTA6=2,FMTRD='(2A4)')
+*----
+*  EQUIVALENCES
+*----
+      INTEGER NITMA,NITMA6(6)
+      REAL FLOTT,FLOTT6(6)
+      EQUIVALENCE(NITMA,FLOTT),(NITMA6,FLOTT6)
+*----
+*  DATA
+*----
+      CHARACTER     CFILNC(NFILNA)*10
+      SAVE          CFILNC
+      DATA         (CFILNC(IFIL),IFIL=1,NFILNA)
+     >             /'ISOTXS','DRAGON','971124'/
+*----
+*  SCRATCH STORAGE ALLOCATION
+*   AVGVEL  neutron average velocity
+*   LOCISO  isotope localisation vector
+*   IJJ     position of in group scattering
+*   NJJ     number of scattering groups
+*----
+      ALLOCATE(LOCISO(NBNISO),IJJ(NGCOND),NJJ(NGCOND))
+      ALLOCATE(AVGVEL(NGCOND))
+*-----
+*  EVALUATE THE ISOTOPE LOCALISATION VECTOR AND
+*  MAXIMUM NUMBER OF UPSCATTER AND DOWN SCATTER GROUPS
+*-----
+      NMASS=XDRCST('Neutron mass','amu')
+      NEXTRI=0
+      MXGDSC=0
+      MXGUSC=0
+      ICHIST=2
+      ISO=0
+*----
+*  ALLOCATE MEMORY TO STORE ISOTOPIC FISSION SPECTRUM
+*----
+      ALLOCATE(RICHI(NGCOND),RJCHI(NGCOND))
+      DO 120 JSO=1,NBNISO
+        IF(MIXISN(JSO) .EQ. IMRG) THEN
+          ISO=ISO+1
+          LOCISO(ISO)=NEXTRI
+          NEXTRI=NEXTRI+2+NL
+          KPEDIT=IPISO(JSO) ! set JSO-th isotope
+          IF(.NOT.C_ASSOCIATED(KPEDIT)) THEN
+            WRITE(HSMG,'(A6,11H: ISOTOPE '',3A4,17H'' IS NOT AVAILABL,
+     >      18HE IN THE MICROLIB.)') NAMSBR,(ISNNAM(ITC,JSO),ITC=1,3)
+            CALL XABORT(HSMG)
+          ENDIF
+*----
+*  TEST IF ALL FISSION PRODUCTION SPECTRUM IDENTICAL
+*  ICHIST = 2 -> NO FISSION SPECTRUM FOUND
+*  ICHIST = 1 -> ALL FISSION SPECTRUM IDENTICAL
+*  ICHIST = 0 -> AT LEAST 2 FISSION SPECTRUM ARE DIFFERENT
+*----
+          CALL LCMLEN(KPEDIT,'CHI',ILENG,ILCMTY)
+          IF(ILENG.NE.0) THEN
+            IF(ICHIST .EQ. 2) THEN
+              CALL LCMGET(KPEDIT,'CHI',RICHI)
+              ICHIST=1
+            ELSE IF(ICHIST .EQ. 1) THEN
+              CALL LCMGET(KPEDIT,'CHI',RJCHI)
+              DO 121 IGROUP=0,NGCOND-1
+                IF(RJCHI(IGROUP+1).NE.RICHI(IGROUP+1)) THEN
+                  ICHIST =0
+                  GO TO 125
+                ENDIF
+ 121          CONTINUE
+ 125          CONTINUE
+            ENDIF
+          ENDIF
+          DO 130 IL=1,NL
+            WRITE(CM,'(I2.2)') IL-1
+            CALL LCMLEN(KPEDIT,'SCAT'//CM,ILENG,ILCMTY)
+            IF(ILENG.NE.0) THEN
+*----
+*  DATA EXISTS FOR THIS SCATTERING LEVEL FOR THIS ISOTOPE
+*  READ NJJ AND IJJ
+*    IJJ(IGTO) IS MAXIMUM GROUP NUMBER
+*      WITH SCATTERING TO "IGTO" GROUP
+*    NJJ(IGTO) IS NUMBER OF GROUPS
+*      WITH SCATTERING TO "IGTO" GROUP
+*  DETERMINE MAXIMUM NUMBER OF UP-SCATTERING GROUPS
+*  DETERMINE MAXIMUM NUMBER OF DOWN-SCATTERING GROUPS
+*----
+              CALL LCMGET(KPEDIT,'NJJS'//CM,NJJ)
+              CALL LCMGET(KPEDIT,'IJJS'//CM,IJJ)
+              DO 140 IGROUP=1,NGCOND
+                MXGUSC=MAX(MXGUSC,IJJ(IGROUP)-IGROUP)
+                MXGDSC=MAX(MXGDSC,IGROUP+NJJ(IGROUP)-IJJ(IGROUP)-1)
+ 140          CONTINUE
+            ENDIF
+ 130      CONTINUE
+*----
+*  RECOVER AVERAGED VELOCITIES
+*----
+          CALL LCMLEN(KPEDIT,'OVERV',ILENG,ILCMTY)
+          IF(ILENG .GT. 0) CALL LCMGET(KPEDIT,'OVERV',AVGVEL)
+        ENDIF
+ 120  CONTINUE
+      DEALLOCATE(RJCHI)
+*----
+*  IF ICHIST = 2 SET DEFAULT FISSION SPECTRUM ALL TO 0.0
+*  AND USE A SINGLE CHI VECTOR
+*----
+      IF(ICHIST .EQ. 2) THEN
+        CALL XDRSET(RICHI,NGCOND,0.0)
+        ICHIST = 1
+      ENDIF
+      NBISO=ISO
+*----
+*     FILE IDENTIFICATION-RECORD 1
+*----
+      NRECWR=1+NFILNA*MULTA6
+      JFZ=0
+      DO 150 IFIL=1,NFILNA
+        JFX=JFZ+1
+        JFZ=JFZ+MULTA6
+        READ(CFILNC(IFIL),FMTRD) (IFILID(JVAR),JVAR=JFX,JFZ)
+ 150  CONTINUE
+      IFILID(NRECWR)=1
+*----
+*  TRANSFER INFORMATION TO ISOTXS
+*----
+      IRECWR=1
+      IF(IUTYPE.EQ.2) THEN
+        IF(NRECWR.GT.MAXA) CALL XABORT('EDITXS: MAXA OVERFLOW(1).')
+        IA(:NRECWR)=IFILID(:NRECWR)
+        CALL XDRITE(IWGOXS,IRECWR,A,NRECWR)
+      ELSE IF(IUTYPE.EQ.3) THEN
+        WRITE(IWGOXS,6002) (CFILNC(IFIL),IFIL=1,NFILNA),1
+      ENDIF
+*----
+*     FILE CONTROL-RECORD 2
+*----
+      IFILCN(1)=NGCOND
+      IFILCN(2)=NBISO
+      IFILCN(3)=MXGUSC
+      IFILCN(4)=MXGDSC
+      IFILCN(5)=NL-1
+      IFILCN(6)=ICHIST
+      IFILCN(7)=NL
+      IFILCN(8)=1
+*-----
+*  TRANSFER INFORMATION TO ISOTXS
+*----
+      IRECWR=IRECWR+1
+      NRECWR=NFILCN
+      IF(IUTYPE.EQ.2) THEN
+        IF(NRECWR.GT.MAXA) CALL XABORT('EDITXS: MAXA OVERFLOW(2).')
+        IA(:NRECWR)=IFILCN(:NRECWR)
+        CALL XDRITE(IWGOXS,IRECWR,A,NRECWR)
+      ELSE IF(IUTYPE.EQ.3) THEN
+        WRITE(IWGOXS,6003) (IFILCN(I),I=1,8)
+      ENDIF
+*----
+*     FILE DATA-RECORD 3
+*----
+      MRECWR=(NBISO+12)*MULTA6+1+NBISO+(2+ICHIST)*NGCOND
+      ALLOCATE(IREC(MRECWR))
+      CALL XDISET(IREC,MRECWR,0)
+      IRECL=1
+      ITITLE=1
+      DO 160 IC6TIT=1,12
+        CIDENT=CTITLE(ITITLE:ITITLE+5)//'  '
+        ITITLE=ITITLE+6
+        READ(CIDENT,FMTRD) (IREC(JVAR),JVAR=IRECL,IRECL+MULTA6-1)
+        IRECL=IRECL+MULTA6
+ 160  CONTINUE
+      DO 170 JSO=1,NBNISO
+        IF(MIXISN(JSO).EQ.IMRG) THEN
+          WRITE(NAMISO,'(3A4)') (ISNNAM(ITC,JSO),ITC=1,3)
+          CIDENT=NAMISO(1:6)//'  '
+          READ(CIDENT,FMTRD) (IREC(JVAR),JVAR=IRECL,IRECL+MULTA6-1)
+          IRECL=IRECL+MULTA6
+        ENDIF
+ 170  CONTINUE
+*----
+*  SAVE SET CHI IF REQUIRED
+*----
+      IF(ICHIST .EQ. 1) THEN
+        DO 122 IGR=1,NGCOND
+          FLOTT=RICHI(IGR)
+          IREC(IRECL)=NITMA
+          IRECL=IRECL+1
+ 122    CONTINUE
+      ENDIF
+*----
+*  SAVE AVERAGE NEUTRON VELOCITY
+*----
+      DO 180 IGR=1,NGCOND
+        FLOTT=1.0/AVGVEL(IGR)
+        IREC(IRECL)=NITMA
+        IRECL=IRECL+1
+ 180  CONTINUE
+*----
+*  SAVE ENERGY GROUP
+*----
+      DO 181 IGR=1,NGCOND+1
+        FLOTT=ENERGY(IGR)
+        IREC(IRECL)=NITMA
+        IRECL=IRECL+1
+ 181  CONTINUE
+*----
+*  TRANSFER LOCISO IN RECORD VECTOR
+*----
+      DO 190 ISO=1,NBISO
+        IREC(IRECL)=LOCISO(ISO)
+        IRECL=IRECL+1
+ 190  CONTINUE
+*-----
+*  TRANSFER INFORMATION TO ISOTXS
+*-----
+      IRECWR=IRECWR+1
+      NRECWR=MRECWR
+      IF(IUTYPE.EQ.2) THEN
+        IF(NRECWR.GT.MAXA) CALL XABORT('EDITXS: MAXA OVERFLOW(3).')
+        IA(:NRECWR)=IREC(:NRECWR)
+        CALL XDRITE(IWGOXS,IRECWR,A,NRECWR)
+      ELSE IF(IUTYPE.EQ.3) THEN
+        WRITE(IWGOXS,6004) CTITLE(:66)
+        KSO=0
+        LFIRST=.TRUE.
+        DO JSO=1,NBNISO
+          IF(MIXISN(JSO).EQ.IMRG) THEN
+            KSO=KSO+1
+            WRITE(NAMISO,'(3A4)') (ISNNAM(ITC,JSO),ITC=1,3)
+            CISO(KSO)=NAMISO(1:6)//'  '
+          ENDIF
+          IF(LFIRST.AND.(KSO.EQ.9)) THEN
+            WRITE(IWGOXS,6005) CTITLE(67:72),(CISO(I),I=1,9)
+            KSO=0
+            LFIRST=.FALSE.
+          ELSE IF(KSO.EQ.10) THEN
+            WRITE(IWGOXS,'(10(1X,A6))') (CISO(I),I=1,10)
+            KSO=0
+          ENDIF
+        ENDDO
+        IF(KSO.GT.0) WRITE(IWGOXS,'(10(1X,A6))') (CISO(I),I=1,KSO)
+        IF(ICHIST.EQ.1) THEN
+          WRITE(IWGOXS,'(1P,6E12.5)') (RICHI(IGR),IGR=1,NGCOND)
+        ENDIF
+        WRITE(IWGOXS,'(1P,6E12.5)') (1.0/AVGVEL(IGR),IGR=1,NGCOND),
+     > (ENERGY(IGR),IGR=1,NGCOND+1)
+        WRITE(IWGOXS,'(12I6)') (LOCISO(ISO),ISO=1,NBISO)
+      ENDIF
+      DEALLOCATE(IREC)
+*----
+*  ISOTOPE CONTROL AND GROUP INDEPENDENT DATA
+*----
+      MRECGI=3*MULTA6+17+NL*(2*NGCOND+2)
+      MRECPX=10*NGCOND
+      MRECPS=NGCOND*NGCOND
+      ALLOCATE(IRECGI(MRECGI),RECPX(MRECPX),RECPS(MRECPS))
+      ISO=0
+      DO 200 JSO=1,NBNISO
+        IF(MIXISN(JSO).EQ.IMRG) THEN
+          ISO=ISO+1
+          CALL XDISET(IRECGI,MRECGI,0)
+          IRECG=1
+          WRITE(NAMISO,'(3A4)') (ISNNAM(ITC,JSO),ITC=1,3)
+          KPEDIT=IPISO(JSO) ! set JSO-th isotope
+          HABSID=NAMISO(1:6)//'  '
+          IF(IPRINT.GE.1) WRITE(IOUT,6000) HABSID(1:6),LOCISO(ISO)
+          READ(HABSID,FMTRD) (IRECGI(JVAR),JVAR=IRECG,IRECG+MULTA6-1)
+          IRECG=IRECG+MULTA6
+          HIDENT='DRAGON  '
+          READ(HIDENT,FMTRD) (IRECGI(JVAR),JVAR=IRECG,IRECG+MULTA6-1)
+          IRECG=IRECG+MULTA6
+          WRITE(NAMISO,'(3A4)') (ISNNRF(ITC,JSO),ITC=1,3)
+          HMAT=NAMISO(1:6)//'  '
+          READ(HMAT,FMTRD) (IRECGI(JVAR),JVAR=IRECG,IRECG+MULTA6-1)
+          IRECG=IRECG+MULTA6
+          FLOTT=AWRISN(JSO)*REAL(NMASS)
+          IRECGI(IRECG)=NITMA
+          FLOTT=EMJISN(JSO)*1.0E-18
+          IRECGI(IRECG+1)=NITMA
+          FLOTT=TMPISN(JSO)
+          IRECGI(IRECG+3)=NITMA
+          FLOTT=DENISN(JSO)
+          IRECGI(IRECG+5)=NITMA
+          CALL LCMLEN(KPEDIT,'CHI',ILENG,ILCMTY)
+          IF((ILENG.NE.0).AND.(ICHIST.EQ.0)) IRECGI(IRECG+7)=1
+          CALL LCMLEN(KPEDIT,'NUSIGF',ILENG,ILCMTY)
+          IF(ILENG.NE.0) IRECGI(IRECG+8)=1
+          CALL LCMLEN(KPEDIT,'NA',ILENG,ILCMTY)
+          IF(ILENG.NE.0) IRECGI(IRECG+9)=1
+          CALL LCMLEN(KPEDIT,'NP',ILENG,ILCMTY)
+          IF(ILENG.NE.0) IRECGI(IRECG+10)=1
+          CALL LCMLEN(KPEDIT,'N2N',ILENG,ILCMTY)
+          IF(ILENG.NE.0) IRECGI(IRECG+11)=1
+          CALL LCMLEN(KPEDIT,'ND',ILENG,ILCMTY)
+          IF(ILENG.NE.0) IRECGI(IRECG+12)=1
+          CALL LCMLEN(KPEDIT,'NT',ILENG,ILCMTY)
+          IF(ILENG.NE.0) IRECGI(IRECG+13)=1
+          CALL LCMLEN(KPEDIT,'NTOT0',ILENG,ILCMTY)
+          IF(ILENG.NE.0) IRECGI(IRECG+14)=1
+          CALL LCMLEN(KPEDIT,'STRD',ILENG,ILCMTY)
+          IF(ILENG.NE.0) IRECGI(IRECG+15)=1
+          CALL LCMLEN(KPEDIT,'STRD-X',ILENG,ILCMTY)
+          IF(ILENG.NE.0) IRECGI(IRECG+16)=3
+          IRECG=IRECG+17
+          DO 210 IL=1,NL
+            IRECGI(IRECG)=IL-1
+            IRECGI(IRECG+NL)=1
+            IRECG=IRECG+1
+ 210      CONTINUE
+          IRECG=IRECG+NL
+          IRECNB=IRECG
+          IRECIB=IRECNB+NL*NGCOND
+          DO 220 IL=1,NL
+            WRITE(CM,'(I2.2)') IL-1
+            CALL LCMLEN(KPEDIT,'SCAT'//CM,ILENG,ILCMTY)
+            IF(ILENG.NE.0) THEN
+              CALL LCMGET(KPEDIT,'NJJS'//CM,NJJ)
+              CALL LCMGET(KPEDIT,'IJJS'//CM,IJJ)
+              DO 230 IGROUP=1,NGCOND
+                IRECGI(IRECNB)=NJJ(IGROUP)
+                IRECGI(IRECIB)=IJJ(IGROUP)-IGROUP+1
+                IRECNB=IRECNB+1
+                IRECIB=IRECIB+1
+ 230          CONTINUE
+            ELSE
+              DO 240 IGROUP=1,NGCOND
+                IRECGI(IRECNB)=1
+                IRECGI(IRECIB)=1
+                IRECNB=IRECNB+1
+                IRECIB=IRECIB+1
+ 240          CONTINUE
+            ENDIF
+ 220      CONTINUE
+          IRECG=IRECG+2*NL*NGCOND
+*-----
+*  TRANSFER INFORMATION TO ISOTXS
+*-----
+          IF(IPRINT.GE.10) THEN
+            IRECW=1
+            WRITE(CDUM,FMTRD) (IRECGI(JVAR),JVAR=IRECW,IRECW+MULTA6-1)
+            HABSID=CDUM
+            IRECW=IRECW+MULTA6
+            WRITE(CDUM,FMTRD) (IRECGI(JVAR),JVAR=IRECW,IRECW+MULTA6-1)
+            HIDENT=CDUM
+            IRECW=IRECW+MULTA6
+            WRITE(CDUM,FMTRD) (IRECGI(JVAR),JVAR=IRECW,IRECW+MULTA6-1)
+            HMAT=CDUM
+            IRECW=IRECW+MULTA6
+            WRITE(IOUT,6001) HABSID(1:6),HIDENT(1:6),HMAT(1:6),
+     >        (IRECGI(IW),IW=IRECW,IRECW+5),
+     >        (IRECGI(IW),IW=IRECW+6,IRECW+16)
+          ENDIF
+          IRECWR=IRECWR+1
+          NRECWR=MRECGI
+          IF(IUTYPE.EQ.2) THEN
+            IF(NRECWR.GT.MAXA) CALL XABORT('EDITXS: MAXA OVERFLOW(4).')
+            IA(:NRECWR)=IRECGI(:NRECWR)
+            CALL XDRITE(IWGOXS,IRECWR,A,NRECWR)
+          ELSE IF(IUTYPE.EQ.3) THEN
+            DO IW=1,6
+              NITMA6(IW)=IRECGI(3*MULTA6+IW)
+            ENDDO
+            WRITE(IWGOXS,6006) HABSID(1:6),HIDENT(1:6),HMAT(1:6),
+     >        (FLOTT6(IW),IW=1,6),
+     >        (IRECGI(IW),IW=3*MULTA6+7,NRECWR)
+          ENDIF
+*------
+*  PRINCIPAL CROSS SECTIONS
+*------
+          CALL XDRSET(RECPX,MRECPX,0.0)
+          IRECP=1
+          CALL LCMLEN(KPEDIT,'STRD',ILENG,ILCMTY)
+          IF(ILENG.NE.0) THEN
+            CALL LCMGET(KPEDIT,'STRD',RECPX(IRECP))
+            IRECP=IRECP+NGCOND
+          ENDIF
+          CALL LCMLEN(KPEDIT,'NTOT0',ILENG,ILCMTY)
+          IF(ILENG.EQ.0) CALL XABORT('EDITXS: NTOT0 DATA MISSING.')
+          CALL LCMGET(KPEDIT,'NTOT0',RECPX(IRECP))
+          IRECP=IRECP+NGCOND
+          CALL LCMLEN(KPEDIT,'NG',ILENG,ILCMTY)
+          IF(ILENG.EQ.0) THEN
+            IFTL=IRECP-NGCOND
+            INFL=IRECP
+            CALL LCMLEN(KPEDIT,'SIGS00',ILENG,ILCMTY)
+            IF(ILENG.EQ.0) CALL XABORT('EDITXS: UNABLE TO MAKE NG.')
+            CALL LCMGET(KPEDIT,'SIGS00',RECPX(IRECP))
+            DO 260 IGROUP=1,NGCOND
+              RECPX(INFL)=RECPX(IFTL)-RECPX(INFL)
+              IFTL=IFTL+1
+              INFL=INFL+1
+ 260        CONTINUE
+          ELSE
+            CALL LCMGET(KPEDIT,'NG',RECPX(IRECP))
+          ENDIF
+          IRECP=IRECP+NGCOND
+          CALL LCMLEN(KPEDIT,'NUSIGF',ILENG,ILCMTY)
+          IF(ILENG.NE.0) THEN
+            IFTL=IRECP
+            CALL LCMGET(KPEDIT,'NFTOT',RECPX(IRECP))
+            IRECP=IRECP+NGCOND
+            INFL=IRECP
+            CALL LCMGET(KPEDIT,'NUSIGF',RECPX(IRECP))
+            IRECP=IRECP+NGCOND
+*----
+*  COMPUTE NU FROM NUSIGF/NFTOT
+*----
+            DO 250 IGROUP=1,NGCOND
+              IF(RECPX(IFTL).NE.0.0) RECPX(INFL)=RECPX(INFL)/RECPX(IFTL)
+              IFTL=IFTL+1
+              INFL=INFL+1
+ 250        CONTINUE
+          ENDIF
+          CALL LCMLEN(KPEDIT,'CHI',ILENG,ILCMTY)
+          IF((ILENG.NE.0).AND.(ICHIST.EQ.0)) THEN
+            CALL LCMGET(KPEDIT,'CHI',RECPX(IRECP))
+            IRECP=IRECP+NGCOND
+          ENDIF
+          CALL LCMLEN(KPEDIT,'NA',ILENG,ILCMTY)
+          IF(ILENG.NE.0) THEN
+            CALL LCMGET(KPEDIT,'NA',RECPX(IRECP))
+            IRECP=IRECP+NGCOND
+          ENDIF
+          CALL LCMLEN(KPEDIT,'NP',ILENG,ILCMTY)
+          IF(ILENG.NE.0) THEN
+            CALL LCMGET(KPEDIT,'NP',RECPX(IRECP))
+            IRECP=IRECP+NGCOND
+          ENDIF
+          CALL LCMLEN(KPEDIT,'N2N',ILENG,ILCMTY)
+          IF(ILENG.NE.0) THEN
+            CALL LCMGET(KPEDIT,'N2N',RECPX(IRECP))
+            IRECP=IRECP+NGCOND
+          ENDIF
+          CALL LCMLEN(KPEDIT,'ND',ILENG,ILCMTY)
+          IF(ILENG.NE.0) THEN
+            CALL LCMGET(KPEDIT,'ND',RECPX(IRECP))
+            IRECP=IRECP+NGCOND
+          ENDIF
+          CALL LCMLEN(KPEDIT,'NT',ILENG,ILCMTY)
+          IF(ILENG.NE.0) THEN
+            CALL LCMGET(KPEDIT,'NT',RECPX(IRECP))
+            IRECP=IRECP+NGCOND
+          ENDIF
+          CALL LCMLEN(KPEDIT,'STRD-X',ILENG,ILCMTY)
+          IF(ILENG.NE.0) THEN
+             CALL LCMGET(KPEDIT,'STRD-X',RECPX(IRECP))
+             IRECP=IRECP+NGCOND
+             IF(ILENG.NE.0) CALL LCMGET(KPEDIT,'STRD-Y',RECPX(IRECP))
+             IRECP=IRECP+NGCOND
+             IF(ILENG.NE.0) CALL LCMGET(KPEDIT,'STRD-Z',RECPX(IRECP))
+             IRECP=IRECP+NGCOND
+          ENDIF
+          IRECWR=IRECWR+1
+          NRECWR=IRECP-1
+          IF(IUTYPE.EQ.2) THEN
+            CALL XDRITE(IWGOXS,IRECWR,RECPX,NRECWR)
+          ELSE IF(IUTYPE.EQ.3) THEN
+            WRITE(IWGOXS,6007) (RECPX(I),I=1,NRECWR)
+          ENDIF
+*----
+*  SCATTERING BLOCK
+*----
+          DO 270 IL=1,NL
+            WRITE(CM,'(I2.2)') IL-1
+            CALL LCMLEN(KPEDIT,'SCAT'//CM,NRECWR,ILCMTY)
+            IF(NRECWR.NE.0) THEN
+              CALL LCMGET(KPEDIT,'SCAT'//CM,RECPS)
+            ELSE
+              CALL XDRSET(RECPS,NGCOND,0.0)
+              NRECWR=NGCOND
+            ENDIF
+*-----
+*  TRANSFER INFORMATION TO ISOTXS
+*----
+            IRECWR=IRECWR+1
+            IF(IUTYPE.EQ.2) THEN
+              CALL XDRITE(IWGOXS,IRECWR,RECPS,NRECWR)
+            ELSE IF(IUTYPE.EQ.3) THEN
+              WRITE(IWGOXS,6009) (RECPS(I),I=1,NRECWR)
+            ENDIF
+ 270      CONTINUE
+        ENDIF
+ 200  CONTINUE
+      DEALLOCATE(RECPS,RECPX,IRECGI)
+      DEALLOCATE(RICHI)
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
+      DEALLOCATE(AVGVEL)
+      DEALLOCATE(NJJ,IJJ,LOCISO)
+      RETURN
+*----
+*  FORMAT
+*----
+ 6000 FORMAT(' STORING ISOTOPE = ',A6,2X,'AT LOCATION = ',I10)
+ 6001 FORMAT(' HABSID = ',6X,A6/' HIDENT = ',6X,A6/' HMAT   = ',6X,A6/
+     >       ' AMASS  = ',E12.5/' EFISS  = ',E12.5/' ECAPT  = ',E12.5/
+     >       ' TEMP   = ',E12.5/' SIGPOT = ',E12.5/' ADENS  = ',E12.5/
+     >       ' KBR    = ',I12  /' ICHI   = ',I12  /' IFIS   = ',I12  /
+     >       ' IALF   = ',I12  /' INP    = ',I12  /' IN2N   = ',I12  /
+     >       ' IND    = ',I12  /' INT    = ',I12  /' LTOT   = ',I12  /
+     >       ' LTRN   = ',I12  /' ISTRPD = ',I12)
+ 6002 FORMAT(11H 0v isotxs ,A6,1H*,2A6,1H*,I6)
+ 6003 FORMAT(4H 1d ,8I6)
+ 6004 FORMAT(4H 2d ,1H*,A66,1H*)
+ 6005 FORMAT(1H*,A6,1H*,9(1X,A6))
+ 6006 FORMAT(4H 4d ,3(1X,A6)/1P,6E12.5/(12I6))
+ 6007 FORMAT(4H 5d ,1P,5E12.5/(6E12.5))
+ 6009 FORMAT(4H 7d ,1P,5E12.5/(6E12.5))
+      END

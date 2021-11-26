@@ -1,0 +1,9 @@
+#!/bin/sh
+if [ $# = 0 ]
+   then
+   echo "usage: channel_mphy.access directory" 1>&2
+   exit 1
+fi
+ln -s "$1"/data/rep900_mphy_proc/_ACompo _ACompo
+ls -l
+echo "channel_mphy access script terminated"

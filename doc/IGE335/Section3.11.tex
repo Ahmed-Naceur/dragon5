@@ -1,0 +1,105 @@
+\subsection{The {\tt CRE:} module}\label{sect:CREData}
+
+The {\tt CRE:} module is used to create or modify an extended {\sc macrolib} (type {\tt L\_MACROLIB}) containing set of interpolated nuclear properties from a {\sc compo} linked list or {\sc xsm} file (type {\tt L\_COMPO}) . The calling specifications are:
+
+\begin{DataStructure}{Structure \dstr{CRE:}}
+\dusa{NAME1} \moc{:=} \moc{CRE:} $[$ \dusa{NAME1} $]$ $[[$ \dusa{NAME2}  $]]$ \moc{::} \dstr{create\_data}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dusa{NAME1}] {\tt character*12} name of the linked list or {\sc xsm} file (type {\tt L\_MACROLIB}) containing the extended {\sc macrolib}. If \dusa{NAME1} appears on the RHS, the information previously stored in \dusa{NAME1} is kept.
+
+\item[\dusa{NAME2}] {\tt character*12} name of the linked list or {\sc xsm} file (type {\tt L\_COMPO}) containing a single {\sc compo}.
+
+\item[\dstr{create\_data}] structure containing the data to module {\tt CRE:}.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+
+\subsubsection{Data input for module {\tt CRE:}}
+
+\begin{DataStructure}{Structure \dstr{create\_data}}
+$[$ \moc{EDIT} \dusa{iprint} $]$ \\
+$[$ \moc{NMIX} \dusa{nmixt} $]$ \\
+\moc{READ} $[[$ \moc{COMPO} \dusa{NAME2} \dstr{interp\_data} $]]$
+\end{DataStructure}
+
+\goodbreak
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] key word used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing in module {\tt
+CRE:}. =0 for no print; =1 for minimum printing (default value); Larger values produce increasing amounts of output.
+
+\item[\moc{NMIX}] key word used to define the number of material mixtures. This data is given if and only if \dusa{NAME1} is created.
+
+\item[\dusa{nmixt}] the maximum number of material mixtures (a material mixture is characterized by a distinct set of macroscopic cross sections). 
+
+\item[\moc{READ}] key word used to read the {\sc macrolib} specifications (burnup, neutron exposure, number densities) from the input data file.
+
+\item[\moc{COMPO}] key word used to select a {\sc compo} and to set the interpolation information.
+
+\item[\dusa{NAME2}] {\tt character*12} name of the linked list or {\sc xsm} file (type {\tt L\_COMPO}) containing the selected {\sc compo}.
+
+\item[\dstr{interp\_data}] structure containing the interpolation data. This structure is defined as
+\end{ListeDeDescription}
+
+\begin{DataStructure}{Structure \dstr{interp\_data}}
+$[[$ \moc{MIX} \dusa{matnum} \dusa{HTYPE}$~[$ \moc{DERIV} $]$ \\
+$[$ $\{$ \moc{BURNUP} \dusa{burn} $|$ \moc{N/KB} \dusa{xnkb} $|$ \moc{T-BURNUP} \dusa{burn0} \dusa{burn1} $|$ \moc{T-N/KB} \dusa{xnkb0} \dusa{xnkb1} $\}$ $]$ \\
+$[$ \moc{MICRO} $\{$ $[[$ \dusa{HISO}  $\{$ \dusa{conc} $|$ \moc{*} $\}$ $]]~$ $|$ \moc{ALL} $\}$ $]$ \\
+\moc{ENDMIX} $]]$
+\end{DataStructure}
+
+\goodbreak
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{MIX}] key word used to set \dusa{matnum}.
+
+\item[\dusa{matnum}] identifier for the material mixture to be created. The maximum number of identifiers permitted is \dusa{nmixt} and the maximum value that \dusa{matnum} may have is \dusa{nmixt}.
+
+\item[\dusa{HTYPE}] name of the material mixture. Each name refers to a type of nuclear data that is stored on a directory in the {\sc compo} linked list or {\sc xsm} file. \dusa{HTYPE} is a {\tt character*12} name built from the concatenation {\sl HCOMPO//HIORD} where \dusa{HCOMPO} is an {\sc ascii} name with a maximum of 8 characters and {\sl HIORD} is a four digit suffix with value {\tt '~~~1'}, {\tt '~~~2'}, {\tt '~~~3'}, etc., indicating the material mixture index.
+
+\item[\moc{DERIV}] key word used to compute the derivative of the {\sc macrolib} information with respect to \dusa{burn}, \dusa{xnkb}, \dusa{burn1} or \dusa{xnkb1}. By default, the {\sc macrolib} information is not differentiated.
+
+\item[\moc{BURNUP}] key word used to perform a single interpolation and to set the burnup value \dusa{burn}. By default, the {\sc macrolib} information is computed for $burn=xnkb=0.0$.
+
+\item[\dusa{burn}] value of the burnup in MW day per tonne of initial heavy elements.
+
+\item[\moc{N/KB}] key word used to perform a single interpolation and to set the neutron exposure value \dusa{xnkb}.
+
+\item[\dusa{xnkb}] value of the neutron exposure in neutron/kb.
+
+\item[\moc{T-BURNUP}] key word used to perform a time averaged {\sc macrolib} evaluation and to set the burnup values \dusa{burn0} and \dusa{burn1}.
+
+\item[\dusa{burn0}] initial value of the burnup in MW day per tonne of initial heavy elements.
+
+\item[\dusa{burn1}] final value of the burnup in MW day per tonne of initial heavy elements.
+
+\item[\moc{T-N/KB}] key word used to perform a time averaged {\sc macrolib} evaluation and to set the neutron exposure values \dusa{xnkb0} and \dusa{xnkb1}.
+
+\item[\dusa{xnkb0}] initial value of the neutron exposure in neutron/kb.
+
+\item[\dusa{xnkb1}] final value of the neutron exposure in neutron/kb.
+
+\item[\moc{MICRO}] key word used to set the number densities of the extracted isotopes present in the {\sc compo} linked list or {\sc xsm} file. By default, the extracted isotopes are not added to the resulting {\sc macrolib}.
+
+\item[\dusa{HISO}] {\tt character*12} name of an extracted isotope.
+
+\item[\dusa{conc}] user-defined value of the number density (in $10^{24}$ particles per ${\rm cm}^3$) of the extracted isotope.
+
+\item[\moc{*}] the value of the number density for isotope \dusa{HISO} is recovered from the {\sc compo}.
+
+\item[\moc{ALL}] all the values for the number densities are recovered from the {\sc compo}.
+
+\item[\moc{ENDMIX}] end of specification key word for the material mixture.
+
+\end{ListeDeDescription}
+
+\eject

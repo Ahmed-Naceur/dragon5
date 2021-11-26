@@ -1,0 +1,97 @@
+*======================================================
+* Jeu de donnees de test SCR:                         *
+* La Saphyb contient 10 isotopes particularises :     *
+* - B10 B11                                           *
+* - XE135PF I135PF                                    *
+* - ND147PF PM147PF PM148PF PM148MPF PM149PF SM149PF  *
+*======================================================
+MODULE      SCR: GREP: DELETE: ABORT: END: ;
+LINKED_LIST MicroFuel ;
+XSM_FILE    Saphyb ;
+SEQ_ASCII   _Saphyb :: FILE "./_Saphyb" ;
+
+REAL B10_ref B10_test ;
+
+*------------------------------------------------------
+* Calcul de reference SCR
+*------------------------------------------------------
+Saphyb := _Saphyb ;
+MicroFuel := SCR: Saphyb ::
+  EDIT 5
+  MICRO LINEAR
+  NMIX 1
+  SAPHYB Saphyb
+  MIX 1 FROM 1
+    SET 'BURN' 10000.
+    SET 'DMOD' .716403
+    SET 'TCOM' 285.
+    SET 'CBOR' 900.
+    SET 'BARR' 1.
+    MICRO ALL
+       'B10'      *
+       'B11'      *
+    ENDMIX
+    ;
+
+! B10 est le 1er isotope particularise
+GREP: MicroFuel :: GETVAL 'ISOTOPESDENS' 1 >>B10_ref<< ;
+MicroFuel := DELETE: MicroFuel ;
+
+*------------------------------------------------------
+* Calcul de test SCR
+* Creation d'une microlib avec RES pour micro-evolution
+*------------------------------------------------------
+MicroFuel := SCR: Saphyb ::
+  EDIT 5
+  MICRO LINEAR
+  NMIX 1
+  SAPHYB Saphyb
+  MIX 1 FROM 1
+    SET 'BURN' 10000.
+    SET 'DMOD' .65
+    SET 'TCOM' 285.
+    SET 'CBOR' 1800.
+    SET 'BARR' 1.
+    MICRO ALL
+       'B10'      *
+       'B11'      *
+    ENDMIX
+    ;
+
+MicroFuel := SCR: MicroFuel Saphyb ::
+  EDIT 5
+  RES
+  MICRO LINEAR
+  NMIX 1
+  SAPHYB Saphyb
+  MIX 1 FROM 1
+    SET 'BURN' 10000.
+    SET 'DMOD' .716403
+    SET 'TCOM' 285.
+    SET 'CBOR' 900.
+    SET 'BARR' 1.
+    MICRO ALL
+* Cas du bore particularise:
+* On doit interpoler une concentration isotopique selon les valeurs
+* du point de fonctionnement (notamment pour une recherche de CB critique)
+       'B10'      *
+       'B11'      *
+    ENDMIX
+    ;
+
+GREP: MicroFuel :: GETVAL 'ISOTOPESDENS' 1 >>B10_test<< ;
+
+*------------------------------------------------------
+* Comparaison
+*------------------------------------------------------
+IF B10_test B10_ref - B10_ref / ABS 1.E-6 > THEN
+  ECHO "B10_test :" B10_test ;
+  ECHO "B10_ref  :" B10_ref ;
+  ECHO "ERROR B10" ;
+  ABORT: ;
+ELSE
+  ECHO "SCR_RES_Interp test successful" ;
+ENDIF ;
+
+END: ;
+QUIT "LIST" .

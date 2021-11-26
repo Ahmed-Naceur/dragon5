@@ -1,0 +1,54 @@
+\section{INTRODUCTION}\label{sect:Introduction}
+
+The computer code DRAGON is a lattice code designed around solution techniques of 
+the neutron transport equation.\cite{PIP2009} The DRAGON project results from an effort made at
+{\sl \'Ecole Polytechnique de Montr\'eal} to rationalize and unify into a single code
+the different models and algorithms used in a lattice code.\cite{Dragon1,Dragon2,Dragon3,Dragon4}
+One of the main concerns was to ensure
+that the structure of the code was such that the development and implementation
+of new calculation techniques would be facilitated. DRAGON is therefore a
+lattice cell code which is divided into many calculation modules linked together
+using the GAN generalized driver\cite{utilitaire,cle2000}. These modules exchange
+informations only via well defined data structures.
+
+The two main components of the code DRAGON are its multigroup flux solver and
+its one-group collision probability (CP) tracking modules. The CP modules  all
+perform the same task but using different levels of approximation.
+
+The SYBIL tracking option emulates the main flux calculation option available in
+the APOLLO-1 code,\cite{Apollo,SPH} and includes a new version of the
+EURYDICE-2 code which performs reactor assembly calculations in both rectangular
+and hexagonal geometries using the interface current method. The option
+is activated when the \moc{SYBILT:} module is called.
+
+The EXCELL tracking option is used to generate the collision probability
+matrices for the cases having cluster, two-dimensional or three-dimensional
+mixed rectangular and cylindrical geometries.\cite{DragonPIJI,Mtl93a} A cyclic
+tracking option is also available for treating specular boundary conditions in
+two-dimensional rectangular geometry.\cite{DragonPIJS1,Mtl93b} EXCELL
+calculations are performed using the \moc{EXCELT:} or \moc{NXT:} module.
+
+The MCCG tracking option activates the long characteristics solution technique.
+This implementation uses the same tracking as EXCELL and perform flux
+integration using the long characteristics algorithm proposed by Igor
+Suslov.\cite{mccg,suslov2,chicago2} The option
+is activated when both \moc{EXCELT:} (or \moc{NXT:}) and \moc{MCCGT:} modules are called.
+
+After the collision probability or response matrices associated with a given
+cell have been generated, the multigroup solution module can be activated. This
+module uses the power iteration method and  requires a number of iteration
+types.\cite{PIM} The thermal iterations are carried out by DRAGON so as to
+rebalance the flux distribution only in cases where neutrons undergo
+up-scattering. The power iterations are performed by DRAGON to solve the fixed
+source or eigenvalue problem in the cases where a multiplicative medium is
+analyzed. The effective multiplication factor ($K_{\rm eff}$) is obtained during
+the power iterations. A search for the critical buckling may be superimposed
+upon the power iterations so as to force the multiplication factor to take on a
+fixed value.\cite{Buck}
+
+DRAGON can access directly standard microscopic cross-section libraries in
+various formats. It has the capability of
+exchanging macroscopic cross-section libraries with a code such as TRANSX-CTR or
+TRANSX-2 by the use of GOXS format files.\cite{MATXS,TRANSX2} The macroscopic
+cross section can also be read in DRAGON via the input data stream.
+

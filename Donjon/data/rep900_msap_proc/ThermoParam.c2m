@@ -1,0 +1,132 @@
+****************************************************************
+*                                                              *
+* Procedure :  ThermoParam.c2m                                 *
+* Purpose   :  Thermo-hydraulics coupling                      *
+* Author    :  A. Hebert                                       *
+*                                                              *
+* CALL      :                                                  *
+*  Fmap Matex Flux := ThermoParam Fmap Matex Sap Track         *
+*                     :: (data) ;                              *
+*                                                              *
+****************************************************************
+PARAMETER  Fmap Matex Flux Sap Track ::
+  ::: LINKED_LIST Fmap Matex Flux Sap Track ; ;
+MODULE SCR: MACINI: TRIVAA: FLUD: THM: FLPOW: GREP: DELETE: END: ;
+LINKED_LIST Thm MacroF System Macro1 Macro2 Power ;
+REAL powi densB pbore_0 temp_comb_0 temp_mode_0 dens_mode_0 ;
+:: >>powi<< >>densB<< >>pbore_0<< >>temp_comb_0<< >>temp_mode_0<<
+   >>dens_mode_0<< ;
+
+INTEGER iter := 0 ;
+REAL keffn erra1 ;
+LOGICAL CONV ;
+REAL temp_comb_c := temp_comb_0 273.16 - ;
+REAL temp_mode_c := temp_mode_0 273.16 - ;
+
+REPEAT
+  EVALUATE iter := iter 1 + ;
+  ECHO "-------------------------------" ;
+  ECHO "Thermo-hydraulics coupling loop" ;
+  ECHO "iter=" iter "densB=" densB "powi=" powi ;
+  ECHO "-------------------------------" ;
+*--
+* Cross-section database interpolation
+*--
+  MacroF := SCR: Sap Fmap ::
+             EDIT 2
+             LINEAR
+             TABLE Sap 'BURN'
+               MIX 1 INST-BURN
+                     SET LINEAR 'BURN' MAP
+                     SET LINEAR 'ppmB' <<pbore_0>>
+                     SET CUBIC 'TF' <<temp_comb_c>>
+                     SET CUBIC 'TCA' <<temp_mode_c>>
+                     SET CUBIC 'DCA' <<dens_mode_0>>
+                     ADD 'ppmB' <<pbore_0>> MAP
+                        REF 'BURN' SAMEASREF
+                            'TF' <<temp_comb_c>>
+                            'TCA' <<temp_mode_c>>
+                            'DCA' <<dens_mode_0>>
+                        ENDREF
+                     ADD 'TCA' <<temp_mode_c>> MAP
+                        REF 'BURN' SAMEASREF
+                            'ppmB' <<pbore_0>>
+                            'TF' <<temp_comb_c>>
+                            'DCA' <<dens_mode_0>>
+                        ENDREF
+                     ADD 'TF' <<temp_comb_c>> MAP
+                        REF 'BURN' SAMEASREF
+                            'ppmB' <<pbore_0>>
+                            'TCA' <<temp_mode_c>>
+                            'DCA' <<dens_mode_0>>
+                        ENDREF
+                     ADD 'DCA' <<dens_mode_0>> MAP
+                        REF 'BURN' SAMEASREF
+                            'ppmB' <<pbore_0>>
+                            'TCA' <<temp_mode_c>>
+                            'TF' <<temp_comb_c>>
+                        ENDREF
+               ENDMIX
+  ;
+  
+  Macro1 := SCR: Sap ::
+*            dummy reflector -- please use more realistic data
+             EDIT 0
+             LINEAR NMIX 2
+             SAPHYB Sap
+               MIX 2 SET LINEAR 'BURN' 15000.0
+                       SET LINEAR 'ppmB' <<densB>>
+                       SET CUBIC 'TF' <<temp_comb_c>>
+                       SET CUBIC 'TCA' <<temp_mode_c>>
+                       SET CUBIC 'DCA' <<dens_mode_0>>
+               ENDMIX 
+  ;
+  
+  Macro2 Matex := MACINI: Matex Macro1 MacroF ;
+*--
+* Steady-state diffusion calculation
+*--
+  System := TRIVAA: Macro2 Track ;
+
+  IF iter 1 = THEN
+    Flux := FLUD: System Track ::
+      EDIT 2 ADI 4 ACCE 5 3 ;
+  ELSE
+    Flux := FLUD: Flux System Track ::
+      EDIT 2 RELAX 0.8 ;
+  ENDIF ;
+  System MacroF Macro1 Macro2 := DELETE: System MacroF Macro1 Macro2 ;
+*--
+* Thermo-hydraulics calculation
+*--
+  Power Fmap := FLPOW: Fmap Flux Track Matex
+                :: EDIT 10 PTOT <<powi>> ;
+
+  Power := DELETE: Power ;
+  GREP: Flux   ::
+    GETVAL 'K-EFFECTIVE ' 1  >>keffn<<   ;
+  ECHO "K-effective = " keffn " densB=" densB ;
+  IF iter 1 = THEN
+    Thm Fmap := THM: Fmap ::
+      EDIT 3
+      CRITFL 1.80E+6 (* W/m^2 *)
+      ASSMB 264 25
+      CWSECT 3.86 (* m^2 *) 67398.0 (* m^3/hr *)
+      INLET 15500000.0 (* Pa *) 560.95 (* K *)
+      RADIUS 0.4095E-2 0.418E-2 0.475E-2 0.6025E-2 (* m *)
+      SET-PARAM 'C-BORE' <<densB>>
+      RELAX 0.5
+    ;
+  ELSE
+    Thm Fmap := THM: Thm Fmap ;
+  ENDIF ;
+*--
+* Convergence test
+*--
+  GREP: Thm :: GETVAL 'ERROR-T-FUEL' 1  >>erra1<< ;
+  ECHO "error on fuel temperature at iteration" iter "=" erra1 ;
+  EVALUATE CONV := erra1 1.0 < iter 50 > + ;
+  ECHO "CONV =" CONV ;
+  ECHO "-------------------------------" ;
+UNTIL CONV ;
+END: ;

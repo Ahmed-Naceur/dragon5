@@ -1,0 +1,88 @@
+*----
+*  TEST CASE TDCM49 (geometry only)
+*  MACROSCOPIC CROSS SECTIONS
+*  4-group eighth UOX assembly with AIC in DRAGON
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST GEON2 MACRO4G TRACKN2 SYS FLUX2 EDIT ;
+MODULE GEO: G2S: SALT: MCCGT: END: ;
+SEQ_ASCII UOX_AIC FIG_AIC ;
+SEQ_BINARY TF_EXC ;
+INTEGER an2d := 12 ;
+REAL densur := 25.0 ;
+REAL erra DELTA ;
+PROCEDURE assertS ;
+
+*----
+*  Input geometry data
+*----
+REAL mesh1 := 0.37 ;
+REAL mesh2 := mesh1 0.52 + ;
+REAL mesh3 := mesh2 0.74 + ;
+REAL mesh4 := mesh3 0.52 + ;
+REAL mesh5 := mesh4 0.74 + ;
+REAL mesh6 := mesh5 0.52 + ;
+REAL mesh7 := mesh6 0.74 + ;
+REAL mesh8 := mesh7 0.52 + ;
+REAL mesh9 := mesh8 0.74 + ;
+REAL mesh10 := mesh9 0.52 + ;
+REAL mesh11 := mesh10 0.74 + ;
+REAL mesh12 := mesh11 0.52 + ;
+REAL mesh13 := mesh12 0.74 + ;
+REAL mesh14 := mesh13 0.52 + ;
+REAL mesh15 := mesh14 0.74 + ;
+REAL mesh16 := mesh15 0.52 + ;
+REAL mesh17 := mesh16 0.74 + ;
+REAL mesh18 := mesh17 0.26 + ;
+*
+GEON2 := GEO: :: CAR2D 18 18
+  EDIT 0
+  X- DIAG X+ REFL
+  Y- REFL Y+ DIAG
+  MESHX 0.0 <<mesh1>> <<mesh2>> <<mesh3>> <<mesh4>> <<mesh5>> <<mesh6>>
+        <<mesh7>> <<mesh8>> <<mesh9>> <<mesh10>> <<mesh11>> <<mesh12>>
+        <<mesh13>> <<mesh14>> <<mesh15>> <<mesh16>> <<mesh17>>
+        <<mesh18>>
+  MESHY 0.0 <<mesh1>> <<mesh2>> <<mesh3>> <<mesh4>> <<mesh5>> <<mesh6>>
+        <<mesh7>> <<mesh8>> <<mesh9>> <<mesh10>> <<mesh11>> <<mesh12>>
+        <<mesh13>> <<mesh14>> <<mesh15>> <<mesh16>> <<mesh17>>
+        <<mesh18>>
+  SPLITX 2 2 4 2 4 2 4 2 4 2 4 2 4 2 4 2 4 1
+  SPLITY 2 2 4 2 4 2 4 2 4 2 4 2 4 2 4 2 4 1
+  MIX
+  1 1 2 1 2 1 4 1 2 1 2 1 4 1 2 1 3 1
+    1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+      3 1 3 1 2 1 3 1 3 1 2 1 3 1 3 1
+        1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+          3 1 2 1 3 1 3 1 2 1 3 1 3 1
+            1 1 1 1 1 1 1 1 1 1 1 1 1
+              4 1 2 1 2 1 4 1 2 1 3 1
+                1 1 1 1 1 1 1 1 1 1 1
+                  3 1 2 1 2 1 3 1 3 1
+                    1 1 1 1 1 1 1 1 1
+                      4 1 2 1 3 1 3 1
+                        1 1 1 1 1 1 1
+                          3 1 3 1 3 1
+                            1 1 1 1 1
+                              3 1 3 1
+                                1 1 1
+                                  3 1
+                                    1
+;
+
+UOX_AIC FIG_AIC := G2S: GEON2 :: DRAWMIX ;
+
+TRACKN2 TF_EXC := SALT: UOX_AIC ::
+  EDIT 3
+  ALLG
+  ANIS 2 TSPC EQW2 <<an2d>> <<densur>> REND
+;
+*
+TRACKN2 := MCCGT: TRACKN2 TF_EXC ::
+  EDIT 2
+  LCMD 3 AAC 150 TMT SCR 0 EPSI 1E-5
+  MAXI 1 KRYL 0 HDD 0.0 LDC ;
+
+ECHO "test tst2016_1 completed" ;
+END: ;

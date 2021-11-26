@@ -1,0 +1,11 @@
+#!/bin/sh
+if [ $# = 0 ]
+then
+echo "usage: fbr_core.access directory" 1>&2
+exit 1
+fi
+ln -s "$1"/data/fbr_core_proc/Saphyb_fissile .
+ln -s "$1"/data/fbr_core_proc/Saphyb_fertile .
+ln -s "$1"/data/fbr_core_proc/Saphyb_solide .
+ls -l
+echo "fbr_core access script terminated"

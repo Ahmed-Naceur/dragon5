@@ -1,0 +1,209 @@
+*DECK KINST2
+      SUBROUTINE KINST2(NEN,KEN,CMOD,TTF,TTP,IFL,IPR,IEXP,DT,IMPH,ICL1,
+     1 ICL2,NADI,ADJ,MAXOUT,EPSOUT,MAXINR,EPSINR,FNAM,PNAM,IMPX,POWTOT)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Recover and validate the necessary information from the LCM objects.
+*
+*Copyright:
+* Copyright (C) 2008 Ecole Polytechnique de Montreal.
+*
+*Author(s): D. Sekki
+*
+*Parameters: input
+* NEN     number of LCM objects used in the module.
+* KEN     addresses of LCM objects: (1) L_KINET; (2) L_MACROLIB;
+*         (3) L_TRACK; (4) L_SYSTEM; (5) L_MACROLIB.
+* CMOD    name of the assembly door (BIVAC or TRIVAC).
+* TTF     value of theta-parameter for fluxes.
+* TTP     value of theta-parameter for precursors.
+* IFL     temporal integration scheme for fluxes.
+* IPR     temporal integration scheme for precursors.
+* IEXP    exponential transformation flag (=1 to activate).
+* DT      current time increment.
+* IMPH    management of convergence histogram.
+* ICL1    number of free iterations in one cycle of the inverse power
+*         method
+* ICL2    number of accelerated iterations in one cycle
+* NADI    number of inner adi iterations per outer iteration
+* ADJ     flag for adjoint space-time kinetics calculation
+* MAXOUT  maximum number of outer iterations
+* EPSOUT  convergence criteria for the flux
+* MAXINR  maximum number of thermal iterations.
+* EPSINR  thermal iteration epsilon.
+* FNAM    name of temporal scheme for fluxes.
+* PNAM    name of temporal scheme for precursors.
+* IMPX    printing parameter (=0 for no print).
+*
+*Parameter: output
+* POWTOT  power.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      INTEGER NEN,IFL,IPR,IEXP,IMPH,ICL1,ICL2,NADI,MAXOUT,MAXINR,IMPX
+      TYPE(C_PTR) KEN(NEN)
+      REAL TTF,TTP,DT,EPSOUT,EPSINR,POWTOT
+      CHARACTER CMOD*12,FNAM*30,PNAM*30
+      LOGICAL ADJ
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER(NSTATE=40,IOS=6)
+      INTEGER ISTATE(NSTATE)
+      REAL EPSCON(5)
+      CHARACTER TEXT*12,HSMG*131
+*----
+*  L_MACROLIB STATE-VECTOR
+*----
+      CALL XDISET(ISTATE,NSTATE,0)
+      CALL LCMGET(KEN(2),'STATE-VECTOR',ISTATE)
+      NGR=ISTATE(1)
+      NBM=ISTATE(2)
+      NLS=ISTATE(3)
+      NBFIS=ISTATE(4)
+      IF(IMPX.GT.9)CALL LCMLIB(KEN(2))
+      IF(NEN.EQ.6)THEN
+*       SECOND L_MACROLIB
+        CALL XDISET(ISTATE,NSTATE,0)
+        CALL LCMGET(KEN(5),'STATE-VECTOR',ISTATE)
+        IF(ISTATE(1).NE.NGR)CALL XABORT('@KINST2: FOUND DIFFERENT NUMB'
+     1  //'ER OF ENERGY GROUPS IN MACROLIBS 1 AND 2.')
+        IF(ISTATE(2).NE.NBM)CALL XABORT('@KINST2: FOUND DIFFERENT NUMB'
+     1  //'ER OF MATERIAL MIXTURES IN MACROLIBS 1 AND 2.')
+        IF(ISTATE(3).NE.NLS)CALL XABORT('@KINST2: FOUND DIFFERENT NUMB'
+     1  //'ER OF LEGENDRE ORDERS IN MACROLIBS 1 AND 2.')
+        IF(ISTATE(4).NE.NBFIS)CALL XABORT('@KINST2: FOUND DIFFERENT NU'
+     1  //'MBER OF FISSILE ISOTOPES IN MACROLIBS 1 AND 2.')
+        IF(IMPX.GT.9)CALL LCMLIB(KEN(5))
+      ENDIF
+*----
+*  L_TRACK STATE-VECTOR
+*----
+      CALL XDISET(ISTATE,NSTATE,0)
+      CALL LCMGET(KEN(3),'STATE-VECTOR',ISTATE)
+      IF(ISTATE(4).GT.NBM) THEN
+         WRITE(HSMG,'(46H@KINST2: THE NUMBER OF MIXTURES IN THE TRACKIN,
+     1   3HG (,I5,50H) IS GREATER THAN THE NUMBER OF MIXTURES IN THE MA,
+     2   8HCROLIB (,I5,2H).)') ISTATE(4),NBM
+         CALL XABORT(HSMG)
+      ENDIF
+      NEL=ISTATE(1)
+      NUN=ISTATE(2)
+      IGM=ISTATE(6)
+      LL4=ISTATE(11)
+      NLF=-1
+      ISPN=-1
+      ISCAT=-1
+      IF(CMOD.EQ.'TRIVAC') THEN
+        NLF=ISTATE(30)
+        ISPN=ISTATE(31)
+        ISCAT=ISTATE(32)
+      ELSE IF(CMOD.EQ.'BIVAC') THEN
+        NLF=ISTATE(14)
+        ISPN=ISTATE(15)
+        ISCAT=ISTATE(16)
+      ENDIF
+      IF((NLF.NE.0).AND.(ISPN.NE.1))CALL XABORT('@KINST2: ONLY SPN'
+     1 //' DISCRETIZATIONS ARE ALLOWED.')
+      IF(IMPX.GT.9)CALL LCMLIB(KEN(3))
+*----
+*  L_SYSTEM STATE-VECTOR
+*----
+      CALL XDISET(ISTATE,NSTATE,0)
+      CALL LCMGET(KEN(4),'STATE-VECTOR',ISTATE)
+      IF(ISTATE(1).NE.NGR)CALL XABORT('@KINST2: FOUND DIFFERENT NUMBER'
+     1 //' OF ENERGY GROUPS IN L_MACROLIB AND L_SYSTEM OBJECTS.')
+      IF(ISTATE(2).NE.LL4)CALL XABORT('@KINST2: FOUND DIFFERENT NUMBER'
+     1  //' OF UNKNOWNS PER GROUP IN L_MACROLIB AND L_SYSTEM OBJECTS.')
+      IF(ISTATE(7).NE.NBM)CALL XABORT('@KINST2: FOUND DIFFERENT NUMBER'
+     1  //' OF MATERIAL MIXTURES IN L_MACROLIB AND L_SYSTEM OBJECTS.')
+      ITY=ISTATE(4)
+      IF(NEN.EQ.6)THEN
+*       SECOND L_SYSTEM
+        CALL XDISET(ISTATE,NSTATE,0)
+        CALL LCMGET(KEN(6),'STATE-VECTOR',ISTATE)
+        IF(ISTATE(1).NE.NGR)CALL XABORT('@KINST2: FOUND DIFFERENT NUMB'
+     1  //'ER OF ENERGY GROUPS IN L_SYSTEM OBJECTS 1 AND 2.')
+        IF(ISTATE(2).NE.LL4)CALL XABORT('@KINST2: FOUND DIFFERENT NUMB'
+     1  //'ER OF UNKNOWNS PER GROUP IN L_SYSTEM OBJECTS 1 AND 2.')
+        IF(ISTATE(4).NE.ITY)CALL XABORT('@KINST2: FOUND DIFFERENT DISC'
+     1  //'RETIZATION TYPES IN L_SYSTEM OBJECTS 1 AND 2.')
+        IF(ISTATE(7).NE.NBM)CALL XABORT('@KINST2: FOUND DIFFERENT NUMB'
+     1  //'ER OF MATERIAL MIXTURES IN L_SYSTEM OBJECTS 1 AND 2.')
+        IF(IMPX.GT.9)CALL LCMLIB(KEN(6))
+      ENDIF
+*----
+*  L_KINET STATE-VECTOR
+*----
+      CALL XDISET(ISTATE,NSTATE,0)
+      CALL LCMGET(KEN(1),'STATE-VECTOR',ISTATE)
+      ITR=ISTATE(1)
+      NDG=ISTATE(2)
+      NUP=ISTATE(8)
+      INORM=ISTATE(13)
+      IF(ISTATE(3).NE.NGR)CALL XABORT('@KINST2: FOUND DIFFERENT NUM'
+     1 //'BER OF ENERGY GROUPS IN L_MACROLIB AND IN L_KINET.')
+      IF(ISTATE(4).NE.IGM)CALL XABORT('@KINST2: INVALID L_TRACK(1).')
+      IF(ISTATE(5).NE.NEL)CALL XABORT('@KINST2: INVALID L_TRACK(2).')
+      IF(ISTATE(6).NE.NUN)CALL XABORT('@KINST2: INVALID L_TRACK(3).')
+      IF(ISTATE(7).NE.LL4)CALL XABORT('@KINST2: INVALID L_TRACK(4).')
+      IF(ISTATE(9).NE.NBFIS)CALL XABORT('@KINST2: INVALID L_TRACK(5).')
+      IF(ISTATE(10).NE.ITY)CALL XABORT('@KINST2: INVALID L_SYSTEM.')
+      ITR=ITR+1
+      ISTATE(1)=ITR
+      ISTATE(11)=ICL1
+      ISTATE(12)=ICL2
+      ISTATE(14)=MAXINR
+      ISTATE(15)=MAXOUT
+      ISTATE(16)=NADI
+      ISTATE(17)=IFL
+      ISTATE(18)=IPR
+      ISTATE(19)=IEXP
+      IF(ADJ) ISTATE(20)=1
+      CALL LCMPUT(KEN(1),'STATE-VECTOR',NSTATE,1,ISTATE)
+      EPSCON(1)=EPSINR
+      EPSCON(2)=EPSOUT
+      EPSCON(3)=TTF
+      EPSCON(4)=TTP
+      CALL LCMPUT(KEN(1),'EPS-CONVERGE',4,2,EPSCON)
+      IF(IMPX.GT.9)CALL LCMLIB(KEN(1))
+*----
+*  PERFORM KINETICS CALCULATION
+*----
+      DTIM=0.0
+      CALL LCMLEN(KEN(1),'TOTAL-TIME',LEN,ITLCM)
+      IF(LEN.NE.0) CALL LCMGET(KEN(1),'TOTAL-TIME',DTIM)
+      IF(.NOT.ADJ) THEN
+        DTIM=DTIM+DT
+      ELSE
+        DTIM=DTIM-DT
+      ENDIF
+      CALL LCMPUT(KEN(1),'TOTAL-TIME',1,2,DTIM)
+      CALL LCMPUT(KEN(1),'DELTA-T',1,2,DT)
+      IF(IMPX.GT.0) THEN
+        WRITE(IOS,1001)DT,DTIM
+        IF(ADJ) WRITE(IOS,'(28H ADJOINT SPACE-TIME KINETICS)')
+        TEXT=' TIME-STEP #'
+        WRITE(IOS,*)'       CURRENT',TEXT,ITR
+        WRITE(IOS,1002) FNAM,PNAM
+      ENDIF
+      CALL KINDRV(NEN,KEN,CMOD,NGR,NBM,NBFIS,NDG,NLF,ITY,NEL,LL4,NUN,
+     1 NUP,TTF,TTP,DT,IMPH,ICL1,ICL2,NADI,ADJ,MAXOUT,EPSOUT,MAXINR,
+     2 EPSINR,IFL,IPR,IEXP,INORM,IMPX,POWTOT)
+      IF(IMPX.GT.3) CALL LCMLIB(KEN(1))
+      RETURN
+*
+ 1001 FORMAT(/1X,5('--o--',5X)//8X,'PERFORMING KINETICS',
+     1 1X,'CALCULATION'/8X,31('-')//8X,'TIME',1X,'INCRE',
+     2 'MENT',1X,'=',1X,1P,E11.4,1X,'SEC'/8X,'ELAPSED TI',
+     3 'ME',3X,'=',1X,1P,E11.4,1X,'SEC')
+ 1002 FORMAT(/1X,5('--o--',5X)//1X,'TEMPORAL SCHEME FOR',
+     1 1X,'FLUX',2X,'=>',2X,A30/1X,'TEMPORAL SCHEME FOR',
+     2 1X,'PRECURSORS',2X,'=>',2X,A30/)
+      END

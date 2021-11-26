@@ -1,0 +1,260 @@
+*----
+*  Nom          : rep900.x2m
+*  Type         : fichier DONJON
+*
+*  Parametres Locaux :
+*    densB1   densite de bore pour le 1er calcul
+*    densB2   densite de bore pour le 2eme calcul
+*
+*  Options de calcul :
+*    Splitx   Discretisation par assemblage
+*    Splitz   Discretisation axiale
+*    TypeCal  Concentration de bore : "critique" ou "fixe"
+*
+*----
+*  Definition STRUCTURES, MODULES et PROCEDURES
+*----
+LINKED_LIST GeoRes MacroF Track System Flux Cpo L0 Reseau Matex
+            Lib Macro1 Macro2 Fmap Micro ;
+MODULE      TRIVAT: TRIVAA: FLUD: GREP: FIND0: MACINI: UTL: NCR:
+            DELETE: ABORT: END: ;
+
+PROCEDURE   GetDim GeoCo SetFuelMap SetParam ;
+PROCEDURE   assertS ;
+SEQ_ASCII   _ACompo ;
+REAL        DELTA REFVALUE ;
+*----
+*  Parametres Locaux
+*----
+REAL    densB1 := 2000.0 ;
+REAL    densB2 :=    0.0 ;
+*----
+*  Options de calcul
+*----
+INTEGER Splitx Splitz := 2 2        ;
+STRING  TypeCal       := "critique" ;
+STRING  Dir := "EDI2B" ;
+
+REAL Rcomb1 Rcomb2 Rcomb3 Rcomb4 
+     R_int_TG R_ext_TG R_int_TI R_ext_TI R_int_G R_ext_G 
+     Cote CoteL  ! on ne declare pas la lame car c'est fait en dessous
+     RmodeN1 RmodeN2 
+     R_ext_G2 R_ext_TGm R_ext_TIm
+     N_U5_UOX N_U5_MOX
+     N_Pu8 N_Pu9 N_Pu0 N_Pu1 N_Pu2 N_Am1
+     densU_UOX densU_MOX densPu_MOX
+     teneur1_Pu teneur2_Pu teneur3_Pu
+     temp_comb temp_mode dens_mode ;
+
+*----
+*  Recover the Multicompo
+*----
+Cpo := _ACompo ;
+UTL: Cpo :: DIR ;
+
+*----
+*  Enchainement du calcul
+*----
+REAL ORF IRC ORC IRCGT ORCGT ORAG ORAN 
+     IRCA ORCA ORDET ORDETC Lame LPitch Height ;
+
+  GetDim ::
+    >>Rcomb1<< >>Rcomb2<< >>Rcomb3<< >>Rcomb4<<
+    >>R_int_TG<< >>R_ext_TG<< >>R_int_TI<< >>R_ext_TI<<
+    >>R_int_G<< >>R_ext_G<< >>Cote<< >>Lame<< >>CoteL<<
+    >>RmodeN1<< >>RmodeN2<< >>R_ext_G2<< >>R_ext_TGm<< >>R_ext_TIm<<
+    >>N_U5_UOX<< >>N_U5_MOX<< >>N_Pu8<< >>N_Pu9<< >>N_Pu0<<
+    >>N_Pu1<< >>N_Pu2<< >>N_Am1<< >>densU_UOX<< >>densU_MOX<<
+    >>densPu_MOX<< >>teneur1_Pu<< >>teneur2_Pu<< >>teneur3_Pu<<
+    >>temp_comb<< >>temp_mode<< >>dens_mode<< ;
+
+
+EVALUATE
+     ORF IRC ORC IRCGT ORCGT
+     ORAG ORAN IRCA ORCA
+     ORDET ORDETC
+     Lame LPitch Height
+     :=
+     Rcomb4 R_int_TG R_ext_TG R_int_TI R_ext_TI
+     R_int_TG R_ext_TG R_int_TI R_ext_TI
+     R_int_TG R_ext_TG
+     Lame Cote 10.0
+     ;
+
+REAL rPavX := 17.0 ; ! assemblage 17 x 17
+INTEGER iPavX := 17 ; ! assemblage 17 x 17
+
+REAL    dx   := rPavX LPitch * 2.0 Lame * + ;
+INTEGER MaxR := iPavX iPavX * 33 * Splitx * Splitx * Splitz * ;
+INTEGER Iter := 1 ;
+REAL keff1 keff2 keffn ;
+REAL Y1 Y2 ROOT YNEW ;
+REAL densB ;
+LOGICAL CONV ;
+
+GeoRes Matex := GeoCo  ::
+   <<Splitx>> <<Splitz>> <<MaxR>> <<dx>> ;
+
+Track := TRIVAT: GeoRes ::
+   MAXR <<MaxR>> DUAL 2 3 ;
+
+*--
+* Definition de la map de combustible et zones de combustion
+*--
+Fmap Matex := SetFuelMap Matex :: <<dx>> ;
+
+Fmap := SetParam Fmap :: <<densB1>> <<temp_comb>> <<temp_mode>>
+        <<dens_mode>> ;
+
+Micro := NCR: Cpo Fmap ::
+             EDIT 2
+             LINEAR
+             TABLE Cpo <<Dir>> 'burnup'
+               MIX 1 INST-BURN ENDMIX 
+;
+MacroF := Micro :: STEP UP MACROLIB ;
+Micro := DELETE: Micro ;
+
+Micro := NCR: Cpo ::
+*            dummy reflector -- please use more realistic data
+             EDIT 2
+             LINEAR NMIX 2
+             COMPO Cpo <<Dir>>
+               MIX 2 SET 'burnup' 0.0
+                     SET 'ppmBore' <<densB1>>
+               ENDMIX 
+;
+Macro1 := Micro :: STEP UP MACROLIB ;
+Micro := DELETE: Micro ;
+
+Macro2 Matex := MACINI: Matex Macro1 MacroF ;
+
+System := TRIVAA: Macro2 Track ;
+
+Macro1 Macro2 := DELETE: Macro1 Macro2 ;
+
+Flux := FLUD: System Track ::
+  EDIT 1 ADI 2 ;
+
+GREP: Flux   ::
+  GETVAL 'K-EFFECTIVE ' 1  >>keff1<<  ;
+
+ECHO "densB1=" densB1 "K-effective 1 = " keff1   ;
+assertS Flux :: 'K-EFFECTIVE' 1 0.9917999 ;
+
+IF TypeCal "critique" = THEN
+
+  System Flux MacroF DELETE: System Flux MacroF ;
+
+  Fmap := SetParam Fmap :: <<densB2>> <<temp_comb>> <<temp_mode>>
+          <<dens_mode>> ;
+
+  Micro := NCR: Cpo Fmap ::
+               EDIT 2
+               LINEAR
+               TABLE Cpo <<Dir>> 'burnup'
+                 MIX 1 INST-BURN ENDMIX
+  ;
+  MacroF := Micro :: STEP UP MACROLIB ;
+  Micro := DELETE: Micro ;
+
+  Micro := NCR: Cpo ::
+*              dummy reflector -- please use more realistic data
+               EDIT 2
+               LINEAR NMIX 2
+               COMPO Cpo <<Dir>>
+                 MIX 2 SET 'burnup' 0.0
+                       SET 'ppmBore' <<densB2>>
+                 ENDMIX 
+  ;
+  Macro1 := Micro :: STEP UP MACROLIB ;
+  Micro := DELETE: Micro ;
+
+  Macro2 Matex := MACINI: Matex Macro1 MacroF ;
+
+  System := TRIVAA: Macro2 Track ;
+
+  Macro1 Macro2 := DELETE: Macro1 Macro2 ;
+
+  Flux := FLUD: System Track ::
+    EDIT 1 ;
+
+  GREP: Flux   ::
+    GETVAL 'K-EFFECTIVE ' 1  >>keff2<<   ;
+  ECHO "densB2=" densB2 "K-effective    2 = " keff2   ;
+  assertS Flux :: 'K-EFFECTIVE' 1 1.052038 ;
+
+  EVALUATE Y1 := 1.0 1.0 keff1 / - ;
+  EVALUATE Y2 := 1.0 1.0 keff2 / - ;
+  L0 := FIND0: :: ITMAX 20 TOL 1.0E-4
+                  POINT X <<densB1>> Y <<Y1>>
+                  POINT X <<densB2>> Y <<Y2>>
+                  >>CONV<< >>ROOT<< ;
+  REPEAT
+
+    System Flux MacroF DELETE: System Flux MacroF ;
+
+    EVALUATE densB := ROOT ;
+
+    Fmap := SetParam Fmap :: <<densB>> <<temp_comb>> <<temp_mode>>
+            <<dens_mode>> ;
+
+    Micro := NCR: Cpo Fmap ::
+                 EDIT 2
+                 LINEAR
+                 TABLE Cpo <<Dir>> 'burnup'
+                   MIX 1 INST-BURN ENDMIX
+    ;
+    MacroF := Micro :: STEP UP MACROLIB ;
+    Micro := DELETE: Micro ;
+
+    Micro := NCR: Cpo ::
+*                dummy reflector -- please use more realistic data
+                 EDIT 2
+                 LINEAR NMIX 2
+                 COMPO Cpo <<Dir>>
+                   MIX 2 SET 'burnup' 0.0
+                         SET 'ppmBore' <<densB>>
+                   ENDMIX 
+    ;
+    Macro1 := Micro :: STEP UP MACROLIB ;
+    Micro := DELETE: Micro ;
+
+    Macro2 Matex := MACINI: Matex Macro1 MacroF ;
+
+    System := TRIVAA: Macro2 Track ;
+
+    Macro1 Macro2 := DELETE: Macro1 Macro2 ;
+
+    Flux := FLUD: System Track ::
+      EDIT 1 ;
+
+    GREP: Flux   ::
+      GETVAL 'K-EFFECTIVE ' 1  >>keffn<<   ;
+    ECHO "K-effective iter " Iter "et bore " ROOT " = " keffn   ;
+
+    EVALUATE YNEW  := 1.0 1.0 keffn / - ;
+    L0 := FIND0: L0 :: Y <<YNEW>>
+                       >>CONV<< >>ROOT<< ;
+
+    EVALUATE Iter := Iter 1 + ;
+
+  UNTIL CONV ;
+  ECHO "Zero is =" ROOT ;
+  EVALUATE REFVALUE := 1.705336E+03 ;
+  EVALUATE DELTA := ROOT REFVALUE - REFVALUE / ABS ;
+  IF DELTA 5.0E-5 < THEN
+    PRINT "TEST SUCCESSFUL; DELTA=" DELTA ;
+  ELSE
+    PRINT "------------" ;
+    PRINT "TEST FAILURE" ;
+    PRINT "------------" ;
+    PRINT "REFERENCE=" REFVALUE " CALCULATED=" ROOT ;
+    ABORT: ;
+  ENDIF ;
+
+ENDIF ;
+
+ECHO "test rep900.x2m completed" ;
+END: ;
+QUIT "LIST" .

@@ -1,0 +1,414 @@
+* Name:   Geo15x15.c2m
+* Type:   DRAGON procedure
+* Use:    Create various geometry & tracking objects
+* Author: A. Bruneau 03.2015, 04.2015
+*         [CS-SI | IRSN/PSN-EXP/SNC/LNR]
+*         V. Salino 05.2016 : ajout des cas 15x15 (Tihange)
+*                             dont Pyrex
+*-----------------------------------------------------------
+PARAMETER   Discr DiscrAu ::
+        ::: LINKED_LIST
+            Discr DiscrAu ; ;
+MODULE      GEO: SYBILT: DELETE: ABORT: END: GREP: ;
+PROCEDURE   ThermaExpans GetTechData ;
+LINKED_LIST Assmb AssmbAu Cellules Huitieme
+            UOX UOX_SS UOX_PY UOX_PY_SS
+            UOX_BLACK UOX_BLACK_SS ;
+
+! /////////////////////////////////////////////////////////////////////
+! /// Variables & Parameters ///
+! /////////////////////////////////////////////////////////////////////
+! ---------------------------------------------------------------------
+! --- DIVERS ---
+! ---------------------------------------------------------------------
+STRING  Gestion AssType ConfigPyrex ;
+INTEGER ThermExp BarType ;
+REAL tcom tmod tclad ;
+
+INTEGER DUMMY_I0 := 0 ;
+INTEGER DUMMY_I310 := 310 ;
+REAL DUMMY_R0 := 0. ;
+STRING Model := "TIH" ;
+! ---------------------------------------------------------------------
+! --- TECH DATA ---
+! ---------------------------------------------------------------------
+REAL    NbPinAssXY ;
+REAL    pAss pPin hWaterGap pPinWaterGap ;
+REAL    rFuel rCladFuel  ;
+REAL    rRodAICn rCladRod ;
+REAL    rRodBPIn rRodBPEx rCladBPIn rCladBPEx ;
+REAL    rTubeIn rTubeEx ;
+! ---------------------------------------------------------------------
+! --- DISCRETIZATION ---
+! ---------------------------------------------------------------------
+REAL    Rfuel1  Rfuel2  Rfuel3  Rfuel4 ;
+REAL    rRodAICn1 rRodAICn2 rRodAICn3 ;
+*-------------------------------------------------------
+* Pyrex configuration provided : None Py8 Py12
+*-------------------------------------------------------
+:: >>Gestion<< >>AssType<< >>ConfigPyrex<< >>ThermExp<<
+   >>BarType<< >>tcom<< >>tmod<< ;
+EVALUATE tclad := 0.12 tcom * 0.88 tmod * + ;
+
+! /////////////////////////////////////////////////////////////////////
+! /// GET DATA LISTS ///
+! /////////////////////////////////////////////////////////////////////
+LINKED_LIST Distances General ;
+Distances := GetTechData :: <<Gestion>> <<AssType>>
+ <<DUMMY_I0>> 'None' 'DISTANCES' ;
+General := GetTechData :: <<Gestion>> <<AssType>>
+ <<DUMMY_I0>> 'None' 'GENERAL' ;
+! /////////////////////////////////////////////////////////////////////
+! /// GET DATA VALUES ///
+! /////////////////////////////////////////////////////////////////////
+! ---------------------------------------------------------------------
+! --- Distances ---
+! ---------------------------------------------------------------------
+! ***gen***
+GREP: Distances :: GETVAL 'pAss' 1 >>pAss<< ;
+GREP: Distances :: GETVAL 'pPin' 1 >>pPin<< ;
+! ***radius pin content***
+GREP: Distances :: GETVAL 'rFuel' 1 >>rFuel<< ;
+GREP: Distances :: GETVAL 'rRodAICn' 1 >>rRodAICn<< ;
+GREP: Distances :: GETVAL 'rRodBPIn' 1 >>rRodBPIn<< ;
+GREP: Distances :: GETVAL 'rRodBPEx' 1 >>rRodBPEx<< ;
+! ***radius clad***
+GREP: Distances :: GETVAL 'rCladFuel' 1 >>rCladFuel<< ;
+GREP: Distances :: GETVAL 'rCladRod' 1 >>rCladRod<< ;
+GREP: Distances :: GETVAL 'rCladBPIn' 1 >>rCladBPIn<< ;
+GREP: Distances :: GETVAL 'rCladBPEx' 1 >>rCladBPEx<< ;
+! ***assembly structure***
+GREP: Distances :: GETVAL 'rTubeIn' 1 >>rTubeIn<< ;
+GREP: Distances :: GETVAL 'rTubeEx' 1 >>rTubeEx<< ;
+! ---------------------------------------------------------------------
+! --- General ---
+! ---------------------------------------------------------------------
+GREP: General :: GETVAL 'NbPinAssXY' 1 >>NbPinAssXY<< ;
+! ---------------------------------------------------------------------
+! --- Cold Half Water Gap ---
+! ---------------------------------------------------------------------
+EVALUATE hWaterGap := pAss pPin NbPinAssXY * - 2. / ;
+
+! /////////////////////////////////////////////////////////////////////
+! /// THERMALEXPANSION ///
+! /////////////////////////////////////////////////////////////////////
+ ECHO "@@@@@@@@@@@ DISTANCES BEFORE (THERMAL EXPANSION) @@@@@@@@@@@" ;
+ ECHO " pAss      = " pAss      " at 20 C." ;
+ ECHO " pPin      = " pPin      " at 20 C." ;
+ ECHO " rFuel     = " rFuel     " at 20 C." ;
+ ECHO " rRodAICn  = " rRodAICn  " at 20 C." ;
+ ECHO " rRodBPIn  = " rRodBPIn  " at 20 C." ;
+ ECHO " rRodBPEx  = " rRodBPEx  " at 20 C." ;
+ ECHO " rCladFuel = " rCladFuel " at 20 C." ;
+ ECHO " rCladRod  = " rCladRod  " at 20 C." ;
+ ECHO " rCladBPIn = " rCladBPIn " at 20 C." ;
+ ECHO " rCladBPEx = " rCladBPEx " at 20 C." ;
+ ECHO " rTubeIn   = " rTubeIn   " at 20 C." ;
+ ECHO " rTubeEx   = " rTubeEx   " at 20 C." ;
+ ECHO " hWaterGap = " hWaterGap " at 20 C." ;
+
+IF ThermExp 1 = THEN
+! ---------------------------------------------------------------------
+! --- Assembly and pin pitches ---
+! ---------------------------------------------------------------------
+  ThermaExpans :: <<pAss>> "SS304" <<tmod>> "Distance" <<Model>>
+                  <<DUMMY_R0>> <<DUMMY_R0>>
+                  >>pAss<< ;
+  ThermaExpans :: <<pPin>> "In718" <<tmod>> "Distance" <<Model>>
+                  <<DUMMY_R0>> <<DUMMY_R0>>
+                  >>pPin<< ;
+! ---------------------------------------------------------------------
+! --- Fuel Pin ---
+! ---------------------------------------------------------------------
+  ThermaExpans :: <<rFuel>> "UO2" <<tcom>> "Distance" <<Model>>
+                  <<DUMMY_R0>> <<DUMMY_R0>>
+                  >>rFuel<< ;
+  ThermaExpans :: <<rCladFuel>> "Zr4" <<tclad>> "Distance" <<Model>>
+                  <<DUMMY_R0>> <<DUMMY_R0>>
+                  >>rCladFuel<< ;
+! ---------------------------------------------------------------------
+! --- Control Rod Pin (SS / AICg /AICn / B4C) ---
+! ---------------------------------------------------------------------
+  ThermaExpans :: <<rRodAICn>> "AIC" <<tmod>> "Distance"  <<Model>>
+                  <<DUMMY_R0>> <<DUMMY_R0>>
+                  >>rRodAICn<< ;
+  ThermaExpans :: <<rCladRod>> "SS304" <<tmod>> "Distance" <<Model>>
+                  <<DUMMY_R0>> <<DUMMY_R0>>
+                  >>rCladRod<< ;
+! ---------------------------------------------------------------------
+! --- Poison Consommable Pyrex / Hafnium ---
+! ---------------------------------------------------------------------
+  ThermaExpans :: <<rRodBPIn>> "Pyrex" <<tmod>> "Distance" <<Model>>
+                  <<DUMMY_R0>> <<DUMMY_R0>>
+                  >>rRodBPIn<< ;
+  ThermaExpans ::  <<rRodBPEx>> "Pyrex" <<tmod>> "Distance" <<Model>>
+                  <<DUMMY_R0>> <<DUMMY_R0>>
+                  >>rRodBPEx<< ;
+  ThermaExpans ::  <<rCladBPIn>> "SS304" <<tmod>>  "Distance" <<Model>>
+                  <<DUMMY_R0>> <<DUMMY_R0>>
+                  >>rCladBPIn<< ;
+  ThermaExpans :: <<rCladBPEx>> "SS304" <<tmod>> "Distance" <<Model>>
+                  <<DUMMY_R0>> <<DUMMY_R0>>
+                  >>rCladBPEx<< ;
+! ---------------------------------------------------------------------
+! --- Guide Tube / Instrumentation ---
+! ---------------------------------------------------------------------
+  ThermaExpans ::  <<rTubeIn>> "Zr4" <<tmod>> "Distance" <<Model>>
+                   <<DUMMY_R0>> <<DUMMY_R0>>
+                   >>rTubeIn<< ;
+  ThermaExpans ::  <<rTubeEx>> "Zr4" <<tmod>> "Distance" <<Model>>
+                   <<DUMMY_R0>> <<DUMMY_R0>>
+                   >>rTubeEx<< ;
+ENDIF ;
+! ---------------------------------------------------------------------
+! --- Half Water Gap ---
+! ---------------------------------------------------------------------
+EVALUATE hWaterGap := pAss NbPinAssXY pPin * - 2. / ;
+EVALUATE pPinWaterGap := pPin hWaterGap + ;
+
+ECHO "@@@@@@@@@@@ DISTANCES AFTER (THERMAL EXPANSION) @@@@@@@@@@@" ;
+ECHO " pAss      = " pAss      " at " tmod  "C." ;
+ECHO " pPin      = " pPin      " at " tmod  "C." ;
+ECHO " rFuel     = " rFuel     " at " tcom  "C." ;
+ECHO " rRodAICn  = " rRodAICn  " at " tmod  "C." ;
+ECHO " rRodBPIn  = " rRodBPIn  " at " tmod  "C." ;
+ECHO " rRodBPEx  = " rRodBPEx  " at " tmod  "C." ;
+ECHO " rCladFuel = " rCladFuel " at " tclad "C." ;
+ECHO " rCladRod  = " rCladRod  " at " tmod  "C." ;
+ECHO " rCladBPIn = " rCladBPIn " at " tmod  "C." ;
+ECHO " rCladBPEx = " rCladBPEx " at " tmod  "C." ;
+ECHO " rTubeIn   = " rTubeIn   " at " tmod  "C." ;
+ECHO " rTubeEx   = " rTubeEx   " at " tmod  "C." ;
+ECHO " hWaterGap = " hWaterGap " at " tmod  "C." ;
+
+! /////////////////////////////////////////////////////////////////////
+! /// DISCRETISATION ///
+! /////////////////////////////////////////////////////////////////////
+*------------------------------------------------------
+* Evaluate Radii:
+* Fuel: r1 = ( .50 x rFuel^2 )^1/2
+*       r2 = ( .80 x rFuel^2 )^1/2
+*       r3 = ( .95 x rFuel^2 )^1/2
+*       r4 =         rFuel
+*
+* Gado: r1 = ( .20 x rFuel^2 )^1/2
+*       r2 = ( .40 x rFuel^2 )^1/2
+*       r3 = ( .60 x rFuel^2 )^1/2
+*       r4 = ( .80 x rFuel^2 )^1/2
+*       r5 = ( .95 x rFuel^2 )^1/2
+*       r6 =         rFuel
+*------------------------------------------------------
+EVALUATE Rfuel1 := rFuel .50 SQRT * ;
+EVALUATE Rfuel2 := rFuel .80 SQRT * ;
+EVALUATE Rfuel3 := rFuel .95 SQRT * ;
+EVALUATE Rfuel4 := rFuel ;
+*------------------------------------------------------
+* Materiaux de base:      1 ->    9
+* Moderateurs:           10 ->   19
+* Structures:   Tubes    20
+*               Barres   21 ->   29
+*               Gaines   30 ->   39
+* Combustibles: UOX     100 -> Nmix
+*------------------------------------------------------
+* Materiaux de base
+*    1 - SS304
+*    2 - Inconel
+*    3 - Zircalloy-4
+*    4 - Grilles precalculees
+*    5 - Eau boree
+*    6 - Isotopes de barre virtuelle
+*    7 - Eau boree tube instrumentation
+* Moderateurs
+*   10 - MODE   [moderateur cellule centrale]
+*   11 - MODEL  [moderateur cellule en peripherie (avec lame d'eau)]
+*   12 - MODEC  [moderateur cellule en coin (double lame d'eau)]
+*   13 - MODETI [moderateur cellule tube (interieur du tube)+Isotopes de barres AIC a 0]
+*   14 - MODETE [moderateur cellule tube (exterieur du tube)]
+*   15 - MODETII [moderateur cellule tube (interieur du tube d'instrumentation)]
+* Structures: Tubes
+*   20 - TUBE
+* Structures: Barres
+*   21 - AIC    [Barres AIC]
+* Structures: Gaines
+*   30 - GAINC  [Gaine combustible UOX/MOX/UGd]
+*   34 - GAINE BP INT ACIER SS304
+*   35 - GAINE BP EXT ACIER SS304
+*   37 - GAINA  [Gaine Barres AICn]
+* Structures: Barres (suite)
+*   41 - AIC    [Barres AIC 1ere couronne]
+*   42 - AIC    [Barres AIC 2e couronne]
+*   43 - AIC    [Barres AIC 3e couronne]
+* Poison consommable (Pyrex)
+*   59 - Air
+*   65 - PYREX
+* Combustibles UOX
+*  100 - COMB   [UOX 1ere couronne (centre a Rcomb*0.5^1/2) <=> 0 a r1]
+*  101 - COMB   [UOX 2e couronne]
+*  102 - COMB   [UOX 3e couronne]
+*  103 - COMB   [UOX 4e couronne (r3 a Rcomb)]
+*------------------------------------------------------
+Cellules := GEO: ::
+::: T  := GEO: CARCEL 2
+  MESHX  0. <<pPin>>
+  MESHY  0. <<pPin>>
+  RADIUS 0. <<rTubeIn>> <<rTubeEx>>
+  MIX    13  20  14 ;
+
+::: C1 := GEO: CARCEL 5
+  MESHX  0. <<pPin>>
+  MESHY  0. <<pPin>>
+  RADIUS 0. <<Rfuel1>> <<Rfuel2>> <<Rfuel3>> <<Rfuel4>> <<rCladFuel>>
+  MIX    100  101  102  103  30  10 ;
+
+::: C2 := GEO: C1  MESHX 0. <<pPinWaterGap>> MIX 100 101 102 103 30 11 ;
+::: C3 := GEO: C2  MESHY 0. <<pPinWaterGap>> MIX 100 101 102 103 30 12 ;
+
+::: Py := GEO: CARCEL 6
+  MESHX  0. <<pPin>>
+  MESHY  0. <<pPin>>
+  RADIUS 0.0 <<rCladBPIn>> <<rRodBPIn>> <<rRodBPEx>>
+         <<rCladBPEx>> <<rTubeIn>> <<rTubeEx>>
+  MIX    59  34  65  35  13  20  14 ;
+
+::: R  := GEO: CARCEL 4
+  MESHX  0. <<pPin>>
+  MESHY  0. <<pPin>>
+  RADIUS 0. <<rRodAICn>> <<rCladRod>> <<rTubeIn>> <<rTubeEx>>
+  MIX  41  37  13  20  14 ;
+;
+
+Huitieme := GEO: Cellules :: CAR2D 8 8
+X- DIAG X+ REFL
+Y- SYME Y+ DIAG ;
+
+*------------------------------------------------------
+*  T  : TUBE_GUIDE
+*  C1 : CELLULE_COMBUSTIBLE_CENTRALE
+*  C2 : CELLULE_COMBUSTIBLE_LATERALE
+*  C3 : CELLULE_COMBUSTIBLE_COIN
+*  Py : Pyrex rod
+*  R  : CELLULE_ABSORBANT_AIC
+*------------------------------------------------------
+UOX := GEO: Huitieme ::
+CELL T  C1 C1 C1 T  C1 C1 C2
+        C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 T  C1 C2
+              T  C1 C1 C1 C2
+                 C1 C1 C1 C2
+                    T  C1 C2
+                       C1 C2
+                          C3 ;
+*------------------------------------------------------
+* UOX Assembly
+*  15 X 15 UOX 900MWe Tihange PWR assembly without Rods
+*------------------------------------------------------
+UOX_SS := GEO: UOX ::
+MERGE 1  2  2  2  1  2  2  4
+         2  2  2  2  2  2  4
+            2  2  2  1  2  4
+               1  2  2  2  4
+                  2  2  2  4
+                     1  2  4
+                        2  4
+                           3 ;
+IF ConfigPyrex "Py8" = THEN
+*------------------------------------------------------
+* UOX Assembly
+*  15 X 15 UOX 900MWe Tihange PWR assembly with 8 Pyrex rods
+*------------------------------------------------------
+  UOX_PY := GEO: Huitieme ::
+  CELL T  C1 C1 C1 Py C1 C1 C2
+          C1 C1 C1 C1 C1 C1 C2
+             C1 C1 C1 T  C1 C2
+                Py C1 C1 C1 C2
+                   C1 C1 C1 C2
+                      T  C1 C2
+                         C1 C2
+                            C3 ;
+  UOX_PY_SS := GEO: UOX_PY ::
+  * Merging region #5 = Pyrex
+  MERGE 1  2  2  2  5  2  2  4
+           2  2  2  2  2  2  4
+              2  2  2  1  2  4
+                 5  2  2  2  4
+                    2  2  2  4
+                       1  2  4
+                          2  4
+                             3 ;
+ELSEIF ConfigPyrex "Py12" = THEN
+*------------------------------------------------------
+* UOX Assembly
+*  15 X 15 UOX 900MWe Tihange PWR assembly with 12 Pyrex rods
+*------------------------------------------------------
+  UOX_PY := GEO: Huitieme ::
+  CELL T  C1 C1 C1 Py C1 C1 C2
+          C1 C1 C1 C1 C1 C1 C2
+             C1 C1 C1 T  C1 C2
+                Py C1 C1 C1 C2
+                   C1 C1 C1 C2
+                      Py C1 C2
+                         C1 C2
+                            C3 ;
+  UOX_PY_SS := GEO: UOX_PY ::
+  * Merging region #5 = Pyrex
+  MERGE 1  2  2  2  5  2  2  4
+           2  2  2  2  2  2  4
+              2  2  2  1  2  4
+                 5  2  2  2  4
+                    2  2  2  4
+                       5  2  4
+                          2  4
+                             3 ;
+ENDIF ;
+*------------------------------------------------------
+* UOX Assembly with 'Black' Rods
+*  15 X 15 UOX 900MWe Tihange PWR assembly with AIC Control Rods
+*------------------------------------------------------
+UOX_BLACK := GEO: UOX ::
+CELL T  C1 C1 C1 R  C1 C1 C2
+        C1 C1 C1 C1 C1 C1 C2
+           C1 C1 C1 R  C1 C2
+              R  C1 C1 C1 C2
+                 C1 C1 C1 C2
+                    R  C1 C2
+                       C1 C2
+                          C3 ;
+UOX_BLACK_SS := GEO: UOX_BLACK ::
+* Merging region #5 = AIC
+MERGE 1  2  2  2  5  2  2  4
+         2  2  2  2  2  2  4
+            2  2  2  5  2  4
+               5  2  2  2  4
+                  2  2  2  4
+                     5  2  4
+                        2  4
+                           3 ;
+
+! /////////////////////////////////////////////////////////////////////
+! /// BARR TYPE SELECTOR ///
+! /////////////////////////////////////////////////////////////////////
+IF BarType 1 = THEN ! 1 = Pas de BARR [nominal]
+  Assmb    := UOX    ;
+  AssmbAu  := UOX_SS ;
+ELSEIF BarType 2 = THEN ! 2 = AICN
+  Assmb    := UOX_BLACK    ;
+  AssmbAu  := UOX_BLACK_SS ;
+ELSEIF BarType 4 = THEN  ! 4 = PY (Pyrex)
+  Assmb    := UOX_PY    ;
+  AssmbAu  := UOX_PY_SS ;
+ELSE
+  ECHO "Unknown BarType" ;
+  ABORT: ;
+ENDIF ;
+
+! /////////////////////////////////////////////////////////////////////
+! /// DISCRETISATION SETTING ///
+! /////////////////////////////////////////////////////////////////////
+INTEGER imax := 1000000 ;
+Discr    := SYBILT: Assmb :: MAXZ <<imax>> MAXR <<imax>>
+                       QUA2 3 3 GAUSS DP01 ;
+DiscrAu  := SYBILT: AssmbAu :: MAXZ <<imax>> MAXR <<imax>>
+                       QUA2 3 3 GAUSS DP01 ;
+
+END: ;
+QUIT "LIST" .

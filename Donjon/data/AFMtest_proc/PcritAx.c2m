@@ -1,0 +1,89 @@
+!***********************************************************************
+!*                                                                    **
+!* PROCEDURE:  PcritAx                                                **
+!* USAGE:      Iteration for axial flux shape  convergence            **
+!*             for Gentilly2                                          **
+!* AUTHOR:     E. Varin (96/02/12)                                    **
+!* Modified:   W. Shen (97/10/10)                                     **
+!*             B. Dionne (01/03/04) (pour cours ENE6209)              **
+!*             A. Hebert (11/11/11) (pour DONJON4)                    **
+!* CALL:                                                              **
+!*                                                                    **
+!*   RESEAU := PcritB RESEAU DBASE INDEX MACRO DEVICE G23D2 ::        **
+!*      Maxreg Precf Pow Keff Eps1 ;                                  **
+!*                                                                    **
+!*                                                                    **
+!* NOTES:                                                             **
+!*        Maxreg = maximum number of matrial regions in geometry      **
+!*        Precf  = Static flux calculation precision                  **
+!*        Pow    = total fission power                                **
+!*        B1,B2  = burnup in each zone                                **
+!*        Keff,Eps1   = output                                        **
+!*                                                                    **
+!***********************************************************************
+ PARAMETER RESEAU DBASE INDEX MACRO DEVICE G23D2 ::
+           ::: LINKED_LIST RESEAU DBASE INDEX MACRO DEVICE G23D2 ;
+           ;
+
+ MODULE DELETE: RESINI: END: ;
+
+ PROCEDURE Pflax ;
+
+!* Declaration et initialisation des variables
+!*********************************************
+ INTEGER Maxreg ;
+ INTEGER Iter Edit := 0 1 ;
+
+ REAL Precf B1 B2 Eps1 Keff Pow ;
+
+!* Lecture des arguments de la procedure
+!***************************************
+ :: >>Precf<< >>B1<< >>B2<< >>Maxreg<< >>Pow<< ;
+
+!* Boucle pour converger sur la forme axiale du flux
+!***************************************************
+ REPEAT
+
+   EVALUATE Iter := Iter 1 + ;
+
+   RESEAU := RESINI: RESEAU :: TIMAV-BVAL <<B1>> <<B2>> ;
+
+   ECHO "PcritAx Iter=" Iter "B=" B1 B2 ;
+   RESEAU INDEX := Pflax RESEAU INDEX DBASE MACRO DEVICE G23D2 ::
+   <<Maxreg>> <<Precf>> <<Pow>> <<Edit>> >>Keff<< >>Eps1<<  ;
+
+ UNTIL Eps1 0.001 <  Iter 10 = + ;
+
+!* Impression de la carte des puissances de canal
+!************************************************
+ EVALUATE Edit := 2 ;
+
+ RESEAU INDEX := Pflax RESEAU INDEX DBASE MACRO DEVICE G23D2 ::
+ <<Maxreg>> <<Precf>> <<Pow>> <<Edit>> >>Keff<< >>Eps1<<  ;
+
+ IF Eps1 0.001 < THEN
+   ECHO "FORME AXIALE DU FLUX CONVERGEE" ;
+   ECHO "--------------------------------" ;
+   ECHO "EXIT BURNUP              = " B1 B2 ;
+   ECHO "KEFF                     = " Keff ;
+   ECHO "ERREUR FORME FLUX        = " Eps1 ;
+   ECHO "NBRE ITERATIONS INTERNES = " Iter ;
+   ECHO "--------------------------------" ;
+ ELSE
+   ECHO "ITERATION MAXIMALE ATTEINTE" ;
+   ECHO "FORME AXIALE DU FLUX NON CONVERGEE" ;
+   ECHO "----------------------------------" ;
+   ECHO "EXIT BURNUP              = " B1 B2 ;
+   ECHO "KEFF                     = " Keff ;
+   ECHO "ERREUR FORME FLUX        = " Eps1 ;
+   ECHO "NBRE ITERATIONS INTERNES = " Iter ;
+   ECHO "----------------------------------" ;
+ ENDIF ;
+
+!* Ecriture des variables de sorties de la procedure
+!***************************************************
+ :: <<Keff>> <<Eps1>>  ;
+
+ END: ;
+
+QUIT .

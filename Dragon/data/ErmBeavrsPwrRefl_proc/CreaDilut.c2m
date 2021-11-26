@@ -1,0 +1,518 @@
+*DECK CreaDilut.c2m
+*======================================================
+* Name:   CreaDilut.c2m
+* Type:   DRAGON procedure
+* Use:    Cree les MIX isotopiques de melanges dilues
+*         pour les reflecteurs
+* Author: M. Cordiez 06.2015
+*         [Altran]
+* Mod:    G. Tixier  05.2017 [CS-SI]
+*         Ajout du selecteur de DN
+*------------------------------------------------------
+* Input Required:
+*  > Molar Masses
+*  > Metal Mixes
+*  > Fractions volumiques des differents milieux
+*  > Numero de la zone reflecteur
+* Output Provided:
+*  < Library
+*======================================================
+PARAMETER LibDilut ConcMode MolarMasses
+          BNat Zirc4 Incon SS304 ::
+      ::: LINKED_LIST
+          LibDilut          MolarMasses
+          BNat Zirc4 Incon SS304 ; ;
+MODULE    LIB: GREP: ABORT: UTL: END: ;
+LINKED_LIST ListeIsot ListeAutop ;
+PROCEDURE AdaptIso ;
+*--------------------------------------------------------------------
+* Paramètres constants
+*--------------------------------------------------------------------
+REAL avogadro := 6.022094E+23 ;
+REAL avo_conc := avogadro 1.E-24 * ;
+
+*--------------------------------------------------------------------
+* Definition des variables generales
+*--------------------------------------------------------------------
+REAL dSS   :=  7.792815 ; ! Densite de l'acier inoxydable (SS304)
+REAL dZr4  :=  6.49012  ; ! Densite du zircaloy 4
+REAL dInc  :=  8.303    ; ! Densite inconel (a 20 degres C...)
+REAL TMil               ; ! Temperature du moderateur en degres C (suppose = T de tout le milieu)
+REAL dZone              ; ! Densite de la zone consideree
+REAL dHe                ; ! Densite de l'helium
+REAL dMod               ; ! Densite du moderateur
+REAL CB                 ; ! Concentration en bore
+REAL fvMod fvZr4 fvInc fvSS304 ; ! Fractions volumiques des differents milieux
+STRING NuclData LibGenre LibType ;
+INTEGER LibId ;
+
+*--------------------------------------------------------------------
+* Fractions volumiques des differents milieux presents dans la zone
+*--------------------------------------------------------------------
+:: >>dMod<< >>TMil<< >>CB<< >>fvMod<< >>fvZr4<< >>fvInc<< >>fvSS304<<
+   >>NuclData<< >>LibType<< ;
+
+*------------------------------------------------------
+* Recuperation des noms des isotopes
+*------------------------------------------------------
+STRING NomH2O ;
+STRING NomH1 ;
+STRING NomO16 ;
+STRING NomAm241 ;
+STRING NomAl27 ;
+STRING NomB10 NomB11 ;
+STRING NomCo59 NomCr50 NomCr52 NomCr53 NomCr54 ;
+STRING NomFe54 NomFe56 NomFe57 NomFe58 ;
+STRING NomMn55 ;
+STRING NomMo95 ;
+STRING NomNb93 ;
+STRING NomNi58 NomNi60 NomNi61 NomNi62 NomNi64 ;
+STRING NomPu238 NomPu239 NomPu240 NomPu241 NomPu242 ;
+STRING NomSiNat NomSi28 NomSi29 NomSi30 ;
+STRING NomSn112 NomSn114 NomSn115 NomSn116 NomSn117 ;
+STRING NomSn118 NomSn119 NomSn120 NomSn122 NomSn124 ;
+STRING NomTiNat NomTi46 NomTi47 NomTi48 NomTi49 NomTi50 ;
+STRING NomU234 NomU235 NomU236 NomU238 ;
+STRING NomZrNat ;
+STRING NomZr90 NomZr91 NomZr92 NomZr93 NomZr94 NomZr95 NomZr96 ;
+STRING NomCNat ;
+STRING NomAg107 NomAg109 ;
+STRING NomCd106 NomCd108 NomCd110 NomCd111 NomCd112 NomCd113 NomCd114 ;
+STRING NomCd116 ;
+STRING NomIn115 NomIn113 NomInNat ;
+STRING NomGd154 NomGd155 NomGd156 NomGd157 NomGd158 NomGd160 ;
+STRING NomKnat NomK39 NomK40 NomK41 NomNa23 ;
+STRING NomS32 NomS33 NomS34 NomN14 ;
+
+ListeIsot ListeAutop := AdaptIso :: <<NuclData>> <<LibType>>
+                         >>LibId<< >>LibGenre<< ;
+
+GREP: ListeIsot :: GETVAL 'H2O  ' <<LibId>> NVAL 8 >>NomH2O<< ;
+GREP: ListeIsot :: GETVAL 'H1   ' <<LibId>> NVAL 8 >>NomH1<<    ;
+GREP: ListeIsot :: GETVAL 'O16  ' <<LibId>> NVAL 8 >>NomO16<<   ;
+GREP: ListeIsot :: GETVAL 'Am241' <<LibId>> NVAL 8 >>NomAm241<< ;
+GREP: ListeIsot :: GETVAL 'Al27 ' <<LibId>> NVAL 8 >>NomAl27<<  ;
+GREP: ListeIsot :: GETVAL 'B10  ' <<LibId>> NVAL 8 >>NomB10<<   ;
+GREP: ListeIsot :: GETVAL 'B11  ' <<LibId>> NVAL 8 >>NomB11<<   ;
+GREP: ListeIsot :: GETVAL 'Co59 ' <<LibId>> NVAL 8 >>NomCo59<<  ;
+GREP: ListeIsot :: GETVAL 'Cr50 ' <<LibId>> NVAL 8 >>NomCr50<<  ;
+GREP: ListeIsot :: GETVAL 'Cr52 ' <<LibId>> NVAL 8 >>NomCr52<<  ;
+GREP: ListeIsot :: GETVAL 'Cr53 ' <<LibId>> NVAL 8 >>NomCr53<<  ;
+GREP: ListeIsot :: GETVAL 'Cr54 ' <<LibId>> NVAL 8 >>NomCr54<<  ;
+GREP: ListeIsot :: GETVAL 'Fe54 ' <<LibId>> NVAL 8 >>NomFe54<<  ;
+GREP: ListeIsot :: GETVAL 'Fe56 ' <<LibId>> NVAL 8 >>NomFe56<<  ;
+GREP: ListeIsot :: GETVAL 'Fe57 ' <<LibId>> NVAL 8 >>NomFe57<<  ;
+GREP: ListeIsot :: GETVAL 'Fe58 ' <<LibId>> NVAL 8 >>NomFe58<<  ;
+GREP: ListeIsot :: GETVAL 'Mn55 ' <<LibId>> NVAL 8 >>NomMn55<<  ;
+GREP: ListeIsot :: GETVAL 'Mo95 ' <<LibId>> NVAL 8 >>NomMo95<<  ;
+GREP: ListeIsot :: GETVAL 'Nb93 ' <<LibId>> NVAL 8 >>NomNb93<<  ;
+GREP: ListeIsot :: GETVAL 'Ni58 ' <<LibId>> NVAL 8 >>NomNi58<<  ;
+GREP: ListeIsot :: GETVAL 'Ni60 ' <<LibId>> NVAL 8 >>NomNi60<<  ;
+GREP: ListeIsot :: GETVAL 'Ni61 ' <<LibId>> NVAL 8 >>NomNi61<<  ;
+GREP: ListeIsot :: GETVAL 'Ni62 ' <<LibId>> NVAL 8 >>NomNi62<<  ;
+GREP: ListeIsot :: GETVAL 'Ni64 ' <<LibId>> NVAL 8 >>NomNi64<<  ;
+GREP: ListeIsot :: GETVAL 'Pu238' <<LibId>> NVAL 8 >>NomPu238<< ;
+GREP: ListeIsot :: GETVAL 'Pu239' <<LibId>> NVAL 8 >>NomPu239<< ;
+GREP: ListeIsot :: GETVAL 'Pu240' <<LibId>> NVAL 8 >>NomPu240<< ;
+GREP: ListeIsot :: GETVAL 'Pu241' <<LibId>> NVAL 8 >>NomPu241<< ;
+GREP: ListeIsot :: GETVAL 'Pu242' <<LibId>> NVAL 8 >>NomPu242<< ;
+GREP: ListeIsot :: GETVAL 'SiNat' <<LibId>> NVAL 8 >>NomSiNat<< ;
+GREP: ListeIsot :: GETVAL 'Si28 ' <<LibId>> NVAL 8 >>NomSi28<<  ;
+GREP: ListeIsot :: GETVAL 'Si29 ' <<LibId>> NVAL 8 >>NomSi29<<  ;
+GREP: ListeIsot :: GETVAL 'Si30 ' <<LibId>> NVAL 8 >>NomSi30<<  ;
+GREP: ListeIsot :: GETVAL 'Sn112' <<LibId>> NVAL 8 >>NomSn112<< ;
+GREP: ListeIsot :: GETVAL 'Sn114' <<LibId>> NVAL 8 >>NomSn114<< ;
+GREP: ListeIsot :: GETVAL 'Sn115' <<LibId>> NVAL 8 >>NomSn115<< ;
+GREP: ListeIsot :: GETVAL 'Sn116' <<LibId>> NVAL 8 >>NomSn116<< ;
+GREP: ListeIsot :: GETVAL 'Sn117' <<LibId>> NVAL 8 >>NomSn117<< ;
+GREP: ListeIsot :: GETVAL 'Sn118' <<LibId>> NVAL 8 >>NomSn118<< ;
+GREP: ListeIsot :: GETVAL 'Sn119' <<LibId>> NVAL 8 >>NomSn119<< ;
+GREP: ListeIsot :: GETVAL 'Sn120' <<LibId>> NVAL 8 >>NomSn120<< ;
+GREP: ListeIsot :: GETVAL 'Sn122' <<LibId>> NVAL 8 >>NomSn122<< ;
+GREP: ListeIsot :: GETVAL 'Sn124' <<LibId>> NVAL 8 >>NomSn124<< ;
+GREP: ListeIsot :: GETVAL 'TiNat' <<LibId>> NVAL 8 >>NomTiNat<< ;
+GREP: ListeIsot :: GETVAL 'Ti46 ' <<LibId>> NVAL 8 >>NomTi46<<  ;
+GREP: ListeIsot :: GETVAL 'Ti47 ' <<LibId>> NVAL 8 >>NomTi47<<  ;
+GREP: ListeIsot :: GETVAL 'Ti48 ' <<LibId>> NVAL 8 >>NomTi48<<  ;
+GREP: ListeIsot :: GETVAL 'Ti49 ' <<LibId>> NVAL 8 >>NomTi49<<  ;
+GREP: ListeIsot :: GETVAL 'Ti50 ' <<LibId>> NVAL 8 >>NomTi50<<  ;
+GREP: ListeIsot :: GETVAL 'U234 ' <<LibId>> NVAL 8 >>NomU234<<  ;
+GREP: ListeIsot :: GETVAL 'U235 ' <<LibId>> NVAL 8 >>NomU235<<  ;
+GREP: ListeIsot :: GETVAL 'U236 ' <<LibId>> NVAL 8 >>NomU236<<  ;
+GREP: ListeIsot :: GETVAL 'U238 ' <<LibId>> NVAL 8 >>NomU238<<  ;
+GREP: ListeIsot :: GETVAL 'ZrNat' <<LibId>> NVAL 8 >>NomZrNat<< ;
+GREP: ListeIsot :: GETVAL 'Zr90 ' <<LibId>> NVAL 8 >>NomZr90<<  ;
+GREP: ListeIsot :: GETVAL 'Zr91 ' <<LibId>> NVAL 8 >>NomZr91<<  ;
+GREP: ListeIsot :: GETVAL 'Zr92 ' <<LibId>> NVAL 8 >>NomZr92<<  ;
+GREP: ListeIsot :: GETVAL 'Zr93 ' <<LibId>> NVAL 8 >>NomZr93<<  ;
+GREP: ListeIsot :: GETVAL 'Zr94 ' <<LibId>> NVAL 8 >>NomZr94<<  ;
+GREP: ListeIsot :: GETVAL 'Zr95 ' <<LibId>> NVAL 8 >>NomZr95<<  ;
+GREP: ListeIsot :: GETVAL 'Zr96 ' <<LibId>> NVAL 8 >>NomZr96<<  ;
+GREP: ListeIsot :: GETVAL 'CNat ' <<LibId>> NVAL 8 >>NomCNat<<  ;
+GREP: ListeIsot :: GETVAL 'Ag107' <<LibId>> NVAL 8 >>NomAg107<< ;
+GREP: ListeIsot :: GETVAL 'Ag109' <<LibId>> NVAL 8 >>NomAg109<< ;
+GREP: ListeIsot :: GETVAL 'Cd106' <<LibId>> NVAL 8 >>NomCd106<< ;
+GREP: ListeIsot :: GETVAL 'Cd108' <<LibId>> NVAL 8 >>NomCd108<< ;
+GREP: ListeIsot :: GETVAL 'Cd110' <<LibId>> NVAL 8 >>NomCd110<< ;
+GREP: ListeIsot :: GETVAL 'Cd111' <<LibId>> NVAL 8 >>NomCd111<< ;
+GREP: ListeIsot :: GETVAL 'Cd112' <<LibId>> NVAL 8 >>NomCd112<< ;
+GREP: ListeIsot :: GETVAL 'Cd113' <<LibId>> NVAL 8 >>NomCd113<< ;
+GREP: ListeIsot :: GETVAL 'Cd114' <<LibId>> NVAL 8 >>NomCd114<< ;
+GREP: ListeIsot :: GETVAL 'Cd116' <<LibId>> NVAL 8 >>NomCd116<< ;
+GREP: ListeIsot :: GETVAL 'In115' <<LibId>> NVAL 8 >>NomIn115<< ;
+GREP: ListeIsot :: GETVAL 'In113' <<LibId>> NVAL 8 >>NomIn113<< ;
+GREP: ListeIsot :: GETVAL 'Gd154' <<LibId>> NVAL 8 >>NomGd154<< ;
+GREP: ListeIsot :: GETVAL 'Gd155' <<LibId>> NVAL 8 >>NomGd155<< ;
+GREP: ListeIsot :: GETVAL 'Gd156' <<LibId>> NVAL 8 >>NomGd156<< ;
+GREP: ListeIsot :: GETVAL 'Gd157' <<LibId>> NVAL 8 >>NomGd157<< ;
+GREP: ListeIsot :: GETVAL 'Gd158' <<LibId>> NVAL 8 >>NomGd158<< ;
+GREP: ListeIsot :: GETVAL 'Gd160' <<LibId>> NVAL 8 >>NomGd160<< ;
+GREP: ListeIsot :: GETVAL 'Knat ' <<LibId>> NVAL 8 >>NomKnat<< ;
+GREP: ListeIsot :: GETVAL 'K39  ' <<LibId>> NVAL 8 >>NomK39<< ;
+GREP: ListeIsot :: GETVAL 'K40  ' <<LibId>> NVAL 8 >>NomK40<< ;
+GREP: ListeIsot :: GETVAL 'K41  ' <<LibId>> NVAL 8 >>NomK41<< ;
+GREP: ListeIsot :: GETVAL 'Na23 ' <<LibId>> NVAL 8 >>NomNa23<< ;
+GREP: ListeIsot :: GETVAL 'S32  ' <<LibId>> NVAL 8 >>NomS32<< ;
+GREP: ListeIsot :: GETVAL 'S33  ' <<LibId>> NVAL 8 >>NomS33<< ;
+GREP: ListeIsot :: GETVAL 'S34  ' <<LibId>> NVAL 8 >>NomS34<< ;
+GREP: ListeIsot :: GETVAL 'N14  ' <<LibId>> NVAL 8 >>NomN14<< ;
+GREP: ListeIsot :: GETVAL 'InNat' <<LibId>> NVAL 8 >>NomInNat<< ;
+
+*--------------------------------------------------------------------
+* Concentrations isotopiques et donnees des differents consistuants
+*--------------------------------------------------------------------
+!------ Donnees du moderateur ------
+REAL MBNat   B10f    B11f    ;
+REAL BTot_mod    ;
+REAL H2O_mod ;
+REAL H_mod O_mod h1 ;
+REAL MH2O := 18.01528 ;
+
+*---- Proportions isotopiques ----
+GREP: BNat :: GETVAL 'AvgMolM ' 1 >>MBNat<< ;
+GREP: BNat :: GETVAL 'B10frIso' 1 >>B10f<<  ;
+GREP: BNat :: GETVAL 'B11frIso' 1 >>B11f<<  ;
+
+GREP: MolarMasses :: GETVAL 'H1  ' 1  >>h1<<  ;
+EVALUATE H_mod := dMod avo_conc * MH2O / 2. * ;   ! En atomes/vol
+EVALUATE O_mod := dMod avo_conc * MH2O / ;   ! En atomes/vol
+EVALUATE H2O_mod := 0. ;
+EVALUATE BTot_mod  := dMod CB * 1.E-6 * avo_conc * MBNat / ;
+
+!---- Donnees du zircaloy ----
+REAL MZr4 Zr4Conc ;
+REAL Fe54Z4f  Fe56Z4f  Fe57Z4f  Fe58Z4f  ;
+REAL Cr50Z4f  Cr52Z4f  Cr53Z4f  Cr54Z4f  ;
+REAL Sn112Z4f Sn114Z4f Sn115Z4f Sn116Z4f Sn117Z4f
+     Sn118Z4f Sn119Z4f Sn120Z4f Sn122Z4f Sn124Z4f ;
+REAL O16Z4f   ZrNatZ4f ;
+REAL Zr90Z4f Zr91Z4f Zr92Z4f Zr93Z4f Zr94Z4f Zr95Z4f Zr96Z4f ;
+
+*---- Proportions isotopiques ----
+GREP: Zirc4 :: GETVAL 'AvgMolM     ' 1 >>MZr4<<      ;
+GREP: Zirc4 :: GETVAL 'Fe54Z4frIso ' 1 >>Fe54Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Fe56Z4frIso ' 1 >>Fe56Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Fe57Z4frIso ' 1 >>Fe57Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Fe58Z4frIso ' 1 >>Fe58Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Cr50Z4frIso ' 1 >>Cr50Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Cr52Z4frIso ' 1 >>Cr52Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Cr53Z4frIso ' 1 >>Cr53Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Cr54Z4frIso ' 1 >>Cr54Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'O16Z4frIso  ' 1 >>O16Z4f<<   ;
+GREP: Zirc4 :: GETVAL 'ZrNatfrIso  ' 1 >>ZrNatZ4f<< ;
+GREP: Zirc4 :: GETVAL 'Zr90Z4frIso ' 1 >>Zr90Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Zr91Z4frIso ' 1 >>Zr91Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Zr92Z4frIso ' 1 >>Zr92Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Zr93Z4frIso ' 1 >>Zr93Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Zr94Z4frIso ' 1 >>Zr94Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Zr95Z4frIso ' 1 >>Zr95Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Zr96Z4frIso ' 1 >>Zr96Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Sn112Z4frIso' 1 >>Sn112Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn114Z4frIso' 1 >>Sn114Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn115Z4frIso' 1 >>Sn115Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn116Z4frIso' 1 >>Sn116Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn117Z4frIso' 1 >>Sn117Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn118Z4frIso' 1 >>Sn118Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn119Z4frIso' 1 >>Sn119Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn120Z4frIso' 1 >>Sn120Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn122Z4frIso' 1 >>Sn122Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn124Z4frIso' 1 >>Sn124Z4f<< ;
+
+ECHO "M(Zirc4)   : " MZr4  " (g/mol)" ;
+
+EVALUATE Zr4Conc := dZr4 avo_conc * MZr4 / ; ! En atomes/vol
+
+!---- Donnees de l'inconel ----
+REAL MInc IncConc ;
+REAL Ni58Inf Ni60Inf Ni61Inf Ni62Inf Ni64Inf ;
+REAL Cr50Inf Cr52Inf Cr53Inf Cr54Inf ;
+REAL Fe54Inf Fe56Inf Fe57Inf Fe58Inf ;
+REAL B10BInf B11BInf ;
+REAL Al27Inf Mo95Inf Co59Inf Mn55Inf Nb93Inf ;
+REAL TiNatInf Ti46Inf Ti47Inf Ti48Inf ;
+REAL Ti49Inf Ti50Inf ;
+REAL SiNatInf Si28Inf Si29Inf Si30Inf ;
+
+*---- Proportions isotopiques ----
+GREP: Incon :: GETVAL 'AvgMolM    ' 1 >>MInc<<    ;
+GREP: Incon :: GETVAL 'Ni58InfrIso' 1 >>Ni58Inf<< ;
+GREP: Incon :: GETVAL 'Ni60InfrIso' 1 >>Ni60Inf<< ;
+GREP: Incon :: GETVAL 'Ni61InfrIso' 1 >>Ni61Inf<< ;
+GREP: Incon :: GETVAL 'Ni62InfrIso' 1 >>Ni62Inf<< ;
+GREP: Incon :: GETVAL 'Ni64InfrIso' 1 >>Ni64Inf<< ;
+GREP: Incon :: GETVAL 'Cr50InfrIso' 1 >>Cr50Inf<< ;
+GREP: Incon :: GETVAL 'Cr52InfrIso' 1 >>Cr52Inf<< ;
+GREP: Incon :: GETVAL 'Cr53InfrIso' 1 >>Cr53Inf<< ;
+GREP: Incon :: GETVAL 'Cr54InfrIso' 1 >>Cr54Inf<< ;
+GREP: Incon :: GETVAL 'Fe54InfrIso' 1 >>Fe54Inf<< ;
+GREP: Incon :: GETVAL 'Fe56InfrIso' 1 >>Fe56Inf<< ;
+GREP: Incon :: GETVAL 'Fe57InfrIso' 1 >>Fe57Inf<< ;
+GREP: Incon :: GETVAL 'Fe58InfrIso' 1 >>Fe58Inf<< ;
+GREP: Incon :: GETVAL 'B10InfrIso ' 1 >>B10BInf<< ;
+GREP: Incon :: GETVAL 'B11InfrIso ' 1 >>B11BInf<< ;
+GREP: Incon :: GETVAL 'Al27InfrIso' 1 >>Al27Inf<< ;
+GREP: Incon :: GETVAL 'Mo95InfrIso' 1 >>Mo95Inf<< ;
+GREP: Incon :: GETVAL 'TiNatInfrIso' 1 >>TiNatInf<< ;
+GREP: Incon :: GETVAL 'Ti46InfrIso ' 1 >>Ti46Inf<<  ;
+GREP: Incon :: GETVAL 'Ti47InfrIso ' 1 >>Ti47Inf<<  ;
+GREP: Incon :: GETVAL 'Ti48InfrIso ' 1 >>Ti48Inf<<  ;
+GREP: Incon :: GETVAL 'Ti49InfrIso ' 1 >>Ti49Inf<<  ;
+GREP: Incon :: GETVAL 'Ti50InfrIso ' 1 >>Ti50Inf<<  ;
+GREP: Incon :: GETVAL 'SiNatInfrIso' 1 >>SiNatInf<< ;
+GREP: Incon :: GETVAL 'Si28InfrIso ' 1 >>Si28Inf<<  ;
+GREP: Incon :: GETVAL 'Si29InfrIso ' 1 >>Si29Inf<<  ;
+GREP: Incon :: GETVAL 'Si30InfrIso ' 1 >>Si30Inf<<  ;
+GREP: Incon :: GETVAL 'Co59InfrIso' 1 >>Co59Inf<< ;
+GREP: Incon :: GETVAL 'Mn55InfrIso' 1 >>Mn55Inf<< ;
+GREP: Incon :: GETVAL 'Nb93InfrIso' 1 >>Nb93Inf<< ;
+
+ECHO "M(Inconel) : " MInc " (g/mol)" ;
+
+EVALUATE IncConc := dInc avo_conc * MInc / ; ! En atomes/vol
+
+!---- Donnees de l'inox 304SS ----
+REAL MSS304  SSConc ;
+REAL Fe54SSf Fe56SSf Fe57SSf Fe58SSf ;
+REAL Ni58SSf Ni60SSf Ni61SSf Ni62SSf Ni64SSf ;
+REAL Cr50SSf Cr52SSf Cr53SSf Cr54SSf ;
+REAL MnSSf ;
+REAL SiSSf Si28SSf Si29SSf Si30SSf ;
+
+*---- Proportions isotopiques ----
+GREP: SS304 :: GETVAL 'AvgMolM     ' 1 >>MSS304<<  ;
+GREP: SS304 :: GETVAL 'Fe54SSfrIso ' 1 >>Fe54SSf<< ;
+GREP: SS304 :: GETVAL 'Fe56SSfrIso ' 1 >>Fe56SSf<< ;
+GREP: SS304 :: GETVAL 'Fe57SSfrIso ' 1 >>Fe57SSf<< ;
+GREP: SS304 :: GETVAL 'Fe58SSfrIso ' 1 >>Fe58SSf<< ;
+GREP: SS304 :: GETVAL 'Ni58SSfrIso ' 1 >>Ni58SSf<< ;
+GREP: SS304 :: GETVAL 'Ni60SSfrIso ' 1 >>Ni60SSf<< ;
+GREP: SS304 :: GETVAL 'Ni61SSfrIso ' 1 >>Ni61SSf<< ;
+GREP: SS304 :: GETVAL 'Ni62SSfrIso ' 1 >>Ni62SSf<< ;
+GREP: SS304 :: GETVAL 'Ni64SSfrIso ' 1 >>Ni64SSf<< ;
+GREP: SS304 :: GETVAL 'Cr50SSfrIso ' 1 >>Cr50SSf<< ;
+GREP: SS304 :: GETVAL 'Cr52SSfrIso ' 1 >>Cr52SSf<< ;
+GREP: SS304 :: GETVAL 'Cr53SSfrIso ' 1 >>Cr53SSf<< ;
+GREP: SS304 :: GETVAL 'Cr54SSfrIso ' 1 >>Cr54SSf<< ;
+GREP: SS304 :: GETVAL 'Mn55SSfrIso ' 1 >>MnSSf<<   ;
+GREP: SS304 :: GETVAL 'SiNatSSfrIso' 1 >>SiSSf<<   ;
+GREP: SS304 :: GETVAL 'Si28SSfrIso ' 1 >>Si28SSf<<   ;
+GREP: SS304 :: GETVAL 'Si29SSfrIso ' 1 >>Si29SSf<<   ;
+GREP: SS304 :: GETVAL 'Si30SSfrIso ' 1 >>Si30SSf<<   ;
+
+ECHO "M(304SS) : " MSS304 " (g/mol)" ;
+
+EVALUATE SSConc := dSS avo_conc * MSS304 / ; ! En atomes/vol
+
+*--------------------------------------------------------------------
+* Calcul des fractions atomiques volumiques des differents constituants
+*--------------------------------------------------------------------
+
+REAL faH2O faB faZr4 faInc faSS faHe ;
+REAL faH   faO ;
+
+EVALUATE faH2O := 0. ;
+EVALUATE faH := H_mod fvMod * ;
+EVALUATE faO := O_mod fvMod * ;
+
+EVALUATE faB := BTot_mod fvMod * ;
+
+EVALUATE faZr4 := Zr4Conc fvZr4 * ;
+
+EVALUATE faInc := IncConc fvInc * ;
+
+EVALUATE faSS := SSConc fvSS304 * ;
+
+*--------------------------------------------------------------------
+* Definition des isotopes du melange (fractions atomiques)
+*--------------------------------------------------------------------
+
+! Prop = fraction isotope x quantite du milieu dans sa fraction de volume
+REAL B10 := B10f faB * B10BInf faInc * + ;
+REAL B11 := B11f faB * B11BInf faInc * + ;
+REAL Fe54 := Fe54Z4f faZr4 * Fe54Inf faInc * Fe54SSf faSS * + + ;
+REAL Fe56 := Fe56Z4f faZr4 * Fe56Inf faInc * Fe56SSf faSS * + + ;
+REAL Fe57 := Fe57Z4f faZr4 * Fe57Inf faInc * Fe57SSf faSS * + + ;
+REAL Fe58 := Fe58Z4f faZr4 * Fe58Inf faInc * Fe58SSf faSS * + + ;
+REAL Cr50 := Cr50Z4f faZr4 * Cr50Inf faInc * Cr50SSf faSS * + + ;
+REAL Cr52 := Cr52Z4f faZr4 * Cr52Inf faInc * Cr52SSf faSS * + + ;
+REAL Cr53 := Cr53Z4f faZr4 * Cr53Inf faInc * Cr53SSf faSS * + + ;
+REAL Cr54 := Cr54Z4f faZr4 * Cr54Inf faInc * Cr54SSf faSS * + + ;
+* Special case: Oxygen 16 may be present in both zircalloy and water (H2O).
+REAL O16 := O16Z4f faZr4 * faO + ;
+REAL Zr := ZrNatZ4f faZr4 * ;
+!REAL Zr90 := Zr90Z4f faZr4 * ;
+!REAL Zr91 := Zr91Z4f faZr4 * ;
+!REAL Zr92 := Zr92Z4f faZr4 * ;
+!REAL Zr93 := Zr93Z4f faZr4 * ;
+!REAL Zr94 := Zr94Z4f faZr4 * ;
+!REAL Zr95 := Zr95Z4f faZr4 * ;
+!REAL Zr96 := Zr96Z4f faZr4 * ;
+!REAL Sn112 := Sn112Z4f faZr4 * ;
+!REAL Sn114 := Sn114Z4f faZr4 * ;
+REAL Sn115 := Sn115Z4f faZr4 * ;
+REAL Sn116 := Sn116Z4f faZr4 * ;
+REAL Sn117 := Sn117Z4f faZr4 * ;
+REAL Sn118 := Sn118Z4f faZr4 * ;
+REAL Sn119 := Sn119Z4f faZr4 * ;
+REAL Sn120 := Sn120Z4f faZr4 * ;
+REAL Sn122 := Sn122Z4f faZr4 * ;
+REAL Sn124 := Sn124Z4f faZr4 * ;
+REAL Ni58 := Ni58Inf faInc * Ni58SSf faSS * + ;
+REAL Ni60 := Ni60Inf faInc * Ni60SSf faSS * + ;
+REAL Ni61 := Ni61Inf faInc * Ni61SSf faSS * + ;
+REAL Ni62 := Ni62Inf faInc * Ni62SSf faSS * + ;
+REAL Ni64 := Ni64Inf faInc * Ni64SSf faSS * + ;
+REAL Al27 := Al27Inf faInc * ;
+REAL Mo95 := Mo95Inf faInc * ;
+REAL TiN := TiNatInf faInc * ;
+!REAL Ti46 := Ti46Inf faInc * ;
+!REAL Ti47 := Ti47Inf faInc * ;
+!REAL Ti48 := Ti48Inf faInc * ;
+!REAL Ti49 := Ti49Inf faInc * ;
+!REAL Ti50 := Ti50Inf faInc * ;
+REAL SiN := SiNatInf faInc * SiSSf faSS * + ;
+!REAL Si28 := Si28Inf faInc * Si28SSf faSS * + ;
+!REAL Si29 := Si29Inf faInc * Si29SSf faSS * + ;
+!REAL Si30 := Si30Inf faInc * Si30SSf faSS * + ;
+REAL Co59 := Co59Inf faInc * ;
+REAL Mn55 := Mn55Inf faInc * MnSSf faSS * + ;
+REAL Nb93 := Nb93Inf faInc * ;
+
+ECHO "Composition de la zone reflecteur" ;
+ECHO "H2O    " faH2O ;
+ECHO "H1     " faH ;
+ECHO "O16_mod" faO ;
+ECHO "B10    " B10 ;
+ECHO "B11    " B11 ;
+ECHO "Fe54   " Fe54 ;
+ECHO "Fe56   " Fe56 ;
+ECHO "Fe57   " Fe57 ;
+ECHO "Fe58   " Fe58 ;
+ECHO "Cr50   " Cr50 ;
+ECHO "Cr52   " Cr52 ;
+ECHO "Cr53   " Cr53 ;
+ECHO "Cr54   " Cr54 ;
+ECHO "O16    " O16 ;
+ECHO "Zr     " Zr ;
+!ECHO "Zr90   " Zr90 ;
+!ECHO "Zr91   " Zr91 ;
+!ECHO "Zr92   " Zr92 ;
+!ECHO "Zr93   " Zr93 ;
+!ECHO "Zr94   " Zr94 ;
+!ECHO "Zr95   " Zr95 ;
+!ECHO "Zr96   " Zr96 ;
+!ECHO "Sn112  " Sn112 ;
+!ECHO "Sn114  " Sn114 ;
+ECHO "Sn115  " Sn115 ;
+ECHO "Sn116  " Sn116 ;
+ECHO "Sn117  " Sn117 ;
+ECHO "Sn118  " Sn118 ;
+ECHO "Sn119  " Sn119 ;
+ECHO "Sn120  " Sn120 ;
+ECHO "Sn122  " Sn122 ;
+ECHO "Sn124  " Sn124 ;
+ECHO "Ni58   " Ni58 ;
+ECHO "Ni60   " Ni60 ;
+ECHO "Ni61   " Ni61 ;
+ECHO "Ni62   " Ni62 ;
+ECHO "Ni64   " Ni64 ;
+ECHO "Al27   " Al27 ;
+ECHO "Mo95   " Mo95 ;
+ECHO "TiN    " TiN ;
+!ECHO "Ti46   " Ti46 ;
+!ECHO "Ti47   " Ti47 ;
+!ECHO "Ti48   " Ti48 ;
+!ECHO "Ti49   " Ti49 ;
+!ECHO "Ti50   " Ti50 ;
+ECHO "SiN    " SiN ;
+!ECHO "Si28   " Si28 ;
+!ECHO "Si29   " Si29 ;
+!ECHO "Si30   " Si30 ;
+ECHO "Co59   " Co59 ;
+ECHO "Mn55   " Mn55 ;
+ECHO "Nb93   " Nb93 ;
+
+*--------------------------------------------------------------------
+* Definition du melange correspondant dans la librairie
+*--------------------------------------------------------------------
+LibDilut := LIB: ::
+  NMIX 32
+
+  MIXS LIB: <<LibGenre>> FIL: <<NuclData>>
+* Milieu generique issu de la dilution de tous les constituants
+  MIX 1 <<TMil>>
+!    H2O      = <<NomH2O>>   <<faH2O>>
+    H1_H2O   = <<NomH1>>    <<faH>>
+    O16      = <<NomO16>>   <<O16>>
+    B10      = <<NomB10>>   <<B10>>
+    B11      = <<NomB11>>   <<B11>>
+    Fe54     = <<NomFe54>>  <<Fe54>>
+    Fe56     = <<NomFe56>>  <<Fe56>>
+    Fe57     = <<NomFe57>>  <<Fe57>>
+    Fe58     = <<NomFe58>>  <<Fe58>>
+    Cr50     = <<NomCr50>>  <<Cr50>>
+    Cr52     = <<NomCr52>>  <<Cr52>>
+    Cr53     = <<NomCr53>>  <<Cr53>>
+    Cr54     = <<NomCr54>>  <<Cr54>>
+    ZrNat    = <<NomZrNat>> <<Zr>>
+!    Zr90     = <<NomZr90>>  <<Zr90>>
+!    Zr91     = <<NomZr91>>  <<Zr91>>
+!    Zr92     = <<NomZr92>>  <<Zr92>>
+!    Zr93     = <<NomZr93>>  <<Zr93>>
+!    Zr94     = <<NomZr94>>  <<Zr94>>
+!    Zr95     = <<NomZr95>>  <<Zr95>>
+!    Zr96     = <<NomZr96>>  <<Zr96>>
+!    Sn112    = <<NomSn112>> <<Sn112>>
+!    Sn114    = <<NomSn114>> <<Sn114>>
+    Sn115    = <<NomSn115>> <<Sn115>>
+    Sn116    = <<NomSn116>> <<Sn116>>
+    Sn117    = <<NomSn117>> <<Sn117>>
+    Sn118    = <<NomSn118>> <<Sn118>>
+    Sn119    = <<NomSn119>> <<Sn119>>
+    Sn120    = <<NomSn120>> <<Sn120>>
+    Sn122    = <<NomSn122>> <<Sn122>>
+    Sn124    = <<NomSn124>> <<Sn124>>
+    Ni58     = <<NomNi58>>  <<Ni58>>
+    Ni60     = <<NomNi60>>  <<Ni60>>
+    Ni61     = <<NomNi61>>  <<Ni61>>
+    Ni62     = <<NomNi62>>  <<Ni62>>
+    Ni64     = <<NomNi64>>  <<Ni64>>
+    Al27     = <<NomAl27>>  <<Al27>>
+    Mo95     = <<NomMo95>>  <<Mo95>>
+    TiNat    = <<NomTiNat>> <<TiN>>
+!    Ti46     = <<NomTi46>>  <<Ti46>>
+!    Ti47     = <<NomTi47>>  <<Ti47>>
+!    Ti48     = <<NomTi48>>  <<Ti48>>
+!    Ti49     = <<NomTi49>>  <<Ti49>>
+!    Ti50     = <<NomTi50>>  <<Ti50>>
+    SiNat    = <<NomSiNat>> <<SiN>>
+!    Si28     = <<NomSi28>>  <<Si28>>
+!    Si29     = <<NomSi29>>  <<Si29>>
+!    Si30     = <<NomSi30>>  <<Si30>>
+    Co59     = <<NomCo59>>  <<Co59>>
+    Mn55     = <<NomMn55>>  <<Mn55>>
+    Nb93     = <<NomNb93>>  <<Nb93>>
+;
+
+END: ;
+QUIT "LIST" .

@@ -1,0 +1,9 @@
+#!/bin/sh
+if [ $# = 0 ]
+   then
+   echo "usage: Triga_Model3D.access directory" 1>&2
+   exit 1
+fi
+ln -s "$1"/data/Triga_Model3D_proc/*.dds .
+ls -l
+echo "Triga_Model3D access script terminated"

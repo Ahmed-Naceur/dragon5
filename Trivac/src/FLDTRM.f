@@ -1,0 +1,379 @@
+*DECK FLDTRM
+      SUBROUTINE FLDTRM(NAMP,IPTRK,IPSYS,LL4,F2,F3)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* LCM driver for the multiplication of a matrix by a vector. Special
+* version for Thomas-Raviart or Thomas-Raviart-Schneider basis.
+*
+*Copyright:
+* Copyright (C) 2006 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): A. Hebert
+*
+*Parameters: input
+* NAMP    name of the coefficient matrix.
+* IPTRK   L_TRACK pointer to the tracking information.
+* IPSYS   L_SYSTEM pointer to system matrices.
+* LL4     order of the matrix.
+* F2      vector to multiply.
+*
+*Parameters: output
+* F3      result of the multiplication.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      TYPE(C_PTR) IPTRK,IPSYS
+      CHARACTER NAMP*12
+      INTEGER LL4
+      REAL F2(LL4),F3(LL4)
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER (NSTATE=40)
+      CHARACTER NAMT*12
+      INTEGER ITP(NSTATE),ITS(NSTATE)
+      LOGICAL LMUX,DIAG
+      INTEGER ASS_LEN
+      REAL, DIMENSION(:), ALLOCATABLE :: GAR,GAF
+      INTEGER, DIMENSION(:), POINTER :: KN,IPERT,IPBW,MUW,IPVW,NBLW,
+     1 LBLW,IPBX,MUX,IPVX,NBLX,LBLX,IPBY,MUY,IPVY,NBLY,LBLY,IPBZ,MUZ,
+     2 IPVZ,NBLZ,LBLZ
+      REAL, DIMENSION(:), POINTER :: TF,DIFF,AW,BW,AX,BX,AY,BY,AZ,BZ
+      DOUBLE PRECISION, DIMENSION(:), POINTER :: CTRAN
+      TYPE(C_PTR) KN_PTR,IPERT_PTR,DIFF_PTR,TF_PTR,CTRAN_PTR,
+     1 AW_PTR,BW_PTR,IPBW_PTR,MUW_PTR,IPVW_PTR,NBLW_PTR,LBLW_PTR,
+     2 AX_PTR,BX_PTR,IPBX_PTR,MUX_PTR,IPVX_PTR,NBLX_PTR,LBLX_PTR,
+     3 AY_PTR,BY_PTR,IPBY_PTR,MUY_PTR,IPVY_PTR,NBLY_PTR,LBLY_PTR,
+     4 AZ_PTR,BZ_PTR,IPBZ_PTR,MUZ_PTR,IPVZ_PTR,NBLZ_PTR,LBLZ_PTR
+*----
+*  INITIALIZATION
+*----
+      NAMT=NAMP
+      CALL LCMGET(IPTRK,'STATE-VECTOR',ITP)
+      IELEM=ITP(9)
+      ISEG=ITP(17)
+      LTSW=ITP(19)
+      LL4F=ITP(25)
+      LL4W=ITP(26)
+      LL4X=ITP(27)
+      LL4Y=ITP(28)
+      LL4Z=ITP(29)
+      NLF=ITP(30)
+      IOFW=LL4F
+      IOFX=LL4F+LL4W
+      IOFY=LL4F+LL4W+LL4X
+      IOFZ=LL4F+LL4W+LL4X+LL4Y
+      CALL LCMLEN(IPTRK,'MUX',IDUM,ITYLCM)
+      LMUX=(IDUM.NE.0).AND.(ITYLCM.EQ.1)
+      DIAG=(LL4Y.GT.0).AND.(.NOT.LMUX)
+      CALL LCMGPD(IPSYS,'TF'//NAMT,TF_PTR)
+      CALL C_F_POINTER(TF_PTR,TF,(/ LL4F*NLF/2 /))
+*----
+*  RECOVER THE PERTURBATION FLAG.
+*----
+      CALL LCMGET(IPSYS,'STATE-VECTOR',ITS)
+      IPR=ITS(9)
+*
+      NULLIFY(IPBW)
+      NULLIFY(BW)
+      IF(LL4W.GT.0) THEN
+         ISPLH=ITP(13)
+         LX=ITP(14)
+         LZ=ITP(16)
+         NBLOS=LX*LZ/3
+         CALL LCMLEN(IPTRK,'KN',MAXKN,ITYLCM)
+         CALL LCMGPD(IPTRK,'CTRAN',CTRAN_PTR)
+         CALL LCMGPD(IPTRK,'KN',KN_PTR)
+         CALL LCMGPD(IPTRK,'IPERT',IPERT_PTR)
+         CALL LCMGPD(IPSYS,'DIFF'//NAMT,DIFF_PTR)
+         CALL C_F_POINTER(CTRAN_PTR,CTRAN,(/ ((IELEM+1)*IELEM)**2 /))
+         CALL C_F_POINTER(KN_PTR,KN,(/ MAXKN /))
+         CALL C_F_POINTER(IPERT_PTR,IPERT,(/ NBLOS /))
+         CALL C_F_POINTER(DIFF_PTR,DIFF,(/ NBLOS /))
+*
+         CALL LCMGPD(IPSYS,'WA'//NAMT,AW_PTR)
+         CALL LCMGPD(IPTRK,'IPBBW',IPBW_PTR)
+         CALL LCMGPD(IPTRK,'WB',BW_PTR)
+         CALL C_F_POINTER(IPBW_PTR,IPBW,(/ 2*IELEM*LL4W /))
+         CALL C_F_POINTER(BW_PTR,BW,(/ 2*IELEM*LL4W /))
+         IF(ISEG.EQ.0) THEN
+*           SCALAR MULTIPLICATION FOR A W-ORIENTED MATRIX.
+            CALL LCMGPD(IPTRK,'MUW',MUW_PTR)
+            CALL C_F_POINTER(MUW_PTR,MUW,(/ LL4W /))
+            CALL C_F_POINTER(AW_PTR,AW,(/ MUW(LL4W) /))
+            CALL ALLDLM(LL4W,AW,F2(IOFW+1),F3(IOFW+1),MUW,1)
+         ELSE IF(ISEG.GT.0) THEN
+*           SUPERVECTORIAL MULTIPLICATION FOR A W-ORIENTED MATRIX.
+            CALL LCMGET(IPTRK,'LL4VW',LL4VW)
+            CALL LCMGPD(IPTRK,'MUVW',MUW_PTR)
+            CALL LCMGPD(IPTRK,'IPVW',IPVW_PTR)
+            CALL LCMLEN(IPTRK,'NBLW',LONW,ITYLCM)
+            CALL LCMGPD(IPTRK,'NBLW',NBLW_PTR)
+            CALL LCMGPD(IPTRK,'LBLW',LBLW_PTR)
+            CALL C_F_POINTER(MUW_PTR,MUW,(/ LL4VW/ISEG /))
+            CALL C_F_POINTER(IPVW_PTR,IPVW,(/ LL4W /))
+            CALL C_F_POINTER(NBLW_PTR,NBLW,(/ LONW /))
+            CALL C_F_POINTER(LBLW_PTR,LBLW,(/ LONW /))
+            CALL LCMLEN(IPSYS,'WA'//NAMT,ASS_LEN,ITYLCM)
+            CALL C_F_POINTER(AW_PTR,AW,(/ ASS_LEN /))
+            ALLOCATE(GAR(LL4VW),GAF(LL4VW))
+            CALL XDRSET(GAR,LL4VW,0.0)
+            DO 20 I=1,LL4W
+            GAR(IPVW(I))=F2(IOFW+I)
+   20       CONTINUE
+            CALL C_F_POINTER(AW_PTR,AW,(/ ISEG*MUW(LL4VW) /))
+            CALL ALVDLM(LTSW,AW,GAR,GAF,MUW,1,ISEG,LONW,NBLW,LBLW)
+            DO 30 I=1,LL4W
+            F3(IOFW+I)=GAF(IPVW(I))
+   30       CONTINUE
+            DEALLOCATE(GAF,GAR)
+         ENDIF
+         IF((IPR.NE.1).AND.(IPR.NE.2)) THEN
+            DO 55 I=1,LL4W
+            GG=F3(IOFW+I)
+            DO 40 J=1,2*IELEM
+            II=IPBW((I-1)*2*IELEM+J)
+            IF(II.EQ.0) GO TO 50
+            GG=GG+BW((I-1)*2*IELEM+J)*F2(II)
+   40       CONTINUE
+   50       F3(IOFW+I)=GG
+   55       CONTINUE
+         ENDIF
+*
+*        PIOLAT TRANSFORM TERM.
+         CALL FLDPWY(LL4W,LL4X,LL4Y,NBLOS,IELEM,CTRAN,IPERT,KN,
+     1   DIFF,F2(IOFY+1),F3(IOFW+1))
+         CALL FLDPWX(LL4W,LL4X,NBLOS,IELEM,CTRAN,IPERT,KN,DIFF,
+     1   F2(IOFX+1),F3(IOFW+1))
+      ENDIF
+*
+      IF(DIAG) THEN
+         CALL LCMGPD(IPSYS,'YA'//NAMT,AX_PTR)
+      ELSE
+         CALL LCMGPD(IPSYS,'XA'//NAMT,AX_PTR)
+      ENDIF
+      CALL LCMGPD(IPTRK,'IPBBX',IPBX_PTR)
+      CALL LCMGPD(IPTRK,'XB',BX_PTR)
+      CALL C_F_POINTER(IPBX_PTR,IPBX,(/ 2*IELEM*LL4X /))
+      CALL C_F_POINTER(BX_PTR,BX,(/ 2*IELEM*LL4X /))
+      IF(ISEG.EQ.0) THEN
+*        SCALAR MULTIPLICATION FOR A X-ORIENTED MATRIX.
+         IF(DIAG) THEN
+            CALL LCMGPD(IPTRK,'MUY',MUX_PTR)
+         ELSE
+            CALL LCMGPD(IPTRK,'MUX',MUX_PTR)
+         ENDIF
+         CALL C_F_POINTER(MUX_PTR,MUX,(/ LL4X /))
+         CALL C_F_POINTER(AX_PTR,AX,(/ MUX(LL4X) /))
+         CALL ALLDLM(LL4X,AX,F2(IOFX+1),F3(IOFX+1),MUX,1)
+      ELSE IF(ISEG.GT.0) THEN
+*        SUPERVECTORIAL MULTIPLICATION FOR A X-ORIENTED MATRIX.
+         IF(DIAG) THEN
+            CALL LCMGET(IPTRK,'LL4VY',LL4VX)
+            CALL LCMGPD(IPTRK,'MUVY',MUX_PTR)
+            CALL LCMGPD(IPTRK,'IPVY',IPVX_PTR)
+            CALL LCMLEN(IPTRK,'NBLY',LONX,ITYLCM)
+            CALL LCMGPD(IPTRK,'NBLY',NBLX_PTR)
+            CALL LCMGPD(IPTRK,'LBLY',LBLX_PTR)
+         ELSE
+            CALL LCMGET(IPTRK,'LL4VX',LL4VX)
+            CALL LCMGPD(IPTRK,'MUVX',MUX_PTR)
+            CALL LCMGPD(IPTRK,'IPVX',IPVX_PTR)
+            CALL LCMLEN(IPTRK,'NBLX',LONX,ITYLCM)
+            CALL LCMGPD(IPTRK,'NBLX',NBLX_PTR)
+            CALL LCMGPD(IPTRK,'LBLX',LBLX_PTR)
+         ENDIF
+         CALL C_F_POINTER(MUX_PTR,MUX,(/ LL4VX/ISEG /))
+         CALL C_F_POINTER(IPVX_PTR,IPVX,(/ LL4X /))
+         CALL C_F_POINTER(NBLX_PTR,NBLX,(/ LONX /))
+         CALL C_F_POINTER(LBLX_PTR,LBLX,(/ LONX /))
+         CALL LCMLEN(IPSYS,'XA'//NAMT,ASS_LEN,ITYLCM)
+         CALL C_F_POINTER(AX_PTR,AX,(/ ASS_LEN /))
+         ALLOCATE(GAR(LL4VX),GAF(LL4VX))
+         CALL XDRSET(GAR,LL4VX,0.0)
+         DO 70 I=1,LL4X
+         GAR(IPVX(I))=F2(IOFX+I)
+   70    CONTINUE
+         CALL ALVDLM(LTSW,AX,GAR,GAF,MUX,1,ISEG,LONX,NBLX,LBLX)
+         DO 80 I=1,LL4X
+         F3(IOFX+I)=GAF(IPVX(I))
+   80    CONTINUE
+         DEALLOCATE(GAF,GAR)
+      ENDIF
+      IF((IPR.NE.1).AND.(IPR.NE.2)) THEN
+         DO 105 I=1,LL4X
+         GG=F3(IOFX+I)
+         DO 90 J=1,2*IELEM
+         II=IPBX((I-1)*2*IELEM+J)
+         IF(II.EQ.0) GO TO 100
+         GG=GG+BX((I-1)*2*IELEM+J)*F2(II)
+   90    CONTINUE
+  100    F3(IOFX+I)=GG
+  105    CONTINUE
+      ENDIF
+*
+      IF(LL4W.GT.0) THEN
+*        PIOLAT TRANSFORM TERM.
+         CALL FLDPXW(LL4W,LL4X,NBLOS,IELEM,CTRAN,IPERT,KN,DIFF,
+     1   F2(IOFW+1),F3(IOFX+1))
+         CALL FLDPXY(LL4W,LL4X,LL4Y,NBLOS,IELEM,CTRAN,IPERT,KN,
+     1   DIFF,F2(IOFY+1),F3(IOFX+1))
+      ENDIF
+*
+      NULLIFY(IPBY)
+      NULLIFY(BY)
+      IF(LL4Y.GT.0) THEN
+         CALL LCMGPD(IPSYS,'YA'//NAMT,AY_PTR)
+         CALL LCMGPD(IPTRK,'IPBBY',IPBY_PTR)
+         CALL LCMGPD(IPTRK,'YB',BY_PTR)
+         CALL C_F_POINTER(IPBY_PTR,IPBY,(/ 2*IELEM*LL4Y /))
+         CALL C_F_POINTER(BY_PTR,BY,(/ 2*IELEM*LL4Y /))
+         IF(ISEG.EQ.0) THEN
+*           SCALAR MULTIPLICATION FOR A Y-ORIENTED MATRIX.
+            CALL LCMGPD(IPTRK,'MUY',MUY_PTR)
+            CALL C_F_POINTER(MUY_PTR,MUY,(/ LL4Y /))
+            CALL C_F_POINTER(AY_PTR,AY,(/ MUY(LL4Y) /))
+            CALL ALLDLM(LL4Y,AY,F2(IOFY+1),F3(IOFY+1),MUY,1)
+         ELSE IF(ISEG.GT.0) THEN
+*           SUPERVECTORIAL MULTIPLICATION FOR A Y-ORIENTED MATRIX.
+            CALL LCMGET(IPTRK,'LL4VY',LL4VY)
+            CALL LCMGPD(IPTRK,'MUVY',MUY_PTR)
+            CALL LCMGPD(IPTRK,'IPVY',IPVY_PTR)
+            CALL LCMLEN(IPTRK,'NBLY',LONY,ITYLCM)
+            CALL LCMGPD(IPTRK,'NBLY',NBLY_PTR)
+            CALL LCMGPD(IPTRK,'LBLY',LBLY_PTR)
+            CALL C_F_POINTER(MUY_PTR,MUY,(/ LL4VY/ISEG /))
+            CALL C_F_POINTER(IPVY_PTR,IPVY,(/ LL4Y /))
+            CALL C_F_POINTER(NBLY_PTR,NBLY,(/ LONY /))
+            CALL C_F_POINTER(LBLY_PTR,LBLY,(/ LONY /))
+            CALL LCMLEN(IPSYS,'YA'//NAMT,ASS_LEN,ITYLCM)
+            CALL C_F_POINTER(AY_PTR,AY,(/ ASS_LEN /))
+            ALLOCATE(GAR(LL4VY),GAF(LL4VY))
+            CALL XDRSET(GAR,LL4VY,0.0)
+            DO 120 I=1,LL4Y
+            GAR(IPVY(I))=F2(IOFY+I)
+  120       CONTINUE
+            CALL ALVDLM(LTSW,AY,GAR,GAF,MUY,1,ISEG,LONY,NBLY,LBLY)
+            DO 130 I=1,LL4Y
+            F3(IOFY+I)=GAF(IPVY(I))
+  130       CONTINUE
+            DEALLOCATE(GAF,GAR)
+         ENDIF
+         IF((IPR.NE.1).AND.(IPR.NE.2)) THEN
+            DO 155 I=1,LL4Y
+            GG=F3(IOFY+I)
+            DO 140 J=1,2*IELEM
+            II=IPBY((I-1)*2*IELEM+J)
+            IF(II.EQ.0) GO TO 150
+            GG=GG+BY((I-1)*2*IELEM+J)*F2(II)
+  140       CONTINUE
+  150       F3(IOFY+I)=GG
+  155       CONTINUE
+         ENDIF
+*
+         IF(LL4W.GT.0) THEN
+*           PIOLAT TRANSFORM TERM.
+            CALL FLDPYX(LL4W,LL4X,LL4Y,NBLOS,IELEM,CTRAN,IPERT,KN,
+     1      DIFF,F2(IOFX+1),F3(IOFY+1))
+            CALL FLDPYW(LL4W,LL4X,LL4Y,NBLOS,IELEM,CTRAN,IPERT,KN,
+     1      DIFF,F2(IOFW+1),F3(IOFY+1))
+         ENDIF
+      ENDIF
+*
+      NULLIFY(IPBZ)
+      NULLIFY(BZ)
+      IF(LL4Z.GT.0) THEN
+         CALL LCMGPD(IPSYS,'ZA'//NAMT,AZ_PTR)
+         CALL LCMGPD(IPTRK,'IPBBZ',IPBZ_PTR)
+         CALL LCMGPD(IPTRK,'ZB',BZ_PTR)
+         CALL C_F_POINTER(IPBZ_PTR,IPBZ,(/ 2*IELEM*LL4Z /))
+         CALL C_F_POINTER(BZ_PTR,BZ,(/ 2*IELEM*LL4Z /))
+         IF(ISEG.EQ.0) THEN
+*           SCALAR MULTIPLICATION FOR A Y-ORIENTED MATRIX.
+            CALL LCMGPD(IPTRK,'MUZ',MUZ_PTR)
+            CALL C_F_POINTER(MUZ_PTR,MUZ,(/ LL4Z /))
+            CALL C_F_POINTER(AZ_PTR,AZ,(/ MUZ(LL4Z) /))
+            CALL ALLDLM(LL4Z,AZ,F2(IOFZ+1),F3(IOFZ+1),MUZ,1)
+         ELSE IF(ISEG.GT.0) THEN
+*           SUPERVECTORIAL MULTIPLICATION FOR A Z-ORIENTED MATRIX.
+            CALL LCMGET(IPTRK,'LL4VZ',LL4VZ)
+            CALL LCMGPD(IPTRK,'MUVZ',MUZ_PTR)
+            CALL LCMGPD(IPTRK,'IPVZ',IPVZ_PTR)
+            CALL LCMLEN(IPTRK,'NBLZ',LONZ,ITYLCM)
+            CALL LCMGPD(IPTRK,'NBLZ',NBLZ_PTR)
+            CALL LCMGPD(IPTRK,'LBLZ',LBLZ_PTR)
+            CALL C_F_POINTER(MUZ_PTR,MUZ,(/ LL4VZ/ISEG /))
+            CALL C_F_POINTER(IPVZ_PTR,IPVZ,(/ LL4Z /))
+            CALL C_F_POINTER(NBLZ_PTR,NBLZ,(/ LONZ /))
+            CALL C_F_POINTER(LBLZ_PTR,LBLZ,(/ LONZ /))
+            CALL LCMLEN(IPSYS,'ZA'//NAMT,ASS_LEN,ITYLCM)
+            CALL C_F_POINTER(AZ_PTR,AZ,(/ ASS_LEN /))
+            ALLOCATE(GAR(LL4VZ),GAF(LL4VZ))
+            CALL XDRSET(GAR,LL4VZ,0.0)
+            DO 170 I=1,LL4Z
+            GAR(IPVZ(I))=F2(IOFZ+1)
+  170       CONTINUE
+            CALL ALVDLM(LTSW,AZ,GAR,GAF,MUZ,1,ISEG,LONZ,NBLZ,LBLZ)
+            DO 180 I=1,LL4Z
+            F3(IOFZ+I)=GAF(IPVZ(I))
+  180       CONTINUE
+            DEALLOCATE(GAF,GAR)
+         ENDIF
+         IF((IPR.NE.1).AND.(IPR.NE.2)) THEN
+            DO 205 I=1,LL4Z
+            GG=F3(IOFZ+I)
+            DO 190 J=1,2*IELEM
+            II=IPBZ((I-1)*2*IELEM+J)
+            IF(II.EQ.0) GO TO 200
+            GG=GG+BZ((I-1)*2*IELEM+J)*F2(II)
+  190       CONTINUE
+  200       F3(IOFZ+I)=GG
+  205       CONTINUE
+         ENDIF
+      ENDIF
+*
+      DO 210 I=1,LL4F
+      F3(I)=TF(I)*F2(I)
+  210 CONTINUE
+      IF((IPR.NE.1).AND.(IPR.NE.2)) THEN
+         DO 230 I=1,LL4W
+         DO 220 J=1,2*IELEM
+         II=IPBW((I-1)*2*IELEM+J)
+         IF(II.EQ.0) GO TO 230
+         F3(II)=F3(II)+BW((I-1)*2*IELEM+J)*F2(IOFW+I)
+  220    CONTINUE
+  230    CONTINUE
+         DO 250 I=1,LL4X
+         DO 240 J=1,2*IELEM
+         II=IPBX((I-1)*2*IELEM+J)
+         IF(II.EQ.0) GO TO 250
+         F3(II)=F3(II)+BX((I-1)*2*IELEM+J)*F2(IOFX+I)
+  240    CONTINUE
+  250    CONTINUE
+         DO 270 I=1,LL4Y
+         DO 260 J=1,2*IELEM
+         II=IPBY((I-1)*2*IELEM+J)
+         IF(II.EQ.0) GO TO 270
+         F3(II)=F3(II)+BY((I-1)*2*IELEM+J)*F2(IOFY+I)
+  260    CONTINUE
+  270    CONTINUE
+         DO 290 I=1,LL4Z
+         DO 280 J=1,2*IELEM
+         II=IPBZ((I-1)*2*IELEM+J)
+         IF(II.EQ.0) GO TO 290
+         F3(II)=F3(II)+BZ((I-1)*2*IELEM+J)*F2(IOFZ+I)
+  280    CONTINUE
+  290    CONTINUE
+      ENDIF
+      RETURN
+      END

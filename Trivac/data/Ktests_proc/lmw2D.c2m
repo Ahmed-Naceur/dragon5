@@ -1,0 +1,148 @@
+*----
+*  TEST CASE LMW 2D
+*
+*  REF: G. Greenman, "A Quasi-Static Flux Synthesis Temporal Integration
+*       Scheme for an Analytic Nodal Method," Nuclear Engineer's Thesis,
+*       Massachusetts Institute of Technology, Department of Nuclear
+*       Engineering (May 1980).
+*
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST LMW TRACK MACRO1 SYSTEM1 MACRO2 SYSTEM2 FLUX KINET ;
+MODULE GEO: MAC: TRIVAT: TRIVAA: FLUD: INIKIN: KINSOL: GREP: DELETE:
+       END: ;
+REAL fnorm sigt1 sigt2 ;
+REAL TIME := 0.0 ;
+PROCEDURE assertS assertS2 ;
+*
+LMW := GEO: :: CAR2D 6 6
+      X- REFL X+ ZERO
+      Y- REFL Y+ ZERO
+      MIX 1 1 1 2 3 4
+          1 1 1 1 3 4
+          1 1 5 1 3 4
+          6 1 1 3 3 4
+          3 3 3 3 4 4
+          4 4 4 4 4 0
+      MESHX  0.0 10. 30. 50. 70. 90. 110.
+      MESHY  0.0 10. 30. 50. 70. 90. 110.
+      SPLITX 2 2 2 2 2 2
+      SPLITY 2 2 2 2 2 2
+      ;
+MACRO1 := MAC: ::
+ EDIT 0 NGRO 2 NMIX 6
+ READ INPUT
+ MIX     1
+      DIFF  1.423910E+00  3.563060E-01
+     TOTAL  2.795756E-02  8.766216E-02
+    NUSIGF  6.477691E-03  1.127328E-01
+  H-FACTOR  2.591070E-03  4.509310E-02
+      SCAT  1 1 0.0 2 2 0.0  0.175555E-01
+      OVERV 0.800E-07  4.000E-06
+ MIX     2
+      DIFF  1.423910E+00  3.563060E-01
+     TOTAL  2.850756E-02  9.146219E-02
+    NUSIGF  6.477691E-03  1.127328E-01
+  H-FACTOR  2.591070E-03  4.509310E-02
+      SCAT  1 1 0.0 2 2 0.0  0.175555E-01
+      OVERV 0.800E-07  4.000E-06
+ MIX     3
+      DIFF  1.425610E+00  3.505740E-01
+     TOTAL  2.817031E-02  9.925634E-02
+    NUSIGF  7.503282E-03  1.378004E-01
+  H-FACTOR  3.001310E-03  5.512106E-02
+      SCAT  1 1 0.0 2 2 0.0  0.171777E-01
+      OVERV 0.800E-07  4.000E-06
+ MIX     4
+      DIFF  1.634220E+00  2.640020E-01
+     TOTAL  3.025750E-02  4.936351E-02
+      SCAT  1 1 0.0 2 2 0.0  0.275969E-01
+      OVERV 0.800E-07  4.000E-06
+ MIX     5
+      DIFF  1.423910E+00  3.563060E-01
+     TOTAL  2.795756E-02  8.766216E-02
+    NUSIGF  6.477691E-03  1.127328E-01
+  H-FACTOR  2.591070E-03  4.509310E-02
+      SCAT  1 1 0.0 2 2 0.0  0.175555E-01
+      OVERV 0.800E-07  4.000E-06
+ MIX     6
+      DIFF  1.423910E+00  3.563060E-01
+     TOTAL  2.850756E-02  9.146217E-02
+    NUSIGF  6.477691E-03  1.127328E-01
+  H-FACTOR  2.591070E-03  4.509310E-02
+      SCAT  1 1 0.0 2 2 0.0  0.175555E-01
+      OVERV 0.800E-07  4.000E-06
+ ;
+TRACK := TRIVAT: LMW ::
+      TITLE 'LMW 2-D BENCHMARK'
+      EDIT 1 MAXR 144 MCFD 2 ;
+SYSTEM1 := TRIVAA: MACRO1 TRACK ::
+      EDIT 1 UNIT ;
+FLUX := FLUD: SYSTEM1 TRACK ::
+      EDIT 1 EXTE 5.0E-7 ;
+assertS FLUX :: 'K-EFFECTIVE' 1 1.014803 ;
+*----
+*  Crank-Nicholson space-time kinetics
+*----
+EVALUATE TIME := 0.0 ;
+KINET := INIKIN: MACRO1 TRACK SYSTEM1 FLUX :: EDIT 1
+      NDEL 6
+      BETA   0.000247 0.0013845 0.001222 0.0026455 0.000832 0.000169
+      LAMBDA 0.0127 0.0317 0.115 0.311 1.40 3.87    
+      CHID   1.0 1.0 1.0 1.0 1.0 1.0
+             0.0 0.0 0.0 0.0 0.0 0.0
+      NORM POWER-INI 1.0E4 ;
+EVALUATE sigt1 := 2.850756E-02 ;
+EVALUATE sigt2 := 9.146217E-02  ;
+WHILE TIME 26.7 <= DO
+  EVALUATE sigt1 := sigt1 5.5E-4 0.1 26.7 / * - ;
+  EVALUATE sigt2 := sigt2 3.8E-3 0.1 26.7 / * - ;
+  MACRO2 := MAC: MACRO1 ::
+      EDIT 0
+      READ INPUT
+      MIX     6
+         TOTAL  <<sigt1>>  <<sigt2>>
+      ;
+  SYSTEM2 := TRIVAA: MACRO2 TRACK ::
+      EDIT 1 UNIT ;
+  KINET := KINSOL: KINET MACRO2 TRACK SYSTEM2 MACRO1 SYSTEM1 ::
+      EDIT 5  DELTA 0.1 
+      SCHEME  FLUX CRANK PREC CRANK EXTE 1.0E-6 ;
+  GREP: KINET :: GETVAL 'TOTAL-TIME' 1 >>TIME<< ;
+  ECHO "TIME=" TIME "S" "sigt=" sigt1 sigt2 ;
+  IF TIME 1.0 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 1.986270E+02 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 1.095509E-01 ;
+    assertS2 KINET :: 'E-POW'     1 1.008753E+04 ;
+  ELSEIF TIME 5.0 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 2.090369E+02 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 1.097266E-01 ;
+    assertS2 KINET :: 'E-POW'     1 1.063990E+04 ;
+  ELSEIF TIME 10.0 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 2.305455E+02 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 1.104699E-01 ;
+    assertS2 KINET :: 'E-POW'     1 1.176902E+04 ;
+  ELSEIF TIME 15.0 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 2.641221E+02 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 1.121002E-01 ;
+    assertS2 KINET :: 'E-POW'     1 1.352433E+04 ;
+  ELSEIF TIME 20.0 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 3.157370E+02 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 1.150681E-01 ;
+    assertS2 KINET :: 'E-POW'     1 1.621938E+04 ;
+  ELSEIF TIME 25.0 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 3.971426E+02 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 1.200883E-01 ;
+    assertS2 KINET :: 'E-POW'     1 2.047011E+04 ;
+  ELSEIF TIME 26.7 - ABS 1.0E-3 < THEN
+    assertS2 KINET :: 'CTRL-FLUX' 1 4.351272E+02 ;
+    assertS2 KINET :: 'CTRL-PREC' 1 1.224600E-01 ;
+    assertS2 KINET :: 'E-POW'     1 2.245449E+04 ;
+  ENDIF ;
+  MACRO1 SYSTEM1 := DELETE: MACRO1 SYSTEM1 ;
+  MACRO1 := MACRO2 ;
+  SYSTEM1 := SYSTEM2 ;
+  MACRO2 SYSTEM2 := DELETE: MACRO2 SYSTEM2 ;
+ENDWHILE ;
+ECHO "test lmw2D completed" ;

@@ -1,0 +1,114 @@
+* DRAGON PARAMETERS PERTUBATION PROCEDURE DECK
+***********************************************************************
+* Purpose:
+* set nominal and pertubed properties for cross-section of 2-D/3-D cell 
+* of CANDU reactor.
+*
+* author:
+* MAJID FASSI FEHRI 09/08/31
+* CNSC
+*
+* Modified:
+* Richard CHAMBON 11/02/24
+* Ecole Polytechnique
+*
+* Note:
+*  - Boron value are in fraction of weight of the moderator
+*     i.e.: 1.E-6 = 1ppm 
+*
+*  - by default (CALCU>0) only current values of properties are returned
+*  - for CALCU=0 nominal properties and their range of perturbation are 
+*       returned.
+*
+***********************************************************************
+MODULE END: ;
+INTEGER CALCU ;
+* Nominal values
+REAL TFuel  TCool  TMode  DCool  DMode
+     PCool   PMode  Bor     Xe      Sm      Np      Gad     :=
+     960.15 562.15 346.15 0.8064 1.08288
+     98.6938 99.966 1.0E-20 1.0E-20 1.0E-20 1.0E-20 1.0E-20 ; 
+* Perturbated values
+REAL TFuelU TFuelD := 2073.15 303.15 ;
+REAL TCoolU TCoolD := 1023.15 303.15 ;
+REAL TModeU TModeD := 364.15  303.15 ;
+REAL DCoolU DCoolD := DCool 1.5 *  DCool 0.00001 * ;
+REAL DModeU DModeD := DMode 1.1 *  DMode 0.7 *     ;
+REAL PModeD := 99.48 ;
+REAL BorU   XeU   SmU  NpU :=
+     1.5E-5 1.0E-20 1.0E-20 1.0E-20 
+;
+
+* Temporary values
+REAL TFuelP TCoolP TModeP DCoolP DModeP 
+     PCoolP PModeP BorP   XeP   SmP  NpP  GadP ;
+
+:: >>CALCU<< ;
+
+ECHO "PERTURBATION STARTED" ;
+
+EVALUATE TFuelP := TFuel   ; 
+EVALUATE TCoolP := TCool   ;
+EVALUATE TModeP := TMode   ;
+EVALUATE DCoolP := DCool   ;
+EVALUATE DModeP := DMode   ;
+EVALUATE PCoolP := PCool   ;
+EVALUATE PModeP := PMode   ;
+EVALUATE BorP   := Bor     ;
+EVALUATE XeP    := Xe      ;
+EVALUATE SmP    := Sm      ;
+EVALUATE NpP    := Np      ;
+EVALUATE GadP   := Gad     ;
+
+IF CALCU 2 = THEN 
+ EVALUATE TFuelP := TFuelU ;
+ELSEIF CALCU 3 = THEN
+ EVALUATE TFuelP := TFuelD ;
+ELSEIF CALCU 4 = THEN
+ EVALUATE TCoolP := TCoolU ;
+ELSEIF CALCU 5 = THEN
+ EVALUATE TCoolP := TCoolD ;
+ELSEIF CALCU 6 = THEN
+ EVALUATE TModeP := TModeU ;
+ELSEIF CALCU 7 = THEN
+ EVALUATE TModeP := TModeD ;
+ELSEIF CALCU 8 = THEN
+ EVALUATE DCoolP := DCoolU ;
+ELSEIF CALCU 9 = THEN
+ EVALUATE DCoolP := DCoolD ;
+ELSEIF CALCU 10 = THEN
+ EVALUATE DModeP := DModeU ;
+ELSEIF CALCU 11 = THEN
+ EVALUATE DModeP := DModeD ;
+ELSEIF CALCU 12 = THEN
+ EVALUATE BorP := BorU ;
+ELSEIF CALCU 13 = THEN
+ EVALUATE PModeP := PModeD ;
+ELSEIF CALCU 14 = THEN
+ EVALUATE XeP := XeU ;
+ELSEIF CALCU 15 = THEN
+ EVALUATE SmP := SmU ;
+ELSEIF CALCU 16 = THEN
+ EVALUATE NpP := NpU ;
+ELSEIF CALCU 17 = THEN
+ EVALUATE TFuelP := TFuelU  ;
+ EVALUATE DCoolP := DCoolD ;
+ELSEIF CALCU 18 = THEN
+ EVALUATE DCoolP := DCoolD ;
+ EVALUATE TCoolP := TCoolU ;
+ENDIF ;
+
+:: <<TFuelP>> <<TCoolP>> <<TModeP>> <<DCoolP>> <<DModeP>>
+   <<PCoolP>> <<PModeP>> <<BorP>> <<XeP>> <<SmP>> <<NpP>> 
+   <<GadP>> ;
+
+* Needed for the CFC: module only
+IF CALCU 0 = THEN
+:: <<TFuelU>> <<TFuelD>> <<TCoolU>> <<TCoolD>> <<TModeU>> <<TModeD>>
+   <<DCoolU>> <<DCoolD>> <<DModeU>> <<DModeD>> <<PModeD>>  
+   <<BorU>>   <<XeU>>    <<SmU>>    <<NpU>> ;
+ENDIF ;
+
+ECHO "PERTURBATION FINISHED" ;
+
+END: ;

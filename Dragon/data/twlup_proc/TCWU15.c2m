@@ -1,0 +1,156 @@
+*----
+*  TEST CASE TCWU05
+*  CANDU-6 ANNULAR CELL
+*  iaea WLUP Library
+*  POWER (KW)         =  615.00000
+*  BURN POWER (KW/KG) =   31.97130
+*  URANIUM MASS       =   19.23600
+*  UO2 REAL DENSITY   =   10.59300
+*  UO2 EFF DENSITY    =   10.43750
+*  UO2 TEMPERATURE    =  941.28998
+*  ENRICHMENT         =    0.71140
+*  COOLANT D2 AT %    =   99.222
+*  MODERATOR D2 AT %  =   99.911
+*  NUMBER OF DAYS     =   50
+*
+*----
+*  Define variables and initialize
+*     Burnup paremeters
+*     a) Power
+*        =  31.9713 kw/kg for    0.0 to 300.0 days
+*     b) Burnup time interval Delt
+*        =     1 day  for    0 to    1 day
+*        =     4 days for    1 to    5 days
+*        =     5 days for    5 to   10 days
+*        =    10 days for   10 to   50 days
+*        =    20 days for   50 to  150 days
+*        =    50 days for  150 to  300 days
+*     c) Days with burnup interval changes
+*        = 1.0, 5.0, 10.0, 50.0, 150.0 and 300.0 days
+*     d) Burnup control time variables Timei, Timef
+*        Timei = initial time
+*        Timef = final time
+*----
+REAL
+  Power    Delt Timec Timei Timef :=
+  31.9713  1.0  1.0   0.0   0.0 ;
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  LIBRARY CANDU6S CANDU6F VOLMATS VOLMATF PIJ FLUX BURNUP EDITION
+  COMPO1 COMPO2 ;
+SEQ_BINARY
+  INTLINS INTLINF ;
+SEQ_ASCII
+  fuel mode ;
+MODULE
+  GEO: NXT: SHI: ASM: FLU: EVO: EDI: CPO: DELETE: END: ;
+*----
+*  Depletion data from file iaea format WIMSD4
+*  Microscopic cross sections from file iaea format WIMSD4
+*----
+PROCEDURE TCWU05Lib ;
+PROCEDURE assertS ;
+INTEGER   iedit := 1 ;
+LIBRARY := TCWU05Lib :: <<iedit>> ;
+*----
+*  Geometry CANDU6S : 13 regions annular cluster for self-shielding
+*           CANDU6F : 31 regions annular cluster for transport
+*----
+CANDU6S := GEO: ::  CARCEL  5
+  X+ REFL X- REFL MESHX -14.2875 14.2875
+  Y+ REFL Y- REFL MESHY -14.2875 14.2875
+  RADIUS  0.00000 5.16890 5.60320  6.44780 6.58750 14.00
+  MIX  1 2 3 4 5 5
+  CLUSTER ROD1 ROD2 ROD3 ROD4
+  ::: ROD1 := GEO: TUBE 2 MIX 6 10 NPIN  1 RPIN 0.0000 APIN 0.0000
+    RADIUS 0.00000 0.6122 0.6540 ;
+  ::: ROD2 := GEO: ROD1   MIX 7 10 NPIN  6 RPIN 1.4885 APIN 0.0000 ;
+  ::: ROD3 := GEO: ROD1   MIX 8 10 NPIN 12 RPIN 2.8755 APIN 0.261799 ;
+  ::: ROD4 := GEO: ROD1   MIX 9 10 NPIN 18 RPIN 4.3305 APIN 0.0 ;
+  ;
+CANDU6F := GEO: CANDU6S :: SPLITR  6 1 1 1 10
+  ::: ROD1 := GEO: ROD1 SPLITR 2 1 ;
+  ::: ROD2 := GEO: ROD2 SPLITR 2 1 ;
+  ::: ROD3 := GEO: ROD3 SPLITR 2 1 ;
+  ::: ROD4 := GEO: ROD4 SPLITR 2 1 ;
+  ;
+*----
+*  Self-Shielding calculation EXCEL
+*  Transport calculation      EXCEL
+*  Flux calculation for keff
+*----
+VOLMATS INTLINS := NXT: CANDU6S ::
+  TITLE 'TCWU05: CANDU-6 CARTESIAN POWER= 31.971 FUEL TEMP= 941.29'
+  EDIT 0 TRAK TISO 5 10.0 ;
+LIBRARY := SHI: LIBRARY VOLMATS INTLINS ::
+  EDIT 0 ;
+VOLMATF INTLINF := NXT: CANDU6F ::
+  TITLE 'TCWU05: CANDU-6 CARTESIAN POWER= 31.971 FUEL TEMP= 941.29'
+  EDIT 0 TRAK TISO 5 10.0 ;
+PIJ := ASM: LIBRARY VOLMATF INTLINF :: ;
+FLUX := FLU: PIJ LIBRARY VOLMATF ::
+  TYPE K ;
+assertS FLUX :: 'K-EFFECTIVE' 1 1.120613 ;
+EDITION := EDI: FLUX LIBRARY VOLMATF ::
+  COND 4.0 MERGE MIX 0 0 0 0 1 0 0 0 0 0 SAVE ON 'EDITMOD' ;
+EDITION := EDI: EDITION FLUX LIBRARY VOLMATF ::
+  COND 4.0 MERGE COMP MICR 1 Xe135 SAVE ;
+*----
+*  Burnup loop: for first step BURNUP is created
+*  while for other steps it is modified
+*----
+WHILE Timei Timec < DO
+  EVALUATE Timef := Timei Delt + ;
+  IF Timei 0.0 = THEN
+    BURNUP LIBRARY := EVO: LIBRARY FLUX VOLMATF ::
+      DEPL <<Timei>> <<Timef>> DAY POWR <<Power>> ;
+  ELSE
+    BURNUP LIBRARY := EVO: BURNUP LIBRARY FLUX VOLMATF ::
+      NOEX DEPL <<Timei>> <<Timef>> DAY POWR <<Power>> ;
+  ENDIF ;
+  LIBRARY := SHI: LIBRARY VOLMATS INTLINS ::
+    EDIT 0 ;
+  PIJ := DELETE: PIJ ;
+  PIJ := ASM: LIBRARY VOLMATF INTLINF :: ;
+  FLUX := FLU: FLUX PIJ LIBRARY VOLMATF ::
+    TYPE K ;
+  EDITION := EDI: EDITION FLUX LIBRARY VOLMATF ::
+    SAVE  ;
+*----
+*  change delta t for burnup and final time if required
+*----
+  IF Timef Timec = THEN
+    IF Timec 150.0 = THEN
+      EVALUATE Delt Timec := 50.0 300.0 ;
+    ENDIF ;
+    IF Timec 50.0 = THEN
+      EVALUATE Delt Timec := 20.0 150.0 ;
+    ENDIF ;
+    IF Timec 10.0 = THEN
+      EVALUATE Delt Timec := 10.0 50.0 ;
+    ENDIF ;
+    IF Timec 5.0 = THEN
+      EVALUATE Delt Timec := 5.0 10.0 ;
+    ENDIF ;
+    IF Timec 1.0 = THEN
+      EVALUATE Delt Timec := 4.0 5.0 ;
+    ENDIF ;
+  ENDIF ;
+  EVALUATE Timei := Timef ;
+ENDWHILE ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9537331 ;
+*----
+*  Save calculation results in CPO format file
+*----
+COMPO1 := CPO: BURNUP EDITION ::
+  BURNUP REF-CASE EXTRACT Xe135 Xe135  NAME MIXTRXE ;
+fuel := COMPO1 ;
+COMPO2 := CPO: EDITION ::
+  STEP 'EDITMOD' NAME MIXTMOD ;
+mode := COMPO2 ;
+INTLINF INTLINS := DELETE: INTLINF INTLINS ;
+ECHO "test TCWU15 completed" ;
+END: ; 
+QUIT "LIST" .

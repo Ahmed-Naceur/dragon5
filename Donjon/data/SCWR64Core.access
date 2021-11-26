@@ -1,0 +1,9 @@
+#!/bin/sh
+if [ $# = 0 ]
+   then
+   echo "usage: SCWR64Core.access directory" 1>&2
+   exit 1
+fi
+ln -s $1/data/SCWR64Core_proc/*.txt .
+ls -l
+echo "SCWR64Core access script terminated"

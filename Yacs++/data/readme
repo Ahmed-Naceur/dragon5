@@ -1,0 +1,31 @@
+To execute PowThm.py on Salome:
+
+(1) compile the C++ multiphysics computational scheme:
+
+cd Version5/Yacs++
+../script/install
+
+(2) construct the shared objects using Yacsgen:
+
+cd Version5/Yacs++/data
+python PowThm.py
+
+(3) on data directory, launch Salome:
+
+./PowThm_appli/runAppli -k > PowThm.out
+(press the YACS button)
+(press "New")
+(press "Load a schema for run")
+(double-click "PowThm.xml")
+(press "Start or Resume Schema Execution")
+
+If the Corba Name Server is not running, you can start it by sourcing the
+following script:
+
+source $SALOME_KERNEL/salome.sh
+
+where $SALOME_KERNEL is a variable defined on your .profile as
+
+export SALOME_KERNEL=$HOME/salome_6.5.0/KERNEL_6.5.0 # Salome
+
+for a 6.5.0 distribution.

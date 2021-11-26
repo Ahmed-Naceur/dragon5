@@ -1,0 +1,86 @@
+\subsubsection{The \moc{sybilt} dependent records on a
+\moc{GROUP} directory}\label{sect:SYBILgrpdiringdir}
+
+This information is provided only if the current iteration method of the
+interface current method is used in SYBIL. This occurs if the key-word {\tt ARM}
+is been used in operators {\tt USS:} or {\tt ASM:}. In these cases, the following records will
+also be found on the \moc{GROUP} directory:
+
+\vskip 0.2cm
+
+The following dimensions will be used:
+\begin{description}
+
+\item[Number of generating cells:] $~$
+
+\begin{displaymath}
+\mathcal{N}_{\rm gen} = \left\{
+\begin{array}{rll}
+\mathcal{P}_1 & \textrm{if~} \mathcal{S}_6^t=3 & \textrm{(do-it-yourself geometry)} \\
+\mathcal{P}_6 & \textrm{if~} \mathcal{S}_6^t=4 & \textrm{(2D assembly geometry)}
+\end{array} \right.
+\end{displaymath}
+
+\item[Number of entering currents in a cell:] $~$
+
+\begin{displaymath}
+N_c = \left\{
+\begin{array}{rll}
+4  & \textrm{if~} \mathcal{P}_1^t=0 \textrm{~and~} 2\le\mathcal{P}_2^t\le 3 & \textrm{($DP_0$ Cartesian cell)} \\
+12 & \textrm{if~} \mathcal{P}_1^t=0 \textrm{~and~} \mathcal{P}_2^t=4 &
+\textrm{($DP_1$ Cartesian cell)} \\
+6  & \textrm{if~} \mathcal{P}_1^t>0 \textrm{~and~} 2\le\mathcal{P}_2^t\le 3 & \textrm{($DP_0$
+hexagonal cell)} \\
+18 & \textrm{if~} \mathcal{P}_1^t>0 \textrm{~and~} \mathcal{P}_2^t=4 &
+\textrm{($DP_1$ hexagonal cell)}
+\end{array} \right.
+\end{displaymath}
+
+\item[Number of transmission probability elements:] $~$
+
+\begin{displaymath}
+D_1 = \left\{
+\begin{array}{rll}
+\mathcal{P}_1 & \textrm{if~} \mathcal{S}_6^t=3 & \textrm{(do-it-yourself geometry)} \\
+\mathcal{P}_6 & \textrm{if~} \mathcal{S}_6^t=4 \textrm{~and~} {\mathcal{P}_2=1} & \textrm{(Roth 2D assembly geometry)} \\
+N_c \times N_c \times \mathcal{P}_6 & \textrm{if~} \mathcal{S}_6^t=4 \textrm{~and~}
+{\mathcal{P}_2\ge 2} & \textrm{(Other 2D assembly geometries)} \\
+\end{array} \right.
+\end{displaymath}
+
+\item[Number of escape probability elements:] $~$
+
+\begin{displaymath}
+D_2 = \left\{
+\begin{array}{rll}
+{\tt NMC}(\mathcal{P}_1+1) & \textrm{if~} \mathcal{S}_6^t=3 & \textrm{(do-it-yourself geometry)} \\
+{\tt NMC}(\mathcal{P}_6+1) & \textrm{if~} \mathcal{S}_6^t=4 \textrm{~and~} {\mathcal{P}_2=1} & \textrm{(Roth 2D assembly geometry)} \\
+N_c \times {\tt NMC}(\mathcal{P}_6+1) & \textrm{if~} \mathcal{S}_6^t=4 \textrm{~and~}
+{\mathcal{P}_2\ge 2} & \textrm{(Other 2D assembly geometries)} \\
+\end{array} \right.
+\end{displaymath}
+
+\item[Number of collision probability elements:] $~$
+
+\begin{displaymath}
+D_3 = \sum\limits_{i=1}^{\mathcal{N}_{\rm gen}}[{\tt NMC}(i+1)-{\tt NMC}(i)]^2
+\end{displaymath}
+
+\end{description}
+
+\begin{DescriptionEnregistrement}{SYBIL groupwise assembly information in \moc{GROUP}}{7.0cm}
+\RealEnr
+  {PSSW\$SYBIL\blank{2}}{$\mathcal{D}_1$}{}
+  {Cellwise scattering-reduced transmission probabilities.}
+\RealEnr
+  {PISW\$SYBIL\blank{2}}{$\mathcal{D}_2$}{}
+  {Cellwise scattering-reduced escape probabilities.}
+\RealEnr
+  {PSJW\$SYBIL\blank{2}}{$\mathcal{D}_2$}{}
+  {Cellwise scattering-reduced collision probabilities for incoming neutrons.}
+\RealEnr
+  {PIJW\$SYBIL\blank{2}}{$\mathcal{D}_3$}{}
+  {Cellwise scattering-reduced collision probabilities.}
+\end{DescriptionEnregistrement}
+
+\eject

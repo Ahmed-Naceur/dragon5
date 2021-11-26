@@ -1,0 +1,181 @@
+****************************************************************
+*                                                              *
+* Input file :  NCRtest.x2m                                    *
+* Purpose    :  Full-core calculation for ACR-1000 like        *
+*               using the NCR module for all XS                *
+* Author     :  R. Chambon (2008/03)                           *
+* based on   :  D. Sekki (2007/10)                             *
+*                                                              *
+****************************************************************
+PROCEDURE    Pgeotest Pfmaptest Pburntest Pfluxtest Pdevtest ;
+PROCEDURE    assertS ;
+*  
+MODULE       DELETE: GREP: USPLIT: TRIVAT: DSET: NCR: UTL: END: ;
+LINKED_LIST  GEOM TRACK MATEX FMAP FLUX POWER SYSTEM
+             DEVICE MACRO1 MACFL MACRO2 MACRO KEFF ;
+LINKED_LIST  LMCPO18 LMCPO20 ;
+*--
+* compo files:
+*--
+SEQ_ASCII  SMCPO18 :: FILE 'Compo18_all.res' ;
+SEQ_ASCII  SMCPO20 :: FILE 'Compo20_all.res' ;
+*--
+* compo directories:
+*--
+STRING   NamFueld := "FUEL" ;
+STRING   NamPARKEYF := "FTYPE" ;
+STRING   NamFue20 := "CELL20" ;
+STRING   NamFue18 := "CELL18" ;
+STRING   NamModed := "MODE" ;
+STRING   NamPARKEYM := "MTYPE" ;
+STRING   NamRef20 := "CELL20" ;
+STRING   NamRef18 := "CELL18" ;
+STRING   NamZCR := "ZCU" ;
+STRING   NamSOR := "SOR" ;
+*--
+* variables declaration:
+*--
+INTEGER   MaxReg := 1000000 ;
+STRING    Method := "MCFD" ;
+INTEGER   splitZ := 1 ;
+INTEGER   degree quadr  := 1 1 ;
+*
+INTEGER   nbMix := 8 ;
+INTEGER   nbRefl nbFuel := 2 2 ;
+INTEGER   mFue20 mFue18 := 1 2 ;
+INTEGER   mRef20 mRef18 := 3 4 ;
+INTEGER   mZCRin mZCRot := 5 6 ;
+INTEGER   mSORin mSORot := 7 8 ;
+*
+REAL      Pow := 3200. ;
+REAL      Prec epsil := 1.E-5 1.E-5 ;
+INTEGER   iEdit maxItr := 5 2 ;
+STRING    Btyp := "TIMAV-BURN" ;
+REAL      Eps Keff Bexit ;
+INTEGER   nbItr ;
+*---------------------------------------------------------------
+*
+*                 EQUILIBRIUM-CORE CALCULATION
+*                 ============================
+*--
+* Save Multicompo as a linked_list
+*--
+LMCPO18 := SMCPO18 ; 
+LMCPO20 := SMCPO20 ; 
+*--
+* geometry construction:
+*--
+GEOM := Pgeotest :: <<splitZ>> ;
+*--
+* link material index and geometry:
+*--
+GEOM MATEX := USPLIT: GEOM :: EDIT 0  NGRP 2
+              MAXR <<MaxReg>>
+              NREFL <<nbRefl>> RMIX <<mRef20>> <<mRef18>>
+              NFUEL <<nbFuel>> FMIX <<mFue20>> <<mFue18>> ;
+*--
+* numerical discretization:
+*--
+IF Method "MCFD" = THEN
+   TRACK := TRIVAT: GEOM :: EDIT 1
+            MAXR <<MaxReg>> MCFD <<degree>> ;
+ELSEIF Method "PRIM" = THEN
+   TRACK := TRIVAT: GEOM :: EDIT 1
+            MAXR <<MaxReg>> PRIM <<degree>> ;
+ELSEIF Method "DUAL" = THEN
+   TRACK := TRIVAT: GEOM :: EDIT 1
+            MAXR <<MaxReg>> DUAL <<degree>> <<quadr>> ;
+ENDIF ;
+GEOM := DELETE: GEOM ;
+*--
+* macrolib for reflector:
+*--
+MACRO1 := NCR: LMCPO18 LMCPO20 :: 
+  EDIT 0 MACRO NMIX <<nbMix>> 
+   COMPO LMCPO20 <<NamModed>>
+      MIX <<mRef20>> 
+        SET <<NamPARKEYM>> <<NamRef20>> ENDMIX
+   COMPO LMCPO18 <<NamModed>>
+      MIX <<mRef18>> 
+        SET <<NamPARKEYM>> <<NamRef18>> ENDMIX
+   COMPO LMCPO18 <<NamFueld>>  
+      MIX <<mZCRin>>
+        SET <<NamPARKEYF>> <<NamZCR>> 
+        SET BURN 6633.69434
+        SET X-COOL 1.0
+        SET T-COOL 5.731600E+02
+        SET T-FUEL 9.601600E+02
+        SET RDTPOS 1.0
+        SET RDDPOS 1.0
+      ENDMIX
+      MIX <<mZCRot>>
+        SET <<NamPARKEYF>> <<NamZCR>> 
+        SET BURN 6633.69434
+        SET X-COOL 1.0
+        SET T-COOL 5.731600E+02
+        SET T-FUEL 9.601600E+02
+        SET RDTPOS 1.0
+        SET RDDPOS 0.0
+      ENDMIX
+      MIX <<mSORin>>
+        SET <<NamPARKEYF>> <<NamSOR>> 
+        SET BURN 6633.69434
+        SET X-COOL 1.0
+        SET T-COOL 5.731600E+02
+        SET T-FUEL 9.601600E+02
+        SET RDTPOS 1.0
+        SET RDDPOS 1.0
+      ENDMIX
+      MIX <<mSORot>>
+        SET <<NamPARKEYF>> <<NamSOR>> 
+        SET BURN 6633.69434
+        SET X-COOL 1.0
+        SET T-COOL 5.731600E+02
+        SET T-FUEL 9.601600E+02
+        SET RDTPOS 1.0
+        SET RDDPOS 0.0
+      ENDMIX 
+;
+*--
+* device specification:
+*--
+DEVICE MATEX := Pdevtest MATEX ::
+     <<mZCRin>> <<mZCRot>> <<mSORin>> <<mSORot>> ;
+*--
+* fuel-map definition:
+*--
+FMAP MATEX := Pfmaptest MATEX ;
+*--
+* average exit burnups:
+*--
+FMAP := Pburntest FMAP :: <<Btyp>> ;
+*--
+* set ZCUs to nominal position:
+*--
+DEVICE := DSET: DEVICE :: EDIT 1
+          ROD-GROUP 1 LEVEL 0.0 END
+          ROD-GROUP 2 LEVEL 0.5 END
+          ROD-GROUP 3 LEVEL 1.0 END ;
+*---------------------------------------------------------------
+*                  TIME-AVERAGE CALCULATION
+*---------------------------------------------------------------
+*--
+* axial-power convergence loop:
+*--
+FMAP MATEX := Pfluxtest FMAP MATEX MACRO1 DEVICE
+                  TRACK LMCPO18 LMCPO20 ::               
+         <<NamFueld>> <<NamPARKEYF>>
+         <<mFue20>> <<mFue18>> <<NamFue20>> <<NamFue18>>
+         <<Pow>> <<epsil>> <<Prec>> <<maxItr>> <<iEdit>>
+         >>nbItr<< >>Keff<< >>Bexit<< ;        
+*--
+* last parameters:
+*--
+ECHO "---- last parameters ---- " ;
+ECHO "Number of Iterations " nbItr ;
+ECHO "CORE-AVERAGED EXIT BURNUP : " Bexit ;
+ECHO "RESULTING K-EFF           : " Keff  ;
+KEFF := UTL: :: CREA 'K-EFFECTIVE' 1 = <<Keff>> ;
+assertS KEFF :: 'K-EFFECTIVE' 1 1.004893 ;
+END: ;
+QUIT .

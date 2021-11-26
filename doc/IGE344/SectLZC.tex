@@ -1,0 +1,210 @@
+\subsection{The \moc{LZC:} module}\label{sect:lzc}
+
+The \moc{LZC:} module is used for the modeling of liquid zone controllers, which
+are normally presented in the CANDU6-type reactor core. The liquid zone controllers
+specifications are read from the input data file. Note that this modeling can be made
+after the rod-type devices have been previously defined using the \moc{DEVINI:}
+module (see \Sect{dev}). In this case, the previously created \dds{device} object
+will be updated by the \moc{LZC:} module; it will store the additional and separate
+information with respect to the liquid controllers (see \Sect{device}). \\
+
+The liquid zone controller specification includes several device parameters, such as:
+the whole device position, water filling level, direction of filling, etc. Note that a liquid
+zone controller is normally composed of two parts: one part is empty and the second
+part is full-filled. The water level can be adjusted according to the control reactivity
+requirements. The controllers positions are referred using \dusa{3-D}-Cartesian
+coordinates. Several devices parameters can be modified using the \moc{DSET:}
+module (see \Sect{dset}). The liquid controllers can also be divided into the several
+user-defined groups so that they can be manipulated simultaneously.\\
+
+\noindent
+The \moc{LZC:} module specification is:
+
+\begin{DataStructure}{Structure \moc{LZC:}}
+\dusa{DEVICE} \dusa{MATEX} \moc{:=} \moc{LZC:}
+$[$ \dusa{DEVICE} $]$ \dusa{MATEX} \moc{::} \dstr{desclzc}
+\end{DataStructure}
+
+\noindent where
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dusa{DEVICE}] \texttt{character*12} name of the \dds{device} object.
+Note, if the rod-type devices are not present in the reactor core, then \dusa{DEVICE}
+object must appear only on the LHS (i.e. in create mode), it will contain the information
+only with respect to the liquid zone controllers. However, if the rod-type devices
+are present in the reactor core, then they must be specified first (i.e. before the
+liquid controllers) using the \moc{DEVINI:} module (see \Sect{dev}). In the last
+case, the \dusa{DEVICE} object must also appear on the RHS (i.e. in modification
+mode), it will contain the additional and separate information with respect to the
+liquid zone controllers.
+
+\item[\dusa{MATEX}] \texttt{character*12} name of the \dds{matex} object
+that will be updated by the module. The lzc-devices material mixtures are
+appended to the previous material index and the lzc-devices indices are
+also modified, accordingly.
+
+\item[\dstr{desclzc}] structure describing the input data to the \moc{LZC:} module.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+
+\subsubsection{Input data to the \moc{LZC:} module}\label{sect:lzcstr}
+
+Note that the input order must be respected.
+
+\begin{DataStructure}{Structure \dstr{desclzc}}
+$[$ \moc{EDIT} \dusa{iprint} $]$ \\
+\moc{NUM-LZC} \dusa{nlzc} \\
+(\dstr{dev-lzc}, i = 1, \dusa{nlzc}) \\
+$[$ \moc{CREATE}  \moc{LZC-GR} \dusa{ngrp}  (\dstr{lzc-group}, i = 1, \dusa{ngrp}) $]$ \\
+;
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] integer index used to control the printing on screen:
+= 0 for no print; = 1 for minimum printing (default value); larger values
+produce increasing amounts of output.
+
+\item[\moc{NUM-LZC}] keyword used to specify \dusa{nlzc}.
+
+\item[\dusa{nlzc}] integer total number of liquid zone controllers.
+This number must be greater than 0.
+
+\item[\moc{CREATE}] keyword used to create the lzc-groups of devices.
+The creation of groups is optional.
+
+\item[\moc{LZC-GR}] keyword used to set \dusa{ngrp}.
+
+\item[\dusa{ngrp}] integer total number of the lzc groups to be created.
+This number must be greater than 0.
+
+\item[\dstr{dev-lzc}] structure describing the input data for each individual
+liquid controller.
+ 
+\item[\dstr{lzc-group}] structure describing the input data for each group of
+liquid controllers.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+
+\subsubsection{Description of dev-lzc input structure}\label{sect:devlzcstr}
+
+Note that the devices positions can not overlap in the reactor core. The input order of data
+must be respected.
+
+\begin{DataStructure}{Structure \dstr{dev-lzc}}
+\moc{LZC} \dusa{id} \\
+\moc{MAXPOS}  ( \dusa{pos}(i) , i = 1, 6 ) \\
+\moc{MAX-FULL} \dusa{fmax} \\
+\moc{AXIS} $\{$ \moc{X} $|$ \moc{Y} $|$ \moc{Z} $\}$ \\
+\moc{LEVEL} \dusa{value} \\
+$[$ \moc{RATE} \dusa{rate} $]$ \\
+$[$ \moc{TIME} \dusa{time} $]$ \\
+\moc{EMPTY-MIX}  ( \dusa{mixE}(n), n = 1, 2 ) \\
+\moc{FULL-MIX}  ( \dusa{mixF}(n), n = 1, 2 )
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{LZC}] keyword used to specify the liquid controller
+\dusa{id} number.
+
+\item[\dusa{id}] integer identification number of the current liquid controller.
+Each controller must be assigned a unique \dusa{id} number, given in an
+ascending order ranging from 1 to \dusa{nlzc}.
+
+\item[\moc{MAXPOS}] keyword used to specify the entire position of a
+liquid zone controller, including its empty and full parts.
+
+\item[\dusa{pos}] real array containing 3-D Cartesian coordinates of the
+liquid zone controller position in the reactor core. These coordinates
+must be given in the order: X$-$  X$+$   Y$-$  Y$+$   Z$-$  Z$+$
+
+\item[\moc{MAX-FULL}] keyword used to specify \dusa{fmax}.
+
+\item[\dusa{fmax}] real value of the limiting coordinate along the controller
+filling axis, which corresponds to the maximum full-filling level for the current
+liquid controller.
+
+\item[\moc{AXIS}] keyword used to specify the controller filling axis.
+A liquid controller can be filled along only one (vertical) axis.
+
+\item[\moc{X}] keyword used to specify that a liquid controller is filled along X axis.
+
+\item[\moc{Y}] keyword used to specify that a liquid controller is filled along Y axis.
+
+\item[\moc{Z}] keyword used to specify that a liquid controller is filled along Z axis.
+
+\item[\moc{LEVEL}] keyword used to specify the actual filling level.
+
+\item[\dusa{value}] real positive value of the water level. This value is minimal
+(\dusa{value} = 0.0) when the controller is empty, and it is maximal (\dusa{value} = 1.0)
+when the controller is full-filled. For the partially filled controller the water level
+must be: 0.0 $<$ \dusa{value} $<$ 1.0
+
+\item[\moc{RATE}] keyword used to specify \dusa{rate}.
+
+\item[\dusa{rate}] real positive value of the water filling rate, given in
+m$^{3}$/s. This value is needed only for the reactor regulating purpose.
+
+\item[\moc{TIME}] keyword used to specify \dusa{time}.
+
+\item[\dusa{time}] real value of the filling time, given in sec.
+This value is needed only for the reactor regulating purpose.
+
+\item[\moc{EMPTY-MIX}] keyword used to specify \dusa{mixE}.
+
+\item[\dusa{mixE}] two integer mixture indices, specified for the empty-part of
+liquid controller. The first and the second mixture indices correspond to the
+perturbed and the reference cross sections, respectively. These indices will be
+used to compute the incremental cross sections in the \moc{NEWMAC:} module.
+
+\item[\moc{FULL-MIX}] keyword used to specify \dusa{mixF}.
+
+\item[\dusa{mixF}] two integer mixture indices, specified for the full-part of liquid
+controller. The first and the second mixture indices correspond to the perturbed
+and the reference cross sections, respectively. These indices will be used
+to compute the incremental cross sections in the \moc{NEWMAC:} module.
+
+\end{ListeDeDescription}
+\clearpage
+
+\subsubsection{Description of lzc-group input structure}\label{sect:lzcgroupstr}
+
+The partition of lzc-devices into groups is similar to that of rod-devices.
+
+\begin{DataStructure}{Structure \dstr{lzc-group}}
+\moc{GROUP-ID} \dusa{igrp} $\{$ \moc{LZC-ID}
+$[[$ \dusa{id} $]]$  $|$  \moc{ALL} $\}$
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{GROUP-ID}] keyword used to set \dusa{igrp} number.
+
+\item[\dusa{igrp}] integer identification number of a group to be created.
+Each controllers group must be assigned a unique identification number,
+given in ascending order ranging from 1 to \dusa{ngrp}.
+
+\item[\moc{LZC-ID}] keyword used to set the controllers \dusa{id} numbers.
+
+\item[\dusa{id}] integer identification numbers of the liquid controllers which
+belong to the same group \dusa{igrp}. A particular controller (or several devices)
+may belong to different groups, but it could not be repeated inside the same
+group. The total number of liquid controllers in any group must be between
+1 and \dusa{nlzc}.
+
+\item[\moc{ALL}] keyword used to specify that all liquid controllers
+will belong to the same group \dusa{igrp}.
+
+\end{ListeDeDescription}
+\clearpage

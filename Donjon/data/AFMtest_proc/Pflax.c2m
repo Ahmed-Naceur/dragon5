@@ -1,0 +1,89 @@
+!***********************************************************************
+!*                                                                    **
+!* PROCEDURE:  Pflax                                                  **
+!* USAGE:      Flux calculation for Gentilly2 for axial flux shape    **
+!*             convergence or criticality on exit burnup (TAVG COMP)  **
+!* AUTHOR:     E. Varin (96/02/12)                                    **
+!*             B. Dionne (01/03/04) (pour cours ENE6209)              **
+!*             A. Hebert (11/11/11) (pour DONJON4)                    **
+!* CALL:                                                              **
+!*                                                                    **
+!*   RESEAU := Pflax RESEAU DBASE INDEX MACRO DEVICE G23D2 ::         **
+!*       <<Maxreg>> <<Precf>> <<Pow>> >>Eps1<< >>Keff<< ;             **
+!*                                                                    **
+!* NOTES:                                                             **
+!*        Maxreg = maximum number of matrial regions in geometry      **
+!*        Precf= Static flux calculation precision                    **
+!*        Pow  = total fission power                                  **
+!*        Eps1 = error on flux form                                   **
+!*        Keff = effective mutltiplication factor                     **
+!*                                                                    **
+!***********************************************************************
+ PARAMETER RESEAU INDEX DBASE MACRO DEVICE G23D2 ::
+           ::: LINKED_LIST RESEAU INDEX DBASE MACRO DEVICE G23D2 ;
+           ;
+
+ MODULE TRIVAT: TRIVAA: NEWMAC: FLUD: GREP: MACINI: AFM: FLPOW: TAVG:
+        END: ;
+
+ LINKED_LIST MACRES MACRO2 TRACK MACRO3 SYSTEM FLUX POWER ;
+
+!* Declaration des variables
+!***************************
+ STRING    NamCpo1 ;
+ EVALUATE NamCpo1 := "FULFBMDATA" ;
+ REAL Eps1 Precf Keff Pow ;
+ INTEGER Maxreg Edit ;
+
+!* Lecture des arguments de la procedure
+!***************************************
+ :: >>Maxreg<< >>Precf<< >>Pow<< >>Edit<< ;
+
+!* Proprietes en fonction du burnup actuel
+!*****************************************
+
+ MACRES := AFM: DBASE RESEAU  ::
+   MAP
+   INFOR C6_FBM_CRP0
+   DNAME 1 <<NamCpo1>>
+   EDIT 1
+   NPWF
+   REFT 1 <<NamCpo1>> ;
+
+ MACRO2 INDEX := MACINI: INDEX MACRO MACRES ;
+
+ MACRO3 INDEX := NEWMAC: INDEX MACRO2 DEVICE ::
+        EDIT 0 XFAC 2.0 ;
+
+!* Creation du fichier de tracking
+!*********************************
+ TRACK := TRIVAT: G23D2 ::
+       EDIT 0
+       TITLE 'G2 3D '
+       MAXR <<Maxreg>> MCFD 1 ;
+
+!* Creation des matrices de systeme d'elements finis
+!***************************************************
+ SYSTEM := TRIVAA: MACRO3 TRACK :: EDIT 0 ;
+
+!* Calcul du flux (probleme aux valeurs propres)
+!***********************************************
+ FLUX := FLUD: SYSTEM TRACK :: EDIT 1 EXTE 100 <<Precf>> ADI 5 ;
+
+!* Calcul de la forme de flux axial et des puissances (normalisees)
+!******************************************************************
+ POWER RESEAU := FLPOW: RESEAU FLUX TRACK INDEX
+                 :: EDIT <<Edit>> PTOT <<Pow>> ;
+ RESEAU := TAVG: RESEAU POWER :: EDIT <<Edit>> AX-SHAPE RELAX 0.5 ;
+
+!* Ecriture des variables de sorties de la procedure
+!***************************************************
+ GREP: RESEAU :: GETVAL EPS-AX 1 >>Eps1<< ;
+ GREP: FLUX :: GETVAL K-EFFECTIVE 1 >>Keff<< ;
+ ECHO "Pflax Pow=" Pow "Keff=" Keff ;
+
+ :: <<Keff>> <<Eps1>> ;
+
+ END: ;
+
+QUIT .

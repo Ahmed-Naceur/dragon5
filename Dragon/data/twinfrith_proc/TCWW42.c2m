@@ -1,0 +1,160 @@
+*---
+* Regression test for MCCG:
+*---
+*---
+*  TEST CASE TCWW42 (based on TCWW05)
+*  3D CANDU-6 CARTESIAN CELL
+*  WIMS-AECL 69 GROUPS LIBRARY FILE WIMSLIB
+*---
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  LIBRARY CANDU6S CANDU6M CANDU6F VOLMATS VOLMATF TEMP PIJ FLUX 
+  EDITION ;
+SEQ_BINARY
+  INTLINS INTLINF ;
+SEQ_ASCII
+  fig.ps ;
+MODULE
+  GEO: NXT: MCCGT: PSP: LIB: SHI: ASM: FLU: EDI: GREP: DELETE: END: ;
+PROCEDURE assertS ;
+REAL k2D kpriz  ;
+*----
+*  Geometry CANDU6S : 2D geometry for self-shielding
+*           CANDU6M : 2D geometry for multigroup flux
+*           CANDU6F : 3D geometry for multigroup flux
+*----
+CANDU6S := GEO: ::  CARCEL 5
+  X+ REFL X- REFL MESHX -14.2875 14.2875
+  Y+ REFL Y- REFL MESHY -14.2875 14.2875
+  RADIUS  0.00000 5.16890 5.60320  6.44780 6.58750 14.00
+  MIX  1 2 3 4 5 5
+  CLUSTER ROD1 ROD2 ROD3 ROD4
+  ::: ROD1 := GEO: TUBE 2 MIX 6 10 NPIN  1 RPIN 0.0000 APIN 0.0000
+    RADIUS 0.00000 0.6122 0.6540 ;
+  ::: ROD2 := GEO: ROD1   MIX 7 10 NPIN  6 RPIN 1.4885 APIN 0.0000 ;
+  ::: ROD3 := GEO: ROD1   MIX 8 10 NPIN 12 RPIN 2.8755 APIN 0.261799 ;
+  ::: ROD4 := GEO: ROD1   MIX 9 10 NPIN 18 RPIN 4.3305 APIN 0.0 ;
+  ;
+CANDU6M := GEO: CANDU6S :: !SPLITR  6 1 1 1 10
+  ;
+REAL    zlength := 50.0 ;
+INTEGER zsplit  := 1 ;
+CANDU6F := GEO: :: CARCELZ 5 1 1 1
+  X+ REFL X- REFL MESHX -14.2875 14.2875
+  Y+ REFL Y- REFL MESHY -14.2875 14.2875
+  Z- REFL Z+ REFL MESHZ 0.0 <<zlength>>
+  SPLITZ <<zsplit>>
+  RADIUS  0.00000 5.16890 5.60320  6.44780 6.58750 14.00
+  !SPLITR  6 1 1 1 10
+  MIX  1 2 3 4 5 5
+  CLUSTER ROD1 ROD2 ROD3 ROD4
+  ::: ROD1 := GEO: TUBEZ 2 1 1 1
+    MESHZ 0.0 <<zlength>>
+    SPLITZ <<zsplit>>
+    MIX 6 10 
+    NPIN  1 RPIN 0.0000 APIN 0.0000
+    RADIUS 0.00000 0.6122 0.6540 ;
+  ::: ROD2 := GEO: ROD1
+    MIX 7 10
+    NPIN  6 RPIN 1.4885 APIN 0.0000 ;
+  ::: ROD3 := GEO: ROD1
+    MIX 8 10
+    NPIN 12 RPIN 2.8755 APIN 0.261799 ;
+  ::: ROD4 := GEO: ROD1
+    MIX 9 10
+    NPIN 18 RPIN 4.3305 APIN 0.0 ;
+;
+*----
+*  Microscopic cross sections from file WIMSLIB format WIMS-AECL
+*----
+LIBRARY := LIB: ::
+  NMIX 10 CTRA WIMS
+  MIXS LIB: WIMSAECL FIL: WIMSLIB
+  MIX  1  560.66   0.81212           O16      = O16      7.99449E-1
+    D2D2O    = D2D2O    1.99768E-1   H1H2O    = H1H2O    7.83774E-4
+  MIX  2  560.66   6.57              Nb93     = NB93     2.50000
+    BNat     = B-NAT    2.10000E-4
+    Zr91     = ZR91     9.75000E+1
+  MIX  3  345.66   0.0014            He4      = HE4      1.00000E+2
+  MIX  4  345.66   6.44              Fe56     = FE56A    1.60000E-1
+    Ni58     = NI58     6.00000E-2   Cr52     = CR52     1.10000E-1
+    BNat     = B-NAT    3.10000E-4
+    Zr91     = ZR91     9.97100E+1
+  MIX  5  345.66   1.082885          O16      = O16      7.98895E-1
+    D2D2O    = D2D2O    2.01016E-1   H1H2O    = H1H2O    8.96000E-5
+  MIX  6  941.29  10.4375010         O16      = O16      1.18473E+1
+    Xe135    = XE135    0.0
+    U235     = U235     6.27118E-1 1
+    U238     = U238     8.75256E+1 1
+    U236     = U236     0.0        1
+    Pu239    = PU239    0.0        1
+  MIX  7  COMB 6 1.0
+  MIX  8  COMB 6 1.0
+  MIX  9  COMB 6 1.0
+  MIX 10   560.66   6.44             Fe56     = FE56A    1.60000E-1
+    Ni58     = NI58     6.00000E-2   Cr52     = CR52     1.10000E-1
+    BNat     = B-NAT    3.10000E-4
+    Zr91     = ZR91     9.97100E+1
+  ;
+*----
+* Self-Shielding 2D tracking by NXT
+* Self-Shielding calculation EXCEL
+*----
+VOLMATS INTLINS := NXT: CANDU6S ::
+  EDIT 0 TISO 4 5.0 ;
+LIBRARY := SHI: LIBRARY VOLMATS INTLINS :: EDIT 0 NOLJ ;
+VOLMATS INTLINS := DELETE: VOLMATS INTLINS ;
+*----
+* Flux Calculation 2D tracking by NXT/MCCGT
+* Flux Calculation 3D prismatic tracking by NXT/MCCGT
+*----
+VOLMATS INTLINS := NXT: CANDU6M ::
+  EDIT 0 TISO 4 5.0 ;
+VOLMATS := MCCGT: VOLMATS INTLINS CANDU6M ::
+     EDIT 2 DGAU 2
+     AAC 100 TMT EPSI 1E-5 STIS 1
+     MAXI 1 KRYL 0 SCR 0 HDD 0.0 ;
+VOLMATF INTLINF := NXT: CANDU6F ::
+  EDIT 0 PRIZ 0.5 GAUS 4 TISO 4 5.0 ;
+TEMP := VOLMATF :: STEP UP PROJECTION ;
+fig.ps := PSP: TEMP ;
+VOLMATF := MCCGT: VOLMATF INTLINF CANDU6F ::
+     EDIT 2
+     AAC 100 TMT EPSI 1E-5 STIS 1
+     MAXI 1 KRYL 0 SCR 0 HDD 0.0 ;
+*---
+* 2D Multigroup flux calculation and edition
+*---
+PIJ := ASM: LIBRARY VOLMATS INTLINS :: 
+  EDIT 2 ARM ;
+FLUX := FLU: PIJ LIBRARY VOLMATS INTLINS ::
+  EDIT 2 TYPE K THER 5 5E-5 EXTE 10 1E-5 UNKT 1E-4 ;
+assertS FLUX :: 'K-INFINITY' 1 1.125582 ;
+GREP: FLUX :: GETVAL 'K-EFFECTIVE' 1 1 1 >>k2D<< ; 
+EDITION := EDI: FLUX LIBRARY VOLMATS :: 
+  EDIT 2 COND 4.0 MERGE MIX 1 2 3 4 5 6 7 8 9 10 ; 
+PIJ FLUX EDITION := DELETE: PIJ FLUX EDITION ;
+*---
+* 3D prismatic Multigroup flux calculation and edition
+*---
+PIJ := ASM: LIBRARY VOLMATF INTLINF :: 
+  EDIT 2 ARM ;
+FLUX := FLU: PIJ LIBRARY VOLMATF INTLINF ::
+  EDIT 2 TYPE K THER 5 5E-5 EXTE 10 1E-5 UNKT 1E-4 ;
+assertS FLUX :: 'K-INFINITY' 1 1.126287 ;
+GREP: FLUX :: GETVAL 'K-EFFECTIVE' 1 1 1 >>kpriz<< ; 
+EDITION := EDI: FLUX LIBRARY VOLMATF :: 
+  EDIT 2 COND 4.0 MERGE MIX 1 2 3 4 5 6 7 8 9 10 ; 
+ECHO "**********************" ;
+ECHO "2D     " k2D ;
+ECHO "3D PRIZ" kpriz ;
+ECHO "**********************" ;
+*---
+* Clean up
+*---
+INTLINF INTLINS := DELETE: INTLINF INTLINS ;
+ECHO "test TCWW42 completed" ;
+END: ;  
+QUIT "LIST" .

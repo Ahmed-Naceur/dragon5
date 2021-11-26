@@ -1,0 +1,579 @@
+#!/bin/sh
+#
+# author : R. Roy    (00-03-24)
+# update : E. Varin  (02-06-20)
+# update : A. Hebert (06-06-12)
+# use    : install [<compiler>] [-debug]
+# note   : please install ganlib and utilib before dragon/donjon
+#
+
+idebug=0
+mpi=0
+nbit=-m64
+optim=1
+compiler='custom'
+FoptCPP=''
+
+for param in $*
+do
+   case $param in
+      -debug) echo "Activate the debug environment variable"
+          idebug=1
+          ;;
+      -m32) echo "Compile in 32 bits"
+          nbit=-m32
+          ;;
+      -mpi) echo "Activate mpi"
+          mpi=1
+          FoptCPP="-DMPI"
+          ;;
+      -noopt) echo "Avoid -O optimization flag"
+          optim=0
+          ;;
+      *) compiler=$param
+          ;;
+   esac
+done
+
+LocDir=`pwd`
+Code=`basename "$LocDir"`
+#
+# Obtain system type:
+#
+System=`uname -s`
+Sysx="`echo $System | cut -b -6`"
+MACH=`uname -sm | sed 's/[ ]/_/'`
+if [ $Sysx = "CYGWIN" ]; then
+   System=`uname -o`
+   MACH=$System
+elif [ $Sysx = "AIX" ]; then
+   MACH=`uname -s`
+fi
+echo "System :" $System "   MACH :" $MACH
+if [ $System != "HP-UX" \
+  -a $System != "AIX"   \
+  -a $System != "Darwin" \
+  -a $System != "SunOS" \
+  -a $System != "Linux" \
+  -a $System != "Cygwin" ]; then
+	echo "Only Cygwin, Linux, AIX, Darwin, HP-UX and SunOS are allowed."
+	exit 1
+fi
+echo 'Configure' $Code 'on ' $MACH 'with' $compiler 'compiler'
+
+HomeDev=`pwd`/..
+if [ $compiler = "custom" ]; then
+   if [ $System = "AIX" ]; then
+      PATH=$PATH:/usr/vac/bin; export PATH
+      TMPDIR=/usr/tmp; export TMPDIR
+   elif [ $System = "SunOS" ]; then
+      PATH=$PATH:/lib; export PATH
+   fi
+   LocLib=${LocDir}/lib/"$MACH"
+   LocBin=${LocDir}/bin/"$MACH"
+   LocGanLib=$HomeDev/Ganlib/lib/"$MACH"
+   LocUtiLib=$HomeDev/Utilib/lib/"$MACH"
+   LocDrgLib=$HomeDev/Dragon/lib/"$MACH"
+   LocTriLib=$HomeDev/Trivac/lib/"$MACH"
+   LocDonLib=$HomeDev/Donjon/lib/"$MACH"
+   LocSkinLib=$HomeDev/Skin++/lib/"$MACH"
+else
+   if [ $System = "Linux" -a $compiler = 'absoft' ]; then
+      . /usr/local/absoft/bin/absoft.sh
+   fi
+   LocLib=${LocDir}/lib/"$MACH"'_'$compiler
+   LocBin=${LocDir}/bin/"$MACH"'_'$compiler
+   LocGanLib=$HomeDev/Ganlib/lib/"$MACH"'_'$compiler
+   LocUtiLib=$HomeDev/Utilib/lib/"$MACH"'_'$compiler
+   LocDrgLib=$HomeDev/Dragon/lib/"$MACH"'_'$compiler
+   LocTriLib=$HomeDev/Trivac/lib/"$MACH"'_'$compiler
+   LocDonLib=$HomeDev/Donjon/lib/"$MACH"'_'$compiler
+   LocSkinLib=$HomeDev/Skin++/lib/"$MACH"'_'$compiler
+fi
+#
+# Set compiler name
+#
+TOOLF="f77"    # Fortran 77 compiler
+TOOLC="cc"     # ANSI C compiler
+#
+# Set code name
+#
+Library=lib$Code.a
+Lnolib=`echo $Code | tr "[:lower:]" "[:upper:]"`.f
+Lnoobj=`echo $Code | tr "[:lower:]" "[:upper:]"`.o
+echo '--------------------'
+echo '--> Install' $Code
+echo '--------------------'
+echo 'Library =' $Library
+#
+# Make directories ./bin ./lib ./bin/"$MACH" and ./lib/"$MACH" if necessary
+#
+if [ $Code != "Utilib" ]; then
+if [ ! -d bin ]; then
+  mkdir bin
+  chmod 755 bin
+  mkdir "$LocBin"
+  chmod 755 "$LocBin"
+else
+  if [ ! -d "$LocBin" ]; then
+    mkdir "$LocBin"
+    chmod 755 "$LocBin"
+  else
+    if [ -f "$LocBin"/$Code ]; then
+      /bin/rm "$LocBin"/$Code
+    fi
+  fi
+fi
+fi
+if [ ! -d lib ]; then
+  mkdir lib
+  chmod 755 lib
+  mkdir "$LocLib"
+  chmod 755 "$LocLib"
+else
+  if [ ! -d "$LocLib" ]; then
+    mkdir "$LocLib"
+    chmod 755 "$LocLib"
+  else
+    if [ -f "$LocLib"/$Library ]; then
+      /bin/rm "$LocLib"/$Library
+    fi
+  fi
+fi
+if [ $Code = "Trivac" ]; then
+	echo "Installing Trivac"
+	if [ ! -f "$LocUtiLib"/libUtilib.a ]; then
+		echo "Please install Utilib first"
+		exit 1
+	fi
+	if [ ! -f "$LocGanLib"/libGanlib.a ]; then
+		echo "Please install Ganlib first"
+		exit 1
+	fi
+elif [ $Code = "Dragon" ]; then
+	echo "Installing Dragon"
+	if [ ! -f "$LocTriLib"/libTrivac.a ]; then
+		echo "Please install Trivac first"
+		exit 1
+	fi
+	if [ -d "$LocLib"/modules ]; then
+		/bin/rm "$LocLib"/modules/*
+	else
+		mkdir "$LocLib"/modules
+		chmod 755 "$LocLib"/modules
+	fi
+elif [ $Code = "Donjon" ]; then
+	echo "Installing Donjon"
+	if [ ! -f "$LocDrgLib"/libDragon.a ]; then
+		echo "Please install Dragon first"
+		exit 1
+	fi
+elif [ $Code = "Optex" ]; then
+	echo "Installing Optex"
+	if [ ! -f "$LocDonLib"/libDonjon.a ]; then
+		echo "Please install Donjon first"
+		exit 1
+	fi
+elif [ $Code = "Skin++" ]; then
+	echo "Installing Skin++"
+        Lnolib=`echo $Code.cxx`
+        Lnoobj=`echo $Code.o`
+        if [ -z "$BOOST_ROOT" ]; then
+                echo "Need to install Boost and to set BOOST_ROOT"
+                exit 1
+        elif [ ! -f "$LocDonLib"/libDonjon.a ]; then
+		echo "Please install Donjon first"
+		exit 1
+	fi
+elif [ $Code = "Yacs++" ]; then
+	echo "Installing Yacs++"
+        Lnolib=`echo $Code.cxx`
+        Lnoobj=`echo $Code.o`
+        if [ -z "$BOOST_ROOT" ]; then
+                echo "Need to install Boost and to set BOOST_ROOT"
+                exit 1
+        elif [ -z "$SALOME_KERNEL" ]; then
+                echo "Need to set SALOME_KERNEL"
+                exit 1
+        elif [ ! -f "$LocSkinLib"/libSkin++.a ]; then
+		echo "Please install Skin++ first"
+		exit 1
+	fi
+elif [ $Code = "Utilib" ]; then
+	echo "Installing Utilib"
+elif [ $Code = "Ganlib" ]; then
+	echo "Installing Ganlib"
+	if [ -d "$LocGanLib"/modules ]; then
+		/bin/rm "$LocGanLib"/modules/*
+	else
+		mkdir "$LocGanLib"/modules
+		chmod 755 "$LocGanLib"/modules
+	fi
+else
+	echo "Installing specific code " $Code
+	if [ ! -f "$LocDrgLib"/libDragon.a ]; then
+		echo "Please install Dragon first"
+		exit 1
+	fi
+	if [ -d "$LocLib"/modules ]; then
+		/bin/rm "$LocLib"/modules/*
+	else
+		mkdir "$LocLib"/modules
+		chmod 755 "$LocLib"/modules
+	fi
+fi
+echo 'Lnolib =' $Lnolib 'Lnoobj =' $Lnoobj
+#
+# Set cpp variables for Fortran and C
+#
+if [ $compiler = 'absoft' ]; then
+   FoptCPP="$FoptCPP -Dabsoft -DUnix"
+   CoptCPP="-Dabsoft"
+elif [ $compiler = 'g95' ]; then
+   FoptCPP="$FoptCPP -DLinux -DUnix -Dg95"
+   CoptCPP="-DLinux"
+elif [ $System = "HP-UX" ]; then
+   FoptCPP="$FoptCPP -DHPUX -DUnix"
+   CoptCPP="-DHPUX"
+elif [ $System = "AIX" ]; then
+   FoptCPP="$FoptCPP -DAIX -DUnix"
+   CoptCPP="-DAIX"
+elif [ $System = "SunOS" ]; then
+   FoptCPP="$FoptCPP -DF90 -DSunOS -DUnix"
+   CoptCPP="-DSunOS"
+else
+   FoptCPP="$FoptCPP -DLinux -DUnix"
+   CoptCPP="-DLinux"
+fi
+echo 'FoptCPP=' $FoptCPP
+echo 'CoptCPP=' $CoptCPP
+#
+# Lnoopt= list the non-optimized routines
+#
+Lnoopt=
+CoptF="-c -Wall $nbit -fPIC"
+CoptL="$nbit"
+CoptC="-c -Wall $nbit -fPIC"
+CAddoptF=' '
+CAoptF90=' '
+CXXLINK="-lstdc++"
+if [ $compiler = 'absoft' ]; then
+        CoptF="-c -fPIC"
+        CoptL="$nbit"
+        TOOLF="f90"
+        TOOLC="gcc -fPIC"
+        TOOLCXX="g++"
+        CAddoptF="-f"
+        CAoptF90="-c -f free"
+        if [ "`uname -m`" = "i386" -o "`uname -m`" = "x86_64" ]; then
+                CAoptF90="-c $nbit -f free"
+		CAddoptF="$nbit -f"
+		CoptC="-c $nbit"
+        fi
+elif [ $compiler = 'g95' ]; then
+        CoptF="-c"
+        TOOLF="g95"
+        TOOLC="gcc"
+        TOOLCXX="g++"
+	CAddoptF="-ffixed-line-length-80 -fsloppy-char -Wno-globals"
+        CoptC="-c -fPIC"
+        CAoptF90="-c -fsloppy-char -Wno-globals"
+elif [ $compiler = 'intel' ]; then
+        FoptCPP="$FoptCPP -Difort"
+        CoptL="$nbit"
+        CoptF="-c -fPIC"
+        TOOLF="ifort"
+        TOOLC="gcc"
+        TOOLCXX="g++"
+        CAoptF90="-c"
+        CoptC="-c $nbit -fPIC"
+        CXXLINK="-lstdc++ -nofor_main"
+elif [ $System = "HP-UX" ]; then
+        Cnoopt="-c +Onolimit"
+        CAoptF90="+source=free"
+elif [ $System = "AIX" ]; then
+        TOOLF="xlf90"
+        CoptF="-c"
+        CoptC="-c"
+        CoptL="-bmaxdata:0x80000000 -qipa"
+        CAddoptF="-qmaxmem=-1 -qxlf77=leadzero -qfixed"
+        CAoptF90="-qmaxmem=-1 -qsuffix=f=f90"
+elif [ $System = "SunOS" ]; then
+        TOOLF="f90"
+        TOOLC="cc"
+        CoptF="-c -m64"
+        CoptC="-c -m64"
+        CAddoptF="-s -ftrap=%none"
+        CAoptF90="-s -ftrap=%none"
+else
+        if [ $mpi = 1 ]; then
+            TOOLF="mpif90"
+            TOOLC="mpicc"
+        else
+            TOOLF="gfortran"
+            TOOLC="gcc"
+        fi
+        TOOLCXX="g++"
+        CAddoptF="-frecord-marker=4"
+        CAoptF90=" "
+        vers=$(uname -r | cut -d"." -f1)
+        if [ "$MACH" = "Darwin_i386" ]; then
+                gccrel=`g++ --version | head -1 | sed -e 's/i686-apple-darwin\([0-9]*\).*/\1/'`
+                gccfullV=`g++ --version | head -1 | sed -e '1 s/.*\([0-9]\.[0-9]\.[0-9]\).*/\1/'`
+                CXXLINK="-L/usr/lib/gcc/i686-apple-darwin$gccrel/$gccfullV -lstdc++"
+                echo "reset CXXLINK to" $CXXLINK
+        elif [ "$MACH" = "Darwin_x86_64" -a "$vers" -gt 15 ]; then
+                CXXLINK="-lc++"
+                echo "reset CXXLINK to" $CXXLINK
+        fi
+fi
+#
+# Set debug flag
+#
+if [ $idebug = 1 ]; then
+        CoptF=`echo $CoptF -g`
+        FoptCPP=`echo $FoptCPP -g`
+        CoptCPP=`echo $CoptCPP -g`
+fi
+#
+# Set optimization
+#
+if [ $optim = 1 -a $idebug = 0 ]; then
+        if [ $System = "AIX" ]; then
+          CoptF=`echo $CoptF -O4 -qstrict`
+          CoptC=`echo $CoptC -O4 -qstrict`
+        else
+          CoptF=`echo $CoptF -O`
+          CoptC=`echo $CoptC -O`
+        fi
+        CoptL=`echo $CoptL -O`
+fi
+#
+Directory=src
+echo "Directory:" $Directory
+cd $Directory
+if [ $Code = "Ganlib" ]; then
+  command -v python3
+  OUT=$?
+  if [ $OUT -eq 0 ]; then
+    echo "use python3"
+    L90="`python3 ../../script/make_depend_py3.py` `ls *.F90`"
+  else
+    echo "use python2"
+    L90="`python ../../script/make_depend.py` `ls *.F90`"
+  fi
+  liste="$L90 `ls *.f` `ls *.F` `ls *.c`"
+  LF="`ls *.F`"
+  LF90="`ls *.F90`"
+  Lcc="`ls *.c`"
+  echo "cc rout  :" $Lcc
+  echo "F rout  :" $LF
+  echo "F90 rout  :" $LF90
+elif [ $Code = "Utilib" -o $Code = "Donjon" -o $Code = "Trivac" -o $Code = "Dragon" -o $Code = "Optex" ]; then
+  command -v python3
+  OUT=$?
+  if [ $OUT -eq 0 ]; then
+    echo "use python3"
+    L90="`python3 ../../script/make_depend_py3.py`"
+  else
+    echo "use python2"
+    L90="`python ../../script/make_depend.py`"
+  fi
+  liste="$L90 `ls *.f` `ls *.F` `ls *.c`"
+  Lcc="`ls *.c`"
+  echo "cc rout  :" $Lcc
+elif [ $Code = "Skin++" -o $Code = "Yacs++" ]; then
+  Lcxx="`ls *.cxx`"
+  liste="$Lcxx"
+  echo "c++ rout  :" $Lcxx
+else
+  echo "Unknown code  :" $Code
+fi
+echo "No opti  :" $Lnoopt
+echo "--------- "
+Lo=
+Lon=
+for routname in $liste; do
+	InLib="Yes"
+	for routnolib in $Lnolib; do
+		if [ $routname = $routnolib ]; then
+			Nlib="`echo $routname | cut -d. -f 1`.o"
+			Lon="$Lon $Nlib"
+			InLib="No"
+		fi
+	done
+	OptIt="Yes"
+	for routnoopt in $Lnoopt; do
+		if [ $routname = $routnoopt ]; then
+			OptIt="No"
+                        echo "Compilei  :" $TOOLF $Cnoopt $routnoopt -I"$LocGanLib"/modules/
+			$TOOLF $Cnoopt $routnoopt -I"$LocGanLib"/modules/
+		fi
+	done
+	for routcc in $Lcc; do
+		if [ $routname = $routcc ]; then
+			OptIt="No"
+			echo "Compile  :" $TOOLC $CoptC $CoptCPP $routcc
+			$TOOLC $CoptC $CoptCPP $routcc
+		fi
+	done
+	for routF in $LF; do
+		if [ $routname = $routF ]; then
+			OptIt="No"
+                        if [ $mpi = 0 -a $routname = 'DRVMPI.F' ]; then
+			      InLib="No"
+                              continue ;
+                        elif [ $mpi = 0 -a $routname = 'SNDMPI.F' ]; then
+			      InLib="No"
+                              continue ;
+                        fi
+		        echo "cpp+Compile  :"  $TOOLF $CoptF $FoptCPP $CAddoptF $routF -I"$LocGanLib"/modules/
+                        objname="`echo $routF | cut -d. -f 1`.o"
+		        cpp -P -W -traditional $FoptCPP -I/usr/local/include $routF temp.f
+		        $TOOLF $CoptF $CAddoptF temp.f -I"$LocGanLib"/modules/ -o $objname
+                        /bin/rm temp.f
+		fi
+	done
+	for routF90 in $LF90; do
+		if [ $routname = $routF90 ]; then
+			OptIt="No"
+		        echo "cpp+Compile  :"  $TOOLF $CoptF $FoptCPP $CAoptF90 $routF90 -I"$LocGanLib"/modules/
+                        objname="`echo $routF90 | cut -d. -f 1`.o"
+		        cpp -P -W -traditional $FoptCPP -I/usr/local/include $routF90 temp.f90
+		        $TOOLF $CoptF $CAoptF90 temp.f90 -I"$LocGanLib"/modules/ -o $objname
+                        /bin/rm temp.f90
+		fi
+	done
+	if [ $OptIt = "Yes" ]; then
+	        for rout90 in $L90; do
+                        if [ $routname = $rout90 ]; then
+                                OptIt="No"
+                                echo "Compile  :" $TOOLF $CoptF $CAoptF90 $rout90 -I"$LocGanLib"/modules/
+                                $TOOLF $CoptF $CAoptF90 $rout90 -I"$LocGanLib"/modules/
+                        fi
+                done
+	fi
+	for routcc in $Lcxx; do
+		if [ $routname = $routcc -a $Code = "Yacs++" ]; then
+			OptIt="No"
+			echo "Compile  :" $TOOLCXX $CoptC $CoptCPP $routcc -I$BOOST_ROOT -I"$HomeDev"/Ganlib/src/ \
+                        -I"$HomeDev"/Skin++/src/ -I"$SALOME_KERNEL"/include/salome/
+			$TOOLCXX $CoptC $CoptCPP $routcc -I$BOOST_ROOT -I"$HomeDev"/Ganlib/src/ \
+                        -I"$HomeDev"/Skin++/src/ -I"$SALOME_KERNEL"/include/salome/
+	        elif [ $routname = $routcc ]; then
+			OptIt="No"
+			echo "Compile  :" $TOOLCXX $CoptC $CoptCPP $routcc -I$BOOST_ROOT -I"$HomeDev"/Ganlib/src/
+			$TOOLCXX $CoptC $CoptCPP $routcc -I$BOOST_ROOT -I"$HomeDev"/Ganlib/src/
+		fi
+	done
+	if [ $OptIt = "Yes" ]; then
+		echo "Compile  :"  $TOOLF $CoptF $CAddoptF $routname -I"$LocGanLib"/modules/
+		$TOOLF $CoptF $CAddoptF $routname -I"$LocGanLib"/modules/
+	fi
+	if [ $InLib = "Yes" ]; then
+		Nlib="`echo $routname | cut -d. -f 1`.o"
+		Lo="$Lo $Nlib"
+	fi
+done
+echo "--------- "
+if [ $System = "SunOS" ]; then
+    /usr/ccs/bin/ar cr $Library $Lo
+else
+    ar cr $Library $Lo
+    ranlib $Library
+fi
+for routnolib in $Lon; do
+	cp $routnolib "$LocLib"/$routnolib
+	chmod 644 "$LocLib"/$routnolib
+	echo "Install  : File   " "$LocLib"/$routnolib "was produced"
+done
+if [ -f $Library ]; then
+	echo "Install  : Library" "$LocLib"/$Library "was produced"
+	mv $Library "$LocLib"
+	chmod 644 "$LocLib"/$Library
+	if [ $Code = "Utilib" ]; then
+		echo "No link performed for Utilib"
+	elif [ $Code = "Ganlib" ]; then
+                Lnoobj="GANMAIN.o"
+		echo "Link :"  $TOOLF $CoptL $Lnoobj
+		echo "      "  "$LocLib"/$Library
+		echo "      "  -o "$LocBin"/$Code
+		$TOOLF $CoptL GANMAIN.o "$LocLib"/$Library -o "$LocBin"/$Code
+		mv *.mod "$LocLib"/modules
+		chmod 644 "$LocLib"/modules/*.mod
+	elif [ $Code = "Trivac" ]; then
+		echo "Link :"  $TOOLF $CoptL $Lnoobj
+		echo "      "  "$LocLib"/$Library
+		echo "      "  "$LocUtiLib"/libUtilib.a
+		echo "      "  "$LocGanLib"/libGanlib.a
+		echo "      "  -o "$LocBin"/$Code
+		$TOOLF $CoptL $Lnoobj "$LocLib"/$Library "$LocUtiLib"/libUtilib.a "$LocGanLib"/libGanlib.a \
+		-o "$LocBin"/$Code
+	elif [ $Code = "Dragon" ]; then
+		echo "Link :"  $TOOLF $CoptL $Lnoobj
+		echo "      "  "$LocLib"/$Library
+		echo "      "  "$LocTriLib"/libTrivac.a
+		echo "      "  "$LocUtiLib"/libUtilib.a
+		echo "      "  "$LocGanLib"/libGanlib.a
+		echo "      "  -o "$LocBin"/$Code
+		$TOOLF $CoptL $Lnoobj "$LocLib"/$Library "$LocTriLib"/libTrivac.a "$LocUtiLib"/libUtilib.a \
+                "$LocGanLib"/libGanlib.a -o "$LocBin"/$Code
+		mv *.mod "$LocLib"/modules
+		chmod 644 "$LocLib"/modules/*.mod
+	elif [ $Code = "Donjon" ]; then
+		echo "Link :"  $TOOLF $CoptL $Lnoobj
+		echo "      "  "$LocLib"/$Library
+		echo "      "  "$LocTriLib"/libTrivac.a
+		echo "      "  "$LocDrgLib"/libDragon.a
+		echo "      "  "$LocUtiLib"/libUtilib.a
+		echo "      "  "$LocGanLib"/libGanlib.a
+		echo "      "  -o "$LocBin"/$Code
+		$TOOLF $CoptL $Lnoobj "$LocLib"/$Library "$LocDrgLib"/libDragon.a "$LocTriLib"/libTrivac.a \
+		"$LocDrgLib"/libDragon.a "$LocUtiLib"/libUtilib.a "$LocGanLib"/libGanlib.a -o "$LocBin"/$Code
+	elif [ $Code = "Optex" ]; then
+		echo "Link :"  $TOOLF $CoptL $Lnoobj
+		echo "      "  "$LocLib"/$Library
+		echo "      "  "$LocTriLib"/libTrivac.a
+		echo "      "  "$LocDrgLib"/libDragon.a
+		echo "      "  "$LocDonLib"/libDonjon.a
+		echo "      "  "$LocUtiLib"/libUtilib.a
+		echo "      "  "$LocGanLib"/libGanlib.a
+		echo "      "  -o "$LocBin"/$Code
+		$TOOLF $CoptL $Lnoobj "$LocLib"/$Library "$LocDonLib"/libDonjon.a "$LocDrgLib"/libDragon.a \
+	        "$LocTriLib"/libTrivac.a "$LocDrgLib"/libDragon.a "$LocUtiLib"/libUtilib.a "$LocGanLib"/libGanlib.a \
+                -o "$LocBin"/$Code
+	elif [ $Code = "Skin++" ]; then
+		echo "Link :"  $TOOLF $CoptL $Lnoobj
+		echo "      "  "$LocLib"/$Library
+		echo "      "  "$LocDonLib"/libDonjon.a
+		echo "      "  "$LocDrgLib"/libDragon.a
+		echo "      "  "$LocTriLib"/libTrivac.a
+		echo "      "  "$LocUtiLib"/libUtilib.a
+		echo "      "  "$LocGanLib"/libGanlib.a
+		echo "      "  $CXXLINK -o "$LocBin"/$Code
+		$TOOLF $CoptL $Lnoobj "$LocLib"/$Library "$LocDonLib"/libDonjon.a "$LocDrgLib"/libDragon.a \
+	        "$LocTriLib"/libTrivac.a "$LocDrgLib"/libDragon.a "$LocUtiLib"/libUtilib.a "$LocGanLib"/libGanlib.a \
+                $CXXLINK -o "$LocBin"/$Code
+	elif [ $Code = "Yacs++" ]; then
+		echo "No link performed for Yacs++"
+        else
+                echo "Unknown code" $Code
+	fi
+	if [ $Code = "Utilib" -o $Code = "Yacs++" ]; then
+		/bin/rm *.o
+        else
+		if [ -x "$LocBin"/$Code ]; then
+			echo "Install  : Exec   " "$LocBin"/$Code "was produced"
+			/bin/rm *.o
+        		chmod 755 "$LocBin"/$Code
+			echo "Install  : DONE"
+		else
+			echo "Install  : Exec   " "$LocBin"/$Code "was NOT produced"
+			echo "Install  : ERROR"
+		fi
+	fi
+else
+	echo "Install  : Library" "$LocLib"/$Library "was NOT produced"
+	echo "Install  : ERROR"
+fi
+cd "$LocDir"

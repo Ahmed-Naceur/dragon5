@@ -1,0 +1,499 @@
+\subsection{The \moc{RESINI:} module}\label{sect:resini}
+
+\vskip 0.2cm
+The \moc{RESINI:} module is used for modeling of the reactor fuel
+lattice in \dusa{3-D} Cartesian geometry or \dusa{3-D} Hexagonal geometry. 
+This modeling is based on the following considerations:
+
+\begin{itemize}
+
+\item For \dusa{3-D} Cartesian geometry, the reactor fuel lattice is composed of 
+a well defined number of fuel channels. Each channel is composed of a well defined 
+number of {\sl fuel bundles}. In \moc{RESINI:} terminology, a {\sl fuel bundle}
+can be a CANDU fuel cluster or an axial slice of a PWR or FBR assembly with
+homogeneous cross sections. Each reactor channel is identified by its specific name
+which corresponds to its position in the fuel lattice.
+
+\vskip 0.08cm
+
+In a Candu reactor, the channels are refuelled according
+to the bidirectional refuelling scheme. The refuelling scheme of a channel
+corresponds to the number of displaced fuel bundles (bundle-shift) during
+each channel refuelling. The direction of refuelling corresponds to the
+direction of coolant flow along the channel. 
+
+\vskip 0.08cm
+
+In a PWR, a basic assembly layout can be projected over the fuel map using a
+naval-coordinate position system. Assembly refuelling and shuffling will be possible using
+the ad hoc module {\tt SIM:} (see \Sect{sim}).
+
+\item For \dusa{3-D} Hexagonal geometry, the reactor fuel lattice is composed of
+a well defined number of fuel channels and each channel is composed of a well defined
+number of fuel bundle. All fuel bundles have the same volume. All channels contain
+the same number of fuel bundles. Refuelling is not available during the calculation. The
+lattice indexation is kept to identify the hexagons.
+
+\item The fuel regions generally have a different set of global and local
+parameters. For example, the fuel bundles have a different evolution of the
+fuel properties according to the given burnup distribution, which is a global
+parameter. Consequently, the homogenized cell properties will differ from one
+fuel region to another, i.e., they are not uniform over the fuel lattice. Thus,
+the realistic modeling of a reactor core requires the fuel properties to be
+interpolated with respect to global and local parameters, which must be
+specified in the fuel map.
+
+\end{itemize}
+
+\noindent
+Note that the above considerations correspond to the typical core modeling
+of CANDU or PWR reactors. The \moc{RESINI:} module will create a new \moc{FMAP}
+object that will store the information related to the fuel lattice specification and
+properties (see \Sect{resinidat}).
+
+\noindent
+In PWR cases, each channel correspond to an assembly. Using heterogeneous mixtures in one assembly increases the complexity of the geometry. However, two levels geometries (embedded geometry) are not possible in the DONJON code. The general idea is then to define one channel per mixture for all assemblies. All these channels have then to be regrouped by assembly to impose the same burnup. This process could be done manually, but if the heterogeneity of the cross-section is large (ex. one mixture per pin within a complete core), the geometry definition may be too complex. This task can be performed automatically by the module {\tt NAP:}. 
+
+\noindent
+The \moc{RESINI:} module specifications are:
+
+\begin{DataStructure}{Structure \moc{RESINI:}}
+$\{$ \dusa{FLMAP} \dusa{MATEX} \moc{:=}
+\moc{RESINI:} \dusa{MATEX} $[$\dusa{COMPO}$]$ \moc{::} \dstr{descresini1} $|$ \\
+~~~\dusa{FLMAP} \moc{:=} \moc{RESINI:} \dusa{FLMAP} $[$\dusa{FLMAP2}$]$
+\moc{::} \dstr{descresini2} $\}$\\
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dusa{FLMAP}] \texttt{character*12} name of the \dds{resini} object
+that will contain the fuel-lattice information. If \dusa{FLMAP} appears on
+both LHS and RHS, it will be updated; otherwise, it is created.
+
+\item[\dusa{MATEX}] \texttt{character*12} name of the \dds{matex} object
+specified in the modification mode. \dusa{MATEX} is required
+only when \dusa{FLMAP} is created.
+
+\item[\dusa{COMPO}] {\tt character*12} name of the \dds{multicompo} data
+structure ({\tt L\_COMPO} signature) where the detailed subregion geometry at assembly level is stored.
+
+\item[\dusa{FLMAP2}] \texttt{character*12} name of the \dds{resini} object
+that contains the fuel-lattice information to recover from.
+
+\item[\dstr{descresini1}] structure describing the main input data to
+the \moc{RESINI:} module. Note that this input data is mandatory and
+must be specified only when \dusa{FLMAP} is created.
+
+\item[\dstr{descresini2}] structure describing the input data for global
+and local parameters. This data is permitted to be modified in the
+subsequent calls to the \moc{RESINI:} module.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+\subsubsection{Main input data to the \moc{RESINI:} module}\label{sect:resinimain}
+
+\noindent
+Note that the input order must be respected.\\
+
+\begin{DataStructure}{Structure \dstr{descresini1}}\label{table:descresini1}
+$[$ \moc{EDIT} \dusa{iprint} $]$\\
+%~\moc{NCHAN} \dusa{nch}\\
+%~\moc{NBUND} \dusa{nb}\\
+~\moc{:::}  $[$ \moc{SPLIT-NAP:} $]$ \moc{GEO:} \dstr{descgeo} \\
+~$[$ \moc{:::}  \moc{NAP:} \dstr{descnap3} $]$ \\
+~$[$ \moc{ASSEMBLY}  \dusa{na} \dusa{nax} \dusa{nay}  \\
+~~ \moc{A-ZONE} $\{$ (\dusa{iza}(i) ,  i = 1, \dusa{nch}) \moc{A-NX} (\dusa{nbax}(i) ,  i = 1, \dusa{nay}) \moc{A-IBX} (\dusa{ibax}(i) ,  i = 1, \dusa{nay}) $|$ \moc{ASBLY} $\}$ \\
+~~ \moc{AXNAME} (\dusa{XNAMEA}(i) ,  i = 1, \dusa{nax}) \\
+~~ \moc{AYNAME} (\dusa{YNAMEA}(i) ,  i = 1, \dusa{nay}) $]$ \\
+~$\{$ \moc{NXNAME}  (\dusa{XNAME}(i) ,  i = 1, \dusa{nx}) \moc{NYNAME} (\dusa{YNAME}(i) ,  i = 1, \dusa{ny}) \\
+~~~~~~~~~~~~~$|$ \moc{NHNAME} (\dusa{HNAME}(i) ,  i = 1, \dusa{nh}) $\}$ \\
+~$[$ \moc{SIM} \dusa{lx} \dusa{ly} (\dusa{naval}(i) ,  i = 1, \dusa{nch}) $]$ \\
+~$[$ \moc{FOLLOW} \dusa{nis} (\dusa{HISOT}(i) ,  i = 1, \dusa{nis}) $]$ \\
+~\moc{NCOMB} $\{$ \dusa{ncomb} ~\moc{B-ZONE}
+(\dusa{icz}(i) ,  i = 1, \dusa{nch}) $|$ \moc{ALL} $|$ \moc{ASBLY} $\}$ \\
+~\dstr{descresini2}\\
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] integer index used to control the printing on screen:
+ = 0 for no print; = 1 for minimum printing (default value); larger values
+produce increasing amounts of output.
+
+\item[\moc{:::}] keyword used to indicate the call to an embedded module.
+
+\item[\moc{SPLIT-NAP:}] keyword to specify that the embedded geometry will be split by the embedded \moc{NAP:} module .
+
+\item[\moc{GEO:}] keyword used to call the \moc{GEO:} module.
+The fuel-map geometry differs from the complete reactor geometry
+in the sense that it must be defined as a coarse geometry, i.e. without
+mesh-splitting over the fuel bundles. Consequently, the mesh-spacings
+over the fuel regions must correspond to the bundle dimensions (e.g.
+$h_{x}$=\dusa{width}; $h_{y}$=\dusa{height}; $h_{z}$=\dusa{length} or in
+\dusa{3-D} Hexagonal geometry $h_{x}$=\dusa{side}; $h_{z}$=\dusa{height}).
+Note that the total number of non-virtual regions in the embedded
+geometry must equal to the number of fuel channels \dusa{times} the
+number of fuel bundles per channel. This means that only the fuel-type
+mixture indices are to be provided in the data input to the \moc{GEO:}
+module for \moc{MIX} record. Other material regions (e.g. reflector) must
+be declared as virtual, i.e. with the mixtures indices set to 0.
+
+\item[\dstr{descgeo}] structure describing the input data to the
+\moc{GEO:} module (see the DRAGON5 user guide\cite{dragon}). Only
+\dusa{3-D} Cartesian or \dusa{3-D} Hexagonal fuel-map geometry is allowed.
+
+\item[\moc{NAP:}] keyword used to call the \moc{NAP:} module. The heterogeneous assembly geometry definition will be called using the geometry defined previously with the embedded module \moc{GEO:} and the \dusa{COMPO} data structure. See section \ref{sect:descnap3} for important note on the coarse geometry requirement.
+
+\item[\dstr{descnap3}] structure describing the input data to the
+\moc{NAP:} module to automatically define the core geometry with heterogeneous assembly (See \Sect{descnap3}).
+
+\item[\moc{ASSEMBLY}] keyword to specify that assembly related information are provided.
+
+\item[\dusa{na}] number of assemblies. 
+
+\item[\dusa{nax}] number of assemblies along x-direction. 
+
+\item[\dusa{nay}] number of assemblies along y-direction.
+
+\item[\moc{A-ZONE}] keyword to specify the assembly number \dusa{iza} of each channels. 
+
+\item[\dusa{iza}] assembly belonging number. 
+
+\item[\moc{A-NX}] keyword to specify the number of assembly \dusa{nbax} per row. 
+
+\item[\dusa{nbax}] number of assembly for each row. 
+
+\item[\moc{A-IBX}] keyword to specify the column for the first assembly \dusa{ibax} on each row. 
+
+\item[\dusa{ibax}] column number for the first assembly on each row. 
+
+\item[\moc{ASBLY}] (after \moc{A-ZONE}) keyword to automatically compute the assembly number of each channel. A call to the embedded module  \moc{NAP:} is required previously.
+
+\item[\moc{AXNAME}] keyword to specify the assembly position names along x-direction \dusa{XNAMEA}.
+
+\item[\dusa{XNAMEA}] \texttt{character*2} array of horizontal channel
+names. A horizontal channel name is identified by the channel column
+using numerical characters '1', '2', '3', and so on.
+Note that the total number of X-names must equal to \dusa{nxa}. 
+
+\item[\moc{AYNAME}] keyword to specify the assembly position names along y-direction \dusa{YNAMEA}.
+
+\item[\dusa{YNAMEA}]  \texttt{character*2} array of horizontal channel
+names. A horizontal channel name is identified by the channel column
+using numerical characters 'A', 'B', 'C', and so on.
+Note that the total number of Y-names must equal to \dusa{nya}.  
+
+\item[\moc{NXNAME}] keyword used to specify \dusa{XNAME} for \dusa{3-D}
+Cartesian geometry case.
+
+\item[\dusa{XNAME}] \texttt{character*2} array of horizontal channel
+names. A horizontal channel name is identified by the channel column
+using numerical characters '1', '2', '3', and so on.
+Note that the total number of X-names must equal to the total number
+of subdivisions along the X-direction in the fuel-map geometry.
+All non-fuel regions are to be assigned a single character '{\tt -}'.
+This option is not available for \dusa{3-D} Hexagonal geometry. When assembly are defined and split, several names can be the same. 
+
+\item[\dusa{nx}] integer total number of subdivisions along the
+X-direction in the fuel-map geometry. Not used for \dusa{3-D} hexagonal
+geometry.
+
+\item[\moc{NYNAME}] keyword used to specify \dusa{YNAME} for
+\dusa{3-D} Cartesian geometry case.
+
+\item[\dusa{YNAME}] \texttt{character*2} array of vertical channel
+names. A vertical channel name is identified by the channel row using
+alphabetical letters 'A' (from the top), 'B', 'C', and so on.
+The total number of Y-names must equal to the total number of
+subdivisions along the Y-direction in the fuel-map geometry.
+All non-fuel regions are to be assigned a single character '-'.
+This option is not available for \dusa{3-D} Hexagonal geometry. When assembly are defined and split, several names can be the same.
+
+\item[\dusa{ny}] integer total number of subdivisions along the
+Y-direction in the fuel-map geometry. Not used for \dusa{3-D} hexagonal
+geometry.
+
+\item[\moc{NHNAME}] keyword used to specify \dusa{XHAME} for \dusa{3-D}
+hexagonal geometry case.
+
+\item[\dusa{HNAME}] \texttt{character*8} array of horizontal channel
+names. A radial channel name can be identified by the following scheme:
+The core is divided into 6 60-degree sectors; the sectors are labeled "A", "B", "C", "D", "E", and "F"
+\begin{itemize}
+\item Rings of channels are numbered starting at ring 0 for the central channel
+
+\item Each channel is now identified as a string 'RRSAA', with RR the ring number, S the sector, and AA the assembly number in the ring.
+\end{itemize}
+
+\noindent For example:
+\begin{description}
+\item[Ring 0:] {\tt C00A01}
+
+\item[Ring 1:] {\tt C01A01}, {\tt C01B01}, {\tt C01C01}, {\tt C01D01}, {\tt C01E01}, {\tt C01F01}
+
+\item[Ring 2:] {\tt C02A01}, {\tt C02A02}, {\tt C02B01}, {\tt C02B02}, {\tt C02C01}, {\tt C02C02}, {\tt C02D01}, {\tt C02D02}, {\tt C02E01}, {\tt C02E02}, {\tt C02F01}, {\tt C02F02}.
+\end{description}
+
+All non-fuel regions are to be assigned a single character '{\tt -}'.
+This option is not available for \dusa{3-D} Cartesian geometry.
+
+\item[\dusa{nh}] integer total number of subdivisions along the
+hexagonal plane in the fuel-map geometry. Not used for \dusa{3-D} Cartesian
+geometry.
+
+\item[\moc{NCOMB}] keyword used to specify the number
+of combustion zones.
+
+\item[\dusa{ncomb}] integer total number of combustion zones.
+This value must be greater than (or equal to) 1 and less than (or equal to)
+the total number of reactor channels.
+
+\item[\moc{B-ZONE}] keyword used to specify \dusa{icz}.
+
+\item[\dusa{icz}] integer array of combustion-zone indices, specified
+for every channel. A reactor channel can belong to only one combustion
+zone, however a combustion zone can be specified for several channels.
+
+\item[\moc{ALL}] keyword used to indicate that the total number
+of combustion zones equals to the number of reactor channels. In
+this particular case, each channel will have a unique combustion-zone
+number. Hence, an explicit specification of the combustion-zone
+indices can be omitted.
+
+\item[\dusa{nch}] $N_{\rm ch}$: number of fuel channels in the radial plane.
+
+\item[\dusa{nb}] $N_{\rm b}$: number of fuel bundles (or assembly slices) in the axial plane.
+
+\item[\moc{ASBLY}] (after \moc{NCOMB}) keyword to specify that one combustion zone per assembly is to be defined.
+
+\item[\moc{SIM}] keyword used to specify a basic assembly layout for the {\tt SIM:} PWR refuelling module (see \Sect{sim}).
+
+\item[\dusa{lx}] number of assemblies along the $X$ axis. Typical values are 15 or 17.
+
+\item[\dusa{ly}] number of assemblies along the $Y$ axis.
+
+\item[\dusa{naval}] \texttt{character*3} identification name corresponding to the basic naval-coordinate position of an assembly. \dusa{naval}(i) is the
+concatenation of a letter (generally chosen between {\tt A} and {\tt T}) and of an integer (generally chosen between {\tt 01}
+and {\tt 17}). An assembly may occupies four positions in the fuel map in order to be represented by four radial burnups. In
+this case, the same naval-coordinate value will appear at four different (i) indices.
+
+\item[\moc{FOLLOW}] keyword used to set the particularized isotopes that will be saved in each fuel cycle information directory.
+
+\item[\dusa{nis}] number of particularized isotopes that will be saved in each fuel cycle information directory.
+
+\item[\dusa{HISOT}] \texttt{character*8} array of particularized isotope names.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+\subsubsection{Input of global and local parameters}\label{sect:resiniaram}
+
+\noindent
+The information with respect to the fuel burnup is required for the fuel-map \dds{macrolib}
+construction, using either the \moc{CRE:}, \moc{NCR:} or \moc{AFM:} module. The fuel-region properties
+related to other local or global parameters can be interpolated only using the \moc{NCR:} module.
+
+\begin{DataStructure}{Structure \dstr{descresini2}}
+$[$ \moc{EDIT} \dusa{iprint} $]$\\
+$[$ \moc{BTYPE} $\{$ \moc{TIMAV-BURN} $|$ \moc{INST-BURN} $\}$ $]$ \\
+$[$ \moc{TIMAV-BVAL} (\dusa{bvalue}(i) ,  i = 1, \dusa{ncomb} ) $]$ \\
+$[$ \moc{INST-BVAL} $\{$ \moc{SAME} \dusa{bvalue} $|$ \moc{CHAN} (\dusa{bvalue}(i) ,  i = 1, \dusa{nch} ) $|$ \moc{BUND} (\dusa{bvalue}(i) ,  i = 1, \dusa{nch}$\cdot$\dusa{nb} ) $|$ \\ ~ \moc{SMOOTH} $\}$ $|$ \moc{ASBLY} (\dusa{bvalue}(i) ,  i = 1, \dusa{na} ) $|$ \moc{OLDMAP}  $]$ \\
+$[$ \moc{BUNDLE-POW} $\{$ \moc{SAME} \dusa{pwvalue} $|$ \moc{CHAN} (\dusa{pwvalue}(i) ,  i = 1, \dusa{nch} ) $|$ \moc{BUND} (\dusa{pwvalue}(i) ,  i = 1, \dusa{nch}$\cdot$\dusa{nb} ) $\}$ $]$ \\
+$[$ \moc{REACTOR-POW} \dusa{pwtot} \moc{AXIAL-PFORM} (\dusa{fvalue}(i) ,  i = 1, \dusa{nb} ) $]$ \\
+$[$ \moc{REF-SHIFT} $\{$ \dusa{ishift} $|$ \moc{COMB} (\dusa{ishift}(i) ,  i = 1, \dusa{ncomb} ) $\}$ $]$ \\
+$[[$ \moc{ADD-PARAM} ~\moc{PNAME} \dusa{PNAME}
+~\moc{PARKEY} \dusa{PARKEY} $\{$ \moc{GLOBAL} $|$ \moc{LOCAL} $\}$ $]]$ \\
+$[[$ \moc{SET-PARAM} \dusa{PNAME} $\{$ \dusa{pvalue} $|$ \moc{OLDMAP}   $|$
+ $\{$ $[$ \moc{TIMES} \dusa{PNAMEREF} $]$ \moc{SAME} \dusa{pvalue} $|$ \\
+~~~\moc{CHAN} (\dusa{pvalue}(i) ,  i = 1, \dusa{nch} ) $|$ \moc{BUND} (\dusa{pvalue}(i) ,  i = 1, \dusa{nch}$\cdot$\dusa{nb} ) $|$ \\
+~~~\moc{LEVEL} $[~\{$ \moc{H+} $|$ \moc{H-} $\}~]~\{$ \moc{SAME} \dusa{lvalue} $|$ \moc{CHAN} (\dusa{lvalue}(i) ,  i = 1, \dusa{nch} ) $\}~\}~\}$ $]]$ \\
+$[[$ \moc{FUEL} $\{$ \moc{WEIGHT} $|$ \moc{ENRICH} $|$ \moc{POISON} $\}$ (\dusa{fvalue}(i) ,  i = 1, \dusa{nfuel} ) $]]$ \\
+$[$ \moc{CELL} (\dusa{ialch}(i) ,  i = 1, \dusa{nch} ) $]$ \\
+;
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] integer index used to control the printing on screen:
+ = 0 for no print; = 1 for minimum printing (default value); = 2 to print the channels
+refuelling schemes (if they are new or modified); = 3 initial burnup limits per each
+channel are also printed (if the axial power-shape has been reinitialized).
+
+\item[\moc{BTYPE}] keyword used to specify the type of interpolation with respect
+to burnup data. This information will be used during the execution of \moc{CRE:},
+\moc{NCR:} or \moc{AFM:} module.
+
+\item[\moc{TIMAV-BURN}]  keyword used to indicate the burnups interpolation
+according to the time-average model. This option is not available in \dusa{3-D}
+Hexagonal geometry.
+
+\item[\moc{INST-BURN}] keyword used to indicate the burnups interpolation
+according to the instantaneous model.
+
+\item[\moc{TIMAV-BVAL}] keyword used to indicate the input of average exit burnup
+values per each combustion zone. Note that the axial power-shape and the first burnup
+limits will be reinitialized each time the average exit burnups are modified by the user.
+These data are required for the time-average calculation (see \Sect{tavg}). This option
+is not available with \dusa{3-D} Hexagonal geometry.
+
+\item[\moc{INST-BVAL}] keyword used to specify the instantaneous burnup
+values for each fuel bundle.
+
+\item[\moc{SMOOTH}] keyword used to level fuel mixtures burnup. If the burnup is supposed 
+to be the same at each occurence of every fuel mixture (for symetry reasons), \moc{SMOOTH} will
+make sure they share the exact same value (the first one in the burnup map).
+Purpose is only to correct calculation noise in historic calculation.
+
+\item[\moc{ASBLY}] keyword to specify that one burnup value per assembly is to be defined.
+
+\item[\moc{OLDMAP}] keyword to specify that the burnup value is recovered from \dusa{FLMAP2}. The recovered burnup distribution is either from a previous calculation: \begin{itemize}
+\item  with the same geometry but different initialization values. Example: homogeneous calculation followed by a pin power reconstruction where assemblies were not defined in the first place.
+\item with a different geometry. In this case, the assembly geometry of the new \dusa{FLMAP} and the geometry of the \dusa{FLMAP2} must match. Example: homogeneous calculation followed by a heterogeneous calculation or pin power reconstruction
+\end{itemize}
+
+\item[\moc{BUNDLE-POW}] keyword used to specify the power values for each fuel bundle.
+This option is not available in \dusa{3-D} Hexagonal geometry.
+
+\item[\dusa{bvalue}] real array containing the burnups values, given in
+\dusa{MW$\cdot$day per tonne}/MW of initial heavy elements. The fuel burnup
+is considered as a global parameter.
+
+\item[\dusa{pwvalue}] real array containing the powers values, given in kW.
+
+\item[\moc{REACTOR-POW}] keyword used to specify the full reactor power. This information is not required if \moc{BUNDLE-POW} data is provided.
+
+\item[\dusa{pwtot}] power value, given in MW.
+
+\item[\moc{AXIAL-PFORM}] keyword used to specify the axial form factors. They are assumed identical in all channels.
+
+\item[\dusa{fvalue}] axial form factor value.
+
+\item[\moc{REF-SHIFT}] keyword used to specify \dusa{ishift}. Note that the
+axial power-shape and the first burnup limits will be reinitialized each time the channel
+refuelling schemes are modified by the user. This option is not avaialble in \dusa{3-D}
+Hexagonal geometry.
+
+\item[\moc{COMB}] keyword used to indicate the input of bundle-shift numbers
+per combustion zone.
+
+\item[\dusa{ishift}] integer array (or single value) of the bundle-shift numbers.
+A single \dusa{ishift} value means that the same bundle-shift will be applied for
+all combustion zones. Note that the bundle-shift value must be positive, it
+corresponds to the number of displaced fuel bundles during each channel refuelling.
+
+\item[\moc{ADD-PARAM}] keyword used to indicate the input of information
+for a new global or local parameter. For more information about the parameter
+data organization on \moc{FMAP} data structure see \Sect{dirparam}.
+
+\item[\moc{PNAME}] keyword used to specify \dusa{PNAME}.
+
+\item[\dusa{PNAME}] \texttt{character*12} identification name of a given
+parameter. This name is user-defined so that it is arbitrary, however
+it must be unique so that it can be used for the search of parameter information
+and interpolation purpose. Moreover, it is recommended to use the following pre-defined
+values:
+
+\begin{tabular}{|c|l|}
+\hline
+{\tt C-BORE} & Boron concentration \\
+{\tt T-FUEL} & Averaged fuel temperature \\
+{\tt T-SURF} & Surfacic fuel temperature \\
+{\tt T-COOL} & Averaged coolant temperature \\
+{\tt D-COOL} & Averaged coolant density \\
+\hline
+\multicolumn{2}{|l|}{CANDU-only parameters:} \\
+\hline
+{\tt T-MODE} & Averaged moderator temperature\\
+{\tt D-MODE} & Averaged moderator density \\
+\hline
+\end{tabular}
+
+\item[\moc{PARKEY}] keyword used to specify \dusa{PARKEY}.
+
+\item[\dusa{PARKEY}] \texttt{character*12} corresponding name of a given
+parameter as it is recorded in the particular multi-parameter compo file. The
+\dusa{PARKEY} name of a parameter may not be same as its \dusa{PNAME}
+and can also differ from one multi-compo file to another.
+
+\item[\moc{GLOBAL}] keyword used to indicate that a given parameter is global,
+which will have a single and constant parameter's value.
+
+\item[\moc{LOCAL}] keyword used to indicate that a given parameter
+is local. In this case, the total number of recorded parameter's values will
+be set to $N_{\rm ch}$ $\times$ $N_{\rm b}$.
+
+\item[\moc{SET-PARAM}] keyword used to indicate the input (or modification)
+of the actual values for a parameter specified using its \dusa{PNAME}.
+
+\item[\moc{SAME}] keyword used to indicate that a core-average
+value of a local parameter will be provided. If the keyword \moc{SAME}
+is specified, then this average value will be set for all fuel bundles for
+every reactor channel.
+
+\item[\moc{CHAN}] keyword used to indicate that the values of a local
+parameter will be provided per each reactor channel. If the keyword \moc{CHAN}
+is specified, then the channel-averaged parameter's value will be set for all fuel
+bundles containing in the same reactor channel.
+
+\item[\moc{BUND}] keyword used to indicate that the values of a local
+parameter will be specified per each fuel bundle for every channel.
+
+\item[\moc{TIMES}] keyword used to indicate that the values of the local
+parameter \dusa{PNAME} is a translation of the local parameter \dusa{PNAMEREF}
+via a multiplication of the constant indicated by \moc{SAME}.
+
+\item[\dusa{PNAMEREF}] \texttt{character*12} identification name of a given
+parameter.
+
+\item[\dusa{pvalue}] real array (or a single value) containing the actual
+parameter's values. Note that these values will not be checked for consistency
+by the module. It is the user responsibility to provide the valid parameter's values
+which should be consistent with those recorded in the multicompo database.
+
+\item[\moc{OLDMAP}] keyword to specify that the \dusa{pvalue} value(s) is (are) recovered from \dusa{FLMAP2}.
+
+\item[\moc{LEVEL}] keyword to specify that parameter \dusa{PNAME} (declared as \moc{LOCAL}) is a control rod insertion parameter computed as
+a function of variable \dusa{lvalue} set between 0.0 (rod out of the core) and 1.0 (rod fully inserted). The variable
+\dusa{lvalue} can be a core-averaged value (with keyword \moc{SAME}) or a set of channel-defined values (with keyword \moc{CHAN}).
+
+\item[\moc{H+}] keyword used to specify that a rod will be inserted into reactor core from the highest position (e.g. from the top for vertically moving rod-device).
+This is the default option.
+
+\item[\moc{H-}] keyword used to specify that a rod will be inserted into reactor core from the lowest position (e.g. from the bottom for vertically moving rod-device).
+
+\item[\moc{FUEL}] keyword used to indicate the input of data which
+will be specified for each fuel type.
+
+\item[\moc{WEIGHT}] keyword used to indicate the input of initial heavy metal content
+in a bundle, given in \dusa{kg}.
+
+\item[\moc{ENRICH}] keyword used to indicate the input of fuel enrichment
+values, given in \dusa{wt}\%.
+
+\item[\moc{POISON}] keyword used to indicate the input of poison load
+in a fuel.
+
+\item[\dusa{fvalue}] real value of the fuel-type parameter, specified for each
+fuel type in the same order as the fuel mixture indices have been recorded in
+the \dds{matex} object (see \Sect{usplitstr}).
+
+\item[\dusa{nfuel}] integer total number of the fuel types, as been
+defined in the \moc{USPLIT:} module.
+
+\item[\moc{CELL}] keyword used to specify that a patterned age distribution will be
+input and used to compute instantaneous bundle burnup.
+
+\item[\dusa{ialch}] real array containing the refueling sequence numbers. This channel
+is refueled the \dusa{ialch(i)}th one. The channels are ordering from the top left to the bottom right of the core. The expression of the resulting bundle 
+burnups are given in Ref.~\citen{tajmouati}.
+
+\end{ListeDeDescription}
+\clearpage

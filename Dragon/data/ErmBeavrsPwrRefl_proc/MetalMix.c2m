@@ -1,0 +1,1540 @@
+*DECK MetalMix.c2m
+*======================================================
+* Name:   MetalMix.c2m
+* Type:   DRAGON procedure
+* Use:    Create isotopic mixtures of metals.
+* Author: A. Bruneau 10.2013
+*         [CS-SI | IRSN/PSN-EXP/SNC/LNR]
+* Mod:    A. Bruneau 12.2013
+*         [CS-SI | IRSN/PSN-EXP/SNC/LNR]
+*         Added AIC with AgNat, CdNat & In for AIC rod description.
+* Mod:    A. Bruneau 02.2014
+*         [CS-SI | IRSN/PSN-EXP/SNC/LNR]
+*         Added GdNat with Gd for Gd2O3
+* Mod:    G. Tixier 09.2016
+*         [CS-SI | IRSN/PSN-EXP/SNC/LNR]
+*         Ajouts S32, S33 et S34 pour materiau M5
+*------------------------------------------------------
+* Procedure called as:
+*------------------------------------------------------
+* Input Required:
+*  > Molar Masses
+* Output Provided:
+*  < Molar Masses
+*  < Metals Concentration
+*======================================================
+PARAMETER   FeNat CrNat SnNat NiNat BNat
+            ZrNat TiNat SiNat KNat
+            AgNat CdNat SNat InNat Zirc4 Incon SS304
+            M5 AIC GdNat Gd2O3 BP MolarMasses ::
+        ::: LINKED_LIST
+            FeNat CrNat SnNat NiNat BNat
+            ZrNat TiNat SiNat KNat
+            AgNat CdNat SNat InNat Zirc4 Incon SS304
+            M5 AIC GdNat Gd2O3 BP MolarMasses ; ;
+MODULE      GREP: UTL: END: ABORT: ;
+STRING      LibType ; ! ENDFVII1 JEFF31 JEFF311 JEFF312...
+STRING      Gestion ;
+REAL        avogadro := 6.022094E+23 ;
+REAL        avo_conc := avogadro 1.E-24 * ;
+REAL        ReNorm ; ! Renormalization Factor
+REAL        SumFr  ; ! Fraction Sum (needed when &IMPU)
+:: >>LibType<< >>Gestion<< ;
+
+*------------------------------------------------------
+REAL am241 ;
+REAL al27 ;
+REAL b10 ;
+REAL b10b ;
+REAL b11 ;
+REAL b11b ;
+REAL co59 ;
+REAL cr50 ;
+REAL cr52 ;
+REAL cr53 ;
+REAL cr54 ;
+REAL fe54 ;
+REAL fe56 ;
+REAL fe57 ;
+REAL fe58 ;
+REAL h2o h1 ;
+REAL mn55 ;
+REAL mo95 ;
+REAL nb93 ;
+REAL ni58 ;
+REAL ni60 ;
+REAL ni61 ;
+REAL ni62 ;
+REAL ni64 ;
+REAL o16 ;
+REAL pu238 ;
+REAL pu239 ;
+REAL pu240 ;
+REAL pu241 ;
+REAL pu242 ;
+REAL siNat si28 si29 si30 ;
+REAL sn112 ;
+REAL sn114 ;
+REAL sn115 ;
+REAL sn116 ;
+REAL sn117 ;
+REAL sn118 ;
+REAL sn119 ;
+REAL sn120 ;
+REAL sn122 ;
+REAL sn124 ;
+REAL tiNat ti46 ti47 ti48 ti49 ti50 ;
+REAL u234 ;
+REAL u235 ;
+REAL u236 ;
+REAL u238 ;
+REAL zrNat zr90 zr91 zr92 zr93 zr94 zr95 zr96 ;
+REAL cnat ;
+*---- added for AIC
+REAL ag107 ;
+REAL ag109 ;
+REAL cd106 ;
+REAL cd108 ;
+REAL cd110 ;
+REAL cd111 ;
+REAL cd112 ;
+REAL cd113 ;
+REAL cd114 ;
+REAL cd116 ;
+REAL in115 in113 ;
+*---- added for Gd2O3
+REAL gd154 ;
+REAL gd155 ;
+REAL gd156 ;
+REAL gd157 ;
+REAL gd158 ;
+REAL gd160 ;
+*---- added for Pyrex
+REAL kNat k39 k40 k41 ;
+REAL na23 ;
+*---- added for M5
+REAL s32  ;
+REAL s33  ;
+REAL s34  ;
+
+*------------------------------------------------------
+*------------------------------------------------------
+* Recuperation des fractions massiques moyennes
+*------------------------------------------------------
+
+* Pour les isotopes non conflictuels
+
+GREP: MolarMasses :: GETVAL 'B10  ' 1 >>b10<<   ;
+GREP: MolarMasses :: GETVAL 'B10B ' 1 >>b10b<<  ;
+GREP: MolarMasses :: GETVAL 'B11  ' 1 >>b11<<   ;
+GREP: MolarMasses :: GETVAL 'B11B ' 1 >>b11b<<  ;
+GREP: MolarMasses :: GETVAL 'CNat ' 1 >>cnat<<  ;
+GREP: MolarMasses :: GETVAL 'O16  ' 1 >>o16<<   ;
+GREP: MolarMasses :: GETVAL 'Al27 ' 1 >>al27<<  ;
+GREP: MolarMasses :: GETVAL 'Cr50 ' 1 >>cr50<<  ;
+GREP: MolarMasses :: GETVAL 'Cr52 ' 1 >>cr52<<  ;
+GREP: MolarMasses :: GETVAL 'Cr53 ' 1 >>cr53<<  ;
+GREP: MolarMasses :: GETVAL 'Cr54 ' 1 >>cr54<<  ;
+GREP: MolarMasses :: GETVAL 'Mn55 ' 1 >>mn55<<  ;
+GREP: MolarMasses :: GETVAL 'Fe54 ' 1 >>fe54<<  ;
+GREP: MolarMasses :: GETVAL 'Fe56 ' 1 >>fe56<<  ;
+GREP: MolarMasses :: GETVAL 'Fe57 ' 1 >>fe57<<  ;
+GREP: MolarMasses :: GETVAL 'Fe58 ' 1 >>fe58<<  ;
+GREP: MolarMasses :: GETVAL 'Co59 ' 1 >>co59<<  ;
+GREP: MolarMasses :: GETVAL 'Ni58 ' 1 >>ni58<<  ;
+GREP: MolarMasses :: GETVAL 'Ni60 ' 1 >>ni60<<  ;
+GREP: MolarMasses :: GETVAL 'Ni61 ' 1 >>ni61<<  ;
+GREP: MolarMasses :: GETVAL 'Ni62 ' 1 >>ni62<<  ;
+GREP: MolarMasses :: GETVAL 'Ni64 ' 1 >>ni64<<  ;
+GREP: MolarMasses :: GETVAL 'Nb93 ' 1 >>nb93<<  ;
+GREP: MolarMasses :: GETVAL 'Mo95 ' 1 >>mo95<<  ;
+GREP: MolarMasses :: GETVAL 'Ag107' 1 >>ag107<< ;
+GREP: MolarMasses :: GETVAL 'Ag109' 1 >>ag109<< ;
+GREP: MolarMasses :: GETVAL 'Cd110' 1 >>cd110<< ;
+GREP: MolarMasses :: GETVAL 'Cd111' 1 >>cd111<< ;
+GREP: MolarMasses :: GETVAL 'Cd112' 1 >>cd112<< ;
+GREP: MolarMasses :: GETVAL 'Cd113' 1 >>cd113<< ;
+GREP: MolarMasses :: GETVAL 'Cd114' 1 >>cd114<< ;
+GREP: MolarMasses :: GETVAL 'Cd116' 1 >>cd116<< ;
+GREP: MolarMasses :: GETVAL 'Sn115' 1 >>sn115<< ;
+GREP: MolarMasses :: GETVAL 'Sn116' 1 >>sn116<< ;
+GREP: MolarMasses :: GETVAL 'Sn117' 1 >>sn117<< ;
+GREP: MolarMasses :: GETVAL 'Sn118' 1 >>sn118<< ;
+GREP: MolarMasses :: GETVAL 'Sn119' 1 >>sn119<< ;
+GREP: MolarMasses :: GETVAL 'Sn120' 1 >>sn120<< ;
+GREP: MolarMasses :: GETVAL 'Sn122' 1 >>sn122<< ;
+GREP: MolarMasses :: GETVAL 'Sn124' 1 >>sn124<< ;
+GREP: MolarMasses :: GETVAL 'Gd154' 1 >>gd154<< ;
+GREP: MolarMasses :: GETVAL 'Gd155' 1 >>gd155<< ;
+GREP: MolarMasses :: GETVAL 'Gd156' 1 >>gd156<< ;
+GREP: MolarMasses :: GETVAL 'Gd157' 1 >>gd157<< ;
+GREP: MolarMasses :: GETVAL 'Gd158' 1 >>gd158<< ;
+GREP: MolarMasses :: GETVAL 'Gd160' 1 >>gd160<< ;
+GREP: MolarMasses :: GETVAL 'U234 ' 1 >>u234<<  ;
+GREP: MolarMasses :: GETVAL 'U235 ' 1 >>u235<<  ;
+GREP: MolarMasses :: GETVAL 'U236 ' 1 >>u236<<  ;
+GREP: MolarMasses :: GETVAL 'U238 ' 1 >>u238<<  ;
+GREP: MolarMasses :: GETVAL 'Pu238' 1 >>pu238<< ;
+GREP: MolarMasses :: GETVAL 'Pu239' 1 >>pu239<< ;
+GREP: MolarMasses :: GETVAL 'Pu240' 1 >>pu240<< ;
+GREP: MolarMasses :: GETVAL 'Pu241' 1 >>pu241<< ;
+GREP: MolarMasses :: GETVAL 'Pu242' 1 >>pu242<< ;
+GREP: MolarMasses :: GETVAL 'Am241' 1 >>am241<< ;
+GREP: MolarMasses :: GETVAL 'Na23 ' 1 >>na23<< ;
+
+* Pour les isotopes conflictuels (absent de certaines bibli.)
+
+IF LibType 'ENDFVI8'    = THEN
+  GREP: MolarMasses :: GETVAL 'H1   ' 1 >>h1<<    ;
+  GREP: MolarMasses :: GETVAL 'SiNat' 1 >>siNat<< ;
+  GREP: MolarMasses :: GETVAL 'TiNat' 1 >>tiNat<< ;
+  GREP: MolarMasses :: GETVAL 'ZrNat' 1 >>zrNat<< ;
+  GREP: MolarMasses :: GETVAL 'InNat' 1 >>in115<< ;
+      ! In115 non defini dans ENDFVI8
+  GREP: MolarMasses :: GETVAL 'Knat ' 1 >>kNat<< ;
+  GREP: MolarMasses :: GETVAL 'S32  ' 1 >>s32<< ;
+
+ELSEIF LibType 'JEF22'       = THEN
+  GREP: MolarMasses :: GETVAL 'H1   ' 1 >>h1<<    ;
+  GREP: MolarMasses :: GETVAL 'SiNat' 1 >>siNat<< ;
+  GREP: MolarMasses :: GETVAL 'TiNat' 1 >>tiNat<< ;
+  GREP: MolarMasses :: GETVAL 'ZrNat' 1 >>zrNat<< ;
+  GREP: MolarMasses :: GETVAL 'In115' 1 >>in115<< ;
+  GREP: MolarMasses :: GETVAL 'Knat ' 1 >>kNat<< ;
+  GREP: MolarMasses :: GETVAL 'S32  ' 1 >>s32<< ;
+  GREP: MolarMasses :: GETVAL 'S33  ' 1 >>s33<< ;
+  GREP: MolarMasses :: GETVAL 'S34  ' 1 >>s34<< ;
+
+ELSEIF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
+       LibType 'JEFF312'  = +
+       LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+  GREP: MolarMasses :: GETVAL 'H1   ' 1 >>h1<<    ;
+  GREP: MolarMasses :: GETVAL 'Si28 ' 1 >>si28<<  ;
+  GREP: MolarMasses :: GETVAL 'Si29 ' 1 >>si29<<  ;
+  GREP: MolarMasses :: GETVAL 'Si30 ' 1 >>si30<<  ;
+  GREP: MolarMasses :: GETVAL 'Ti46 ' 1 >>ti46<<  ;
+  GREP: MolarMasses :: GETVAL 'Ti47 ' 1 >>ti47<<  ;
+  GREP: MolarMasses :: GETVAL 'Ti48 ' 1 >>ti48<<  ;
+  GREP: MolarMasses :: GETVAL 'Ti49 ' 1 >>ti49<<  ;
+  GREP: MolarMasses :: GETVAL 'Ti50 ' 1 >>ti50<<  ;
+  GREP: MolarMasses :: GETVAL 'Zr90 ' 1 >>zr90<<  ;
+  GREP: MolarMasses :: GETVAL 'Zr91 ' 1 >>zr91<<  ;
+  GREP: MolarMasses :: GETVAL 'Zr92 ' 1 >>zr92<<  ;
+  GREP: MolarMasses :: GETVAL 'Zr93 ' 1 >>zr93<<  ;
+  GREP: MolarMasses :: GETVAL 'Zr94 ' 1 >>zr94<<  ;
+  GREP: MolarMasses :: GETVAL 'Zr95 ' 1 >>zr95<<  ;
+  GREP: MolarMasses :: GETVAL 'Zr96 ' 1 >>zr96<<  ;
+  GREP: MolarMasses :: GETVAL 'Cd106' 1 >>cd106<< ;
+  GREP: MolarMasses :: GETVAL 'Cd108' 1 >>cd108<< ;
+  GREP: MolarMasses :: GETVAL 'In115' 1 >>in115<< ;
+  GREP: MolarMasses :: GETVAL 'Sn112' 1 >>sn112<< ;
+  GREP: MolarMasses :: GETVAL 'Sn114' 1 >>sn114<< ;
+  GREP: MolarMasses :: GETVAL 'K39  ' 1 >>k39<< ;
+  GREP: MolarMasses :: GETVAL 'K40  ' 1 >>k40<< ;
+  GREP: MolarMasses :: GETVAL 'K41  ' 1 >>k41<< ;
+  GREP: MolarMasses :: GETVAL 'S32  ' 1 >>s32<< ;
+  GREP: MolarMasses :: GETVAL 'S33  ' 1 >>s33<< ;
+  GREP: MolarMasses :: GETVAL 'S34  ' 1 >>s34<< ;
+
+ELSE
+  ECHO "Cette bibliotheque n'est pas repertoriee..." ;
+ENDIF ;
+
+*------------------------------------------------------
+*  ZrNat : Natural Zirconium
+*  Isotopic Composition : Zr90 .5145
+*                         Zr91 .1123
+*                         Zr92 .1716
+*                         Zr93 .
+*                         Zr94 .1738
+*                         Zr95 .
+*                         Zr96 .0281
+*------------------------------------------------------
+REAL Zr90f :=  .0 ;
+REAL Zr91f :=  .0 ;
+REAL Zr92f :=  .0 ;
+REAL Zr93f :=  .0 ;
+REAL Zr94f :=  .0 ;
+REAL Zr95f :=  .0 ;
+REAL Zr96f :=  .0 ;
+REAL MZrNat ; ! Average Weight Ratio
+
+IF LibType 'JEFF31'   =   LibType 'JEFF311' = +
+   LibType 'JEFF312'  = +
+   LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+
+  EVALUATE Zr90f :=  .5145 ;
+  EVALUATE Zr91f :=  .1122 ;
+  EVALUATE Zr92f :=  .1715 ;
+  EVALUATE Zr93f := 0.     ;
+  EVALUATE Zr94f :=  .1738 ;
+  EVALUATE Zr95f := 0.     ;
+  EVALUATE Zr96f :=  .0280 ;
+
+  *---- ZrNat Average Weight Ratio ----
+  EVALUATE MZrNat :=        zr90  Zr90f  *   zr91  Zr91f  * +
+                            zr92  Zr92f  * + zr93  Zr93f  * +
+                            zr94  Zr94f  * + zr95  Zr95f  * +
+                            zr96  Zr96f  * + ;
+
+  ECHO "Masse molaire du zirconium " MZrNat ;
+
+ELSE ! JEF22
+
+  EVALUATE MZrNat := zrNat ;
+
+ENDIF ;
+
+*---- ZrNat Table Creation ----
+ZrNat := UTL:       :: CREA 'AvgMolM  ' 1 = <<MZrNat>> ;
+ZrNat := UTL: ZrNat :: CREA 'Zr90frIso' 1 = <<Zr90f>>  ;
+ZrNat := UTL: ZrNat :: CREA 'Zr91frIso' 1 = <<Zr91f>>  ;
+ZrNat := UTL: ZrNat :: CREA 'Zr92frIso' 1 = <<Zr92f>>  ;
+ZrNat := UTL: ZrNat :: CREA 'Zr93frIso' 1 = <<Zr93f>>  ;
+ZrNat := UTL: ZrNat :: CREA 'Zr94frIso' 1 = <<Zr94f>>  ;
+ZrNat := UTL: ZrNat :: CREA 'Zr95frIso' 1 = <<Zr95f>>  ;
+ZrNat := UTL: ZrNat :: CREA 'Zr96frIso' 1 = <<Zr96f>>  ;
+
+*------------------------------------------------------
+*  FeNat : Natural Iron
+*  Isotopic Composition : Fe54 .0580
+*                         Fe56 .9172
+*                         Fe57 .0220
+*                         Fe58 .0028
+*------------------------------------------------------
+REAL Fe54f := .0580 ;
+REAL Fe56f := .9172 ;
+REAL Fe57f := .0220 ;
+REAL Fe58f := .0028 ;
+
+*---- FeNat Average Weight Ratio ----
+REAL     MFeNat ; ! Average Weight Ratio
+EVALUATE MFeNat :=        fe54  Fe54f  *   fe56  Fe56f  * + ;
+EVALUATE MFeNat := MFeNat fe57  Fe57f  * + fe58  Fe58f  * + ;
+
+*---- FeNat Table Creation ----
+FeNat := UTL:       :: CREA 'AvgMolM  ' 1 = <<MFeNat>> ;
+FeNat := UTL: FeNat :: CREA 'Fe54frIso' 1 = <<Fe54f>>  ;
+FeNat := UTL: FeNat :: CREA 'Fe56frIso' 1 = <<Fe56f>>  ;
+FeNat := UTL: FeNat :: CREA 'Fe57frIso' 1 = <<Fe57f>>  ;
+FeNat := UTL: FeNat :: CREA 'Fe58frIso' 1 = <<Fe58f>>  ;
+
+*------------------------------------------------------
+*  TiNat : Natural Titanium
+*  Isotopic Composition : Ti46 .0825
+*                         Ti47 .0744
+*                         Ti48 .7372
+*                         Ti49 .0541
+*                         Ti50 .0518
+*------------------------------------------------------
+REAL Ti46f := .0 ;
+REAL Ti47f := .0 ;
+REAL Ti48f := .0 ;
+REAL Ti49f := .0 ;
+REAL Ti50f := .0 ;
+REAL MTiNat ; ! Average Weight Ratio
+
+IF LibType 'JEFF31'   =   LibType 'JEFF311' = +
+   LibType 'JEFF312'  = +
+   LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+
+  EVALUATE Ti46f := .0825 ;
+  EVALUATE Ti47f := .0744 ;
+  EVALUATE Ti48f := .7372 ;
+  EVALUATE Ti49f := .0541 ;
+  EVALUATE Ti50f := .0518 ;
+
+  *---- TiNat Average Weight Ratio ----
+  EVALUATE MTiNat := ti46  Ti46f  *   ti47  Ti47f  * +
+                     ti48  Ti48f  * +
+                     ti49  Ti49f  * + ti50  Ti50f  * + ;
+
+  ECHO "Masse molaire du titane " MTiNat ;
+
+ELSE ! JEF22 ENDFVI8
+
+  EVALUATE MTiNat := tiNat ;
+
+ENDIF ;
+
+*---- TiNat Table Creation ----
+TiNat := UTL:       :: CREA 'AvgMolM  ' 1 = <<MTiNat>> ;
+TiNat := UTL: TiNat :: CREA 'Ti46frIso' 1 = <<Ti46f>>  ;
+TiNat := UTL: TiNat :: CREA 'Ti47frIso' 1 = <<Ti47f>>  ;
+TiNat := UTL: TiNat :: CREA 'Ti48frIso' 1 = <<Ti48f>>  ;
+TiNat := UTL: TiNat :: CREA 'Ti49frIso' 1 = <<Ti49f>>  ;
+TiNat := UTL: TiNat :: CREA 'Ti50frIso' 1 = <<Ti50f>>  ;
+
+*------------------------------------------------------
+*  SiNat : Natural Silicium
+*  Isotopic Composition : Si28 .922298
+*                         Si29 .046833
+*                         Si30 .030873
+*------------------------------------------------------
+REAL Si28f := .0 ;
+REAL Si29f := .0 ;
+REAL Si30f := .0 ;
+REAL MSiNat ; ! Average Weight Ratio
+
+
+IF LibType 'JEFF31'   =   LibType 'JEFF311' = +
+   LibType 'JEFF312'  = +
+   LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+
+  EVALUATE Si28f := .9222 ;
+  EVALUATE Si29f := .0468 ;
+  EVALUATE Si30f := .0309 ;
+
+  *---- SiNat Average Weight Ratio ----
+  EVALUATE MSiNat := si28  Si28f  *   si29  Si29f  * +
+                     si30  Si30f  * + ;
+
+  ECHO "Masse molaire du silicium " MSiNat ;
+
+ELSE ! JEF22 ENDFVI8
+
+  EVALUATE MSiNat := siNat ;
+
+ENDIF ;
+
+*---- SiNat Table Creation ----
+SiNat := UTL:       :: CREA 'AvgMolM  ' 1 = <<MSiNat>> ;
+SiNat := UTL: SiNat :: CREA 'Si28frIso' 1 = <<Si28f>>  ;
+SiNat := UTL: SiNat :: CREA 'Si29frIso' 1 = <<Si29f>>  ;
+SiNat := UTL: SiNat :: CREA 'Si30frIso' 1 = <<Si30f>>  ;
+
+*------------------------------------------------------
+*  CrNat : Natural Chromium
+*  Isotopic Composition : Cr50 .0435
+*                         Cr52 .8379
+*                         Cr53 .0950
+*                         Cr54 .0236
+*------------------------------------------------------
+REAL Cr50f := .0435 ;
+REAL Cr52f := .8379 ;
+REAL Cr53f := .0950 ;
+REAL Cr54f := .0236 ;
+
+*---- CrNat Average Weight Ratio ----
+REAL     MCrNat ; ! Average Weight Ratio
+EVALUATE MCrNat :=        cr50  Cr50f  *   cr52  Cr52f  * + ;
+EVALUATE MCrNat := MCrNat cr53  Cr53f  * + cr54  Cr54f  * + ;
+
+*---- CrNat Table Creation ----
+CrNat := UTL:       :: CREA 'AvgMolM  ' 1 = <<MCrNat>> ;
+CrNat := UTL: CrNat :: CREA 'Cr50frIso' 1 = <<Cr50f>>  ;
+CrNat := UTL: CrNat :: CREA 'Cr52frIso' 1 = <<Cr52f>>  ;
+CrNat := UTL: CrNat :: CREA 'Cr53frIso' 1 = <<Cr53f>>  ;
+CrNat := UTL: CrNat :: CREA 'Cr54frIso' 1 = <<Cr54f>>  ;
+
+*------------------------------------------------------
+*  SnNat : Natural Tin
+*  Isotopic Composition : Sn112 .010  Sauf JEF22 et ENDFVI8
+*                         Sn114 .007  Sauf JEF22 et ENDFVI8
+*                         Sn115 .004
+*                         Sn116 .147 / Sn116 .164 (JEF22, ENDFVI8)
+*                         Sn117 .077
+*                         Sn118 .243
+*                         Sn119 .086
+*                         Sn120 .324
+*                         Sn122 .046
+*                         Sn124 .056
+* Pour Sn112 et Sn114 avec JEF22 ou ENDFVI8, on reporte les
+* fractions atomiques sur Sn116 (premier isotope pair defini
+* dans ces bibliotheques)
+*------------------------------------------------------
+REAL Sn112f := .0  ;
+REAL Sn114f := .0  ;
+REAL Sn115f := .0  ;
+REAL Sn116f := .0  ;
+REAL Sn117f := .0  ;
+REAL Sn118f := .0  ;
+REAL Sn119f := .0  ;
+REAL Sn120f := .0  ;
+REAL Sn122f := .0  ;
+REAL Sn124f := .0  ;
+REAL MSnNat ; ! Average Weight Ratio
+
+IF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
+   LibType 'JEFF312'  = +
+   LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+
+  EVALUATE Sn112f := .010  ;
+  EVALUATE Sn114f := .007  ;
+  EVALUATE Sn115f := .004  ;
+  EVALUATE Sn116f := .147  ;
+  EVALUATE Sn117f := .077  ;
+  EVALUATE Sn118f := .243  ;
+  EVALUATE Sn119f := .086  ;
+  EVALUATE Sn120f := .324  ;
+  EVALUATE Sn122f := .046  ;
+  EVALUATE Sn124f := .056  ;
+
+  *---- SnNat Average Weight Ratio ----
+  EVALUATE MSnNat  :=        sn112 Sn112f *   sn114 Sn114f * + ;
+  EVALUATE MSnNat  := MSnNat sn115 Sn115f * + sn116 Sn116f * + ;
+  EVALUATE MSnNat  := MSnNat sn117 Sn117f * + sn118 Sn118f * + ;
+  EVALUATE MSnNat  := MSnNat sn119 Sn119f * + sn120 Sn120f * + ;
+  EVALUATE MSnNat  := MSnNat sn122 Sn122f * + sn124 Sn124f * + ;
+
+ELSE ! JEF22 ENDFVI8
+
+  EVALUATE Sn115f := .004  ;
+  EVALUATE Sn116f := .164  ;
+  EVALUATE Sn117f := .077  ;
+  EVALUATE Sn118f := .243  ;
+  EVALUATE Sn119f := .086  ;
+  EVALUATE Sn120f := .324  ;
+  EVALUATE Sn122f := .046  ;
+  EVALUATE Sn124f := .056  ;
+
+  *---- SnNat Average Weight Ratio ----
+  EVALUATE MSnNat  :=        sn115 Sn115f *   sn116 Sn116f * + ;
+  EVALUATE MSnNat  := MSnNat sn117 Sn117f * + sn118 Sn118f * + ;
+  EVALUATE MSnNat  := MSnNat sn119 Sn119f * + sn120 Sn120f * + ;
+  EVALUATE MSnNat  := MSnNat sn122 Sn122f * + sn124 Sn124f * + ;
+
+ENDIF ;
+
+*---- SnNat Table Creation ----
+SnNat := UTL:       :: CREA 'AvgMolM   ' 1 = <<MSnNat>> ;
+SnNat := UTL: SnNat :: CREA 'Sn112frIso' 1 = <<Sn112f>> ;
+SnNat := UTL: SnNat :: CREA 'Sn114frIso' 1 = <<Sn114f>> ;
+SnNat := UTL: SnNat :: CREA 'Sn115frIso' 1 = <<Sn115f>> ;
+SnNat := UTL: SnNat :: CREA 'Sn116frIso' 1 = <<Sn116f>> ;
+SnNat := UTL: SnNat :: CREA 'Sn117frIso' 1 = <<Sn117f>> ;
+SnNat := UTL: SnNat :: CREA 'Sn118frIso' 1 = <<Sn118f>> ;
+SnNat := UTL: SnNat :: CREA 'Sn119frIso' 1 = <<Sn119f>> ;
+SnNat := UTL: SnNat :: CREA 'Sn120frIso' 1 = <<Sn120f>> ;
+SnNat := UTL: SnNat :: CREA 'Sn122frIso' 1 = <<Sn122f>> ;
+SnNat := UTL: SnNat :: CREA 'Sn124frIso' 1 = <<Sn124f>> ;
+
+*------------------------------------------------------
+*  NiNat : Natural Nickel
+*  Isotopic Composition : Ni58 .6827
+*                         Ni60 .2610
+*                         Ni61 .0113
+*                         Ni62 .0359
+*                         Ni64 .0091
+*------------------------------------------------------
+REAL Ni58f := .6827 ;
+REAL Ni60f := .2610 ;
+REAL Ni61f := .0113 ;
+REAL Ni62f := .0359 ;
+REAL Ni64f := .0091 ;
+
+*---- NiNat Average Weight Ratio ----
+REAL     MNiNat ; ! Average Weight Ratio
+EVALUATE MNiNat :=        ni58  Ni58f  *   ni60  Ni60f  * +
+                          ni61  Ni61f  * + ni62  Ni62f  * +
+                          ni64  Ni64f  * + ;
+
+*---- NiNat Table Creation ----
+NiNat := UTL:       :: CREA 'AvgMolM  ' 1 = <<MNiNat>> ;
+NiNat := UTL: NiNat :: CREA 'Ni58frIso' 1 = <<Ni58f>>  ;
+NiNat := UTL: NiNat :: CREA 'Ni60frIso' 1 = <<Ni60f>>  ;
+NiNat := UTL: NiNat :: CREA 'Ni61frIso' 1 = <<Ni61f>>  ;
+NiNat := UTL: NiNat :: CREA 'Ni62frIso' 1 = <<Ni62f>>  ;
+NiNat := UTL: NiNat :: CREA 'Ni64frIso' 1 = <<Ni64f>>  ;
+
+*------------------------------------------------------
+*  BNat : Natural Boron
+*  Isotopic Composition : B10 .2
+*                         B11 .8
+*------------------------------------------------------
+REAL B10f := .2 ;
+REAL B11f := .8 ;
+IF
+Gestion "BEAV" = THEN
+EVALUATE B10f := 0.199 ;
+EVALUATE B11f := 0.801 ;
+ENDIF ;
+
+*---- BNat Average Weight Ratio ----
+REAL     MBNat ; ! Average Weight Ratio
+EVALUATE MBNat := b10 B10f * b11 B11f * + ;
+IF Gestion "BEAV" = THEN
+EVALUATE MBNat := 10.8135 ;
+ENDIF ;
+
+*---- BNat Table Creation ----
+BNat := UTL:      :: CREA 'AvgMolM ' 1 = <<MBNat>> ;
+BNat := UTL: BNat :: CREA 'B10frIso' 1 = <<B10f>>  ;
+BNat := UTL: BNat :: CREA 'B11frIso' 1 = <<B11f>>  ;
+
+*------------------------------------------------------
+*  AgNat : Natural Silver
+*  Isotopic Composition :  Ag107 .5183
+*                          Ag109 .4817
+*------------------------------------------------------
+REAL Ag107f := .5183 ;
+REAL Ag109f := .4817 ;
+
+*---- AgNat Average Weight Ratio ----
+REAL     MAgNat ;
+EVALUATE MAgNat := ag107 Ag107f * ag109 Ag109f * + ;
+
+*---- AgNat Table Creation ----
+AgNat := UTL:       :: CREA 'AvgMolM    ' 1 = <<MAgNat>> ;
+AgNat := UTL: AgNat :: CREA 'Ag107frIso ' 1 = <<Ag107f>> ;
+AgNat := UTL: AgNat :: CREA 'Ag109frIso ' 1 = <<Ag109f>> ;
+
+*------------------------------------------------------
+*  CdNat : Natural Cadmium
+*  Isotopic Composition : Cd106 .0125 *
+*                         Cd108 .0089 **
+*                         Cd110 .1251
+*                         Cd111 .1281
+*                         Cd112 .2413 **
+*                         Cd113 .1222
+*                         Cd114 .2872
+*                         Cd116 .0747
+*
+*  *  : Cd106 is not available on JEF22 and ENDFVI8. It is replaced
+*       by Cd112.
+*       For JEF22 and ENDFVI8 :
+*                     ==> Cd106 .0000
+*                     ==> Cd108 .0000
+*                     ==> Cd112 .2627
+*  ** : Cd108 is not available on JEF22 and ENDFVI8.
+*       It is replaced by Cd112 which has relatively close enough
+*       neutronic properties
+*
+*                     ==> Cd108 .0000
+*                     ==> Cd112 .2502
+*------------------------------------------------------
+REAL Cd106f := .0 ;
+REAL Cd108f := .0 ;
+REAL Cd110f := .0 ;
+REAL Cd111f := .0 ;
+REAL Cd112f := .0 ;
+REAL Cd113f := .0 ;
+REAL Cd114f := .0 ;
+REAL Cd116f := .0 ;
+REAL MCdNat ;
+
+
+IF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
+   LibType 'JEFF312'  = +
+   LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+
+  EVALUATE Cd106f := .0125 ;
+  EVALUATE Cd108f := .0089 ;
+  EVALUATE Cd110f := .1251 ;
+  EVALUATE Cd111f := .1281 ;
+  EVALUATE Cd112f := .2413 ;
+  EVALUATE Cd113f := .1222 ;
+  EVALUATE Cd114f := .2872 ;
+  EVALUATE Cd116f := .0747 ;
+
+*---- CdNat Average Weight Ratio ----
+  EVALUATE MCdNat :=        cd106 Cd106f *   cd108 Cd108f * + ;
+  EVALUATE MCdNat := MCdNat cd110 Cd110f * + cd111 Cd111f * + ;
+  EVALUATE MCdNat := MCdNat cd112 Cd112f * + cd113 Cd113f * + ;
+  EVALUATE MCdNat := MCdNat cd114 Cd114f * + cd116 Cd116f * + ;
+
+ELSE ! JEF22 ou ENDFVI8
+
+  EVALUATE Cd110f := .1251 ;
+  EVALUATE Cd111f := .1281 ;
+  EVALUATE Cd112f := .2627 ;
+  EVALUATE Cd113f := .1222 ;
+  EVALUATE Cd114f := .2872 ;
+  EVALUATE Cd116f := .0747 ;
+
+*---- CdNat Average Weight Ratio ----
+  EVALUATE MCdNat :=        cd110 Cd110f * ;
+  EVALUATE MCdNat := MCdNat cd111 Cd111f * + cd112 Cd112f * + ;
+  EVALUATE MCdNat := MCdNat cd113 Cd113f * + cd114 Cd114f * + ;
+  EVALUATE MCdNat := MCdNat cd116 Cd116f * + ;
+
+ENDIF ;
+
+*---- CdNat Table Creation ----
+CdNat := UTL:       :: CREA 'AvgMolM    ' 1 = <<MCdNat>> ;
+CdNat := UTL: CdNat :: CREA 'Cd106frIso ' 1 = <<Cd106f>> ;
+CdNat := UTL: CdNat :: CREA 'Cd108frIso ' 1 = <<Cd108f>> ;
+CdNat := UTL: CdNat :: CREA 'Cd110frIso ' 1 = <<Cd110f>> ;
+CdNat := UTL: CdNat :: CREA 'Cd111frIso ' 1 = <<Cd111f>> ;
+CdNat := UTL: CdNat :: CREA 'Cd112frIso ' 1 = <<Cd112f>> ;
+CdNat := UTL: CdNat :: CREA 'Cd113frIso ' 1 = <<Cd113f>> ;
+CdNat := UTL: CdNat :: CREA 'Cd114frIso ' 1 = <<Cd114f>> ;
+CdNat := UTL: CdNat :: CREA 'Cd116frIso ' 1 = <<Cd116f>> ;
+
+*------------------------------------------------------
+*  KNat : Natural Potassium
+*  Reference : www.wikipedia.org/wiki/Potassium
+*  Isotopic Composition : K39 .9326
+*                         K40 .0001167
+*                         K41 .0673
+*------------------------------------------------------
+REAL K39f := .0 ;
+REAL K40f := .0 ;
+REAL K41f := .0 ;
+REAL MKNat ; ! Average Weight Ratio
+
+
+IF LibType 'JEFF31'   =   LibType 'JEFF311' = +
+   LibType 'JEFF312'  = +
+   LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+
+  EVALUATE K39f := .9326 ;
+  EVALUATE K40f := .0001167 ;
+  EVALUATE K41f := .0673 ;
+
+*---- KNat Average Weight Ratio ----
+  EVALUATE MKNat := k39  K39f  *   k40  K40f  * + k41  K41f  * + ;
+
+  ECHO "Masse molaire du potassium " MKNat ;
+
+ELSE ! JEF22 ENDFVI8
+
+  EVALUATE MKNat := kNat ;
+
+ENDIF ;
+
+*---- KNat Table Creation ----
+KNat := UTL:      :: CREA 'AvgMolM  ' 1 = <<MKNat>> ;
+KNat := UTL: KNat :: CREA 'K39frIso' 1 = <<K39f>>  ;
+KNat := UTL: KNat :: CREA 'K40frIso' 1 = <<K40f>>  ;
+KNat := UTL: KNat :: CREA 'K41frIso' 1 = <<K41f>>  ;
+
+
+*------------------------------------------------------
+*  SNat : Natural Sulfur
+*  Reference : www.wikipedia.org/wiki/Soufre
+*  Isotopic Composition :  S32 0.9502
+*                          S33 0.0076
+*                          S34 0.0422
+*  NB: pas de S33 et S34 dans ENDFBVI8
+* Pour S34 dans ENDFVI8, on reporte les
+* fractions atomiques sur S32 (premier isotope pair defini
+* dans ces bibliotheques)
+*------------------------------------------------------
+
+REAL S32f := .0  ;
+REAL S33f := .0  ;
+REAL S34f := .0  ;
+
+REAL MSNat ; ! Average Weight Ratio
+ECHO "libtype:" LibType ;
+IF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
+   LibType 'JEFF312'  = + LibType 'JEFF22'  = +
+   LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+
+  EVALUATE S32f := .9502  ;
+  EVALUATE S33f := .0076  ;
+  EVALUATE S34f := .0422  ;
+
+*---- SNat Average Weight Ratio ----
+  EVALUATE MSNat := S32f s32 * S33f s33 * + ;
+  EVALUATE MSNat := MSNat S34f s34 * + ;
+
+ELSE ! ENDFVI8
+
+  EVALUATE S32f := .9924  ;
+
+  *---- SnNat Average Weight Ratio ----
+  EVALUATE MSNat  := s32 S32f * ;
+
+ENDIF ;
+
+*---- SNat Table Creation ----
+SNat := UTL:      :: CREA 'AvgMolM ' 1 = <<MSNat>> ;
+SNat := UTL: SNat :: CREA 'S32frIso' 1 = <<S32f>>  ;
+SNat := UTL: SNat :: CREA 'S33frIso' 1 = <<S33f>>  ;
+SNat := UTL: SNat :: CREA 'S34frIso' 1 = <<S34f>>  ;
+
+*------------------------------------------------------
+*  InNat : Natural Indium
+*  Reference : www.webelements.com/indium/isotopes.html
+*  Isotopic Composition : In115 0.9571
+*                         In113 0.0429
+* NB : In113 non disponible. On considere que
+* l'InNat correspond a 100% de In115
+*------------------------------------------------------
+REAL In113f := 0. ;
+REAL In115f := 1. ;
+REAL MInNat ; ! Average Weight Ratio
+
+*---- SNat Average Weight Ratio ----
+EVALUATE MInNat := In115f in115 * ;
+
+*---- InNat Table Creation ----
+InNat := UTL:       :: CREA 'AvgMolM   ' 1 = <<MInNat>> ;
+InNat := UTL: InNat :: CREA 'In115frIso' 1 = <<In115f>>  ;
+InNat := UTL: InNat :: CREA 'In113frIso' 1 = <<In113f>>  ;
+
+*------------------------------------------------------
+*  Zirc4 : Zircalloy4
+*  Massic Composition : FeNat .002
+*                       CrNat .001
+*                       016   .001
+*                       ZrNat .981
+*                       SnNat .015
+*------------------------------------------------------
+REAL FeZ4f  := .002 ;
+REAL CrZ4f  := .001 ;
+REAL O16Z4f := .001 ;
+REAL ZrZ4f  := .981 ;
+REAL SnZ4f  := .015 ;
+
+REAL Zr90Z4f  Zr91Z4f  Zr92Z4f  Zr93Z4f
+     Zr94Z4f  Zr95Z4f  Zr96Z4f ;
+REAL Fe54Z4f  Fe56Z4f  Fe57Z4f  Fe58Z4f ;
+REAL Cr50Z4f  Cr52Z4f  Cr53Z4f  Cr54Z4f ;
+REAL Sn112Z4f Sn114Z4f Sn115Z4f Sn116Z4f Sn117Z4f
+     Sn118Z4f Sn119Z4f Sn120Z4f Sn122Z4f Sn124Z4f ;
+
+*---- Mass Ratios -> Isotopic Ratios ----
+EVALUATE FeZ4f  := FeZ4f  avo_conc * MFeNat / ;
+EVALUATE CrZ4f  := CrZ4f  avo_conc * MCrNat / ;
+EVALUATE O16Z4f := O16Z4f avo_conc * o16    / ;
+EVALUATE ZrZ4f  := ZrZ4f  avo_conc * MZrNat / ;
+EVALUATE SnZ4f  := SnZ4f  avo_conc * MSnNat / ;
+
+EVALUATE ReNorm := FeZ4f CrZ4f + O16Z4f + ZrZ4f + SnZ4f + ;
+
+EVALUATE FeZ4f  := FeZ4f  ReNorm / ;
+EVALUATE CrZ4f  := CrZ4f  ReNorm / ;
+EVALUATE O16Z4f := O16Z4f ReNorm / ;
+EVALUATE ZrZ4f  := ZrZ4f  ReNorm / ;
+EVALUATE SnZ4f  := SnZ4f  ReNorm / ;
+
+*---- Zirc4 Average Weight Ratio ---
+REAL     MZirc4 ; ! Average Weight Ratio
+EVALUATE MZirc4 := FeZ4f  MFeNat *   CrZ4f MCrNat * +
+                   O16Z4f o16    * + ZrZ4f MZrNat  * +
+                   SnZ4f  MSnNat * + ;
+
+ECHO "Masse molaire du zircaloy " MZirc4 ;
+
+*---- Isotopic Ratios for all Zr, Fe, Cr & Sn ----
+* Rq : si les isotopes n'existent pas ce n'est pas grave,
+*      leur valeur sera egale a 0. dans tous les calculs
+*      et leur appel sera commente dans l'appel a LIB de
+*      la procedure CreaMix.c2m. Leur presence n'a aucune
+*      influence sur les calculs du fait de leur valeur = 0.
+*-------------------------------------------------
+EVALUATE Zr90Z4f  := ZrZ4f Zr90f  * ;
+EVALUATE Zr91Z4f  := ZrZ4f Zr91f  * ;
+EVALUATE Zr92Z4f  := ZrZ4f Zr92f  * ;
+EVALUATE Zr93Z4f  := ZrZ4f Zr93f  * ;
+EVALUATE Zr94Z4f  := ZrZ4f Zr94f  * ;
+EVALUATE Zr95Z4f  := ZrZ4f Zr95f  * ;
+EVALUATE Zr96Z4f  := ZrZ4f Zr96f  * ;
+
+EVALUATE Fe54Z4f  := FeZ4f Fe54f  * ;
+EVALUATE Fe56Z4f  := FeZ4f Fe56f  * ;
+EVALUATE Fe57Z4f  := FeZ4f Fe57f  * ;
+EVALUATE Fe58Z4f  := FeZ4f Fe58f  * ;
+
+EVALUATE Cr50Z4f  := CrZ4f Cr50f  * ;
+EVALUATE Cr52Z4f  := CrZ4f Cr52f  * ;
+EVALUATE Cr53Z4f  := CrZ4f Cr53f  * ;
+EVALUATE Cr54Z4f  := CrZ4f Cr54f  * ;
+
+EVALUATE Sn112Z4f := SnZ4f Sn112f * ;
+EVALUATE Sn114Z4f := SnZ4f Sn114f * ;
+EVALUATE Sn115Z4f := SnZ4f Sn115f * ;
+EVALUATE Sn116Z4f := SnZ4f Sn116f * ;
+EVALUATE Sn117Z4f := SnZ4f Sn117f * ;
+EVALUATE Sn118Z4f := SnZ4f Sn118f * ;
+EVALUATE Sn119Z4f := SnZ4f Sn119f * ;
+EVALUATE Sn120Z4f := SnZ4f Sn120f * ;
+EVALUATE Sn122Z4f := SnZ4f Sn122f * ;
+EVALUATE Sn124Z4f := SnZ4f Sn124f * ;
+
+*---- Zirc4 Table Creation ----
+
+Zirc4 := UTL:       :: CREA 'AvgMolM     ' 1 = <<MZirc4>>   ;
+Zirc4 := UTL: Zirc4 :: CREA 'O16Z4frIso  ' 1 = <<O16Z4f>>   ;
+Zirc4 := UTL: Zirc4 :: CREA 'Fe54Z4frIso ' 1 = <<Fe54Z4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'Fe56Z4frIso ' 1 = <<Fe56Z4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'Fe57Z4frIso ' 1 = <<Fe57Z4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'Fe58Z4frIso ' 1 = <<Fe58Z4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'Cr50Z4frIso ' 1 = <<Cr50Z4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'Cr52Z4frIso ' 1 = <<Cr52Z4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'Cr53Z4frIso ' 1 = <<Cr53Z4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'Cr54Z4frIso ' 1 = <<Cr54Z4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'ZrNatfrIso  ' 1 = <<ZrZ4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'Zr90Z4frIso ' 1 = <<Zr90Z4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'Zr91Z4frIso ' 1 = <<Zr91Z4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'Zr92Z4frIso ' 1 = <<Zr92Z4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'Zr93Z4frIso ' 1 = <<Zr93Z4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'Zr94Z4frIso ' 1 = <<Zr94Z4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'Zr95Z4frIso ' 1 = <<Zr95Z4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'Zr96Z4frIso ' 1 = <<Zr96Z4f>>  ;
+Zirc4 := UTL: Zirc4 :: CREA 'Sn112Z4frIso' 1 = <<Sn112Z4f>> ;
+Zirc4 := UTL: Zirc4 :: CREA 'Sn114Z4frIso' 1 = <<Sn114Z4f>> ;
+Zirc4 := UTL: Zirc4 :: CREA 'Sn115Z4frIso' 1 = <<Sn115Z4f>> ;
+Zirc4 := UTL: Zirc4 :: CREA 'Sn116Z4frIso' 1 = <<Sn116Z4f>> ;
+Zirc4 := UTL: Zirc4 :: CREA 'Sn117Z4frIso' 1 = <<Sn117Z4f>> ;
+Zirc4 := UTL: Zirc4 :: CREA 'Sn118Z4frIso' 1 = <<Sn118Z4f>> ;
+Zirc4 := UTL: Zirc4 :: CREA 'Sn119Z4frIso' 1 = <<Sn119Z4f>> ;
+Zirc4 := UTL: Zirc4 :: CREA 'Sn120Z4frIso' 1 = <<Sn120Z4f>> ;
+Zirc4 := UTL: Zirc4 :: CREA 'Sn122Z4frIso' 1 = <<Sn122Z4f>> ;
+Zirc4 := UTL: Zirc4 :: CREA 'Sn124Z4frIso' 1 = <<Sn124Z4f>> ;
+
+*------------------------------------------------------
+*  Incon : Inconel - AFA 2G
+*  Massic Composition : NiNat .5250
+*                       CrNat .1900
+*                       FeNat .1823
+*                       BNatB .00003
+*                       Al27  .0050
+*                       Mo95  .0305
+*                       TiNat .0088
+*                       SiNat .0018
+*                       Co59  .0005
+*                       Mn55  .0018
+*                       Nb93  .05175
+*                      (&IMPU .00252)
+*------------------------------------------------------
+REAL NiIncf := .5250  ;
+REAL CrIncf := .1900  ;
+REAL FeIncf := .1823  ;
+REAL BIncf  := .00003 ;
+REAL AlIncf := .0050  ;
+REAL MoIncf := .0305  ;
+REAL TiIncf := .0088  ;
+REAL SiIncf := .0018  ;
+REAL CoIncf := .0005  ;
+REAL MnIncf := .0018  ;
+REAL NbIncf := .05175 ;
+
+IF Gestion "BEAV" = THEN
+EVALUATE NiIncf := .5119  ;
+EVALUATE CrIncf := .1896  ;
+EVALUATE FeIncf := .2863  ;
+EVALUATE BIncf  := 1E-15 ;
+EVALUATE AlIncf := 1E-15  ;
+EVALUATE MoIncf := 1E-15  ;
+EVALUATE TiIncf := 1E-15  ;
+EVALUATE SiIncf := .0035  ;
+EVALUATE CoIncf := .0005  ;
+EVALUATE MnIncf := .0087  ;
+EVALUATE NbIncf := 1E-15 ;
+ENDIF ;
+
+REAL Ni58Inf Ni60Inf Ni61Inf Ni62Inf Ni64Inf ;
+REAL Cr50Inf Cr52Inf Cr53Inf Cr54Inf ;
+REAL Fe54Inf Fe56Inf Fe57Inf Fe58Inf ;
+REAL Ti46Inf Ti47Inf Ti48Inf Ti49Inf Ti50Inf ;
+REAL Si28Inf Si29Inf Si30Inf ;
+REAL B10Inf  B11Inf  ;
+
+*---- Fraction Sum ----
+EVALUATE SumFr  := NiIncf CrIncf + FeIncf + BIncf  + AlIncf + MoIncf + ;
+EVALUATE SumFr  := SumFr  TiIncf + SiIncf + CoIncf + MnIncf + NbIncf + ;
+
+*---- Mass Ratios -> Isotopic Ratios ----
+EVALUATE NiIncf := NiIncf avo_conc * MNiNat / ;
+EVALUATE CrIncf := CrIncf avo_conc * MCrNat / ;
+EVALUATE FeIncf := FeIncf avo_conc * MFeNat / ;
+EVALUATE BIncf  := BIncf  avo_conc * MBNat  / ;
+EVALUATE AlIncf := AlIncf avo_conc * al27   / ;
+EVALUATE MoIncf := MoIncf avo_conc * mo95   / ;
+EVALUATE TiIncf := TiIncf avo_conc * MTiNat  / ;
+EVALUATE SiIncf := SiIncf avo_conc * MSiNat  / ;
+EVALUATE CoIncf := CoIncf avo_conc * co59   / ;
+EVALUATE MnIncf := MnIncf avo_conc * mn55   / ;
+EVALUATE NbIncf := NbIncf avo_conc * nb93   / ;
+
+EVALUATE ReNorm := NiIncf CrIncf + FeIncf + BIncf  + AlIncf + MoIncf + ;
+EVALUATE ReNorm := ReNorm TiIncf + SiIncf + CoIncf + MnIncf + NbIncf + ;
+EVALUATE ReNorm := ReNorm SumFr  / ;
+
+EVALUATE NiIncf := NiIncf ReNorm / ;
+EVALUATE CrIncf := CrIncf ReNorm / ;
+EVALUATE FeIncf := FeIncf ReNorm / ;
+EVALUATE BIncf  := BIncf  ReNorm / ;
+EVALUATE AlIncf := AlIncf ReNorm / ;
+EVALUATE MoIncf := MoIncf ReNorm / ;
+EVALUATE TiIncf := TiIncf ReNorm / ;
+EVALUATE SiIncf := SiIncf ReNorm / ;
+EVALUATE CoIncf := CoIncf ReNorm / ;
+EVALUATE MnIncf := MnIncf ReNorm / ;
+EVALUATE NbIncf := NbIncf ReNorm / ;
+
+*---- Isotopic Ratios for all Ni, Cr, Fe & B ----
+EVALUATE Ni58Inf := Ni58f NiIncf * ;
+EVALUATE Ni60Inf := Ni60f NiIncf * ;
+EVALUATE Ni61Inf := Ni61f NiIncf * ;
+EVALUATE Ni62Inf := Ni62f NiIncf * ;
+EVALUATE Ni64Inf := Ni64f NiIncf * ;
+
+EVALUATE Ti46Inf := Ti46f TiIncf * ;
+EVALUATE Ti47Inf := Ti47f TiIncf * ;
+EVALUATE Ti48Inf := Ti48f TiIncf * ;
+EVALUATE Ti49Inf := Ti49f TiIncf * ;
+EVALUATE Ti50Inf := Ti50f TiIncf * ;
+
+EVALUATE Si28Inf := Si28f SiIncf * ;
+EVALUATE Si29Inf := Si29f SiIncf * ;
+EVALUATE Si30Inf := Si30f SiIncf * ;
+
+EVALUATE Cr50Inf := Cr50f CrIncf * ;
+EVALUATE Cr52Inf := Cr52f CrIncf * ;
+EVALUATE Cr53Inf := Cr53f CrIncf * ;
+EVALUATE Cr54Inf := Cr54f CrIncf * ;
+
+EVALUATE Fe54Inf := Fe54f FeIncf * ;
+EVALUATE Fe56Inf := Fe56f FeIncf * ;
+EVALUATE Fe57Inf := Fe57f FeIncf * ;
+EVALUATE Fe58Inf := Fe58f FeIncf * ;
+
+EVALUATE B10Inf  := B10f  BIncf  * ;
+EVALUATE B11Inf  := B11f  BIncf  * ;
+
+*---- Inconel Average Weight Ratio ---
+REAL     MIncon ; ! Average Weight Ratio
+EVALUATE MIncon :=  NiIncf MNiNat *   CrIncf MCrNat * +
+                    FeIncf MFeNat * + BIncf  MBNat  * +
+                    AlIncf al27   * + MoIncf mo95   * +
+                    TiIncf MTiNat * + SiIncf MSiNat * +
+                    CoIncf co59   * + MnIncf mn55   * +
+                    NbIncf nb93   * + ;
+
+ECHO "Masse molaire de l'inconel " MIncon ;
+
+*---- Due to &IMPU, fractions are summing to "1-&IMPU".
+*     These fractions are stored, as they represent the correct proportion.
+*     MIncon however has to be renormalized so that fractions are summing to 1. ----
+EVALUATE MIncon := MIncon SumFr  / ;
+
+*---- Incon Table Creation ----
+
+Incon := UTL:       :: CREA 'AvgMolM     ' 1 = <<MIncon>>  ;
+Incon := UTL: Incon :: CREA 'B10InfrIso  ' 1 = <<B10Inf>>  ;
+Incon := UTL: Incon :: CREA 'B11InfrIso  ' 1 = <<B11Inf>>  ;
+Incon := UTL: Incon :: CREA 'Al27InfrIso ' 1 = <<AlIncf>>  ;
+Incon := UTL: Incon :: CREA 'SiNatInfrIso' 1 = <<SiIncf>>  ;
+Incon := UTL: Incon :: CREA 'Si28InfrIso ' 1 = <<Si28Inf>> ;
+Incon := UTL: Incon :: CREA 'Si29InfrIso ' 1 = <<Si29Inf>> ;
+Incon := UTL: Incon :: CREA 'Si30InfrIso ' 1 = <<Si30Inf>> ;
+Incon := UTL: Incon :: CREA 'TiNatInfrIso' 1 = <<TiIncf>>  ;
+Incon := UTL: Incon :: CREA 'Ti46InfrIso ' 1 = <<Ti46Inf>> ;
+Incon := UTL: Incon :: CREA 'Ti47InfrIso ' 1 = <<Ti47Inf>> ;
+Incon := UTL: Incon :: CREA 'Ti48InfrIso ' 1 = <<Ti48Inf>> ;
+Incon := UTL: Incon :: CREA 'Ti49InfrIso ' 1 = <<Ti49Inf>> ;
+Incon := UTL: Incon :: CREA 'Ti50InfrIso ' 1 = <<Ti50Inf>> ;
+Incon := UTL: Incon :: CREA 'Cr50InfrIso ' 1 = <<Cr50Inf>> ;
+Incon := UTL: Incon :: CREA 'Cr52InfrIso ' 1 = <<Cr52Inf>> ;
+Incon := UTL: Incon :: CREA 'Cr53InfrIso ' 1 = <<Cr53Inf>> ;
+Incon := UTL: Incon :: CREA 'Cr54InfrIso ' 1 = <<Cr54Inf>> ;
+Incon := UTL: Incon :: CREA 'Mn55InfrIso ' 1 = <<MnIncf>>  ;
+Incon := UTL: Incon :: CREA 'Fe54InfrIso ' 1 = <<Fe54Inf>> ;
+Incon := UTL: Incon :: CREA 'Fe56InfrIso ' 1 = <<Fe56Inf>> ;
+Incon := UTL: Incon :: CREA 'Fe57InfrIso ' 1 = <<Fe57Inf>> ;
+Incon := UTL: Incon :: CREA 'Fe58InfrIso ' 1 = <<Fe58Inf>> ;
+Incon := UTL: Incon :: CREA 'Co59InfrIso ' 1 = <<CoIncf>>  ;
+Incon := UTL: Incon :: CREA 'Ni58InfrIso ' 1 = <<Ni58Inf>> ;
+Incon := UTL: Incon :: CREA 'Ni60InfrIso ' 1 = <<Ni60Inf>> ;
+Incon := UTL: Incon :: CREA 'Ni61InfrIso ' 1 = <<Ni61Inf>> ;
+Incon := UTL: Incon :: CREA 'Ni62InfrIso ' 1 = <<Ni62Inf>> ;
+Incon := UTL: Incon :: CREA 'Ni64InfrIso ' 1 = <<Ni64Inf>> ;
+Incon := UTL: Incon :: CREA 'Nb93InfrIso ' 1 = <<NbIncf>>  ;
+Incon := UTL: Incon :: CREA 'Mo95InfrIso ' 1 = <<MoIncf>>  ;
+
+*------------------------------------------------------
+*  SS304 : control rod clad -- Stainless Steel
+*  Massic Composition : FeNat .706
+*                       NiNat .100
+*                       CrNat .180
+*                       Mn55  .010
+*                       SiNat .004
+*------------------------------------------------------
+REAL FeSSf  := .706 ;
+REAL NiSSf  := .100 ;
+REAL CrSSf  := .180 ;
+REAL MnSSf  := .010 ;
+REAL SiSSf  := .004 ;
+
+IF Gestion "BEAV" = THEN
+ EVALUATE FeSSf  := .684 ;
+ EVALUATE NiSSf  := .100 ;
+ EVALUATE CrSSf  := .190 ;
+ EVALUATE MnSSf  := .020 ;
+ EVALUATE SiSSf  := .006 ;
+ENDIF ;
+
+REAL Fe54SSf  Fe56SSf  Fe57SSf  Fe58SSf  ;
+REAL Ni58SSf  Ni60SSf  Ni61SSf  Ni62SSf  Ni64SSf ;
+REAL Cr50SSf  Cr52SSf  Cr53SSf  Cr54SSf  ;
+REAL Si28SSf  Si29SSf  Si30SSf ;
+
+*---- Mass Ratios -> Isotopic Ratios ----
+EVALUATE FeSSf  := FeSSf  avo_conc * MFeNat / ;
+EVALUATE NiSSf  := NiSSf  avo_conc * MNiNat / ;
+EVALUATE CrSSf  := CrSSf  avo_conc * MCrNat / ;
+EVALUATE MnSSf  := MnSSf  avo_conc * mn55   / ;
+EVALUATE SiSSf  := SiSSf  avo_conc * MSiNat  / ;
+
+EVALUATE ReNorm := FeSSf NiSSf + CrSSf + MnSSf + SiSSf + ;
+
+EVALUATE FeSSf  := FeSSf  ReNorm / ;
+EVALUATE NiSSf  := NiSSf  ReNorm / ;
+EVALUATE CrSSf  := CrSSf  ReNorm / ;
+EVALUATE MnSSf  := MnSSf  ReNorm / ;
+EVALUATE SiSSf  := SiSSf  ReNorm / ;
+
+*---- SS304 Average Weight Ratio ---
+REAL     MSS304 ; ! Average Weight Ratio
+EVALUATE MSS304 :=        FeSSf  MFeNat *   NiSSf MNiNat * +
+                          CrSSf  MCrNat * + MnSSf mn55   * +
+                          SiSSf  MSiNat * + ;
+
+ECHO "Masse molaire du SS304 " MSS304 ;
+
+*---- Isotopic Ratios for all Fe, Ni & Cr ----
+EVALUATE Fe54SSf := FeSSf Fe54f * ;
+EVALUATE Fe56SSf := FeSSf Fe56f * ;
+EVALUATE Fe57SSf := FeSSf Fe57f * ;
+EVALUATE Fe58SSf := FeSSf Fe58f * ;
+
+EVALUATE Ni58SSf := NiSSf Ni58f * ;
+EVALUATE Ni60SSf := NiSSf Ni60f * ;
+EVALUATE Ni61SSf := NiSSf Ni61f * ;
+EVALUATE Ni62SSf := NiSSf Ni62f * ;
+EVALUATE Ni64SSf := NiSSf Ni64f * ;
+
+EVALUATE Cr50SSf := CrSSf Cr50f * ;
+EVALUATE Cr52SSf := CrSSf Cr52f * ;
+EVALUATE Cr53SSf := CrSSf Cr53f * ;
+EVALUATE Cr54SSf := CrSSf Cr54f * ;
+
+EVALUATE Si28SSf  := SiSSf Si28f * ;
+EVALUATE Si29SSf  := SiSSf Si29f * ;
+EVALUATE Si30SSf  := SiSSf Si30f * ;
+
+*---- SS304 Table Creation ----
+
+* Isotopes non conflictuels
+SS304 := UTL:       :: CREA 'AvgMolM     ' 1 = <<MSS304>>  ;
+SS304 := UTL: SS304 :: CREA 'SiNatSSfrIso' 1 = <<SiSSf>> ;
+SS304 := UTL: SS304 :: CREA 'Si28SSfrIso ' 1 = <<Si28SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Si29SSfrIso ' 1 = <<Si29SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Si30SSfrIso ' 1 = <<Si30SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Fe54SSfrIso ' 1 = <<Fe54SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Fe56SSfrIso ' 1 = <<Fe56SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Fe57SSfrIso ' 1 = <<Fe57SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Fe58SSfrIso ' 1 = <<Fe58SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Ni58SSfrIso ' 1 = <<Ni58SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Ni60SSfrIso ' 1 = <<Ni60SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Ni61SSfrIso ' 1 = <<Ni61SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Ni62SSfrIso ' 1 = <<Ni62SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Ni64SSfrIso ' 1 = <<Ni64SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Cr50SSfrIso ' 1 = <<Cr50SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Cr52SSfrIso ' 1 = <<Cr52SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Cr53SSfrIso ' 1 = <<Cr53SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Cr54SSfrIso ' 1 = <<Cr54SSf>> ;
+SS304 := UTL: SS304 :: CREA 'Mn55SSfrIso ' 1 = <<MnSSf>>   ;
+
+*------------------------------------------------------
+*  M5
+*  Ref: C. Lemaignan "Zirconium Alloys: Properties
+*                     and Characteristics"
+*  Massic Composition : FeNat .00050
+*                       O16   .00135
+*                       ZrNat .98813
+*                       Nb93  .01000
+*                       SNat  .00002
+*------------------------------------------------------
+REAL FeM5f   := 0.00050 ;
+REAL O16M5f  := 0.00135 ;
+REAL ZrM5f   := 0.98813 ;
+REAL Nb93M5f := 0.01000 ;
+REAL SM5f    := 0.00002 ;
+
+REAL Zr90M5f Zr91M5f Zr92M5f Zr93M5f Zr94M5f Zr95M5f Zr96M5f ;
+REAL Fe54M5f Fe56M5f Fe57M5f Fe58M5f ;
+REAL S32M5f  S33M5f  S34M5f          ;
+
+*---- Mass Ratios -> Isotopic Ratios ----
+EVALUATE FeM5f   := FeM5f   avo_conc * MFeNat / ;
+EVALUATE O16M5f  := O16M5f  avo_conc * o16    / ;
+EVALUATE ZrM5f   := ZrM5f   avo_conc * MZrNat  / ;
+EVALUATE Nb93M5f := Nb93M5f avo_conc * nb93   / ;
+EVALUATE SM5f    := SM5f    avo_conc * MSNat  / ;
+
+EVALUATE ReNorm := FeM5f O16M5f + ZrM5f + Nb93M5f + SM5f + ;
+
+EVALUATE FeM5f   := FeM5f   ReNorm / ;
+EVALUATE O16M5f  := O16M5f  ReNorm / ;
+EVALUATE ZrM5f   := ZrM5f   ReNorm / ;
+EVALUATE Nb93M5f := Nb93M5f ReNorm / ;
+EVALUATE SM5f    := SM5f    ReNorm / ;
+
+*---- M5 Average Weight Ratio ----
+REAL MM5 ; ! Average Weight Ratio
+EVALUATE MM5 :=     FeM5f MFeNat *   O16M5f  o16  * + ;
+EVALUATE MM5 := MM5 ZrM5f MZrNat  * + Nb93M5f nb93 * + ;
+EVALUATE MM5 := MM5 SM5f  MSNat  * + ;
+
+*---- Isotopic Ratios for all Zr & Fe & S ----
+EVALUATE Zr90M5f := ZrM5f Zr90f * ;
+EVALUATE Zr91M5f := ZrM5f Zr91f * ;
+EVALUATE Zr92M5f := ZrM5f Zr92f * ;
+EVALUATE Zr93M5f := ZrM5f Zr93f * ;
+EVALUATE Zr94M5f := ZrM5f Zr94f * ;
+EVALUATE Zr95M5f := ZrM5f Zr95f * ;
+EVALUATE Zr96M5f := ZrM5f Zr96f * ;
+
+EVALUATE Fe54M5f := FeM5f Fe54f * ;
+EVALUATE Fe56M5f := FeM5f Fe56f * ;
+EVALUATE Fe57M5f := FeM5f Fe57f * ;
+EVALUATE Fe58M5f := FeM5f Fe58f * ;
+
+EVALUATE S32M5f  := SM5f  S32f  * ;
+EVALUATE S33M5f  := SM5f  S33f  * ;
+EVALUATE S34M5f  := SM5f  S34f  * ;
+
+*---- M5 Table Creation ----
+M5 := UTL:    :: CREA 'AvgMolM    ' 1 = <<MM5>>     ;
+M5 := UTL: M5 :: CREA 'Fe54M5frIso' 1 = <<Fe54M5f>> ;
+M5 := UTL: M5 :: CREA 'Fe56M5frIso' 1 = <<Fe56M5f>> ;
+M5 := UTL: M5 :: CREA 'Fe57M5frIso' 1 = <<Fe57M5f>> ;
+M5 := UTL: M5 :: CREA 'Fe58M5frIso' 1 = <<Fe58M5f>> ;
+M5 := UTL: M5 :: CREA 'O16M5frIso ' 1 = <<O16M5f>>  ;
+M5 := UTL: M5 :: CREA 'ZrM5frIso  ' 1 = <<ZrM5f>>   ;
+M5 := UTL: M5 :: CREA 'Zr90M5frIso' 1 = <<Zr90M5f>> ;
+M5 := UTL: M5 :: CREA 'Zr91M5frIso' 1 = <<Zr91M5f>> ;
+M5 := UTL: M5 :: CREA 'Zr92M5frIso' 1 = <<Zr92M5f>> ;
+M5 := UTL: M5 :: CREA 'Zr93M5frIso' 1 = <<Zr93M5f>> ;
+M5 := UTL: M5 :: CREA 'Zr94M5frIso' 1 = <<Zr94M5f>> ;
+M5 := UTL: M5 :: CREA 'Zr95M5frIso' 1 = <<Zr95M5f>> ;
+M5 := UTL: M5 :: CREA 'Zr96M5frIso' 1 = <<Zr96M5f>> ;
+M5 := UTL: M5 :: CREA 'Nb93M5frIso' 1 = <<Nb93M5f>> ;
+M5 := UTL: M5 :: CREA 'S32M5frIso ' 1 = <<S32M5f>>  ;
+M5 := UTL: M5 :: CREA 'S33M5frIso ' 1 = <<S33M5f>>  ;
+M5 := UTL: M5 :: CREA 'S34M5frIso ' 1 = <<S34M5f>>  ;
+
+*------------------------------------------------------
+*  AIC : control rod neutron absorber -- AgInCd
+*  Massic Composition : AgNat .80611
+*                       CdNat .04909
+*                       In115 (1-(Ag+Cd))
+*  Dans le cas de ENDFVI8 : In115 est en realite InNat
+*------------------------------------------------------
+REAL AgAICf := .80611 ;
+REAL CdAICf := .04909 ;
+REAL InAICf := 1. AgAICf - CdAICf - ;
+
+REAL Ag107AICf Ag109AICf ;
+REAL Cd106AICf Cd108AICf Cd110AICf Cd111AICf Cd112AICf Cd113AICf ;
+REAL Cd114AICf Cd116AICf ;
+REAL In115AICf In113AICf ;
+
+*---- Mass Ratios -> Isotopic Ratios ----
+EVALUATE AgAICf := AgAICf avo_conc * MAgNat / ;
+EVALUATE CdAICf := CdAICf avo_conc * MCdNat / ;
+*EVALUATE InAICf := InAICf avo_conc * in115  / ;
+EVALUATE InAICf := InAICf avo_conc * MInNat  / ;
+
+EVALUATE ReNorm := AgAICf CdAICf + InAICf + ;
+
+EVALUATE AgAICf := AgAICf ReNorm / ;
+EVALUATE CdAICf := CdAICf ReNorm / ;
+EVALUATE InAICf := InAICf ReNorm / ;
+
+*---- AIC Average Weight Ratio ---
+REAL     MAIC   ; ! Average Weight Ratio
+EVALUATE MAIC   :=        AgAICf MAgNat *   CdAICf MCdNat * + ;
+*EVALUATE MAIC   := MAIC   InAICf in115  * + ;
+EVALUATE MAIC   := MAIC   InAICf MInNat  * + ;
+
+*---- Isotopic Ratios for all Ag & Cd ----
+EVALUATE Ag107AICf := AgAICf Ag107f * ;
+EVALUATE Ag109AICf := AgAICf Ag109f * ;
+
+EVALUATE Cd106AICf := CdAICf Cd106f * ;
+EVALUATE Cd108AICf := CdAICf Cd108f * ;
+EVALUATE Cd110AICf := CdAICf Cd110f * ;
+EVALUATE Cd111AICf := CdAICf Cd111f * ;
+EVALUATE Cd112AICf := CdAICf Cd112f * ;
+EVALUATE Cd113AICf := CdAICf Cd113f * ;
+EVALUATE Cd114AICf := CdAICf Cd114f * ;
+EVALUATE Cd116AICf := CdAICf Cd116f * ;
+
+EVALUATE In115AICf := InAICf In115f * ;
+EVALUATE In113AICf := InAICf In113f * ;
+
+*---- AIC Table Creation ----
+AIC := UTL:     :: CREA 'AvgMolM     ' 1 = <<MAIC>>      ;
+AIC := UTL: AIC :: CREA 'Ag107AICfIso' 1 = <<Ag107AICf>> ;
+AIC := UTL: AIC :: CREA 'Ag109AICfIso' 1 = <<Ag109AICf>> ;
+AIC := UTL: AIC :: CREA 'Cd106AICfIso' 1 = <<Cd106AICf>> ;
+AIC := UTL: AIC :: CREA 'Cd108AICfIso' 1 = <<Cd108AICf>> ;
+AIC := UTL: AIC :: CREA 'Cd110AICfIso' 1 = <<Cd110AICf>> ;
+AIC := UTL: AIC :: CREA 'Cd111AICfIso' 1 = <<Cd111AICf>> ;
+AIC := UTL: AIC :: CREA 'Cd112AICfIso' 1 = <<Cd112AICf>> ;
+AIC := UTL: AIC :: CREA 'Cd113AICfIso' 1 = <<Cd113AICf>> ;
+AIC := UTL: AIC :: CREA 'Cd114AICfIso' 1 = <<Cd114AICf>> ;
+AIC := UTL: AIC :: CREA 'Cd116AICfIso' 1 = <<Cd116AICf>> ;
+AIC := UTL: AIC :: CREA 'In115AICfIso' 1 = <<In115AICf>> ;
+AIC := UTL: AIC :: CREA 'In113AICfIso' 1 = <<In113AICf>> ;
+
+*------------------------------------------------------
+*  GdNat : Natural Gadolinium
+*  Isotopic Composition : Gd152 .002 ***
+*                         Gd154 .021 ***
+*                         Gd155 .148
+*                         Gd156 .206
+*                         Gd157 .157
+*                         Gd158 .248
+*                         Gd160 .218
+*
+*  *** : Gd152 is not available. It is replaced by Gd154
+*        which has relatively close enough neutronic properties
+*
+*                      => Gd152 .000
+*                      => Gd154 .023
+*------------------------------------------------------
+*REAL Gd152f := .000 ;
+REAL Gd154f := .023 ;
+REAL Gd155f := .148 ;
+REAL Gd156f := .206 ;
+REAL Gd157f := .157 ;
+REAL Gd158f := .248 ;
+REAL Gd160f := .218 ;
+
+*---- GdNat Average Weight Ratio ----
+REAL     MGdNat ; ! Average Weight Ratio
+EVALUATE MGdNat :=        gd154 Gd154f *   gd155 Gd155f * + ;
+EVALUATE MGdNat := MGdNat gd156 Gd156f * + gd157 Gd157f * + ;
+EVALUATE MGdNat := MGdNat gd158 Gd158f * + gd160 Gd160f * + ;
+
+*---- GdNat Table Creation ----
+GdNat := UTL:       :: CREA 'AvgMolM   ' 1 = <<MGdNat>> ;
+GdNat := UTL: GdNat :: CREA 'Gd154frIso' 1 = <<Gd154f>> ;
+GdNat := UTL: GdNat :: CREA 'Gd155frIso' 1 = <<Gd155f>> ;
+GdNat := UTL: GdNat :: CREA 'Gd156frIso' 1 = <<Gd156f>> ;
+GdNat := UTL: GdNat :: CREA 'Gd157frIso' 1 = <<Gd157f>> ;
+GdNat := UTL: GdNat :: CREA 'Gd158frIso' 1 = <<Gd158f>> ;
+GdNat := UTL: GdNat :: CREA 'Gd160frIso' 1 = <<Gd160f>> ;
+
+*------------------------------------------------------
+*  Gd2O3 : Gadolinium Oxyde
+*  Isotopic Composition : GdNat 2
+*                         O16   3
+*------------------------------------------------------
+REAL GadOxGdf := 2. ;
+REAL GadOxOf  := 3. ;
+
+REAL GadOxG4f GadOxG5f GadOxG6f GadOxG7f GadOxG8f GadOxG0f ;
+
+EVALUATE GadOxG4f := GadOxGdf Gd154f * ;
+EVALUATE GadOxG5f := GadOxGdf Gd155f * ;
+EVALUATE GadOxG6f := GadOxGdf Gd156f * ;
+EVALUATE GadOxG7f := GadOxGdf Gd157f * ;
+EVALUATE GadOxG8f := GadOxGdf Gd158f * ;
+EVALUATE GadOxG0f := GadOxGdf Gd160f * ;
+
+REAL     MGd2O3 ; ! Average Weight Ratio
+EVALUATE MGd2O3 := MGdNat GadOxGdf * o16 GadOxOf * + ;
+
+*---- Gd2O3 Table Creation ----
+Gd2O3 := UTL:       :: CREA 'AvgMolM     ' 1 = <<MGd2O3>>   ;
+Gd2O3 := UTL: Gd2O3 :: CREA 'GadOxG4frIso' 1 = <<GadOxG4f>> ;
+Gd2O3 := UTL: Gd2O3 :: CREA 'GadOxG5frIso' 1 = <<GadOxG5f>> ;
+Gd2O3 := UTL: Gd2O3 :: CREA 'GadOxG6frIso' 1 = <<GadOxG6f>> ;
+Gd2O3 := UTL: Gd2O3 :: CREA 'GadOxG7frIso' 1 = <<GadOxG7f>> ;
+Gd2O3 := UTL: Gd2O3 :: CREA 'GadOxG8frIso' 1 = <<GadOxG8f>> ;
+Gd2O3 := UTL: Gd2O3 :: CREA 'GadOxG0frIso' 1 = <<GadOxG0f>> ;
+Gd2O3 := UTL: Gd2O3 :: CREA 'GadOxOfrIso ' 1 = <<GadOxOf>>  ;
+
+*------------------------------------------------------
+*  B2O3 : Solid White Glass Diboron Trioxide # B
+*   Quantity of BNat in B2O3 : BNatBq = 2.
+*   Quantity of O16 in B2O3  : O16Bq  = 3.
+*------------------------------------------------------
+REAL BNatBq := 2. ;
+REAL O16Bq :=  3. ;
+*---- B2O3 Average Weight Ratio ----
+REAL     MB2O3 ; ! Average Weight Ratio
+EVALUATE MB2O3 := MBNat BNatBq * o16 O16Bq * + ;
+*------------------------------------------------------
+*  SiO2 : Silica Crystalline  # S
+*   Quantity of SiNat in SiO2 : SiNatSq = 1.
+*   Quantity of O16 in SiO2   : O16Sq   = 2.
+*------------------------------------------------------
+REAL SiNatSq := 1. ;
+REAL O16Sq := 2. ;
+*---- SiO2  Average Weight Ratio ----
+REAL     MSiO2  ; ! Average Weight Ratio
+EVALUATE MSiO2 := MSiNat SiNatSq * o16 O16Sq * + ;
+*------------------------------------------------------
+*  Al2O3 : Aluminium Oxide  # A
+*   Quantity of Aluminium in Al2O3 : Al27Aq = 2.
+*   Quantity of O16 in Al2O3       : O16Aq  = 3.
+*------------------------------------------------------
+REAL Al27Aq := 2. ;
+REAL O16Aq  := 3. ;
+*---- Al2O3  Average Weight Ratio ----
+REAL     MAl2O3  ; ! Average Weight Ratio
+EVALUATE MAl2O3 := al27 Al27Aq * o16 O16Aq * + ;
+*------------------------------------------------------
+*  K2O : Potassium Oxide  # K
+*   Quantity of KNat in K2O  : KNatKq = 2.
+*   Quantity of O16 in K2O : O16Kq  = 1.
+*------------------------------------------------------
+REAL KNatKq := 2. ;
+REAL O16Kq  := 1. ;
+*---- K2O Average Weight Ratio ----
+REAL     MK2O ; ! Average Weight Ratio
+EVALUATE MK2O := MKNat KNatKq * o16 O16Kq * + ;
+*------------------------------------------------------
+*  Na2O : Sodium oxide  # N
+*   Quantity of Na23 in Na2O  : Na23Nq = 2.
+*   Quantity of O16 in Na2O : O16Nq  = 1.
+*------------------------------------------------------
+REAL Na23Nq := 2. ;
+REAL O16Nq  := 1. ;
+*---- Na2O Average Weight Ratio ----
+REAL     MNa2O ; ! Average Weight Ratio
+EVALUATE MNa2O := na23 Na23Nq * o16 O16Nq * + ;
+*------------------------------------------------------
+
+*------------------------------------------------------
+*  BP : Burnable Poison Borosilicate Glass
+*  Tihange Specifications CEA-N-2092
+*  Massic Composition : B2O3  .181
+*                       SiO2  .648
+*                       Al2O3 .076
+*                       K2O   .032
+*                       Na2O  .031
+* The sum of massic composition %m is equal to 0.968 !!
+*------------------------------------------------------
+*               Massic Fraction : %m
+*------------------------------------------------------
+REAL B2O3BPf  ;
+REAL SiO2BPf  ;
+REAL Al2O3BPf ;
+REAL K2OBPf   ;
+REAL Na2OBPf  ;
+
+IF Gestion "BEAV" = THEN
+*  Weight Fraction    : Onat  0.5481
+*                       AlNat 0.0344
+*                       B10   0.0071
+*                       B11   0.0317
+*                       Sinat 0.3787
+  EVALUATE B2O3BPf   := .125 ;
+  EVALUATE SiO2BPf   := .810 ; ! .806
+  EVALUATE Al2O3BPf  := .065 ; ! .024
+  EVALUATE K2OBPf    := .0 ; ! .022
+  EVALUATE Na2OBPf   := .0 ; ! .021
+ELSE
+  EVALUATE B2O3BPf   := .181 ;
+  EVALUATE SiO2BPf   := .648 ;
+  EVALUATE Al2O3BPf  := .076 ;
+  EVALUATE K2OBPf    := .032 ;
+  EVALUATE Na2OBPf   := .031 ;
+ENDIF ;
+EVALUATE SumFr     := B2O3BPf SiO2BPf Al2O3BPf K2OBPf Na2OBPf + + + + ;
+
+*
+*-----------------------------------------------------
+*     Material Massic To Material Fraction
+*
+* %m_i : Massic   fraction of material i
+* %n_i : Material fraction of material i
+*
+*    %n_i = [%m_i / M_i] / [ Sum ( %m_k / M_k ) ]
+*-----------------------------------------------------
+*
+EVALUATE B2O3BPf := B2O3BPf MB2O3 / ;
+EVALUATE SiO2BPf := SiO2BPf MSiO2 / ;
+EVALUATE Al2O3BPf := Al2O3BPf MAl2O3  / ;
+EVALUATE K2OBPf := K2OBPf MK2O / ;
+EVALUATE Na2OBPf := Na2OBPf MNa2O / ;
+*
+EVALUATE ReNorm := B2O3BPf SiO2BPf Al2O3BPf K2OBPf Na2OBPf + + + + ;
+*
+EVALUATE B2O3BPf := B2O3BPf ReNorm / ;
+EVALUATE SiO2BPf := SiO2BPf ReNorm / ;
+EVALUATE Al2O3BPf := Al2O3BPf ReNorm / ;
+EVALUATE K2OBPf := K2OBPf ReNorm / ;
+EVALUATE Na2OBPf := Na2OBPf ReNorm / ;
+
+*
+*-----------------------------------------------------
+*         Molar Mass of BP Calculation : MBP
+*-----------------------------------------------------
+REAL     MBP := 0.0 ; ! BP Average Weight Ratio
+EVALUATE MBP := B2O3BPf  MB2O3 *   SiO2BPf MSiO2 * + ;
+EVALUATE MBP := MBP Al2O3BPf MAl2O3  * + K2OBPf  MK2O  * + ;
+EVALUATE MBP := MBP Na2OBPf  MNa2O  * +  ;
+*
+*----------------------------------------------------
+*  AMF : Ajusted Material Fraction
+*   because  Sum of %m is 0.968 and not 1
+*    --> AMF =  Material Fraction (%n_i) * SumFr
+*----------------------------------------------------
+EVALUATE B2O3BPf := B2O3BPf SumFr * ;
+EVALUATE SiO2BPf := SiO2BPf SumFr * ;
+EVALUATE Al2O3BPf := Al2O3BPf SumFr * ;
+EVALUATE K2OBPf := K2OBPf SumFr * ;
+EVALUATE Na2OBPf := Na2OBPf SumFr * ;
+*-----------------------------------------------------
+*             Isotopic Ratio Calculation
+*-----------------------------------------------------
+* %f = AMF x Qem x Fie
+*  Qem = Quantity of Element in Material
+*  Fie = Fraction of Isotope In Element
+*
+*  example :  B10 isotopic fraction
+*   We find 0,20% of B10 in element BNat -> Fie = 0.2
+*   There are 2 BNat in B203             -> Qem = 2.
+*   The molar fraction of B2O3 is  %n    -> B2O3BPf
+*
+*   -->  B10BPf = 0.2 * 2. * B2O3BPf
+*-----------------------------------------------------
+*------ Isotopic Ratios for all isotopes in BP -------
+REAL B10BPf ;
+REAL B11BPf ;
+REAL O16BPf ;
+REAL SiNatBPf ;
+REAL Al27BPf ;
+REAL KNatBPf ;
+REAL Na23BPf ;
+
+
+*
+EVALUATE B10BPf := B10f BNatBq B2O3BPf   * *   ;
+EVALUATE B11BPf := B11f BNatBq B2O3BPf   * *   ;
+EVALUATE O16BPf :=        O16Bq B2O3BPf * O16Sq SiO2BPf * + ;
+EVALUATE O16BPf := O16BPf O16Aq Al2O3BPf * + ;
+EVALUATE O16BPf := O16BPf O16Kq K2OBPf * + ;
+EVALUATE O16BPf := O16BPf O16Nq Na2OBPf * + ;
+EVALUATE Na23BPf := Na23Nq Na2OBPf   *   ;
+EVALUATE Al27BPf := Al27Aq Al2O3BPf   *   ;
+EVALUATE KNatBPf := KNatKq K2OBPf   *   ;
+REAL K39BPf := KNatKq K39f * K2OBPf * ;
+REAL K40BPf := KNatKq K40f * K2OBPf * ;
+REAL K41BPf := KNatKq K41f * K2OBPf * ;
+EVALUATE SiNatBPf := SiNatSq SiO2BPf   *   ;
+REAL Si28BPf := SiNatSq Si28f * SiO2BPf  * ;
+REAL Si29BPf := SiNatSq Si29f * SiO2BPf  * ;
+REAL Si30BPf := SiNatSq Si30f * SiO2BPf  * ;
+*
+*---- BP Table Creation ----
+BP := UTL:     :: CREA 'AvgMolM     ' 1 = <<MBP>>      ;
+BP := UTL: BP  :: CREA 'B10BPfrIso  ' 1 = <<B10BPf>>   ;
+BP := UTL: BP  :: CREA 'B11BPfrIso  ' 1 = <<B11BPf>>   ;
+BP := UTL: BP  :: CREA 'O16BPfrIso  ' 1 = <<O16BPf>>   ;
+BP := UTL: BP  :: CREA 'SiNatBPfrIso' 1 = <<SiNatBPf>>   ;
+BP := UTL: BP  :: CREA 'Si28BPfrIso' 1 = <<Si28BPf>>   ;
+BP := UTL: BP  :: CREA 'Si29BPfrIso' 1 = <<Si29BPf>>   ;
+BP := UTL: BP  :: CREA 'Si30BPfrIso' 1 = <<Si30BPf>>   ;
+BP := UTL: BP  :: CREA 'Al27BPfrIso ' 1 = <<Al27BPf>>   ;
+BP := UTL: BP  :: CREA 'KNatBPfrIso ' 1 = <<KNatBPf>>   ;
+BP := UTL: BP  :: CREA 'K39BPfrIso ' 1 = <<K39BPf>>   ;
+BP := UTL: BP  :: CREA 'K40BPfrIso ' 1 = <<K40BPf>>   ;
+BP := UTL: BP  :: CREA 'K41BPfrIso ' 1 = <<K41BPf>>   ;
+BP := UTL: BP  :: CREA 'Na23BPfrIso ' 1 = <<Na23BPf>>   ;
+
+END: ;
+QUIT "LIST" .
+

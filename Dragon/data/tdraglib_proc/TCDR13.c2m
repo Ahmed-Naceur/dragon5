@@ -1,0 +1,132 @@
+*----
+*  TEST CASE TCDR13
+*  CANDU-6 ANNULAR CELL
+*  172-GROUP JEF2.2 DRAGLIB
+*  POWER (KW)         =  615.00000
+*  BURN POWER (KW/KG) =   31.97130
+*  URANIUM MASS       =   19.23600
+*  UO2 REAL DENSITY   =   10.59300
+*  UO2 EFF DENSITY    =   10.43750
+*  UO2 TEMPERATURE    =  941.28998
+*  ENRICHMENT         =    0.71140
+*  COOLANT D2 AT %    =   99.222
+*  MODERATOR D2 AT %  =   99.911
+*  NUMBER OF DAYS     =   50
+*
+*----
+*  Select burnup options
+*----
+REAL     Power BExit := 31.9713 9609.42 ;
+INTEGER  NbSteps      := 16   ;
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  LIBRARY CANDU6S CANDU6F VOLMATS VOLMATF PIJ FLUX EDITION ISOT ;
+  XSM_FILE BURNUP DATABASE ;
+SEQ_BINARY
+  INTLINS INTLINF ;
+SEQ_ASCII
+  database.txt ;
+MODULE
+  GEO: EXCELT: SHI: ASM: FLU: EDI: COMPO: DELETE: END: ;
+PROCEDURE EvolRef ;
+PROCEDURE assertS ;
+*----
+*  Depletion data from Jef 2.2 Draglib
+*  Microscopic cross sections from Jef 2.2 Draglib
+*----
+PROCEDURE TCDR05Lib ;
+INTEGER   iedit := 1 ;
+LIBRARY := TCDR05Lib :: <<iedit>> ;
+*----
+*  Geometry CANDU6S : 13 regions annular cluster for self-shielding
+*           CANDU6F : 31 regions annular cluster for transport
+*----
+CANDU6S := GEO: ::  TUBE 5
+  R+ REFL RADIUS  0.00000 5.16890 5.60320  6.44780 6.58750 16.12171
+  MIX  1 2 3 4 5
+  CLUSTER ROD1 ROD2 ROD3 ROD4
+  ::: ROD1 := GEO: TUBE 2 MIX 6 10 NPIN  1 RPIN 0.0000 APIN 0.0000
+    RADIUS 0.00000 0.6122 0.6540 ;
+  ::: ROD2 := GEO: ROD1   MIX 7 10 NPIN  6 RPIN 1.4885 APIN 0.0000 ;
+  ::: ROD3 := GEO: ROD1   MIX 8 10 NPIN 12 RPIN 2.8755 APIN 0.261799 ;
+  ::: ROD4 := GEO: ROD1   MIX 9 10 NPIN 18 RPIN 4.3305 APIN 0.0 ;
+  ;
+CANDU6F := GEO: CANDU6S :: SPLITR  6 1 1 1 10
+  ::: ROD1 := GEO: ROD1 SPLITR 2 1 ;
+  ::: ROD2 := GEO: ROD2 SPLITR 2 1 ;
+  ::: ROD3 := GEO: ROD3 SPLITR 2 1 ;
+  ::: ROD4 := GEO: ROD4 SPLITR 2 1 ;
+  ;
+*----
+*  Create the reactor database
+*----
+DATABASE := COMPO: ::
+  EDIT 5
+  STEP UP 'moderator'
+    COMM  'Multi-parameter reactor database for moderator' ENDC
+    INIT
+  STEP UP 'fuel'
+    COMM  'Multi-parameter reactor database for fuel' ENDC
+    PARA  'BURN' IRRA
+    PARA  'FLUB' FLUB
+    INIT
+  ;
+*----
+*  Self-Shielding calculation EXCEL
+*  Transport calculation      EXCEL
+*----
+VOLMATS INTLINS := EXCELT: CANDU6S ::
+  TITLE 'TCDR05: CANDU-6 ANNULAR POWER= 31.971 FUEL TEMP= 941.29'
+  EDIT 0 MAXR 13 TRAK TISO 5 10.0 SYMM 12 ;
+VOLMATF INTLINF := EXCELT: CANDU6F ::
+  TITLE 'TCDR05: CANDU-6 ANNULAR POWER= 31.971 FUEL TEMP= 941.29'
+  EDIT 0 MAXR 31 TRAK TISO 5 10.0 SYMM 12 ;
+*----
+*  Reflector calculation
+*----
+LIBRARY := SHI: LIBRARY VOLMATS INTLINS :: EDIT 0 NOLJ ;
+PIJ := ASM: LIBRARY VOLMATF INTLINF ;
+FLUX := FLU: PIJ LIBRARY VOLMATF ::
+  TYPE K ;
+assertS FLUX :: 'K-INFINITY' 1 1.117541 ;
+EDITION := EDI: FLUX LIBRARY VOLMATF ::
+  COND 4.0 MERGE MIX 0 0 0 0 1 0 0 0 0 0 MICR RES SAVE ON 'moderator' ;
+DATABASE := COMPO: DATABASE EDITION ::
+  EDIT 3
+  STEP UP *
+  ;
+EDITION := EDI: EDITION FLUX LIBRARY VOLMATF ::
+  COND 4.0 MERGE COMP MICR 1 Xe135 SAVE ON 'fuel' ;
+PIJ FLUX EDITION := DELETE: PIJ FLUX EDITION ;
+*----
+*  Burnup calculation using procedure EvolRef
+*----
+DATABASE BURNUP FLUX LIBRARY := EvolRef LIBRARY VOLMATS  
+                   VOLMATF INTLINS INTLINF :: 
+                   <<BExit>> <<Power>> <<NbSteps>> ;                                     
+*----
+*  Export and access the database
+*----
+database.txt := DATABASE ;
+
+ISOT := DATABASE :: STEP UP fuel
+                    STEP UP MIXTURES STEP AT 1
+                    STEP UP CALCULATIONS STEP AT 5
+                    STEP UP ISOTOPESLIST STEP AT 1 ;
+assertS ISOT :: 'NWT0' 1 1.149079E+01 ;
+assertS ISOT :: 'NWT0' 2 2.586806E+01 ;
+ISOT := DELETE: ISOT ;
+
+ISOT := DATABASE :: STEP UP moderator
+                    STEP UP MIXTURES STEP AT 1
+                    STEP UP CALCULATIONS STEP AT 1
+                    STEP UP ISOTOPESLIST STEP AT 1 ;
+assertS ISOT :: 'NWT0' 1 9.095950E-02 ;
+assertS ISOT :: 'NWT0' 2 3.246065E-01 ;
+
+INTLINF INTLINS := DELETE: INTLINF INTLINS ;
+ECHO "test TCDR13 completed" ;
+END: ;  
+QUIT "LIST" .

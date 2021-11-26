@@ -1,0 +1,140 @@
+\subsection{The {\tt BREF:} module}\label{sect:BREFData}
+
+This module compute a {\sc macrolib} for a 1D {\sl equivalent reflector} based on various models. One or many fine-group and
+fine-mesh reference calculations (using the $S_n$ method) are first performed so as to produce coarse-group and
+coarse-mesh Macrolibs stored within output {\sc edition} objects (\dusa{EDIT\_SN}), compatible with the selected
+reflector model. Module {\tt BREF:} recovers the $S_n$ {\sc geometry}, depicted in Fig.~\ref{fig:bref}, from object \dusa{GEOM\_SN}
+and recovers the following information from each \dusa{EDIT\_SN} object:
+\begin{itemize}
+\item Coarse group surfacic fluxes betweem the nodes (using averaged flux values recovered into {\sl gap} volumes)
+\item Coarse group net currents between the nodes (obtained from a balance relation, assuming reflection on the left
+boundary)
+\item Averaged macroscopic cross sections and diffusion coefficients within the homogenized nodes.
+\end{itemize}
+
+\begin{figure}[h!]
+\begin{center} 
+\epsfxsize=11cm
+\centerline{ \epsffile{bref_geom.eps}}
+\parbox{14cm}{\caption{Definition of geometries used by the {\tt BREF:} module}
+\label{fig:bref}} 
+\end{center} 
+\end{figure}
+
+At output, a {\sc macrolib} object is produced with equivalent macroscopic cross sections, diffusion coefficients, discontinuity factors and
+albedos. A verification calculation performed over the {\tt BREF:} geometry is depicted in Fig.~\ref{fig:brefVerif},
+
+\begin{figure}[h!]
+\begin{center} 
+\epsfxsize=15cm
+\centerline{ \epsffile{ErmBeavrsPwrRefl.eps}}
+\parbox{14cm}{\caption{Equivalent ERM-NEM reflector for the BEAVRS benchmark}
+\label{fig:brefVerif}} 
+\end{center} 
+\end{figure}
+
+\vskip 0.02cm
+\goodbreak
+
+The calling specifications are:
+
+\begin{DataStructure}{Structure \dstr{BREF:}}
+\dusa{GEOM} \dusa{MACRO}~\moc{:=}~\moc{BREF:}~\dusa{GEOM\_SN} $[[$~\dusa{EDIT\_SN}~$]]$ \moc{::} \dstr{BREF\_data} \\
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\dusa{GEOM}] {\tt character*12} name of the nodal {\sc geometry} (type {\tt L\_GEOM}) object open creation mode. This geometry can be used for
+performing a verification calculation over the 1D nodal geometry.
+
+\item[\dusa{MACRO}] {\tt character*12} name of the nodal {\sc macrolib} (type {\tt L\_MACROLIB}) object open in creation mode.
+
+\item[\dusa{GEOM\_SN}] {\tt character*12} name of the $S_n$ {\sc geometry} (type {\tt L\_GEOM}) object open read-only mode.
+
+\item[\dusa{EDIT\_SN}] {\tt character*12} name of one or many $S_n$ {\sc edition} (type {\tt L\_EDIT}) object, containing coarse-group and
+coarse-mesh Maccrolib for one or many reference $S_n$ calculations.
+
+\item[\dusa{BREF\_data}] input data structure containing specific data (see \Sect{descBREF}).
+
+\end{ListeDeDescription}
+
+\subsubsection{Data input for module {\tt BREF:}}\label{sect:descBREF}
+
+\begin{DataStructure}{Structure \dstr{BREF\_data}}
+$[$~\moc{EDIT} \dusa{iprint}~$]$ \\
+$[$~\moc{HYPE} \dusa{igmax}~$]$ \\
+\moc{MIX} $[[$ \dusa{imix} $]]$ \moc{GAP} $[[$ \dusa{igap} $]]$ \\
+\moc{MODE} \dusa{hmod} \\
+$[$~\moc{SPH}~$]~[$~\moc{NOAL}~$]$ \\
+$[$~\moc{NGET}~$[$~(\dusa{adf}($g$), $g$=1,$N_g$) $]~]$ \\
+{\tt ;}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing in module {\tt BREF:}. =0 for no print; =1 for minimum printing (default value).
+
+\item[\moc{HYPE}] keyword used to specify the type of nodal expansion base functions used to represent the flux with the {\tt DF-NEM} and {\tt ERM-NEM}
+methods. By default, polynomials defined over $(-0.5,0.5)$ are used as base functions:
+\begin{eqnarray}
+\nonumber P_0(u)\negthinspace &=&\negthinspace 1\\
+\nonumber P_1(u)\negthinspace &=&\negthinspace u\\
+\nonumber P_2(u)\negthinspace &=&\negthinspace u^2-{1\over 12}\\
+\nonumber P_3(u)\negthinspace &=&\negthinspace \left( u^2-{1\over 4}\right)u\\
+P_4(u)\negthinspace &=&\negthinspace \left( u^2-{1\over 4}\right)\left( u^2-{1\over 20}\right)
+\end{eqnarray}
+There is the option of using hyperbolic functions in some energy groups:
+\begin{eqnarray}
+\nonumber P_3(u)\negthinspace &=&\negthinspace \sinh(\zeta u)\\
+P_4(u)\negthinspace &=&\negthinspace \cosh(\zeta u)-{2\over \zeta}\, \sinh(\zeta/2)
+\end{eqnarray}
+\noindent where
+\begin{equation}
+\zeta=\Delta x\sqrt{\Sigma_{{\rm r},g} \over D_g}
+\end{equation}
+\noindent where $\Delta x$, $\Sigma_{{\rm r},g}$ and $D_g$ are the node width (cm), the macroscopic removal cross section (cm$^{-1}$)
+and the diffusion coefficient (cm) in group $g$, respectively.
+
+\item[\dusa{igmax}] hyperbolic base functions are used for coarse energy groups with indices $\ge$ \dusa{igmax}.
+
+\item[\moc{MIX}] keyword used to set the nodal mixture indices \dusa{imix}.
+
+\item[\dusa{imix}] index of a mixture index within object \dusa{EDIT\_SN} corresponding to a node. In Fig.~\ref{fig:bref}, this data
+is set as {\tt MIX 1 3} for {\tt DF-NEM} and {\tt ERM-NEM} geometries and to {\tt MIX 0 3} for {\tt LEFEBVRE-LEB} and {\tt KOEBKE}
+geometries.
+
+\item[\moc{GAP}] keyword used to set the gap mixture indices \dusa{igap} where the surfacic fluxes are recovered.
+
+\item[\dusa{igap}] index of a mixture index within object \dusa{EDIT\_SN} corresponding to a gap. In Fig.~\ref{fig:bref}, this data
+is set as {\tt GAP 2 4} for {\tt DF-NEM} and {\tt ERM-NEM} geometries and to {\tt GAP 2 0} for {\tt LEFEBVRE-LEB} and {\tt KOEBKE}
+geometries.
+
+\item[\moc{MODE}] keyword used to select a specific reflector equivalence model.
+
+\item[\dusa{hmod}] character*12 name of the reflector equivalence model used. The following options are available:
+\begin{description}
+\item[{\tt LEFEBVRE-LEB}:] Lefebvre-Lebigot equivalence model. Two \dusa{EDIT\_SN} objects are expected at RHS.\cite{LLB,Frohlicher}
+\item[{\tt KOEBKE}:] Koebke equivalence model. Two \dusa{EDIT\_SN} objects are expected at RHS.\cite{Koebke,Frohlicher}
+\item[{\tt DF-NEM}:] Pure discontinuity-factor model. Only one \dusa{EDIT\_SN} object is expected at RHS.
+\item[{\tt ERM-NEM}:] {\sl Equivalent reflector model} based on {\sl matrix discontinuity factors}.  Two or more \dusa{EDIT\_SN} objects are expected at RHS.
+\end{description}
+
+\item[\moc{SPH}] keyword used to include discontinuity factors within cross sections and diffusion coefficients. This option is not available
+with model {\tt ERM-NEM}.
+
+\item[\moc{NOAL}] keyword used to desactivate equivalent albedo calculation with {\tt DF-NEM} and {\tt ERM-NEM} models. By default, an equivalent
+albedo is set in each coarse energy group.
+
+\item[\moc{NGET}] keyword used to force the value of the fuel assembly discontinuity factor at the fuel-reflector interface, as used
+by the NGET normalization. By default, this value is not modified by NGET normalization.
+
+\item[\dusa{adf}] value of the assembly discontinuity factor (ADF) on the fuel-reflector interface in group $g\le N_g$. If keyword \moc{NGET} is set and
+\dusa{adf} vakues are not given, the ADF values are recovered from \dusa{EDIT\_SN}.
+
+\end{ListeDeDescription}
+
+\eject

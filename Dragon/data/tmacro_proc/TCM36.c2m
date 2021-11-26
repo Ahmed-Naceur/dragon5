@@ -1,0 +1,176 @@
+*----
+*  TEST CASE TCM36
+*  9 X 9 ASSEMBLY WITH DOUBLE HETEROGENEITY (BIHET) MIXTURES
+*  ONE-GROUP MACROLIB-DEFINED CROSS SECTIONS
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST MACRO ASSMB TRACK SYS FLUX EDIT ;
+MODULE GEO: SYBILT: EXCELT: NXT: MCCGT: MAC: ASM: FLU: DELETE: END: ;
+SEQ_BINARY TRACK_FIL ;
+PROCEDURE assertS ;
+*
+MACRO := MAC: ::
+ EDIT 2 NGRO 1 NMIX 4 NIFI 1
+     READ INPUT
+     MIX 1
+        TOTAL 0.3683        SCAT 1 1 0.3661
+     MIX 2
+        TOTAL 0.36522       SCAT 1 1 0.3234
+        NUSIGF 0.05564      CHI 1.0
+     MIX 3
+        TOTAL 0.8453        SCAT 1 1 0.5216
+     MIX 4
+        TOTAL 0.3683        SCAT 1 1 0.0
+     ;
+ASSMB := GEO: :: CAR2D 5 5
+          X- DIAG X+ REFL
+          Y- SYME Y+ DIAG
+          CELL C1 C3 C2 C3 C4
+                  C3 C3 C3 C4
+                     C2 C3 C4
+                        C3 C4
+                           C5
+     BIHET SPHE (*NG=*) 2 (* NMILG= *) 2 (* SPHERICAL MICRO-STRUCTURE *)
+     (* NS= *) 3 3
+     (* M-S-1 *) 0.0 0.1 0.2 0.3 (* M-S 2 *) 0.0 0.2 0.4 0.5
+     (* COMPOSITE MIXTURES *)  5 6
+     (* MIXTURES SURROUNDING M-S *) 2 2
+     (* COMPOSITE MIXTURE 4 FRACT *) 0.4 0.0
+     (* REAL MIXTURE CONTENT M-S-1 *) 3 1 3
+     (* COMPOSITE MIXTURE 5 FRACT *) 0.2 0.1
+     (* REAL MIXTURE CONTENT M-S-1 *) 1 2 1
+     (* REAL MIXTURE CONTENT M-S-2 *) 2 3 1
+          ::: C1 := GEO: CARCEL 0
+                MESHX 0.0 1.262082
+                MESHY 0.0 1.262082
+                MIX 4
+          ;
+          ::: C2 := GEO: CARCEL 3
+                MESHX 0.0 1.262082
+                MESHY 0.0 1.262082
+                RADIUS 0.0 3.25296E-01 4.60039E-01 5.63430E-01
+                MIX 5 3 3 1
+          ;
+          ::: C3 := GEO: CARCEL 1
+                MESHX 0.0 1.262082
+                MESHY 0.0 1.262082
+                RADIUS 0.0 4.12660E-01
+                MIX 6 1
+          ;
+          ::: C4 := GEO: C3
+                MESHX 0.0 1.322082
+                MIX 6 1
+          ;
+          ::: C5 := GEO: C4
+                MESHY 0.0 1.322082
+                RADIUS 0.0 5.76770008E-01
+                MIX 6 1
+          ;
+          ;
+*----
+*  Eurydice interface current approximation (PIJ)
+*  Hebert double heterogeneity model
+*----
+TRACK := SYBILT: ASSMB ::
+     EDIT 1
+     MAXR 200  (*MAXIMUM OF 200 REGIONS*)
+     TITLE 'MULTICELL 9 X 9 PWR BENCHMARK WITH POISON'
+     ROT+ ASKE ;
+*
+SYS := ASM: MACRO TRACK :: EDIT 2 PIJ ;
+FLUX := FLU: MACRO TRACK SYS :: TYPE B B0 SIGS ;
+assertS FLUX :: 'B2  B1HOM' 1 -1.959593E-02 ;
+TRACK SYS FLUX := DELETE: TRACK SYS FLUX ;
+*----
+*  Eurydice interface current approximation (ARM)
+*  Hebert double heterogeneity model
+*----
+TRACK := SYBILT: ASSMB ::
+     EDIT 1
+     MAXR 200  (*MAXIMUM OF 200 REGIONS*)
+     TITLE 'MULTICELL 9 X 9 PWR BENCHMARK WITH POISON'
+     ROT+ ASKE ;
+*
+SYS := ASM: MACRO TRACK :: EDIT 2 ARM ;
+FLUX := FLU: MACRO TRACK SYS :: TYPE B B0 SIGS ;
+assertS FLUX :: 'B2  B1HOM' 1 -1.959593E-02 ;
+TRACK SYS FLUX := DELETE: TRACK SYS FLUX ;
+*----
+*  Excell approximation
+*  Hebert double heterogeneity model
+*----
+TRACK TRACK_FIL := EXCELT: ASSMB ::
+     EDIT 1
+     MAXR 80  (*MAXIMUM OF 80 REGIONS*)
+     TITLE 'MULTICELL 9 X 9 PWR BENCHMARK WITH POISON'
+     ALLG TRAK TISO 12 12.0 ;
+*
+SYS := ASM: MACRO TRACK TRACK_FIL :: EDIT 2 PIJ ;
+FLUX := FLU: MACRO TRACK SYS :: TYPE B B0 SIGS ;
+assertS FLUX :: 'B2  B1HOM' 1 -2.034746E-02 ;
+TRACK TRACK_FIL SYS FLUX := DELETE: TRACK TRACK_FIL SYS FLUX ;
+*----
+*  NXT approximation with PIJ
+*----
+TRACK TRACK_FIL := NXT: ASSMB ::
+     EDIT 1
+     TITLE 'MULTICELL 9 X 9 PWR BENCHMARK WITH POISON'
+     ALLG TISO 12 12.0 ;
+*
+SYS := ASM: MACRO TRACK TRACK_FIL :: EDIT 2 PIJ ;
+FLUX := FLU: MACRO TRACK SYS :: TYPE B B0 SIGS ;
+assertS FLUX :: 'B2  B1HOM' 1 -2.029928E-02 ;
+TRACK TRACK_FIL SYS FLUX := DELETE: TRACK TRACK_FIL SYS FLUX ;
+*----
+*  NXT approximation with MOC (white boundary condition)
+*----
+TRACK TRACK_FIL := NXT: ASSMB ::
+     EDIT 1
+     TITLE 'MULTICELL 9 X 9 PWR BENCHMARK WITH POISON'
+     ALLG TISO 12 12.0 ;
+*
+TRACK := MCCGT: TRACK TRACK_FIL ASSMB ::
+  EDIT 1
+  EPSI 1E-6 HDD 0.0
+  MAXI 10 KRYL 10 SCR 1 AAC 1 TMT ;
+*
+SYS := ASM: MACRO TRACK TRACK_FIL :: EDIT 2 ARM ;
+FLUX := FLU: MACRO TRACK TRACK_FIL SYS :: TYPE B B0 SIGS ;
+assertS FLUX :: 'B2  B1HOM' 1 -2.03004E-02 ;
+TRACK TRACK_FIL SYS FLUX := DELETE: TRACK TRACK_FIL SYS FLUX ;
+*----
+*  NXT approximation with MOC (cyclic tracking)
+*----
+TRACK TRACK_FIL := NXT: ASSMB ::
+     EDIT 5
+     TITLE 'MULTICELL 9 X 9 PWR BENCHMARK WITH POISON'
+     ALLG TSPC 12 12.0 ;
+*
+TRACK := MCCGT: TRACK TRACK_FIL ASSMB ::
+  EDIT 1
+  EPSI 1E-6 HDD 0.0
+  MAXI 10 GAUS KRYL 10 SCR 1 AAC 1 TMT ;
+*
+SYS := ASM: MACRO TRACK TRACK_FIL :: EDIT 2 ARM ;
+FLUX := FLU: MACRO TRACK TRACK_FIL SYS :: TYPE B B0 SIGS ;
+assertS FLUX :: 'B2  B1HOM' 1 -2.026781E-02 ;
+TRACK TRACK_FIL SYS FLUX := DELETE: TRACK TRACK_FIL SYS FLUX ;
+*----
+*  Eurydice interface current approximation (ARM)
+*  Sanchez-Pomraning double heterogeneity model
+*----
+TRACK := SYBILT: ASSMB ::
+     EDIT 1
+     MAXR 200  (*MAXIMUM OF 200 REGIONS*)
+     TITLE 'MULTICELL 9 X 9 PWR BENCHMARK WITH POISON'
+     ROT+ ASKE SAPO ;
+*
+SYS := ASM: MACRO TRACK :: EDIT 2 ARM ;
+FLUX := FLU: MACRO TRACK SYS :: TYPE B B0 SIGS ;
+assertS FLUX :: 'B2  B1HOM' 1 -1.954746E-2 ;
+TRACK SYS FLUX := DELETE: TRACK SYS FLUX ;
+*
+ECHO "test TCM36 completed" ;
+END: ;
+QUIT "LIST" .

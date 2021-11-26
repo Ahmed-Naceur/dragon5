@@ -1,0 +1,158 @@
+*----
+*  Name          : AddCompo.c2m
+*  Type          : DRAGON procedure
+*  Use           : Initialize multicompo object
+*  Author        : R. Chambon
+*
+*  Procedure called as: 
+*
+*  LIBRARY2 := Autop1 LIBRARY TRACKSS :: <<Fuel>> <<NbRegions>> ;
+*
+*  Input data   :
+*    LIBRARY    : Library with SUBG key word
+*    TRACKSS    : Tracking of the SS geometry
+*    Fuel       : Type of fuel (UOX/MOX)
+*    NbRegions  : Number of regions for the calculation (20/32)
+*  Output data  :
+*    LIBRARY2   : Self shielded Library
+ECHO "AddCompo.x2m" ;
+
+PARAMETER COMPO FLUX2 LIBEQ TRACKN2 
+          GEON2 ALLGEO BURN164 LIBRARY ::
+       EDIT 1 
+           ::: LINKED_LIST 
+          COMPO FLUX2 LIBEQ TRACKN2 
+          GEON2 ALLGEO BURN164 LIBRARY 
+           ; 
+   ;
+
+LINKED_LIST EDIOBJ EDIOB2 ;
+
+MODULE COMPO: END: DELETE: ;
+
+PROCEDURE CondHet_2gr ;
+
+STRING Library SelOpt TypeCompo Gff ;
+REAL pbore dmod Tend ;
+
+  :: >>Library<< >>SelOpt<< >>TypeCompo<<  >>Gff<< 
+     >>pbore<<  >>dmod<< >>Tend<< ;
+
+REAL rodl := 0.0 ;
+
+STRING NameDirAss NameDirPin NameDirHt1 NameDirHt2 :=
+       'Ass'      'Pin'      'Het1'     'Het2'     ;
+
+*
+*Pin by Pin
+*
+IF TypeCompo "PinByPin" = TypeCompo "All" = + TypeCompo "Both" = + 
+   Gff "Yes" = + THEN
+  EDIOBJ := CondHet_2gr FLUX2 LIBEQ TRACKN2 GEON2 ALLGEO
+    :: <<Library>> <<SelOpt>> 'PinByPin' ;
+  IF TypeCompo "PinByPin" = TypeCompo "All" = + 
+     TypeCompo "Both" = +  THEN
+    COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+      EDIT 2
+      STEP UP <<NameDirPin>>
+      'ppmBore' <<pbore>>
+      'DCA' <<dmod>>
+      'BARR' <<rodl>>
+      MACRO
+      SET <<Tend>> DAY 
+    ;
+  ENDIF ;
+  IF Gff "Yes" = THEN
+    EDIOB2 := EDIOBJ ;
+  ENDIF ;
+  EDIOBJ := DELETE: EDIOBJ ;
+ENDIF ;
+
+IF TypeCompo "Assembly" = TypeCompo "All" = + TypeCompo "Both" = + THEN
+  EDIOBJ := CondHet_2gr FLUX2 LIBEQ TRACKN2 GEON2 ALLGEO
+    :: <<Library>> <<SelOpt>> 'Assembly' ;
+  IF Gff "No" = THEN
+    COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+      EDIT 2
+      STEP UP <<NameDirAss>>
+      'ppmBore' <<pbore>>
+      'DCA' <<dmod>>
+      'BARR' <<rodl>>
+      MACRO
+      SET <<Tend>> DAY 
+    ;
+  ELSEIF Gff "Yes" = THEN
+    COMPO := COMPO: COMPO EDIOBJ EDIOB2 BURN164 LIBRARY ::
+      EDIT 2
+      STEP UP <<NameDirAss>>
+      'ppmBore' <<pbore>>
+      'DCA' <<dmod>>
+      'BARR' <<rodl>>
+      MACRO
+      SET <<Tend>> DAY 
+    ;
+  ENDIF ;
+  EDIOBJ := DELETE: EDIOBJ ;
+ENDIF ;
+
+IF TypeCompo "Heter1" = TypeCompo "All" = + THEN
+  EDIOBJ := CondHet_2gr FLUX2 LIBEQ TRACKN2 GEON2 ALLGEO
+    :: <<Library>> <<SelOpt>> 'Heter1' ;
+  IF Gff "No" = THEN
+    COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+      EDIT 2
+      STEP UP <<NameDirHt1>>
+      'ppmBore' <<pbore>>
+      'DCA' <<dmod>>
+      'BARR' <<rodl>>
+      MACRO
+      SET <<Tend>> DAY 
+    ;
+  ELSEIF Gff "Yes" = THEN
+    COMPO := COMPO: COMPO EDIOBJ EDIOB2 BURN164 LIBRARY ::
+      EDIT 2
+      STEP UP <<NameDirHt1>>
+      'ppmBore' <<pbore>>
+      'DCA' <<dmod>>
+      'BARR' <<rodl>>
+      MACRO
+      SET <<Tend>> DAY 
+    ;
+  ENDIF ;
+  EDIOBJ := DELETE: EDIOBJ ;
+ENDIF ;
+
+!IF TypeCompo "Heter2" = TypeCompo "All" = + THEN
+!  EDIOBJ := CondHet_2gr FLUX2 LIBEQ TRACKN2 GEON2 ALLGEO
+!    :: <<Library>> <<SelOpt>> 'Heter2' ;
+!  IF Gff "No" = THEN
+!    COMPO := COMPO: COMPO EDIOBJ BURN164 LIBRARY ::
+!      EDIT 2
+!      STEP UP <<NameDirHt2>>
+!      'ppmBore' <<pbore>>
+!      'DCA' <<dmod>>
+!      'BARR' <<rodl>>
+!      MACRO
+!      SET <<Tend>> DAY 
+!    ;
+!  ELSEIF Gff "Yes" = THEN
+!    COMPO := COMPO: COMPO EDIOBJ EDIOB2 BURN164 LIBRARY ::
+!      EDIT 2
+!      STEP UP <<NameDirHt2>>
+!      'ppmBore' <<pbore>>
+!      'DCA' <<dmod>>
+!      'BARR' <<rodl>>
+!      MACRO
+!      SET <<Tend>> DAY 
+!    ;
+!  ENDIF ;
+!  EDIOBJ := DELETE: EDIOBJ ;
+!ENDIF ;
+
+IF Gff "Yes" = THEN
+  EDIOB2 := DELETE: EDIOB2 ;
+ENDIF ;
+
+
+END: ;
+QUIT .

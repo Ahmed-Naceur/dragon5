@@ -1,0 +1,64 @@
+*********************************************
+* Procedure :  pdrive2.c2m                  *
+* Author    :  D. Sekki (04/2008)           *
+*********************************************
+PARAMETER MACRO TRACK SYSTEM FLUX ::
+      ::: LINKED_LIST MACRO TRACK SYSTEM FLUX ; ;
+LINKED_LIST KINET ;
+PROCEDURE assertS pkinet1 pkinet2 pkinet3 pkinet4 ;
+MODULE    DELETE: GREP: END: ;
+STRING    fTemp pTemp ;
+INTEGER   maxItr nadi ;
+REAL      precf ttf ttp ;
+ :: >>maxItr<< >>precf<< >>nadi<< ;
+ECHO " *****  TEST01 *****" ;
+EVALUATE fTemp pTemp := "IMPLIC" "IMPLIC" ;
+KINET := pkinet1 MACRO TRACK SYSTEM FLUX :: <<fTemp>>
+       <<pTemp>> <<maxItr>> <<precf>> <<nadi>> ;
+assertS KINET :: 'CTRL-FLUX' 1 0.4897438 ;
+KINET := DELETE: KINET ;
+ECHO " *****  TEST02 *****" ;
+EVALUATE fTemp pTemp := "CRANK" "CRANK" ;
+KINET := pkinet1 MACRO TRACK SYSTEM FLUX :: <<fTemp>>
+       <<pTemp>> <<maxItr>> <<precf>> <<nadi>> ;
+assertS KINET :: 'CTRL-FLUX' 1 0.4897424 ;
+KINET := DELETE: KINET ;
+ECHO " *****  TEST03 *****" ;
+EVALUATE fTemp pTemp := "CRANK" "EXPON" ;
+KINET := pkinet1 MACRO TRACK SYSTEM FLUX :: <<fTemp>>
+       <<pTemp>> <<maxItr>> <<precf>> <<nadi>> ;
+assertS KINET :: 'CTRL-FLUX' 1 0.4897425 ;
+KINET := DELETE: KINET ;
+ECHO " *****  TEST04 *****" ;
+EVALUATE fTemp pTemp := "THETA" "IMPLIC" ;
+EVALUATE ttf := 0.75 ;
+KINET := pkinet2 MACRO TRACK SYSTEM FLUX :: <<fTemp>>
+           <<pTemp>> <<maxItr>> <<ttf>>
+           <<precf>> <<nadi>> ;
+assertS KINET :: 'CTRL-FLUX' 1 0.4897434 ;
+KINET := DELETE: KINET ;
+ECHO " *****  TEST05 *****" ;
+EVALUATE fTemp pTemp := "THETA" "EXPON" ;
+KINET := pkinet2 MACRO TRACK SYSTEM FLUX :: <<fTemp>>
+           <<pTemp>> <<maxItr>> <<ttf>>
+           <<precf>> <<nadi>> ;
+assertS KINET :: 'CTRL-FLUX' 1 0.4897432 ;
+KINET := DELETE: KINET ;
+ECHO " *****  TEST06 *****" ;
+EVALUATE fTemp pTemp := "CRANK" "THETA" ;
+EVALUATE ttp := 0.75 ;
+KINET := pkinet3 MACRO TRACK SYSTEM FLUX :: <<fTemp>>
+           <<pTemp>> <<maxItr>> <<ttp>>
+           <<precf>> <<nadi>> ;
+assertS KINET :: 'CTRL-FLUX' 1 0.4897423 ;
+KINET := DELETE: KINET ;
+ECHO " *****  TEST07 *****" ;
+EVALUATE fTemp pTemp := "THETA" "THETA" ;
+EVALUATE ttf ttp := 0.8 0.6 ;
+KINET := pkinet4 MACRO TRACK SYSTEM FLUX :: <<fTemp>>
+           <<pTemp>> <<maxItr>> <<ttf>> <<ttp>>
+           <<precf>> <<nadi>> ;
+assertS KINET :: 'CTRL-FLUX' 1 0.4897433 ;
+KINET := DELETE: KINET ;
+END: ;
+QUIT .

@@ -1,0 +1,150 @@
+*----
+*  TEST CASE TCWU03
+*  MULTICELL HEXAGONAL ASSEMBLY WITH POISON
+*  iaea WLUP Library
+*
+*  REF: none
+*
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  ASSMBH DISCR LIBRARY CP CALC OUT DATABASE ISOT SPHGEOM MTRACK ;
+SEQ_ASCII
+  res ;
+MODULE
+  GEO: SYBILT: BIVACT: LIB: SHI: ASM: FLU: EDI: COMPO: SPH: DELETE:
+  END: ;
+PROCEDURE assertS ;
+*----
+*  Microscopic cross sections from file iaea format WIMSD4
+*----
+LIBRARY := LIB: ::
+  NMIX 11 CTRA WIMS
+  MIXS LIB: WIMSD4 FIL: iaea
+  MIX 1 579.9
+    H1H2O    = '3001'   4.76690E-2   O16H2O   = '6016'   2.38345E-2
+    BNat     = '1011'   2.38103E-5
+  MIX 2 579.9                        O16      = '6016'   3.06711E-4
+    Cr52     = '52'     7.54987E-5   Fe56     = '2056'   1.47624E-4
+    Zr91     = '91'     4.18621E-2
+  MIX 3 579.9
+    H1H2O    = '3001'   4.65292E-2   O16H2O   = '6016'   2.32646E-2
+                                     Cr52     = '52'     4.79927E-5
+    Fe56     = '2056'   4.45845E-5   Ni58     = '58'     1.13521E-4
+                                     MoNat    = '96'     4.03755E-6
+                                     Al27     = '27'     2.35231E-6
+    Mn55     = '55'     4.15901E-7
+    BNat     = '1011'   2.32761E-5
+    Zr91     = '91'     8.92427E-4
+  MIX 4 933.6                        O16      = '6016'   4.49355E-2
+    U235     = '2235'   7.39237E-4 1 
+    U238     = '8238'   2.17285E-2 1 
+  MIX 5 579.9                        In115    = '2115'   7.57464E-3
+    Cd113    = '2113'   2.62493E-3
+    Ag109    = '3109'   4.49188E-2
+  MIX 6 579.9                        Cr52     = '52'     1.52702E-2
+    Fe56     = '2056'   5.57670E-2   Ni58     = '58'     7.51418E-3
+    Mn55     = '55'     8.02943E-4
+  MIX 7 579.9
+    H1H2O    = '3001'   3.06466E-2   O16H2O   = '6016'   1.53233E-2
+    Fe56     = '2056'   5.27485E-5   Cr52     = '52'     2.69769E-5
+    BNat     = '1011'   1.53077E-5
+    Zr91     = '91'     1.49580E-2
+  MIX 8 579.9
+    H1H2O    = '3001'   4.65292E-2   O16H2O   = '6016'   2.32646E-2
+                                     Cr52     = '52'     4.79927E-5
+    Fe56     = '2056'   4.45845E-5   Ni58     = '58'     1.13521E-4
+                                     MoNat    = '96'     4.03755E-6
+                                     Al27     = '27'     2.35231E-6
+    Mn55     = '55'     4.15901E-7
+    BNat     = '1011'   2.32761E-5
+    Zr91     = '91'     8.92427E-4
+  MIX 9 579.9                        O16      = '6016'   2.87335E-4
+    Cr52     = '52'     7.07291E-5   Fe56     = '2056'   1.38298E-4
+    Zr91     = '91'     3.92175E-2
+  MIX 10 579.9
+    H1H2O    = '3001'   4.71346E-2   O16H2O   = '6016'   2.35673E-2
+                                     Cr52     = '52'     2.24991E-5
+    Fe56     = '2056'   2.09013E-5   Ni58     = '58'     5.32188E-5
+                                     MoNat    = '96'     1.89281E-6
+                                     Al27     = '27'     1.10277E-6
+    Mn55     = '55'     1.94976E-7   BNat     = '1011'   2.35598E-5
+    Zr91     = '91'     4.18372E-4
+  MIX 11 579.9
+    H1H2O    = '3001'   4.71676E-2   O16H2O   = '6016'   2.35838E-2
+                                     Cr52     = '52'     2.11122E-5
+    Fe56     = '2056'   1.96130E-5   Ni58     = '58'     4.99383E-5
+                                     MoNat    = '96'     1.77614E-6
+                                     Al27     = '27'     1.03479E-6
+    Mn55     = '55'     1.82957E-7
+    BNat     = '1011'   2.35753E-5
+    Zr91     = '91'     3.92583E-4
+  ;
+*----
+*  Geometry ASSMBH :  hexagonal assembly with poison
+*  contains  C1 : cell without fuel
+*            C2 : poison cell
+*            C3 : normal fuel cell
+*            C4 : peripheral cell
+*----
+ASSMBH := GEO: :: HEX 36
+  HBC S30 REFL
+  CELL  C1 C3 C3 C3 C3 C3 C2 C3 C3 C3 C2 C3 C3 C3 C3 C3 C3 C2
+        C3 C3 C2 C3 C3 C3 C3 C3 C3 C3 C3 C3 C4 C4 C4 C4 C4 C4
+  TURN   A  A  A  A  A  A  A  A  B  D  A  I  A  C  F  J  B  A
+         F  A  A  E  E  A  A  E  A  A  A  A  A  A  A  A  A  A
+  MERGE  1  2  3  4  5  4  6  7  8  7  9  8 10  7  7  4  7 11
+        12 13 14 15 12 16 17 12 16 18 18 19 20 21 21 22 22 23
+  ::: C1 := GEO: HEXCEL 2
+    SIDE 0.707297 RADIUS 0.0 0.412282 0.475917
+    MIX 1 2 3 ;
+  ::: C2 := GEO: HEXCEL 5
+    SIDE 0.707297 RADIUS 0.0 0.25057 0.354359 0.436 0.486 0.6125
+    MIX 5 5 5 6 7 8 ;
+  ::: C3 := GEO: C1  MIX 4 9 10 ;
+  ::: C4 := GEO: C3  MIX 4 9 11 ;
+  ;
+*----
+*  Self-Shielding calculation JPM
+*  Transport calculation      SYBIL
+*  Flux calculation for B1 homogeneous leakage
+*  Editing using SPH model for transport-diffusion
+*----
+DISCR := SYBILT: ASSMBH ::
+  TITLE 'TCWU03: MULTICELL HEXAGONAL ASSEMBLY WITH POISON'
+  MAXR 400 MAXZ 15000 QUA2 6 3 ;
+LIBRARY := SHI: LIBRARY DISCR :: EDIT 0 NOLJ ;
+CP := ASM: LIBRARY DISCR ;
+CALC := FLU: CP LIBRARY DISCR ::
+  TYPE B B1 ;
+assertS CALC :: 'K-INFINITY' 1 0.7116683 ;
+OUT := EDI: LIBRARY DISCR CALC ASSMBH ::
+  EDIT 3 UPS SAVE MICR RES MERGE CELL COND 4.0
+  ;
+SPHGEOM := OUT :: STEP UP 'MACRO-GEOM' ;
+SPHGEOM := GEO: SPHGEOM :: SPLITH 0 ;
+MTRACK := BIVACT: SPHGEOM :: PRIM 1 2 ;
+OUT := SPH: OUT MTRACK ;
+SPHGEOM MTRACK := DELETE: SPHGEOM MTRACK ;
+
+DATABASE := COMPO: ::
+  EDIT 5
+  COMM  'Multi-parameter reactor database' ENDC
+  INIT
+  ;
+DATABASE := COMPO: DATABASE OUT ::
+  EDIT 3
+  ;
+res := DATABASE ;
+
+ISOT := DATABASE :: STEP UP default
+                    STEP UP MIXTURES STEP AT 5
+                    STEP UP CALCULATIONS STEP AT 1
+                    STEP UP ISOTOPESLIST STEP AT 1 ;
+assertS ISOT :: 'NWT0' 1 1.442307E+00 ;
+assertS ISOT :: 'NWT0' 2 1.477404E-01 ;
+
+ECHO "test TCWU03 completed" ;
+END: ; 
+QUIT "LIST" .

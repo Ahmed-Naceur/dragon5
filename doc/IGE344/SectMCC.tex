@@ -1,0 +1,100 @@
+\subsection{The {\tt MCC:} module}\label{sect:MCCData}
+
+The \moc{MCC:} module supplies tools to edit selectively one or several parameters of a fuel map object. These parameters are the ones defined when the fuel map is created, according to the calculation grid chosen to compute the macroscopic cross-sections libraries. Their selective edition is useful to study their impact on the core reactivity. For instance, this module enables to increase uniformly the fuel temperature in each cell, without modifying any other parameter such as the moderator temperature. It grants access to the Doppler coefficient, even at hot full power when the fuel temperature is different in every cell of the core.\\
+
+This module enables the computation of (non-exhausive list) : the Doppler coefficient, the power Doppler coefficient (Doppler during a power transient), the moderator temperature coefficient, the boron concentration coefficient, the reactivity with the fuel temperature set to the moderator one, etc.\\
+
+Note that this module does not perform any reactivity calculation (only fuel map edition).\\
+
+The \moc{MCC:} module specifications are:
+
+\begin{DataStructure}{Structure \moc{MCC:}}
+$[$\dusa{FLMAP1}$]$ \moc{:=}
+\moc{MCC:} \dusa{FLMAP1} $[$\dusa{FLMAP2}$]$ \moc{::} \dstr{descmcc1} 
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dusa{FLMAP1}] \texttt{character*12} name of the \dds{MAP} object that will contain the updated fuel-lattice information. If \dusa{FLMAP1} appears on both LHS and RHS, it will be updated; if it only appears on RHS, it will only be read to display its contents.
+
+\item[\dusa{FLMAP2}] \texttt{character*12} name of the \dds{MAP} object that contains information to be recovered to update \dusa{FLMAP1}. If \dusa{FLMAP2} exists, data to update \dusa{FLMAP1} will be taken in it. If not, data to update \dusa{FLMAP1} will be taken in \dusa{FLMAP1}.
+
+\item[\dstr{descmcc1}] structure describing the main input data to the \moc{MCC:} module. Note that this input data is mandatory and must be specified either if \dusa{FLMAP1} is updated or only read.
+
+\end{ListeDeDescription}
+
+% Parameter description
+
+\vskip 0.2cm
+\subsubsection{Main input data to the \moc{MCC:} module}\label{sect:mccmain}
+
+\noindent
+
+\begin{DataStructure}{Structure \dstr{descmcc1}}
+$[$ \moc{EDIT} \dusa{iprint} $]$\\
+$[[$ \moc{REC} \dusa{rec1} $\{$ \moc{UNI} \dusa{value1} $|$ \moc{ADD} \dusa{value2} $|$ $\{$ \moc{SAME} $|$ \moc{READ} $\}$ \dusa{rec2} $\}$ $]]$ \\
+$[$ \moc{TTD} \dusa{pcore} $]$\\
+\moc{;}
+\end{DataStructure}
+
+\noindent where
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] integer index used to control the printing on screen:
+ = 0 for no print; = 1 for minimum printing (default value); larger values
+produce increasing amounts of output. A value of 5 or higher will display 
+the contents of \dusa{FLMAP1} object after edition, and a value of 6 or higher
+will display the contents before edition.
+
+\item[\moc{REC}] keyword used to indicate that the name of the record to be
+updated will follow.
+
+\item[\dusa{rec1}] name of the record to be updated. The authorised values are
+defined in the table \ref{sect:dirparam}, page \pageref{sect:dirparam} (\moc{P-NAME}
+variable). To be allowed, these values have to be previously defined in the fuel
+map before calling \moc{MCC}.
+
+\item[\moc{UNI}] keyword to specify that an uniform and absolute value
+is to be set. With this parameter, the \dusa{rec1} of every region will have
+the same value.
+
+\item[\dusa{value1}] absolute value (in Kelvin if it is a temperature) that will
+be set for \dusa{rec1} in every region.
+
+\item[\moc{ADD}] keyword to specify that an uniform variation of \dusa{rec1} value
+is to be applied. With this parameter, the value of \dusa{rec1} will be altered in
+every region.
+
+\item[\dusa{value2}] value of \dusa{rec1} variation (in Kelvin if it is a
+temperature) that will be applied to every region.
+
+\item[\moc{SAME}] keyword used to indicate that the values to edit \dusa{rec1} are
+to be recovered from \dusa{rec2} in the same fuel map, \dusa{FLMAP1}. For instance,
+it enables the user to set the fuel temperature with the moderator temperature.
+
+\item[\moc{READ}] keyword used to indicate that the values to edit \dusa{rec1} are
+to be recovered from \dusa{rec2} in an other fuel map, \dusa{FLMAP2}. For instance,
+it enables the user to set the fuel temperature in \dusa{FLMAP1} with the fuel
+temperature of \dusa{FLMAP2}.
+
+\item[\dusa{rec2}] name of the record where the data to perform the update of 
+\dusa{FLMAP1} is to be recovered. The authorised values are defined in the table
+\ref{sect:dirparam}, page \pageref{sect:dirparam} (\moc{P-NAME} variable). 
+To be allowed, these values have to be previously defined in the fuel
+map before calling \moc{MCC}.
+
+\item[\moc{TTD}] keyword used to indicate that the values of the {\tt 'D-COOL'}
+record are to be updated. They will be computed from the moderator temperature
+stored in the {\tt 'T-COOL'} folder and the core pressure, using the water tables.
+Note that the position of the \moc{TTD} keyword matters, the density being
+calculated when \moc{TTD} is called and not at the end of \moc{MCC:} execution.
+
+\item[\dusa{pcore}] core pressure (in Pa).
+
+\end{ListeDeDescription}
+
+\eject

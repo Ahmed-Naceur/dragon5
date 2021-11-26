@@ -1,0 +1,450 @@
+\subsection{The {\tt FLU:} module}\label{sect:FLUData}
+
+The \moc{FLU:} module is used to solve the linear system of multigroup collision
+probability or response matrix equations in DRAGON. Different types of solution are
+available, such as fixed source problem, fixed source eigenvalue problem (GPT type) or
+different types of eigenvalue problems. The calling specifications are:
+
+\begin{DataStructure}{Structure \dstr{FLU:}}
+\dusa{FLUNAM} \moc{:=} \moc{FLU:} $[~\{$ \dusa{FLUNAM} $|$ \dusa{FLUDSA} $\}~]$ \dusa{PIJNAM} 
+\dusa{LIBNAM}  \dusa{TRKNAM} $[$ \dusa{TRKFIL} $]$ \\
+$~~~~[~\{$ \dusa{TRKFLP} \dusa{TRKGPT} $|$ \dusa{SOUNAM} $\}~]$ \moc{::} \dstr{descflu}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dusa{FLUNAM}] {\tt character*12} name of the \dds{fluxunk} data structure
+containing the solution ({\tt L\_FLUX} signature). If \dusa{FLUNAM} appears on
+the RHS, the solution previously stored in \dusa{FLUNAM} (flux and buckling) is used to initialize
+the new iterative process; otherwise, a uniform unknown vector and a zero buckling
+are used.
+
+\item[\dusa{FLUDSA}] {\tt character*12} name of the \dds{fluxunk} data structure
+containing an initial approximation of the solution ({\tt L\_FLUX} signature). This solution
+corresponds to a DSA-type simplified
+calculation compatible with \dusa{FLUNAM}. This option is only available with a \moc{SNT:} tracking.
+
+\item[\dusa{PIJNAM}] {\tt character*12} name of the \dds{asmpij} data
+structure containing the group-dependent system
+matrices ({\tt L\_PIJ} signature, see \Sect{ASMData}).
+
+\item[\dusa{LIBNAM}] {\tt character*12} name of the \dds{macrolib} or \dds{microlib} data structure that contains the
+macroscopic cross sections ({\tt L\_MACROLIB} or {\tt L\_LIBRARY} signature, see \Sectand{MACData}{LIBData}).
+Module {\tt FLU:} is performing a {\sl direct} or {\sl adjoint} calculation, depending if the adjoint flag
+is set to {\tt .false.} or {\tt .true.} in the {\tt STATE-VECTOR} record of the \dds{macrolib}.
+
+\item[\dusa{TRKNAM}] {\tt character*12} name of the \dds{tracking} data
+structure containing the tracking ({\tt L\_TRACK} signature, see \Sect{TRKData}).
+
+\item[\dusa{TRKFIL}] {\tt character*12} name of the sequential binary tracking
+file used to store the tracks lengths. This file is given if and only if it was
+required in the previous tracking module call (see \Sect{TRKData}).
+
+\item[\dusa{TRKFLP}] {\tt character*12} name of the \dds{fluxunk} data structure containing the
+unperturbed flux used to decontaminate the GPT solution ({\tt L\_FLUX} signature). This object is
+mandatory if and only if ``{\tt TYPE P}" is selected.
+
+\item[\dusa{TRKGPT}] {\tt character*12} name of the \dds{source} data structure
+containing the GPT fixed sources ({\tt L\_SOURCE} signature). This object is
+mandatory if and only if ``{\tt TYPE P}" is selected.
+
+\item[\dusa{SOUNAM}] {\tt character*12} name of the \dds{source} data structure
+containing the fixed sources ({\tt L\_SOURCE} signature) used for a ``{\tt TYPE S}" calculation.
+By default, piecewise-constant fixed sources available in the \dds{macrolib} (or \dds{microlib}) \dusa{LIBNAM}
+are used.
+
+\item[\dstr{descflu}] structure containing the input data to this module (see
+\Sect{descflu}).
+
+\end{ListeDeDescription}
+
+\clearpage
+
+\subsubsection{Data input for module {\tt FLU:}}\label{sect:descflu}
+
+\begin{DataStructure}{Structure \dstr{descflu}}
+$[$ \moc{EDIT} \dusa{iprint} $]$ \\
+$[$ \moc{INIT} $\{$ \moc{OFF} $|$ \moc{ON} $|$ \moc{DSA} $\}~]$ \\
+\moc{TYPE} $\{$ \moc{N} $|$ \moc{S} $|$ \moc{P} $|$ \moc{K} $[$ \dstr{descleak} $]$ $|$ 
+$\{$\moc{B} $|$ \moc{L} $\}$ \dstr{descleak} $\}$ $]$  \\
+$[$ \moc{EXTE} $[$ \dusa{maxout} $]~~[$ \dusa{epsout} $]~]$ \\
+$[$ \moc{THER} $[$ \dusa{maxthr} $]~~[$ \dusa{epsthr} $]~]~~[$ \moc{REBA} $[$ \moc{OFF} $]~]$ \\
+$[$ \moc{UNKT} $[$ \dusa{epsunk} $]~]$ \\
+$[$ \moc{ACCE} \dusa{nlibre} \dusa{naccel}  $]$ \\
+{\tt ;}
+\end{DataStructure}
+
+\goodbreak
+\noindent where
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\moc{EDIT}] keyword used to modify the print level \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing of this operator. The
+amount of output produced by this operator will vary substantially
+depending on the print level specified. 
+
+\item[\moc{OFF}] keyword to specify that the neutron flux
+is to be initialized with a flat distribution (default option).
+
+\item[\moc{ON}] keyword to specify that the initial neutron flux distribution
+is to be recovered from \dusa{FLUNAM} if present in the RHS arguments.
+
+\item[\moc{DSA}] keyword to specify that the initial neutron flux distribution
+is to be recovered from the DSA compatible data structure \dusa{FLUDSA} if present in the RHS arguments.
+This option is only available with a \moc{SNT:} tracking.
+
+\item[\moc{TYPE}] keyword to specify the type of solution used in the flux
+operator.
+
+\item[\moc{N}] keyword to specify that no flux calculation is to be performed.
+This option is usually activated when one simply wishes to initialize the
+neutron flux distribution and to store this information in \dusa{FLUNAM}.
+
+\item[\moc{S}]  keyword to specify that a fixed source problem is to be
+treated. Such problem can also include fission source contributions.
+
+\item[\moc{P}]  keyword to specify that a fixed source eigenvalue problem (GPT type) is to be
+treated. Such problem includes fission source contributions in addition of GPT sources.
+
+\item[\moc{K}] keyword to specify that a fission source eigenvalue problem is
+to be treated. The eigenvalue is then the effective multiplication factor with a
+fixed buckling. In this case, the fixed sources, if any is present on the
+\dds{macrolib} or \dds{microlib} data structure, are not used.  
+
+\item[\moc{B}] keyword to specify that a fission source eigenvalue problem is
+to be treated. The eigenvalue in this case is the critical buckling with a fixed
+effective multiplication factor. The buckling eigenvalue has meaning only in the
+case of a cell without leakages (see the structure \dstr{descBC} in
+\Sect{descBC}). It is also possible to use an open geometry with
+\moc{VOID} boundary conditions  provided it is closed by the \moc{ASM:} module
+(see \Sect{descasm}) using the keywords \moc{NORM} or \moc{ALSB}.
+
+\item[\moc{L}] keyword to specify that a non-multiplicative medium eigenvalue
+problem is to be treated. The eigenvalue in this case is the critical buckling
+with vanishing fission cross sections. The buckling eigenvalue has meaning only in the
+case of a cell without leakages (see the structure \dstr{descBC} in
+\Sect{descBC}). It is also possible to use an open geometry with
+\moc{VOID} boundary conditions  provided it is closed by the \moc{ASM:} module
+(see \Sect{descasm}) using the keywords \moc{NORM} or \moc{ALSB}.
+
+\item[\dstr{descleak}] structure describing the general leakage parameters
+options (see \Sect{descleak}). This information is mandatory for producing the
+diffusion coefficients.
+
+\item[\moc{EXTE}] keyword to specify that the control parameters for the
+external iteration are to be modified. 
+
+\item[\dusa{maxout}] maximum number of external iterations. The fixed default
+value for a case with no leakage model is \dusa{maxout}=$2\times n_{f}-1$ where
+$n_{f}$ is the number of regions containing fuel. The fixed default value for a
+case with a leakage model is \dusa{maxout}=$10\times n_{f}-1$.
+
+\item[\dusa{epsout}] convergence criterion for the external iterations. The
+fixed default value is \dusa{epsout}=$5.0\times 10^{-5}$.
+
+\item[\moc{THER}] keyword to specify that the control parameters for the
+thermal iterations are to be modified.
+
+\item[\dusa{maxthr}] maximum number of thermal iterations. The fixed default
+value is \dusa{maxthr}=2$\times$\dusa{ngroup}-1 (using scattering modified CP)
+or \dusa{maxthr}=4$\times$\dusa{ngroup}-1 (using standard CP).
+
+\item[\dusa{epsthr}] convergence criterion for the thermal iterations. The
+fixed default value is \dusa{epsthr}=$5.0\times 10^{-5}$.
+
+\item[\moc{UNKT}] keyword to specify the flux error tolerance in
+the outer iteration.
+
+\item[\dusa{epsunk}] convergence criterion for flux components in the outer
+iteration. The fixed default value is \dusa{epsunk}=\dusa{epsthr}.
+
+\item[\moc{REBA}] keyword used to specify that the flux rebalancing option is
+to be turned on or off in the thermal iteration. By default (floating default)
+the flux rebalancing option is initially activated. This keyword is required to
+toggle between the on and off position of the flux rebalancing option. 
+
+\item[\moc{OFF}] keyword used to deactivate the flux rebalancing option. When
+this keyword is absent the flux rebalancing option is reactivated.
+
+\item[\moc{ACCE}] keyword used to modify the variational acceleration
+parameters. This option is active by default (floating default) with
+\dusa{nlibre}=3 free iterations followed by \dusa{naccel}=3 accelerated
+iterations. 
+
+\item[\dusa{nlibre}] number of free iterations per cycle of
+\dusa{nlibre}+\dusa{naccel} iterations. 
+
+\item[\dusa{naccel}] number of accelerated iterations per cycle of
+\dusa{nlibre}+\dusa{naccel} iterations. Variational acceleration may be
+deactivated by using \dusa{naccel}=0.
+
+\end{ListeDeDescription}
+\clearpage
+
+\subsubsection{Leakage model specification structure}\label{sect:descleak}
+
+Without leakage model, the multigroup flux $\vec\phi_g$ of the collision
+probability method is obtained from equation
+
+\begin{equation}
+\vec\phi_g={\bf W}_g \vec Q^{*}_g
+\label{eq:eq3.64}
+\end{equation}
+
+\noindent where ${\bf W}_g$ is the scattering reduced collision probability matrix
+and $ Q^{*}_g$ is the fission and out-of-group scattering source. This equation is
+modified by the leakage model. The leakage models \moc{PNLR}, \moc{PNL}, \moc{SIGS}
+and \moc{ECCO} can also be used with solutions techniques other than the collision
+probability method.
+
+\vskip 0.2cm
+
+A leakage model can be set in {\sl fundamental mode condition} if all boundary conditions are
+conservative (such as \moc{REFL}, \moc{SYME}, \moc{SSYM}, \moc{DIAG}, \moc{ALBE 1.0}). In this
+case, the \dstr{descleak} structure allows the following information to be specified:
+
+\begin{DataStructure}{Structure \dstr{descleak} in fundamental mode condition}
+$\{$ \moc{LKRD} $|$ \moc{RHS} $|$ \moc{P0} $|$ \moc{P1} $|$ \moc{P0TR} $|$ \moc{B0} $|$ \moc{B1} $|$ \moc{B0TR} $\}$ \\
+$\{$ \moc{PNLR} $|$ \moc{PNL} $|$ \moc{SIGS} $|$ \moc{ALBS} $|$ \moc{ECCO} $|$ \moc{HETE}
+$[$ $\{$ \moc{G} $|$ \moc{R} $|$ \moc{Z} $|$ \moc{X} $|$ \moc{Y} $\}$ $]$ $\}$ \\
+$[$ $\{$ \moc{BUCK} $\{$ \dusa{valb2} $|$ $[$ \moc{G} \dusa{valb2} $]$  
+$[$ \moc{R} \dusa{valbr2} $]$ $[$ \moc{Z} \dusa{valbz2} $]$ 
+$[$ \moc{X} \dusa{valbx2} $]$
+$[$ \moc{Y} \dusa{valby2} $]$ $\}$
+$|$ \moc{KEFF} \dusa{valk} $|$ \moc{IDEM} $\}$
+$]$  \end{DataStructure}
+
+If a boundary condition is non-conservative (such as \moc{VOID}), it is nevertheless possible to set a
+simplified leakage model based on the Todorova approximation. Such a model is usefull to represent leakage in
+the axial direction. The Todorova leakage model available in module \moc{FLU:} is an homogeneous model
+assuming uniform leakage across the complete domain in each energy group. In this
+case, the \dstr{descleak} structure allows the following information to be specified:
+
+\begin{DataStructure}{Structure \dstr{descleak} in non-fundamental mode condition}
+$\{$ \moc{LKRD} $|$ \moc{RHS} $|$ \moc{P0} $|$ \moc{P1} $|$ \moc{P0TR} $\}$ \\
+$\{$ \moc{PNLR} $|$ \moc{PNL} $|$ \moc{SIGS} $\}$ \\
+$[$ \moc{BUCK} \dusa{valb2} $]$ 
+\end{DataStructure}
+
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\moc{LKRD}] keyword used to specify that the leakage coefficients are
+recovered from data structure named \dusa{LIBNAM}. The \moc{LKRD} option is not
+available with the \moc{ECCO} and \moc{HETE} leakage models.
+
+\item[\moc{RHS}] keyword used to specify that the leakage coefficients are
+recovered from RHS flux data structure named \dusa{FLUNAM}. The \moc{RHS} option is not
+available with the \moc{ECCO} and \moc{HETE} leakage models. If the flux calculation is
+an adjoint calculation, the energy group ordering of the leakage coefficients is permuted.
+
+\item[\moc{P0}] keyword used to specify that the leakage coefficients are
+calculated using a $P_0$ model.
+
+\item[\moc{P1}] keyword used to specify that the leakage coefficients are
+calculated using a $P_1$ model. 
+
+\item[\moc{P0TR}] keyword used to specify that the leakage coefficients are
+calculated using a $P_0$ model with transport correction.
+
+\item[\moc{B0}] keyword used to specify that the leakage coefficients are
+calculated using a $B_0$ model. This is the default value when a buckling
+calculation is required (\moc{B}).
+
+\item[\moc{B1}] keyword used to specify that the leakage coefficients are
+calculated using a $B_1$ model.
+
+\item[\moc{B0TR}] keyword used to specify that the leakage coefficients are
+calculated using a $B_0$ model with transport correction.
+
+\item[\moc{PNLR}] keyword used to specify that the elements of the scattering
+modified collision probability matrix
+are multiplied by the adequate non-leakage homogeneous buckling dependent
+factor.\cite{ALSB1}. The non-leakage
+factor $P_{{\rm NLR},g}$ is defined as
+
+\begin{equation}
+P_{{\rm NLR},g}={\bar\Sigma_g-\bar\Sigma_{{\rm s0},g \gets g}\over{\bar\Sigma_g-\bar\Sigma_{{\rm s0},g \gets g}+d_g(B) \ B^2}}
+\end{equation}
+
+\noindent where transport-corrected total
+cross sections are used to compute the ${\bf W}_g$ matrix. $\bar\Sigma_{{\rm s0},g \gets g}$ is the average
+transport-corrected macroscopic within-group scattering cross section in group $g$,
+homogenized over the lattice and transport corrected. \eq(eq3.64) is then replaced by
+ 
+\begin{equation}
+\vec\phi_g=P_{{\rm NLR},g} {\bf W}_g \vec Q^*_g \ \ \ .
+\label{eq:eq5.36}
+\end{equation}
+
+\item[\moc{PNL}] keyword used to specify that the elements of the collision
+probability matrix
+are multiplied by the adequate non-leakage homogeneous buckling dependent
+factor.\cite{ALSB1}. This is the default option when a buckling
+calculation is required (\moc{B}) or a fission source eigenvalue problem (\moc{K})
+with imposed buckling is considered. The non-leakage
+factor $P_{{\rm NL},g}$ is defined as
+
+\begin{equation}
+P_{{\rm NL},g}={\bar\Sigma_g\over{\bar\Sigma_g+d_g(B) \ B^2}}
+\end{equation}
+
+\noindent where $\bar\Sigma_g$ is the average transport-corrected macroscopic total cross section
+in group $g$, homogenized over the lattice and transport corrected. \eq(eq3.64) is then replaced by
+
+\begin{equation}
+\vec\phi_g={\bf W}_g \left[ P_{{\rm NL},g} \vec Q^*_g -(1-P_{{\rm NL},g}) {\bf \Sigma}_{{\rm s0},g\gets g} \ \vec\phi_g \right]
+\label{eq:eq5.33b}
+\end{equation}
+
+\noindent where ${\bf \Sigma}_{{\rm s0},g\gets g}={\rm diag} \{ \Sigma_{{\rm s0},i,g \gets g}\> ;\> \forall i \}$
+and the total cross sections used to compute the ${\bf W}_g$ matrix are also
+transport-corrected.
+
+\vskip 0.02cm
+
+\noindent It is important to note that that the \moc{PNLR} option reduces to the \moc{PNL} option in
+cases where no scattering reduction is performed. Scattering reduction can be avoided in module
+\moc{ASM:} by setting {\tt PIJ SKIP} (See \Sect{descasm}).
+
+\item[\moc{SIGS}] keyword used to specify that an homogeneous buckling
+correction is to be applied on the diffusion cross section ($\Sigma_{s} -
+dB^{2}$). \eq(eq3.64) is then replaced by
+
+\begin{equation}
+\vec\phi_g={\bf W}_g\left[ \vec Q^{*}_g-d_g(B) \ B^2 \ \vec\phi_g\right]
+\label{eq:eq5.33}
+\end{equation}
+
+\noindent where transport-corrected total
+cross sections are used to compute the ${\bf W}_g$ matrix. This is the so called
+{\sl DIFFON method} used in the APOLLO-family of thermal lattice codes.
+
+\item[\moc{ALBS}] keyword used to specify that an homogeneous buckling
+contribution is introduced by a group dependent correction of the
+albedo.\cite{ALSB2} This leakage model is restricted to the collision probability
+method. It is then necessary to define the geometry with an
+external boundary condition of type \moc{VOID} (see \Sect{descBC}) and to close
+the region in module \moc{ASM:} using the \moc{ALBS} option (see
+\Sect{descasm}). \eq(eq3.64) is then replaced by
+
+\begin{equation}
+\vec\phi_g={\bf W}_g \ \vec Q^{*}_g-\left[ {\bf I}+{\bf W}_g{\bf \Sigma}_{{\rm s0},g\gets g}\right] d_g(B) \ B^2 
+\ \gamma \ {\bf P}_{{\rm iS},g}
+\label{eq:eq5.34}
+\end{equation}
+
+\noindent where ${\bf P}_{{\rm iS},g}=\{P_{{\rm iS},g} \ ; \ i=1,I \}$ is the array of escape
+probabilities in the open geometry and where
+
+\begin{equation}
+\gamma={\sum\limits_j V_j \phi_{j,g} \over \sum\limits_j V_j \phi_{j,g} P_{{\rm jS},g}} \ \ \ .
+\label{eq:eq5.35}
+\end{equation}
+
+\item[\moc{ECCO}] keyword used to perform an ECCO--type leakage
+calculation taking into account isotropic streaming effects. This method
+introduces an heterogeneous buckling contribution as a group dependent correction
+to the source term.\cite{ecco,rimpault} It is then necessary to set the keyword \moc{ECCO}
+in module \moc{ASM:} (see \Sect{descasm}). In the $P_1$ non--consistent case,
+\eq(eq3.64) is then replaced by
+
+\vskip -0.3cm
+
+\begin{eqnarray}
+\vec\varphi_g&=& {\bf W}_g \left(\vec Q^{*}_g - B^2 \ {i\vec{\cal J}_g\over B}\right)
+\label{eq:eq5.37flux} \\
+{i\vec{\cal J}_g\over B} &=& {\bf X}_g \left[{1 \over 3}
+\ \vec\varphi_g + \sum_{h\not= g} {\bf \Sigma}_{{\rm s1},g \gets h} \
+{i\vec{\cal J}_h\over B} \right]
+\label{eq:eq5.37cour}
+\end{eqnarray}
+
+\noindent where $i\vec{\cal J}_{j,g}/B$ is the multigroup fundamental current, ${\bf \Sigma}_{{\rm s1},g \gets h}={\rm diag}\{ \Sigma_{{\rm s1},i,g \gets h}\> ;\> \forall i \}$ and where
+
+\begin{equation}
+{\bf X}_g=[{\bf I}-{\bf p}_g \ {\bf\Sigma}_{{\rm s}1,g\gets g}]^{-1} {\bf p}_g \ \ \ .
+\label{eq:eq5.37ter}
+\end{equation}
+
+\item[\moc{HETE}] keyword used to perform a TIB\`ERE--type leakage
+calculation taking into account anisotropic streaming effects. This method
+introduces an heterogeneous buckling contribution as a group dependent correction
+to the source term.\cite{PIJK0,PIJK} The heterogeneous buckling contribution is
+introduced in the $B_n$ model using directional collision probabilities (PIJK method).
+It is then necessary to set the keyword
+\moc{PIJK} in module \moc{ASM:} (see \Sect{descasm}).
+
+\item[\moc{G}] keyword used to specify that the buckling search will assume
+all directional buckling to be identical (floating default option).
+
+\item[\moc{R}] keyword used to specify that a radial buckling search will be
+considered assuming an imposed $z$-direction buckling.
+
+\item[\moc{Z}] keyword used to specify that a $z$-direction buckling search
+will be considered  assuming an imposed $x$-direction and $y$-direction
+buckling.
+
+\item[\moc{X}] keyword used to specify that a $x$-direction buckling search
+will be considered  assuming an imposed $y$-direction and $z$-direction
+buckling.
+
+\item[\moc{Y}] keyword used to specify that a $y$-direction buckling search
+will be considered  assuming an imposed $x$-direction and $z$-direction
+buckling.
+
+\item[\moc{BUCK}] keyword used to specify the initial (for a buckling
+eigenvalue problem) or fixed (for a effective multiplication constant eigenvalue
+problem) buckling. 
+
+\item[\moc{G}] keyword used to specify that the buckling in the $x$-direction,
+$y$-direction and $z$-direction are to be initialized to \dusa{valb2}/3
+(floating default).
+
+\item[\moc{R}] keyword used to specify that the buckling in the $x$-direction,
+and $y$-direction are to be initialized to \dusa{valbr2}/2.
+
+\item[\moc{Z}] keyword used to specify that the buckling in the $z$-direction,
+is to be initialized to \dusa{valbz2}.
+
+\item[\moc{X}] keyword used to specify that the buckling in the $x$-direction,
+is to be initialized to \dusa{valbx2}.
+
+\item[\moc{Y}] keyword used to specify that the buckling in the $y$-direction,
+is to be initialized to \dusa{valby2}.
+
+\item[\dusa{valb2}] value of the fixed or initial total buckling in $cm^{-2}$.
+The floating default value is
+$${\it valb2}={\it valbx2}+{\it valby2}+{\it valbz2}.$$
+
+\item[\dusa{valbr2}] value of the fixed or initial radial buckling in
+$cm^{-2}$. The floating default value is
+$${\it valbr2}={\it valbx2}+{\it valby2}.$$
+
+\item[\dusa{valbz2}] value of the fixed or initial $z$-direction buckling in
+$cm^{-2}$. The floating default value is \dusa{valbz2}=0.0 $cm^{-2}$. If
+\dusa{valb2} is specified then \dusa{valbz2}=\dusa{valb2}/3.
+
+\item[\dusa{valbx2}] value of the fixed or initial $z$-direction buckling in
+$cm^{-2}$. The floating default value is \dusa{valbx2}=0.0 $cm^{-2}$. If
+\dusa{valb2} is specified then \dusa{valbx2}=\dusa{valb2}/3. If \dusa{valbr2} is
+specified then \dusa{valbx2}=\dusa{valbr2}/2.
+
+\item[\dusa{valby2}] value of the fixed or initial $z$-direction buckling in
+$cm^{-2}$. The floating default value is \dusa{valby2}=0.0 $cm^{-2}$. If
+\dusa{valb2} is specified then \dusa{valby2}=\dusa{valb2}/3. If \dusa{valbr2} is
+specified then \dusa{valby2}=\dusa{valbr2}/2.
+
+\item[\moc{KEFF}] keyword used to specify the fixed (for a buckling eigenvalue
+problem) effective multiplication constant. 
+
+\item[\dusa{valk}] value of the fixed effective multiplication constant. The
+fixed default value is \dusa{valk}=1.0.
+
+\item[\moc{IDEM}] keyword used to specify that the initial (for a buckling
+eigenvalue problem) or fixed (for a effective multiplication constant eigenvalue
+problem) buckling is to be read from the data structure \dusa{LIBNAM}. 
+
+\end{ListeDeDescription}
+\eject

@@ -1,0 +1,440 @@
+\subsection{The \moc{trivat} dependent records on a
+\dir{tracking} directory}\label{sect:trivatrackingdir}
+
+A TRIVAC--type tracking data structure is holding the information related to
+the ADI partitionning of the system matrices in 1D, 2D or 3D. A one-speed
+discretizarion of the diffusion equation leads to a matrix system of the form
+
+\begin{equation}
+\bf{A} \ \vec\Phi = \vec S
+\label{eq:tratr1}
+\end{equation}
+
+\noindent where $\Phi$ may contains different types of unknowns: flux values,
+current values, polynomial coefficients, etc.
+
+\vskip 0.2cm
+
+The matrix $\bf{A}$ can be splitted in different ways. Many TRIVAC discretizations in
+Cartesian geometry are based on the following ADI splitting:
+
+\begin{equation}
+\bf{A} = \bf{U} + \bf{P}_x\bf{X}\bf{P}_x^\top + \bf{P}_y\bf{Y}\bf{P}_y^\top + \bf{P}_z\bf{Z}\bf{P}_z^\top
+\label{eq:tratr2}
+\end{equation}
+
+\noindent where
+
+\begin{tabular}{rl}
+$\bf{U}=$ & matrix containing the diagonal elements of $\bf{A}$\\
+$\bf{X},\bf{Y},\bf{Z}=$ & symetrical matrices containing the nondiagonal elements of $\bf{A}$\\
+$\bf{P}_x,\bf{P}_y,\bf{P}_z=$ & permutation matrices that ensure a minimum bandwidth for matrices $\bf{X}$, $\bf{Y}$ and $\bf{Z}$.\\
+\end{tabular}
+
+\vskip 0.2cm
+
+Similarly, many discretizations in hexagonal geometry are based on the following ADI splitting:
+\begin{equation}
+\bf{A} = \bf{U} + \bf{P_w}\bf{W}\bf{P}_w^\top + \bf{P}_x\bf{X}\bf{P}_x^\top + \bf{P}_y\bf{Y}\bf{P}_y^\top + \bf{P}_z\bf{Z}\bf{P}_z^\top \ \ \ .
+\label{eq:tratr3}
+\end{equation}
+
+The diffusion equation can also be solved using a Thomas-Raviart polynomial basis together with a mixte-dual
+variational formulation. In this case, the following splitting will be used in Cartesian geometry:
+
+\begin{equation}
+\bf{A} = \left(\matrix{\bf{A}_x & \bf{0} & \bf{0} & -\bf{R}_x \cr
+         \bf{0} & \bf{A}_y & \bf{0} & -\bf{R}_y \cr
+         \bf{0} & \bf{0} & \bf{A}_z & -\bf{R}_z \cr
+         -\bf{R}_x^\top & -\bf{R}_y^\top & -\bf{R}_z^\top & -\bf{T} \cr}\right)
+\label{eq:tratr4}
+\end{equation}
+
+\vskip 0.2cm
+
+Similarly, we use the following ADI splitting in hexagonal geometry:
+
+\begin{equation}
+\bf{A} = \left(\matrix{\bf{A}_w & \bf{C}_{xw}^\top & \bf{C}_{wy} &\bf{0} & -\bf{R}_w \cr
+         \bf{C}_{xw} & \bf{A}_x & \bf{C}_{yx}^\top & \bf{0} & -\bf{R}_x \cr
+         \bf{C}_{wy}^\top & \bf{C}_{yx} & \bf{A}_y & \bf{0} & -\bf{R}_y \cr
+         \bf{0} & \bf{0} & \bf{0} & \bf{A}_z & -\bf{R}_z \cr
+         -\bf{R}_w^\top & -\bf{R}_x^\top & -\bf{R}_y^\top & -\bf{R}_z^\top & -\bf{T} \cr}\right)
+\label{eq:tratr5}
+\end{equation}
+
+\vskip 0.2cm
+
+When the \moc{TRIVAT:} operator is used ($\mathsf{CDOOR}$={\tt 'TRIVAC'}), the following elements in the vector
+$\mathcal{S}^{t}_{i}$ will also be defined.
+
+\begin{itemize}
+\item $\mathcal{S}^{t}_{6}$: ({\tt ITYPE}) Type of TRIVAC geometry:
+\begin{displaymath}
+\mathcal{S}^{t}_{6} = \left\{
+\begin{array}{rl}
+ 2 & \textrm{Cartesian 1-D geometry} \\
+ 3 & \textrm{Tube 1-D geometry} \\
+ 5 & \textrm{Cartesian 2-D geometry} \\
+ 6 & \textrm{Tube 2-D geometry} \\
+ 7 & \textrm{Cartesian 3-D geometry} \\
+ 8 & \textrm{Hexagonal 2-D geometry} \\
+ 9 & \textrm{Hexagonal 3-D geometry}
+\end{array} \right.
+\end{displaymath}
+
+\item $\mathcal{S}^{t}_{7}$: ({\tt IHEX}) Type of hexagonal symmetry if $\mathcal{S}^{t}_{6}\ge 8$:
+\begin{displaymath}
+\mathcal{S}^{t}_{7} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{non-hexagonal geometry} \\
+ 1 & \textrm{S30} \\
+ 2 & \textrm{SA60} \\
+ 3 & \textrm{SB60} \\
+ 4 & \textrm{S90} \\
+ 5 & \textrm{R120} \\
+ 6 & \textrm{R180} \\
+ 7 & \textrm{SA180} \\
+ 8 & \textrm{SB180} \\
+ 9 & \textrm{COMPLETE} \\
+\end{array} \right.
+\end{displaymath}
+
+\item $\mathcal{S}^{t}_{8}$: ({\tt IDIAG}) Diagonal symmetry flag if $\mathcal{S}^{t}_{6}=5$ or $=7$.
+$\mathcal{S}^{t}_{8}=1$ if diagonal symmetry is present.
+
+\item $\mathcal{S}^{t}_{9}$: ({\tt IELEM}) Type of finite elements:
+\begin{displaymath}
+\mathcal{S}^{t}_{9} = \left\{
+\begin{array}{rl}
+ <0 & \textrm{Order $-\mathcal{S}^{t}_{9}$ primal finite elements} \\
+ >0 & \textrm{Order $\mathcal{S}^{t}_{9}$ dual finite elements}
+\end{array} \right.
+\end{displaymath}
+
+\item $\mathcal{S}^{t}_{10}$: ({\tt ICOL}) Type of quadrature used to integrate
+the mass matrix:
+\begin{displaymath}
+\mathcal{S}^{t}_{10} = \left\{
+\begin{array}{rl}
+ 1 & \textrm{Analytical integration} \\
+ 2 & \textrm{Gauss-Lobatto quadrature (finite difference/collocation method)} \\
+ 3 & \textrm{Gauss-Legendre quadrature (superconvergent approximation)}
+\end{array} \right.
+\end{displaymath}
+
+\item $\mathcal{S}^{t}_{11}$: ({\tt LL4}) Order of the group-wise matrices.
+Generally equal to
+$\mathcal{S}^{t}_{2}$ except in cases where averaged fluxes are appended to the
+unknown vector. $\mathcal{S}^{t}_{11}\le\mathcal{S}^{t}_{2}$.
+
+\item $\mathcal{S}^{t}_{12}$: ({\tt ICHX}) Type of discretization algorithm:
+\begin{displaymath}
+\mathcal{S}^{t}_{12} = \left\{
+\begin{array}{rl}
+ 1 & \textrm{Variational collocation method (mesh-corner finite differences or primal finite} \\
+   & \textrm{elements with Gauss-Lobatto quadrature). \Eq{tratr2} or \Eq{tratr3} is used.} \\
+ 2 & \textrm{Dual finite element approximation (Thomas-Raviart or Thomas-Raviart-Schneider} \\
+   & \textrm{polynomial basis). \Eq{tratr4} or \Eq{tratr5} is used.} \\
+ 3 & \textrm{Nodal collocation method with full tensorial products (mesh-centered finite} \\
+   & \textrm{differences or dual finite elements with Gauss-Lobatto quadrature). \Eq{tratr2} or} \\
+   & \textrm{\Eq{tratr3} is used.} \\
+ 4 & \textrm{Nodal expansion method (NEM).}
+\end{array} \right.
+\end{displaymath}
+
+\item $\mathcal{S}^{t}_{13}$: ({\tt ISPLH}) Type of hexagonal mesh splitting if $\mathcal{S}^{t}_{6}\ge 8$:
+\begin{displaymath}
+\mathcal{S}^{t}_{13} = \left\{
+\begin{array}{rl}
+ 1 & \textrm{No mesh splitting (full hexagons)}; \emph{or} \\
+   & \textrm{$3$ lozenges per hexagon with Thomas-Raviart-Schneider approximation} \\
+ K & \textrm{$6\times(K-1)\times(K-1)$ triangles per hexagon with finite-difference approximations} \\
+   & \textrm{$3\times K \times K$ lozenges per hexagon with Thomas-Raviart-Schneider approximation}
+\end{array} \right.
+\end{displaymath}
+
+\item $\mathcal{S}^{t}_{14}$: ({\tt LX}) Number of elements along the $X$ axis in Cartesian geometry or number of
+hexagons in one axial plane.
+
+\item $\mathcal{S}^{t}_{15}$: ({\tt LY}) Number of elements along the $Y$ axis.
+
+\item $\mathcal{S}^{t}_{16}$: ({\tt LZ}) Number of elements along the $Z$ axis.
+
+\item $\mathcal{S}^{t}_{17}$: ({\tt ISEG}) Number of components in a vector
+register (used
+for supervectorial operations). Equal to zero for operations in scalar mode.
+
+\item $\mathcal{S}^{t}_{18}$: ({\tt IMPV}) Print parameter for supervectorial operations.
+
+\item $\mathcal{S}^{t}_{19}$: ({\tt LTSW}) Maximum bandwidth for supervectorial operations ($=2$ for
+tridiagonal matrices).
+
+\item $\mathcal{S}^{t}_{20}$: ({\tt LONW}) number of groups of linear systems for matrices
+$\bf{W}+\bf{P}_w^\top \bf{U}\bf{P}_w$ or $\bf{A}_w+\bf{R}_w\bf{T}^{-1}\bf{R}_w^\top$ (used
+for supervectorial operations)
+
+\item $\mathcal{S}^{t}_{21}$: ({\tt LONX})  number of groups of linear systems for matrices
+$\bf{X}+\bf{P}_x^\top \bf{U}\bf{P}_x$ or $\bf{A}_x+\bf{R}_x\bf{T}^{-1}\bf{R}_x^\top$ (used
+for supervectorial operations)
+
+\item $\mathcal{S}^{t}_{22}$: ({\tt LONY})  number of groups of linear systems for matrices
+$\bf{Y}+\bf{P}_y^\top \bf{U}\bf{P}_y$ or $\bf{A}_y+\bf{R}_y\bf{T}^{-1}\bf{R}_y^\top$ (used
+for supervectorial operations)
+
+\item $\mathcal{S}^{t}_{23}$: ({\tt LONZ})  number of groups of linear systems for matrices
+$\bf{Z}+\bf{P}_z^\top \bf{U}\bf{P}_z$ or $\bf{A}_z+\bf{R}_z\bf{T}^{-1}\bf{R}_z^\top$ (used
+for supervectorial operations)
+
+\item $\mathcal{S}^{t}_{24}$: ({\tt NR0}) Number of radii used with the cylindrical correction
+algorithm for the albedos. Equal to zero if no cylindrical correction is applied.
+
+\item $\mathcal{S}^{t}_{25}$: ({\tt LL4F}) Order of matrices $\bf{T}$ if $\mathcal{S}^{t}_{12}=2$
+
+\item $\mathcal{S}^{t}_{26}$: ({\tt LL4W}) Order of matrices $\bf{A_w}$ if $\mathcal{S}^{t}_{12}=2$
+
+\item $\mathcal{S}^{t}_{27}$: ({\tt LL4X}) Order of matrices $\bf{A_x}$ if $\mathcal{S}^{t}_{12}=2$
+
+\item $\mathcal{S}^{t}_{28}$: ({\tt LL4Y}) Order of matrices $\bf{A_y}$ if $\mathcal{S}^{t}_{12}=2$
+
+\item $\mathcal{S}^{t}_{29}$: ({\tt LL4Z}) Order of matrices $\bf{A_z}$ if $\mathcal{S}^{t}_{12}=2$
+
+\item $\mathcal{S}^{t}_{30}$: ({\tt NLF}) Number of components in the angular expansion of the flux. Must be a positive
+even number. Set to zero for diffusion theory. Set to 2 for $P_1$ method.
+
+\item $\mathcal{S}^{t}_{31}$: ({\tt ISPN}) Type of transport approximation if {\tt NLF}$\ne 0$:
+\begin{displaymath}
+\mathcal{S}^{t}_{31} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{Complete $P_n$ approximation of order {\tt NLF}$-1$ (currently not available)}\\
+ 1 & \textrm{Simplified $P_n$ approximation of order {\tt NLF}$-1$}
+\end{array} \right.
+\end{displaymath}
+
+\item $\mathcal{S}^{t}_{32}$: ({\tt ISCAT}) Number of terms in the scattering sources if {\tt NLF}$\ne 0$:
+\begin{displaymath}
+\mathcal{S}^{t}_{32} = \left\{
+\begin{array}{rl}
+ 1 & \textrm{Isotropic scattering in the laboratory system} \\
+ 2 & \textrm{Linearly anisotropic scattering in the laboratory system} \\
+ $n$ & \textrm{order $n-1$ anisotropic scattering in the laboratory system}
+\end{array} \right.
+\end{displaymath}
+\noindent A negative value of $\mathcal{S}^{t}_{32}$ indicates that $1/3D^{g}$ values are used as $\Sigma_1^{g}$ cross sections.
+
+\item $\mathcal{S}^{t}_{33}$: ({\tt NADI}) Number of ADI iterations at the inner
+iterative level.
+
+\item $\mathcal{S}^{t}_{34}$: ({\tt NVD}) Number of base points in the Gauss-Legendre quadrature used to integrate
+void boundary conditions if {\tt ICOL} $=3$ and {\tt NLF}$\ne 0$:
+\begin{displaymath}
+\mathcal{S}^{t}_{34} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{Use a ({\tt NLF}$+1$)--point quadrature consistent with $P_{{\rm NLF}-1}$ theory} \\
+ 1 & \textrm{Use a {\tt NLF}--point quadrature consistent with $S_{\rm NLF}$ theory} \\
+ 2 & \textrm{Use an analytical integration consistent with diffusion theory.}
+\end{array} \right.
+\end{displaymath}
+
+\item $\mathcal{S}^{t}_{39}$: ({\tt IGMAX}) Hyperbolic nodal expansion functions are used in energy groups indices $\ge$ {\tt IGMAX}.
+
+\end{itemize}
+
+The following records will also be present on the main level of a \dir{tracking}
+directory.
+
+\begin{DescriptionEnregistrement}{The \moc{trivat} records in
+\dir{tracking}}{8.0cm}
+\IntEnr
+  {NCODE\blank{7}}{$6$}
+  {Record containing the types of boundary conditions on each surface. =0 side
+   not used; =1 VOID; =2 REFL; =4 TRAN; =5 SYME; =7 ZERO; =8 CYLI.} 
+\RealEnr
+  {ZCODE\blank{7}}{$6$}{$1$}
+  {Record containing the albedo value (real number) on each surface.} 
+\OptRealEnr
+  {SIDE\blank{8}}{$1$}{$\mathcal{S}^{t}_{6}\ge 8$}{cm}
+  {Side of a hexagon.} 
+\OptRealEnr
+  {XX\blank{10}}{$\mathcal{S}^{t}_{1}$}{$\mathcal{S}^{t}_{6}<8$}{cm}
+  {Element-ordered $X$-directed mesh spacings after mesh-splitting for type 2, 5
+   or 7 geometries. Element-ordered radius after mesh-splitting for type 3
+   or 6 geometries.} 
+\OptRealEnr
+  {YY\blank{10}}{$\mathcal{S}^{t}_{1}$}{$\mathcal{S}^{t}_{6}=5, \ 6 \ {\rm or} \ 7$}{cm}
+  {Element-ordered $Y$-directed mesh spacings after mesh-splitting for type 5, 6
+   or 7 geometries.} 
+\OptRealEnr
+  {ZZ\blank{10}}{$\mathcal{S}^{t}_{1}$}{$\mathcal{S}^{t}_{6}=7 \ {\rm or} \ 9$}{cm}
+  {Element-ordered $Y$-directed mesh spacings after mesh-splitting for type 7
+   or 9 geometries.} 
+\OptRealEnr
+  {DD\blank{10}}{$\mathcal{S}^{t}_{1}$}{$\mathcal{S}^{t}_{6}=3 \ {\rm or} \ 6$}{cm}
+  {Element-ordered position used with type 3 and 6 cylindrical geometries.} 
+\IntEnr
+  {KN\blank{10}}{$\mathcal{S}^{t}_{1}\times N_{\rm kn}$}
+  {Element-ordered unknown list. $N_{\rm kn}$ is the number of unknowns per element.} 
+\RealEnr
+  {QFR\blank{9}}{$\mathcal{S}^{t}_{1}\times N_{\rm surf}$}{}
+  {Element-ordered boundary condition. $N_{\rm surf}=6$ in Cartesian geometry and $=8$ in hexagonal geometry.} 
+\IntEnr
+  {IQFR\blank{8}}{$\mathcal{S}^{t}_{1}\times N_{\rm surf}$}
+  {Element-ordered physical albedo indices. $N_{\rm surf}=6$ in Cartesian geometry and $=8$ in hexagonal geometry.} 
+\OptIntEnr
+  {MUW\blank{9}}{$\mathcal{S}^{t}_{11}$ or $\mathcal{S}^{t}_{26}$}{$\mathcal{S}^{t}_{6}\ge 8$}
+  {Indices used with compressed diagonal storage mode matrices $\bf{W}+\bf{P}_w^\top \bf{U}\bf{P}_w$ or $\bf{A}_w+\bf{R}_w\bf{T}^{-1}\bf{R}_w^\top$.} 
+\OptIntEnr
+  {IPW\blank{9}}{$\mathcal{S}^{t}_{11}$}{$\mathcal{S}^{t}_{6}\ge 8$}
+  {Permutation vector ensuring minimum bandwidth for matrices $\bf{W}+\bf{P}_w^\top \bf{U}\bf{P}_w$ or $\bf{A}_w+\bf{R}_w\bf{T}^{-1}\bf{R}_w^\top$.} 
+\OptIntEnr
+  {MUX\blank{9}}{$\mathcal{S}^{t}_{11}$ or $\mathcal{S}^{t}_{27}$}{$\mathcal{S}^{t}_{8}=0$}
+  {Indices used with compressed diagonal storage mode matrices $\bf{X}+\bf{P}_x^\top \bf{U}\bf{P}_x$ or $\bf{A}_x+\bf{R}_x\bf{T}^{-1}\bf{R}_x^\top$.} 
+\IntEnr
+  {IPX\blank{9}}{$\mathcal{S}^{t}_{11}$}
+  {Permutation vector ensuring minimum bandwidth for matrices $\bf{X}+\bf{P}_x^\top \bf{U}\bf{P}_x$ or $\bf{A}_x+\bf{R}_x\bf{T}^{-1}\bf{R}_x^\top$.} 
+\OptIntEnr
+  {MUY\blank{9}}{$\mathcal{S}^{t}_{11}$ or $\mathcal{S}^{t}_{28}$}{$\mathcal{S}^{t}_{6}\ge 5$}
+  {Indices used with compressed diagonal storage mode matrices $\bf{Y}+\bf{P}_y^\top \bf{U}\bf{P}_y$ or $\bf{A}_y+\bf{R}_y\bf{T}^{-1}\bf{R}_y^\top$.} 
+\OptIntEnr
+  {IPY\blank{9}}{$\mathcal{S}^{t}_{11}$}{$\mathcal{S}^{t}_{6}\ge 5$}
+  {Permutation vector ensuring minimum bandwidth for matrices $\bf{Y}+\bf{P}_y^\top \bf{U}\bf{P}_y$ or $\bf{A}_y+\bf{R}_y\bf{T}^{-1}\bf{R}_y^\top$.} 
+\OptIntEnr
+  {MUZ\blank{9}}{$\mathcal{S}^{t}_{11}$ or $\mathcal{S}^{t}_{29}$}{$\mathcal{S}^{t}_{6}=7$ or $9$}
+  {Indices used with compressed diagonal storage mode matrices $\bf{Z}+\bf{P}_z^\top \bf{U}\bf{P}_z$ or $\bf{A}_z+\bf{R}_z\bf{T}^{-1}\bf{R}_z^\top$.} 
+\OptIntEnr
+  {IPZ\blank{9}}{$\mathcal{S}^{t}_{11}$}{$\mathcal{S}^{t}_{6}=7$ or $9$}
+  {Permutation vector ensuring minimum bandwidth for matrices $\bf{Z}+\bf{P}_z^\top \bf{U}\bf{P}_z$ or $\bf{A}_z+\bf{R}_z\bf{T}^{-1}\bf{R}_z^\top$.} 
+\DirEnr
+  {BIVCOL\blank{6}}
+  {Sub-directory containing the unit matrices (mass, stiffness, nodal coupling,
+   etc.) for a finite element discretization.
+  The specification of this directory is given in \Sect{bivactrackingdir}}
+\end{DescriptionEnregistrement}
+
+The following records will also be present on the main level of a \dir{tracking}
+directory in cases where a Thomas-Raviart or Thomas-Raviart-Schneider polynomial basis is used ($\mathcal{S}^{t}_{12}=2$):
+
+\begin{DescriptionEnregistrement}{The \moc{trivat} records in
+\dir{tracking} (contd.)}{8.0cm}
+\OptIntEnr
+  {IPF\blank{9}}{$\mathcal{S}^{t}_{25}$}{$\mathcal{S}^{t}_{25}\ne 0$}
+  {Localization vector for flux values in unknown vector.} 
+\OptIntEnr
+  {IPBBW\blank{7}}{$2 \, \mathcal{S}^{t}_{9} \times \mathcal{S}^{t}_{26}$}{$\mathcal{S}^{t}_{26}\ne 0$}
+  {Perdue sparse storage indices for matrices $\bf{R}_w$.} 
+\OptIntEnr
+  {IPBBX\blank{7}}{$2 \, \mathcal{S}^{t}_{9} \times \mathcal{S}^{t}_{27}$}{$\mathcal{S}^{t}_{27}\ne 0$}
+  {Perdue sparse storage indices for matrices $\bf{R}_x$.}
+\OptIntEnr
+  {IPBBY\blank{7}}{$2 \, \mathcal{S}^{t}_{9} \times \mathcal{S}^{t}_{28}$}{$\mathcal{S}^{t}_{28}\ne 0$}
+  {Perdue sparse storage indices for matrices $\bf{R}_y$.}
+\OptIntEnr
+  {IPBBZ\blank{7}}{$2 \, \mathcal{S}^{t}_{9} \times \mathcal{S}^{t}_{29}$}{$\mathcal{S}^{t}_{29}\ne 0$}
+  {Perdue sparse storage indices for matrices $\bf{R}_z$.} 
+\OptRealEnr
+  {WB\blank{10}}{$2 \, \mathcal{S}^{t}_{9} \times \mathcal{S}^{t}_{26}$}{$\mathcal{S}^{t}_{26}\ne 0$}{~}
+  {Matrix component $\bf{R}_w$ in Perdue sparse storage mode.} 
+\OptRealEnr
+  {XB\blank{10}}{$2 \, \mathcal{S}^{t}_{9} \times \mathcal{S}^{t}_{27}$}{$\mathcal{S}^{t}_{27}\ne 0$}{~}
+  {Matrix component $\bf{R}_x$ in Perdue sparse storage mode.} 
+\OptRealEnr
+  {YB\blank{10}}{$2 \, \mathcal{S}^{t}_{9} \times \mathcal{S}^{t}_{28}$}{$\mathcal{S}^{t}_{28}\ne 0$}{~}
+  {Matrix component $\bf{R}_y$ in Perdue sparse storage mode.} 
+\OptRealEnr
+  {ZB\blank{10}}{$2 \, \mathcal{S}^{t}_{9} \times \mathcal{S}^{t}_{29}$}{$\mathcal{S}^{t}_{29}\ne 0$}{~}
+  {Matrix component $\bf{R}_z$ in Perdue sparse storage mode.} 
+\OptIntEnr
+  {IPERT\blank{7}}{$N_{\rm los}$}{$\mathcal{S}^{t}_{6}\ge 8$}
+  {Mixture permutation index. $N_{\rm los}=\mathcal{S}^{t}_{14}\times \mathcal{S}^{t}_{15}\times (\mathcal{S}^{t}_{13})^2$} 
+\OptDbleEnr
+  {CTRAN\blank{7}}{$N_{\rm pio}\times N_{\rm pio}$}{$\mathcal{S}^{t}_{6}\ge 8$}{~}
+  {Piolat current coupling matrix. $N_{\rm pio}=(\mathcal{S}^{t}_{9}+1)\times \mathcal{S}^{t}_{9}$} 
+\OptRealEnr
+  {FRZ\blank{9}}{$\mathcal{S}^{t}_{16}$}{$\mathcal{S}^{t}_{6}\ge 8$}{~}
+  {Volume fractions related to the SYME boundary condition in $Z$.} 
+\end{DescriptionEnregistrement}
+
+The following records will also be present on the main level of a \dir{tracking}
+directory in cases where supervectorial operations are used ($\mathcal{S}^{t}_{17}\ne 0$):
+
+\begin{DescriptionEnregistrement}{The \moc{trivat} records in
+\dir{tracking} (contd.)}{8.0cm}
+\IntEnr
+  {LL4VW\blank{7}}{$1$}
+  {Order of a reordered $W-$matrix, including supervectorial fill-in. Multiple of $\mathcal{S}^{t}_{17}$}
+\IntEnr
+  {LL4VX\blank{7}}{$1$}
+  {Order of a reordered $X-$matrix, including supervectorial fill-in. Multiple of $\mathcal{S}^{t}_{17}$}
+\IntEnr
+  {LL4VY\blank{7}}{$1$}
+  {Order of a reordered $Y-$matrix, including supervectorial fill-in. Multiple of $\mathcal{S}^{t}_{17}$}
+\IntEnr
+  {LL4VZ\blank{7}}{$1$}
+  {Order of a reordered $Z-$matrix, including supervectorial fill-in. Multiple of $\mathcal{S}^{t}_{17}$}
+\OptIntEnr
+  {NBLW\blank{8}}{$\mathcal{S}^{t}_{20}$}{$\mathcal{S}^{t}_{20}\ne 0$}
+  {Number of linear systems per supervector group for $W-$matrices}
+\OptIntEnr
+  {NBLX\blank{8}}{$\mathcal{S}^{t}_{21}$}{$\mathcal{S}^{t}_{21}\ne 0$}
+  {Number of linear systems per supervector group for $X-$matrices}
+\OptIntEnr
+  {NBLY\blank{8}}{$\mathcal{S}^{t}_{22}$}{$\mathcal{S}^{t}_{22}\ne 0$}
+  {Number of linear systems per supervector group for $Y-$matrices}
+\OptIntEnr
+  {NBLZ\blank{8}}{$\mathcal{S}^{t}_{23}$}{$\mathcal{S}^{t}_{23}\ne 0$}
+  {Number of linear systems per supervector group for $Z-$matrices}
+\OptIntEnr
+  {LBLW\blank{8}}{$\mathcal{S}^{t}_{20}$}{$\mathcal{S}^{t}_{20}\ne 0$}
+  {Number of unknowns per supervector group for $W-$matrices}
+\OptIntEnr
+  {LBLX\blank{8}}{$\mathcal{S}^{t}_{21}$}{$\mathcal{S}^{t}_{21}\ne 0$}
+  {Number of unknowns per supervector group for $X-$matrices}
+\OptIntEnr
+  {LBLY\blank{8}}{$\mathcal{S}^{t}_{22}$}{$\mathcal{S}^{t}_{22}\ne 0$}
+  {Number of unknowns per supervector group for $Y-$matrices}
+\OptIntEnr
+  {LBLZ\blank{8}}{$\mathcal{S}^{t}_{23}$}{$\mathcal{S}^{t}_{23}\ne 0$}
+  {Number of unknowns per supervector group for $Z-$matrices}
+\OptIntEnr
+  {MUVW\blank{8}}{$\mathcal{S}^{t}_{11}$ or $\mathcal{S}^{t}_{26}$}{$\mathcal{S}^{t}_{6}\ge 8$}
+  {Indices used with $W-$directed compressed diagonal storage mode matrices in supervector mode}
+\OptIntEnr
+  {MUVX\blank{8}}{$\mathcal{S}^{t}_{11}$ or $\mathcal{S}^{t}_{27}$}{$\mathcal{S}^{t}_{8}=0$}
+  {Indices used with $X-$directed compressed diagonal storage mode matrices in supervector mode}
+\OptIntEnr
+  {MUVY\blank{8}}{$\mathcal{S}^{t}_{11}$ or $\mathcal{S}^{t}_{28}$}{$\mathcal{S}^{t}_{6}\ge 5$}
+  {Indices used with $Y-$directed compressed diagonal storage mode matrices in supervector mode}
+\OptIntEnr
+  {MUVZ\blank{8}}{$\mathcal{S}^{t}_{11}$ or $\mathcal{S}^{t}_{29}$}{$\mathcal{S}^{t}_{6}=7$ or $9$}
+  {Indices used with $Z-$directed compressed diagonal storage mode matrices in supervector mode}
+\OptIntEnr
+  {IPVW\blank{8}}{$\mathcal{S}^{t}_{11}$}{$\mathcal{S}^{t}_{6}\ge 8$}
+  {$W-$directed ADI permutation matrix in supervector mode}
+\IntEnr
+  {IPVX\blank{8}}{$\mathcal{S}^{t}_{11}$}
+  {$X-$directed ADI permutation matrix in supervector mode}
+\OptIntEnr
+  {IPVY\blank{8}}{$\mathcal{S}^{t}_{11}$}{$\mathcal{S}^{t}_{6}\ge 5$}
+  {$Y-$directed ADI permutation matrix in supervector mode}
+\OptIntEnr
+  {IPVZ\blank{8}}{$\mathcal{S}^{t}_{11}$}{$\mathcal{S}^{t}_{6}=7$ or $9$}
+  {$Z-$directed ADI permutation matrix in supervector mode}
+\end{DescriptionEnregistrement}
+
+The following records will also be present on the main level of a \dir{tracking}
+directory in cases where a cylindrical correction of the albedos is used ($\mathcal{S}^{t}_{24}\ne 0$):
+
+\begin{DescriptionEnregistrement}{The \moc{trivat} records in
+\dir{tracking} (contd.)}{8.0cm}
+\OptRealEnr
+  {RR0\blank{9}}{$\mathcal{S}^{t}_{24}$}{$\mathcal{S}^{t}_{24}\ne 0$}{cm}
+  {Radii of the cylindrical boundaries in the cylindrical correction}
+\OptRealEnr
+  {XR0\blank{9}}{$\mathcal{S}^{t}_{24}$}{$\mathcal{S}^{t}_{24}\ne 0$}{cm}
+  {Coordinates on principal axis in the cylindrical correction}
+\OptRealEnr
+  {ANG\blank{9}}{$\mathcal{S}^{t}_{24}$}{$\mathcal{S}^{t}_{24}\ne 0$}{1}
+  {Angles for applying the cylindrical correction}
+\end{DescriptionEnregistrement}
+
+\eject

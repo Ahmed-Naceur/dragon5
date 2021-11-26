@@ -1,0 +1,94 @@
+\subsection{The {\tt M2T:} module}\label{sect:M2TData}
+
+This component of the lattice code is dedicated to the generation of an {\sc ascii} file
+with the Apotrim specification using {\sc macrolib} data. Such a file is useful to transfer multigroup
+and macroscopic cross-section data toward a Moret calculation.
+
+\vskip 0.02cm
+
+The calling specifications are:
+
+\begin{DataStructure}{Structure \dstr{M2T:}}
+\dusa{APTRIM}~\moc{:=}~\moc{M2T:}~$[$~\dusa{APTRIM}~$]$~\dusa{MLIB}~\moc{::}~\dstr{M2T\_data} \\
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\dusa{APTRIM}] {\tt character*12} name of an {\sc ascii} file with the Apotrim specification. If \dusa{APTRIM} appears on the RHS, new information is appended to the existing Apotrim file.
+
+\item[\dusa{MLIB}] {\tt character*12} name of a {\sc macrolib} (type {\tt L\_MACROLIB}) object.
+
+\item[\dusa{M2T\_data}] input data structure containing specific data (see \Sect{descM2T}).
+
+\end{ListeDeDescription}
+
+\subsubsection{Data input for module {\tt M2T:}}\label{sect:descM2T}
+
+\vskip -0.5cm
+
+\begin{DataStructure}{Structure \dstr{M2T\_data}}
+$[$~\moc{EDIT} \dusa{iprint}~$]$ \\
+$[$~\moc{PN} \dusa{nl}~$]~[$~\moc{TRAN}~$]~[$~\moc{NOMA}~$]$ \\
+$[[$~\moc{MIX} \dusa{hmix}~$[$~\moc{FROM}~\dusa{imixold}~$]~[$~\moc{BURN} \dusa{bup}~$]~[$~\moc{TEMP} \dusa{tval}~$]$~\moc{ENDMIX}~$]]$\\
+{\tt ;}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing in module {\tt
+M2T:}. =0 for no print; =1 for minimum printing (default value).
+
+\item[\moc{PN}] keyword used to set the Legendre order of the scattering transfers written on the Apotrim file.
+
+\item[\dusa{nl}] Legendre order. By default, \dusa{nl} $=0$ corresponding to an isotropic collision in LAB.
+
+\item[\moc{TRAN}] keyword used to set a transport correction on cross sections written on the Apotrim file.
+
+\item[\moc{NOMA}] keyword used to avoid writing the energy mesh on the Apotrim file. This
+option is useful to catenate additional mixture information on an existing Apotrim file. By
+default, the energy mesh is written on the Apotrim file.
+
+\item[\moc{MIX}] keyword used to set \dusa{hmix}.
+
+\item[\dusa{hmix}] {\tt character*20} name of the mixture to be written on the Apotrim file.
+
+\item[\moc{BURN}] keyword used to set the burnup of a mixture.
+
+\item[\dusa{bup}] burnup of a mixture. By default, \dusa{bup} $=0.0$.
+
+\item[\moc{TEMP}] keyword used to set the temperature of a mixture.
+
+\item[\dusa{tval}] temperature of a mixture in Celsius. By default, \dusa{tval} $=0.0 \ ^\circ{\rm C}$.
+
+\item[\moc{FROM}] keyword used to set the index of the mixture in the {\sc macrolib} object.
+
+\item[\dusa{imixold}] index of the mixture that is recovered in the {\sc macrolib} object. By default, \dusa{imixold}$=1$.
+
+\item[\moc{ENDMIX}] end of specification keyword for the material mixture.
+
+\end{ListeDeDescription}
+
+Here is an example of the creation of an Apotrim file named {\tt APOTR} with a Hansen-Roach energy mesh created
+from a XMAS 172-group flux calculation. The Apotrim file is created from three
+LCM objects {\tt FLUX}, {\tt LIBRARY2} and {\tt TRACK} containing the flux, the XMAS-formatted microlib
+and the tracking.
+
+\begin{verbatim}
+LINKED_LIST TRACK LIBRARY2 FLUX MAC2 EDIT ;
+SEQ_ASCII APOTR ;
+...
+EDIT := EDI: LIBRARY2 TRACK FLUX :: EDIT 3
+*     Hansen-Roach energy mesh follows
+      COND 12 17 21 27 33 42 50 60 66 76 84 95 123 140 155 172
+      MERGE MIX 1 1 1 1 1 1 2 3 3
+      SAVE ON 'EDITCDAT   1' ;
+MAC2 := EDIT :: STEP UP 'EDITCDAT   1' STEP UP 'MACROLIB' ;
+APOTR := M2T: MAC2 :: EDIT 3 TRAN MIX FUEL FROM 1 ENDMIX
+                                  MIX CLAD FROM 2 ENDMIX
+                                  MIX COOLANT FROM 3 ENDMIX ;
+\end{verbatim}
+\eject

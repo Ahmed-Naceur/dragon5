@@ -1,0 +1,19 @@
+* Regression tests based on Rowland's benchmarks with a Jef2.2 Draglib.
+* Use a 281-group SHEM library.
+* Running time = ~ 10m
+* A. Hebert
+*
+PROCEDURE uo2_6c_c1_sh uo2_6c_c2_sh uo2_6c_c3_sh uo2_6c_c4_sh
+          uo2_6c_c5_sh mox_6c_c1_sh mox_6c_c2_sh mox_6c_c3_sh
+          mox_6c_c4_sh mox_6c_c5_sh ;
+uo2_6c_c1_sh ;
+uo2_6c_c2_sh ;
+uo2_6c_c3_sh ;
+uo2_6c_c4_sh ;
+uo2_6c_c5_sh ;
+mox_6c_c1_sh ;
+mox_6c_c2_sh ;
+mox_6c_c3_sh ;
+mox_6c_c4_sh ;
+mox_6c_c5_sh ;
+QUIT "LIST" .

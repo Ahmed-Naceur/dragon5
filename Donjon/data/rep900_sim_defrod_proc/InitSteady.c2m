@@ -1,0 +1,136 @@
+****************************************************************
+*                                                              *
+* Procedure :  InitSteady.c2m                                  *
+* Purpose   :  initialize objects for Steady procedure         *
+* Author    :  V. Salino                                       *
+*                                                              *
+* CALL      :                                                  *
+*  Flux Thermo XeMicroF XeBurn Fmap Matex := InitSteady        *
+*  Fmap Matex ReflXS Track ;                                   *
+*                                                              *
+****************************************************************
+PARAMETER Flux Thermo MicroF Burn Fmap Matex SapUOX SapMOX 
+          MacroRefl Track ::
+  ::: LINKED_LIST Flux Thermo MicroF Burn Fmap 
+                  Matex SapUOX SapMOX MacroRefl Track ; ;
+MODULE SCR: NCR: MACINI: RESINI: TRIVAA: FLUD: FLPOW: THM: EVO:
+       GREP: UTL: DELETE: ABORT: END: ;
+*--
+* Local objects and variable
+*--
+LINKED_LIST MacroTot MacroF System PowerIter ;
+REAL CBinterp := 0.0 ;
+*--
+* Thermalhydraulics parameters
+*--
+REAL dx       := 21.5 ;
+REAL Tot_tub  := 6.6E-03 2.0 ** $Pi_R * 25.0  * ;
+REAL Tot_pin  := 4.7E-03 2.0 ** $Pi_R * 264.0 * ;
+REAL asssect  := dx dx * 1.E-04 * Tot_tub - Tot_pin - ;
+REAL coresect := 157.0 asssect * ;
+*--
+* Flat power distribution
+*--
+REAL Ptot := 2750. ;
+REAL BundPow := Ptot 157.0 / 29.0 / 1.0E+3 * (* MW to kW *) ;
+Fmap := RESINI: Fmap ::
+  BUNDLE-POW SAME <<BundPow>> ;
+*--
+* Thermalhydraulics computation
+*--
+    Thermo Fmap := THM: Fmap ::
+      EDIT 4
+      CRITFL 4.00E+6 (* W/m^2 *)
+      ASSMB  264 25
+      CWSECT <<coresect>> 60000.0
+      INLET  155.0E+05 550.0
+      RADIUS 4.1E-03 4.2E-03 4.7E-03 6.6E-03
+      SET-PARAM 'C-BORE' <<CBinterp>>
+      CONV 50 50 50 0.1 1.0E-3
+      RELAX 0.4 ;
+*--
+* Saphyb Interpolation
+* Historic effects are neglected for simplicity's sake
+*--
+MicroF := SCR: SapUOX SapMOX Fmap ::
+    EDIT 10
+    MICRO LINEAR
+    EQUI EQVS
+    TABLE SapUOX 'BURN'
+    MIX 4
+       INST-BURN
+        SET 'DMOD' MAP
+        SET 'TCOM' MAP
+        SET 'BARR' MAP
+       MICRO ALL
+           'B10'      *
+           'B11'      *
+           'XE135PF'    0.
+           'I135PF'     0.
+           'ND147PF'    0.
+           'PM147PF'    0.
+           'PM148PF'    0.
+           'PM148MPF'   0.
+           'PM149PF'    0.
+           'SM149PF'    0.
+           '*MAC*RES' 1.
+    ENDMIX
+    TABLE SapMOX 'BURN'
+    MIX 5
+       INST-BURN
+        SET 'DMOD' MAP
+        SET 'TCOM' MAP
+        SET 'BARR' MAP
+       MICRO ALL
+           'B10'      *
+           'B11'      *
+           'XE135PF'    0.
+           'I135PF'     0.
+           'ND147PF'    0.
+           'PM147PF'    0.
+           'PM148PF'    0.
+           'PM148MPF'   0.
+           'PM149PF'    0.
+           'SM149PF'    0.
+           '*MAC*RES' 1.
+    ENDMIX
+CHAIN
+  B10      STABLE
+  B11      STABLE
+  I135PF   NG    0.
+  XE135PF  NG    0. FROM DECAY 1.0E+00 I135PF
+  ND147PF  STABLE
+  PM147PF  STABLE
+  PM148PF  STABLE
+  PM148MPF STABLE
+  PM149PF  STABLE
+  SM149PF  STABLE
+  MACR     NFTOT 0.
+ENDCHAIN
+;
+
+MacroF := MicroF :: STEP UP "MACROLIB" ;
+*--
+* Reflector interpolation
+*--
+*--
+* Flux and power computation
+*--
+MacroTot Matex := MACINI: Matex MacroRefl MacroF ;
+MacroF := DELETE: MacroF ;
+System := TRIVAA: MacroTot Track :: EDIT 0 ;
+MacroTot := DELETE: MacroTot ;
+Flux := FLUD: System Track :: EDIT 0 ACCE 5 3 ;
+System := DELETE: System ;
+PowerIter Fmap := FLPOW: Fmap Flux Track Matex ::
+  EDIT 0 PTOT <<Ptot>> PRINT DISTR POWER ;
+*--
+* Xenon saturation
+*--
+Burn MicroF := EVO: MicroF PowerIter ::
+  EDIT 0 FLUX_POW PIFI SAVE 0. DAY KEEP ;
+*Flux PowerIter := DELETE: Flux PowerIter ;
+PowerIter := DELETE: PowerIter ;
+
+END: ;
+

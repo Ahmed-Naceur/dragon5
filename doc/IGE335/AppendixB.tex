@@ -1,0 +1,79 @@
+\section{THE CLE-2000 CONTROL LANGUAGE}
+
+The CLE-2000 control language allows  loops, conditional testing and
+macro-processor capabilities to be included in the generalized driver input
+deck. A reversed polish notation (RPN) calculator named {\tt EVALUATE} is also
+provided. An example of conditional testing is shown in the following example
+involving two modules:
+
+\vskip 0.4cm
+
+\noindent\begin{tabular}{|l|}
+\hline \\
+{\tt INTEGER INDEX ;} \\
+{\tt MODULE MOD1: MOD2: ;} \\
+. \\
+. \\
+. \\
+{\tt EVALUATE INDEX := 0 ;} \\
+{\tt REPEAT} \\
+{\tt ~~~~~EVALUATE INDEX := INDEX 1 + ;} \\
+{\tt ~~~~~IF INDEX 3 > THEN} \\
+{\tt ~~~~~~~~~~}{\sl (list of output objects)} {\tt := MOD1:} {\sl (list of input objects) {\tt ::} (data input for {\tt MOD1:})} {\tt ; }\\
+{\tt ~~~~~ELSE} \\
+{\tt ~~~~~~~~~~}{\sl (list of output objects)} {\tt := MOD2:} {\sl (list of input objects) {\tt ::} (data input for {\tt MOD2:})} {\tt ;} \\
+{\tt ~~~~~ENDIF ;} \\
+{\tt UNTIL INDEX 7 >= ;} \\
+\\ \\ \hline
+\end{tabular}
+
+\vskip 0.4cm
+
+An input deck will be built as a collection of 
+\begin{itemize}
+\item {\tt PARAMETER}, {\tt MODULE}, {\tt PROCEDURE}, {\tt LINKED}$\_${\tt LIST}, {\tt XSM}$\_${\tt FILE}, {\tt SEQ}$\_${\tt BINARY}, {\tt SEQ}$\_${\tt ASCII} and {\tt DIRECT}$\_${\tt ACCESS}, {\tt INTEGER}, {\tt REAL}, {\tt CHARACTER}, {\tt DOUBLE} and {\tt LOGICAL} declarations;
+\item {\tt REDGET} calls (into procedures only);
+\item {\tt EVALUATE} statements, {\tt PRINT} statements and conditional logic involving variables.
+\end{itemize}
+
+ This type of programming provides the user with much more flexibility  than
+the conventional approaches. It is possible to build new applications without
+recompilation, simply by changing the order of the module calls and by making
+modifications to the conditional logic. It is very simple to develop a
+user-defined function even if this possibility is not programmed into any
+module.
+
+
+The CLE-2000 control language brings the following capabilities to any code built around the generalized driver:
+
+\begin{itemize}
+\item {\tt INTEGER}, {\tt REAL}, {\tt CHARACTER}, {\tt DOUBLE} and  {\tt
+LOGICAL} declarations to contain control language and macro-processor variables.
+
+\item macro processor variables. For example, it is possible to define a variable {\tt VAR1} as equal to a real number and to use {\tt <<VAR1>>} in place of this real number later on.
+
+\item reversed polish notation calculator. A calculator is called each time the statement {\tt EVALUATE} is used. For example, the statement
+  \begin{verbatim}
+EVALUATE VAR1 := 4.0 6.0 + ;
+  \end{verbatim}
+would assign the result 10.0 to the variable {\tt VAR1}. Logical operations are fully supported.
+
+\item a simple printer. For example, the variable {\tt VAR1} can be printed using the command
+  \begin{verbatim}
+PRINT VAR1 ;
+  \end{verbatim}
+
+\item three types of control loops. The available control loops are:
+
+\begin{itemize}
+\item {\tt IF} {\sl (logical expression)} {\tt THEN} {\sl (user instructions)} {\tt ELSE} {\sl (user instructions)} {\tt ENDIF ;}
+\item {\tt REPEAT} {\sl (user instructions)} {\tt UNTIL} {\sl (logical expression)} {\tt ;}
+\item {\tt WHILE} {\sl (logical expression)} {\tt DO} {\sl (user instructions)} {\tt ENDWHILE ;}
+\end{itemize}
+
+\end{itemize}
+
+\vskip 0.2cm
+
+Note that the {\tt EVALUATE} and {\tt PRINT} statements are {\sl not} modules of the generalized driver.
+

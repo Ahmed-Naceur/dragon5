@@ -1,0 +1,124 @@
+*----
+*  TEST CASE TCM08
+*  MACROSCOPIC CROSS SECTIONS
+*  FIXED SOURCE PROBLEM WITH FISSILE MATERIAL
+*  FOR 1/8 7X7 PWR ASSEMBLY
+*
+*  REF: TCM02
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST
+  PWRF TRACF SYSF FLUXF EDITF PWRS TRACS SYSS FLUXS EDITS MACRO ;
+SEQ_BINARY
+  PWRTRKF PWRTRKS ;
+MODULE
+  GEO: EXCELT: MAC: ASM: FLU: EDI: DELETE: END: ;
+PROCEDURE assertS assertV ;
+*----
+* Macroscopic XS
+*----
+MACRO   :=      MAC:    ::
+  NGRO 1 NMIX 4 NIFI 1
+  READ INPUT
+  MIX 1 TOTAL  1.250  SCAT 1 1  1.242  
+        NUSIGF 0.15  CHI 1.0
+  MIX 2 TOTAL  0.625  SCAT 1 1  0.355
+        FIXE 0.000
+  MIX 3 TOTAL 14.000  SCAT 1 1  0.000  
+        FIXE 1.000
+  MIX 4 TOTAL  1.250  SCAT 1 1  1.242  
+        FIXE 0.000
+  ;
+*----
+*  Geometry : PWRF  - Cartesian 2D assembly with fission
+*             PWRS  - Cartesian 2D assembly without fission
+*  Tracking : EXCELT 
+*----
+PWRF    :=      GEO:    :: CAR2D 4 4
+  X- DIAG  X+ REFL Y- SYME  Y+ DIAG
+  CELL   P F F F 
+           F F F
+             F F
+               F 
+  ::: F := GEO: CARCEL 1
+    RADIUS 0.000 0.450
+    MIX 2  1
+    MESHX -0.625  0.625 SPLITX 2
+    MESHY -0.625  0.625 SPLITY 2  ;
+  ::: P := GEO: F
+    MIX  3  1  
+    SPLITR 3     ;
+  ;
+PWRS    :=      GEO:    :: CAR2D 4 4
+  X- DIAG  X+ REFL Y- SYME  Y+ DIAG
+  CELL   P F F F 
+           F F F
+             F F
+               F 
+  ::: F := GEO: CARCEL 1
+    RADIUS 0.000 0.450
+    MIX 2  4
+    MESHX -0.625  0.625 SPLITX 2
+    MESHY -0.625  0.625 SPLITY 2 ;
+  ::: P := GEO: F
+    MIX  3  4  
+    SPLITR 3     ;
+  ;
+TRACF PWRTRKF := EXCELT: PWRF    ::
+  TITLE 'TCM08: STANKOVSKI PWR ASSEMBLY'
+  MAXR 58 TRAK TISO 12 8.0  ;
+SYSF := ASM: MACRO TRACF PWRTRKF ;
+TRACS   PWRTRKS :=      EXCELT: PWRS    ::
+  TITLE 'TCM08: STANKOVSKI PWR ASSEMBLY'
+  MAXR 58 TRAK TISO 12 8.0  ;
+SYSS := ASM: MACRO TRACS PWRTRKS ;
+*---- 
+*  Solution : TYPE K to test if k < 1.0 
+*             TYPE S to include fixed source
+*----
+FLUXF := FLU: SYSF MACRO TRACF ::
+  TYPE K ;
+assertS FLUXF :: 'K-EFFECTIVE' 1 0.8165358 ;
+EDITF := EDI: MACRO TRACF FLUXF ::
+  EDIT 2 SAVE
+  MERGE REGION
+   1  1  1  2  3  4  3  4  5  6  5  6  7  8  7  8
+   9 10  9 10  9 10 11 12 11 12 11 12 11 12 13 14 13 14 13 14 13 14
+  15 16 15 16 15 16 17 18 17 18 17 18 17 18
+  19 20 19 20 19 20  ;
+EDITF := DELETE: EDITF ;
+*----
+*  SINCE KEFF < 1  DO FIXED SOURCE PROBLEM
+*  (FIXED AND FISSION SOURCES TAKEN INTO ACCOUNT)
+*----
+FLUXF := FLU: FLUXF SYSF MACRO TRACF ::
+  TYPE S ;
+EDITF := EDI: MACRO TRACF FLUXF ::
+  EDIT 2 SAVE
+  MERGE REGION
+   1  1  1  2  3  4  3  4  5  6  5  6  7  8  7  8
+   9 10  9 10  9 10 11 12 11 12 11 12 11 12 13 14 13 14 13 14 13 14
+  15 16 15 16 15 16 17 18 17 18 17 18 17 18
+  19 20 19 20 19 20  ;
+*---- 
+*  Solution : TYPE S only since no fission
+*----
+*
+*  IF KEFF < 1  DO FIXED SOURCE PROBLEM PROBLEM
+*  (FIXED AND FISSION SOURCES TAKEN INTO ACCOUNT)
+*
+FLUXS := FLU: SYSS MACRO TRACS ::
+  TYPE S ;
+assertV FLUXS :: 'FLUX' (*GROUP*) 1 (*REGION*) 10 6.728200E-03 ;
+EDITS := EDI: MACRO TRACS FLUXS ::
+  EDIT 2 SAVE
+  MERGE REGION
+   1  1  1  2  3  4  3  4  5  6  5  6  7  8  7  8
+   9 10  9 10  9 10 11 12 11 12 11 12 11 12 13 14 13 14 13 14 13 14
+  15 16 15 16 15 16 17 18 17 18 17 18 17 18
+  19 20 19 20 19 20  ;
+PWRTRKS PWRTRKF := DELETE: PWRTRKS PWRTRKF ;
+ECHO "test TCM08 completed" ;
+END: ;
+QUIT "LIST" .

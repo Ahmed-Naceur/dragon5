@@ -1,0 +1,138 @@
+*DECK Autop2
+*----
+*  Name          : Autop2.c2m
+*  Type          : DRAGON procedure
+*  Use           : Realize the rerun of self shielding calculation
+*  Author        : R. Vallerent
+*
+*  Procedure called as: 
+*
+*  LIBRARY2 := Autop2 LIBRARY2 LIBRARY TRACKSS :: <<Fuel>> <<NbRegions>> ;
+*
+*  Input data   :
+*    LIBRARY    : Library with SUBG key word
+*    LIBRARY2   : Library already self shielded
+*    TRACKSS    : Tracking of the SS geometry
+*    Fuel       : Type of fuel (UOX/MOX)
+*    NbRegions  : Number of regions for the calculation (20/32)
+*  Output data  :
+*    LIBRARY2   : Self shielded Library
+
+
+PARAMETER LIBRARY2 LIBRARY TRACKSS ::  
+       EDIT 1 
+           ::: LINKED_LIST LIBRARY2 LIBRARY TRACKSS ; 
+   ;
+*                                                                      ;
+MODULE USS: END: ;
+
+STRING Fuel   ;
+  :: >>Fuel<< ;
+INTEGER NbRegions   ;
+   :: >>NbRegions<< ;
+
+IF Fuel "MOX" = THEN
+LIBRARY2 := USS: LIBRARY LIBRARY2 TRACKSS ::
+  EDIT 0
+  ARM
+  TRAN
+  PASS 1
+  GRMIN 31 GRMAX 93
+  CALC 
+    REGI W1 U235  ALL
+    REGI W1 U236  ALL
+    REGI W1 Pu239 ALL
+    REGI W1 Pu240 ALL
+    REGI W1 Pu241 ALL
+    REGI W1 Pu242 ALL
+    REGI W1 Zr90g ALL
+    REGI W1 Zr91g ALL
+    REGI W1 Zr92g ALL
+    REGI W1 Zr94g ALL
+    REGI W1 Zr96g ALL
+    REGI W1 Zr90f ALL
+    REGI W1 Zr91f ALL
+    REGI W1 Zr92f ALL
+    REGI W1 Zr94f ALL
+    REGI W1 Zr96f ALL
+
+  ENDC
+;
+ELSEIF Fuel "UOX" = THEN
+    IF NbRegions 20 = THEN
+LIBRARY2 := USS: LIBRARY LIBRARY2 TRACKSS ::
+  EDIT 0
+  ARM
+  TRAN
+  PASS 1
+  GRMIN 31 GRMAX 93
+  CALC 
+    REGI W1 U235  ALL
+    REGI W1 U236  ALL
+    REGI W1 Pu239 ALL
+    REGI W1 Pu240 ALL
+    REGI W1 Pu241 ALL
+    REGI W1 Pu242 ALL
+    REGI W1 Zr90g ALL
+    REGI W1 Zr91g ALL
+    REGI W1 Zr92g ALL
+    REGI W1 Zr94g ALL
+    REGI W1 Zr96g ALL
+    REGI W1 Zr90f ALL
+    REGI W1 Zr91f ALL
+    REGI W1 Zr92f ALL
+    REGI W1 Zr94f ALL
+    REGI W1 Zr96f ALL
+
+    REGI W1 U238  9
+    REGI W2 U238 10
+    REGI W3 U238 11
+    REGI W4 U238 12
+    REGI W5 U238 13 17 21 25
+    REGI W6 U238 14 18 22 26
+    REGI W7 U238 15 19 23 27
+    REGI W8 U238 16 20 24 28
+  ENDC
+;
+    ELSEIF NbRegions 32 = THEN
+LIBRARY2 := USS: LIBRARY LIBRARY2 TRACKSS ::
+  EDIT 0
+  ARM
+  TRAN
+  PASS 1
+  GRMIN 31 GRMAX 93
+  CALC 
+    REGI W1 U235  ALL
+    REGI W1 U236  ALL
+    REGI W1 Pu239 ALL
+    REGI W1 Pu240 ALL
+    REGI W1 Pu241 ALL
+    REGI W1 Pu242 ALL
+    REGI W1 Zr90g ALL
+    REGI W1 Zr91g ALL
+    REGI W1 Zr92g ALL
+    REGI W1 Zr94g ALL
+    REGI W1 Zr96g ALL
+    REGI W1 Zr90f ALL
+    REGI W1 Zr91f ALL
+    REGI W1 Zr92f ALL
+    REGI W1 Zr94f ALL
+    REGI W1 Zr96f ALL
+
+    REGI W1 U238  9 21
+    REGI W2 U238 10 22
+    REGI W3 U238 11 23
+    REGI W4 U238 12 24
+    REGI W5 U238 13 17 25 29 33 37
+    REGI W6 U238 14 18 26 30 34 38
+    REGI W7 U238 15 19 27 31 35 39
+    REGI W8 U238 16 20 28 32 36 40
+  ENDC
+;
+    ENDIF ;
+ELSE
+  ECHO "Mauvaise donnée de Fuel" ;
+ENDIF ;
+
+END: ;
+QUIT .

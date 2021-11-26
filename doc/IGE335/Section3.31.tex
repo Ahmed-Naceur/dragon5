@@ -1,0 +1,50 @@
+\subsection{The {\tt FMAC:} module}\label{sect:FMACData}
+
+This module is used to extract macrocoscopic cross-section data from a FMAC-M {\sc ascii} file.
+Transition source information from companion particles are recovered from the FMAC-M file and written in the
+output {\sc macrolib}.
+
+\vskip 0.02cm
+
+The calling specifications are:
+
+\begin{DataStructure}{Structure \dstr{FMAC:}}
+\dusa{MACRO}~\moc{:=}~\moc{FMAC:}~\dusa{fmac.txt}~\moc{::}~\dstr{FMAC\_data} \\
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\dusa{MACRO}] {\tt character*12} name of the output {\sc macrolib} (type {\tt L\_MACROLIB}) object that is created by {\tt FMAC:}.
+
+\item[\dusa{fmac.txt}] {\tt character*12} name of a {\sc ascii} file, open in read-only mode, containing FMAC-M information.
+
+\item[\dusa{FMAC\_data}] input data structure containing specific data (see \Sect{descFMAC}).
+
+\end{ListeDeDescription}
+
+\subsubsection{Data input for module {\tt FMAC:}}\label{sect:descFMAC}
+
+\vskip -0.5cm
+
+\begin{DataStructure}{Structure \dstr{FMAC\_data}}
+$[$~\moc{EDIT} \dusa{iprint}~$]$ \\
+\moc{PARTICLE} \dusa{htype} \\
+\moc{;}
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing in module {\tt FMAC:}. =0 for no print; =1 for minimum printing (default value).
+
+\item[\moc{PARTICLE}] keyword used to specify the type of particle corresponding to the {\sc macrolib} (secondary state of the transition).
+
+\item[\dusa{htype}] character*1 name of the particle. Usual names are {\tt N}: neutrons, {\tt G}: photons, {\tt B}: electrons,
+{\tt C}: positrons and {\tt P}: protons.
+
+\end{ListeDeDescription}
+
+\eject

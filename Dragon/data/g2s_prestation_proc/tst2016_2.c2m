@@ -1,0 +1,264 @@
+*----                                                                  
+* 295-group eighth assembly in DRAGON                                  
+*----                                                                  
+SEQ_ASCII AIC_TBH ;
+SEQ_ASCII AICSERPENT ;             
+SEQ_ASCII AICFULL ;
+LINKED_LIST GEON2 ;
+MODULE GEO: G2S: G2MC: UTL: END: ;
+
+REAL Rcomb1 := 0.288712 ;
+REAL Rcomb2 := 0.365195 ;
+REAL Rcomb3 := 0.397962 ;
+REAL Rcomb4 := 0.4083 ;
+REAL Rtub1  := 0.1897 ;
+REAL Rtub2  := 0.3794 ;
+REAL R_int_TG := 0.5691 ;
+REAL R_ext_TG := 0.6095 ;
+REAL R_int_TI := 0.5691 ;
+REAL R_ext_TI := 0.6095 ;
+REAL R_int_G := 0.4165 ;
+REAL R_ext_G := 0.4775 ;
+
+REAL Raic4    := 0.431656 ;
+REAL Raic1    := 0.5 SQRT Raic4 * ;
+REAL Raic2    := 0.8 SQRT Raic4 * ;
+REAL Raic3    := 0.95 SQRT Raic4 * ;
+REAL R_int_AIC := 0.437 ;
+REAL R_ext_AIC := 0.484 ;
+
+REAL Cote := 1.26 ;
+REAL CoteL := 1.302 ;
+REAL Lame := CoteL Cote - ;
+
+REAL mesh1 := Lame ;
+REAL mesh2 := mesh1 Cote + ;
+REAL mesh3 := mesh2 Cote + ;
+REAL mesh4 := mesh3 Cote + ;
+REAL mesh5 := mesh4 Cote + ;
+REAL mesh6 := mesh5 Cote + ;
+REAL mesh7 := mesh6 Cote + ;
+REAL mesh8 := mesh7 Cote + ;
+REAL mesh9 := mesh8 Cote + ;
+REAL mesh10 := mesh9 Cote + ;
+REAL mesh11 := mesh10 Cote + ;
+REAL mesh12 := mesh11 Cote + ;
+REAL mesh13 := mesh12 Cote + ;
+REAL mesh14 := mesh13 Cote + ;
+REAL mesh15 := mesh14 Cote + ;
+REAL mesh16 := mesh15 Cote + ;
+REAL mesh17 := mesh16 Cote + ;
+REAL mesh18 := mesh17 Cote + ;
+REAL mesh19 := mesh18 Lame + ;
+*
+GEON2 := GEO: :: CAR2D 19 19
+  EDIT 0
+  X- REFL X+ REFL
+  Y- REFL Y+ REFL
+  CELL
+   Lame_C Lame_H Lame_H Lame_H Lame_H Lame_H Lame_H Lame_H Lame_H Lame_H
+          Lame_H Lame_H Lame_H Lame_H Lame_H Lame_H Lame_H Lame_H Lame_C
+   Lame_V  C0909  C0908  C0907  C0906  C0905  C0904  C0903  C0902  C0901
+           C0902  C0903  C0904  C0905  C0906  C0907  C0908  C0909 Lame_V
+   Lame_V  C0908  C0808  C0807  C0806  C0805  C0804  C0803  C0802  C0801
+           C0802  C0803  C0804  C0805  C0806  C0807  C0808  C0908 Lame_V
+   Lame_V  C0907  C0807  C0707  C0706  C0705     T2  C0703  C0702     T2
+           C0702  C0703     T2  C0705  C0706  C0707  C0807  C0907 Lame_V
+   Lame_V  C0906  C0806  C0706     T2  C0605  C0604  C0603  C0602  C0601
+           C0602  C0603  C0604  C0605     T2  C0706  C0806  C0906 Lame_V
+   Lame_V  C0905  C0805  C0705  C0605  C0505  C0504  C0503  C0502  C0501
+           C0502  C0503  C0504  C0505  C0605  C0705  C0805  C0905 Lame_V
+   Lame_V  C0904  C0804     T2  C0604  C0504     T1  C0403  C0402     T1
+           C0402  C0403     T1  C0504  C0604     T2  C0804  C0904 Lame_V
+   Lame_V  C0903  C0803  C0703  C0603  C0503  C0403  C0303  C0302  C0301
+           C0302  C0303  C0403  C0503  C0603  C0703  C0803  C0903 Lame_V
+   Lame_V  C0902  C0802  C0702  C0602  C0502  C0402  C0302  C0202  C0201
+           C0202  C0302  C0402  C0502  C0602  C0702  C0802  C0902 Lame_V
+
+   Lame_V  C0901  C0801     T2  C0601  C0501     T1  C0301  C0201     TI
+           C0201  C0301     T1  C0501  C0601     T2  C0801  C0901 Lame_V
+
+   Lame_V  C0902  C0802  C0702  C0602  C0502  C0402  C0302  C0202  C0201
+           C0202  C0302  C0402  C0502  C0602  C0702  C0802  C0902 Lame_V
+   Lame_V  C0903  C0803  C0703  C0603  C0503  C0403  C0303  C0302  C0301
+           C0302  C0303  C0403  C0503  C0603  C0703  C0803  C0903 Lame_V
+   Lame_V  C0904  C0804     T2  C0604  C0504     T1  C0403  C0402     T1
+           C0402  C0403     T1  C0504  C0604     T2  C0804  C0904 Lame_V
+   Lame_V  C0905  C0805  C0705  C0605  C0505  C0504  C0503  C0502  C0501
+           C0502  C0503  C0504  C0505  C0605  C0705  C0805  C0905 Lame_V
+   Lame_V  C0906  C0806  C0706     T2  C0605  C0604  C0603  C0602  C0601
+           C0602  C0603  C0604  C0605     T2  C0706  C0806  C0906 Lame_V
+   Lame_V  C0907  C0807  C0707  C0706  C0705     T2  C0703  C0702     T2
+           C0702  C0703     T2  C0705  C0706  C0707  C0807  C0907 Lame_V
+   Lame_V  C0908  C0808  C0807  C0806  C0805  C0804  C0803  C0802  C0801
+           C0802  C0803  C0804  C0805  C0806  C0807  C0808  C0908 Lame_V
+   Lame_V  C0909  C0908  C0907  C0906  C0905  C0904  C0903  C0902  C0901
+           C0902  C0903  C0904  C0905  C0906  C0907  C0908  C0909 Lame_V
+   Lame_C Lame_H Lame_H Lame_H Lame_H Lame_H Lame_H Lame_H Lame_H Lame_H
+          Lame_H Lame_H Lame_H Lame_H Lame_H Lame_H Lame_H Lame_H Lame_C
+
+  MESHX 0.0 <<mesh1>> <<mesh2>> <<mesh3>> <<mesh4>> <<mesh5>> <<mesh6>>
+        <<mesh7>> <<mesh8>> <<mesh9>> <<mesh10>> <<mesh11>> <<mesh12>>
+        <<mesh13>> <<mesh14>> <<mesh15>> <<mesh16>> <<mesh17>>
+        <<mesh18>> <<mesh19>>
+  MESHY 0.0 <<mesh1>> <<mesh2>> <<mesh3>> <<mesh4>> <<mesh5>> <<mesh6>>
+        <<mesh7>> <<mesh8>> <<mesh9>> <<mesh10>> <<mesh11>> <<mesh12>>
+        <<mesh13>> <<mesh14>> <<mesh15>> <<mesh16>> <<mesh17>>
+        <<mesh18>> <<mesh19>>
+  ::: Lame_C := GEO: CAR2D 1 1
+    MESHX 0.0 <<Lame>> MESHY 0.0 <<Lame>>
+    MIX 1 ;
+
+  ::: Lame_V := GEO: CAR2D 1 1
+    MESHX 0.0 <<Lame>> MESHY 0.0 <<Cote>>
+    MIX 1 ;
+
+  ::: Lame_H := GEO: CAR2D 1 1
+    MESHX 0.0 <<Cote>> MESHY 0.0 <<Lame>>
+    MIX 1 ;
+
+  ::: C0201 := GEO: CARCEL 6
+         MESHX 0.0 <<Cote>>
+         MESHY 0.0 <<Cote>>
+         RADIUS 0.0 <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>>
+                <<R_int_G>> <<R_ext_G>>
+         MIX  3 4 5 6   7 8 1 ;
+
+  ::: C0202 := GEO: C0201
+         MIX  9 10 11 12   7 8 1 ;
+
+  ::: C0301 := GEO: C0201
+         MIX  13 14 15 16   7 8 1 ;
+
+  ::: C0302 := GEO: C0201
+         MIX  17 18 19 20   7 8 1 ;
+
+  ::: C0303 := GEO: C0201
+         MIX  21 22 23 24   7 8 1 ;
+
+  ::: C0402 := GEO: C0201
+         MIX  26 27 28 29   7 8 1 ;
+
+  ::: C0403 := GEO: C0201
+         MIX  30 31 32 33   7 8 1 ;
+
+  ::: C0501 := GEO: C0201
+         MIX  34 35 36 37   7 8 1 ;
+
+  ::: C0502 := GEO: C0201
+         MIX  46 47 48 49   7 8 1 ;
+
+  ::: C0503 := GEO: C0201
+         MIX  50 51 52 53   7 8 1 ;
+
+  ::: C0504 := GEO: C0201
+         MIX  54 55 56 57   7 8 1 ;
+
+  ::: C0505 := GEO: C0201
+         MIX  58 59 60 61   7 8 1 ;
+
+  ::: C0601 := GEO: C0201
+         MIX  62 63 64 65   7 8 1 ;
+
+  ::: C0602 := GEO: C0201
+         MIX  66 67 68 69   7 8 1 ;
+
+  ::: C0603 := GEO: C0201
+         MIX  70 71 72 73   7 8 1 ;
+
+  ::: C0604 := GEO: C0201
+         MIX  74 75 76 77   7 8 1 ;
+
+  ::: C0605 := GEO: C0201
+         MIX  78 79 80 81   7 8 1 ;
+
+  ::: C0702 := GEO: C0201
+         MIX  82 83 84 85   7 8 1 ;
+
+  ::: C0703 := GEO: C0201
+         MIX  86 87 88 89   7 8 1 ;
+
+  ::: C0705 := GEO: C0201
+         MIX  90 91 92 93   7 8 1 ;
+
+  ::: C0706 := GEO: C0201
+         MIX  94 95 96 97   7 8 1 ;
+
+  ::: C0707 := GEO: C0201
+         MIX  98 99 100 101   7 8 1 ;
+
+  ::: C0801 := GEO: C0201
+         MIX  102 103 104 105   7 8 1 ;
+
+  ::: C0802 := GEO: C0201
+         MIX  106 107 108 109   7 8 1 ;
+
+  ::: C0803 := GEO: C0201
+         MIX  110 111 112 113   7 8 1 ;
+
+  ::: C0804 := GEO: C0201
+         MIX  114 115 116 117   7 8 1 ;
+
+  ::: C0805 := GEO: C0201
+         MIX  118 119 120 121   7 8 1 ;
+
+  ::: C0806 := GEO: C0201
+         MIX  122 123 124 125   7 8 1 ;
+
+  ::: C0807 := GEO: C0201
+         MIX  126 127 128 129   7 8 1 ;
+
+  ::: C0808 := GEO: C0201
+         MIX  130 131 132 133   7 8 1 ;
+
+  ::: C0901 := GEO: C0201
+         MIX  134 135 136 137   7 8 1 ;
+
+  ::: C0902 := GEO: C0201
+         MIX  138 139 140 141   7 8 1 ;
+
+  ::: C0903 := GEO: C0201
+         MIX  142 143 144 145   7 8 1 ;
+
+  ::: C0904 := GEO: C0201
+         MIX  146 147 148 149   7 8 1 ;
+
+  ::: C0905 := GEO: C0201
+         MIX  150 151 152 153   7 8 1 ;
+
+  ::: C0906 := GEO: C0201
+         MIX  154 155 156 157   7 8 1 ;
+
+  ::: C0907 := GEO: C0201
+         MIX  158 159 160 161   7 8 1 ;
+
+  ::: C0908 := GEO: C0201
+         MIX  162 163 164 165   7 8 1 ;
+
+  ::: C0909 := GEO: C0201
+         MIX  166 167 168 169   7 8 1 ;
+
+  ::: T2 := GEO: CARCEL 8
+         MESHX 0.0 <<Cote>>
+         MESHY 0.0 <<Cote>>
+         RADIUS 0.0 <<Raic1>> <<Raic2>> <<Raic3>> <<Raic4>>
+                <<R_int_AIC>> <<R_ext_AIC>> <<R_int_TI>> <<R_ext_TI>>
+         MIX 38 39 40 41 7 25   1 25 1 ;
+
+  ::: T1 := GEO: T2
+         MIX 42 43 44 45 7 25   1 25 1 ;
+
+  ::: TI := GEO: CARCEL 4
+         MESHX 0.0 <<Cote>>
+         MESHY 0.0 <<Cote>>
+         RADIUS 0.0 <<Rtub1>> <<Rtub2>> <<R_int_TI>> <<R_ext_TI>>
+         MIX 1 1 1 2 1 ;
+;
+UTL: GEON2 :: DIR ;
+
+AIC_TBH AICFULL := G2S: GEON2 ;
+*AICSERPENT := G2MC: GEON2 ;
+
+ECHO "test tst2016_2 completed" ;
+END: ;                                                                 
+QUIT .                                                                 

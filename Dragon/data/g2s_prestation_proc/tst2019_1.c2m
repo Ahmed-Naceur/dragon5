@@ -1,0 +1,63 @@
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST GEOM ;
+SEQ_BINARY TRKFILN2 ;
+SEQ_ASCII G2S_tst :: FILE './G2S_tst.txt' ;
+SEQ_ASCII FIG_tst :: FILE './FIG_tst.ps' ;
+MODULE GEO: G2S: END: ;
+
+REAL Rcomb4 := 0.39218 ;
+REAL Rtub1  := 0.1897 ;
+REAL Rtub2  := 0.3794 ;
+REAL R_int_TI := 0.56134 ;
+REAL R_ext_TI := 0.60198 ;
+REAL R_int_G := 0.40005 ;
+REAL R_ext_G := 0.45720 ;
+
+REAL Cote := 0.62992 2. * ;
+REAL lpitch := 10.75182 2. * ;
+
+REAL Rcomb1 := 0.5 SQRT Rcomb4 * ;
+REAL Rcomb2 := 0.8 SQRT Rcomb4 * ;
+REAL Rcomb3 := 0.95 SQRT Rcomb4 * ;
+
+REAL mesh1 := Cote ;
+REAL mesh2 := mesh1 Cote + ;
+REAL mesh3 := mesh2 Cote + ;
+
+
+GEOM := GEO: :: CAR2D 3 2
+   EDIT 0
+   X+ REFL X- REFL Y- REFL Y+ SYME
+   CELL    CF CF CF
+           CF TI CF
+
+  MESHX 0.0 <<mesh1>>  <<mesh2>>  <<mesh3>> 
+  MESHY 0.0 <<mesh1>> <<mesh2>> 
+  
+  ::: CF := GEO: CARCEL 5
+         MESHX 0.0 <<Cote>>
+         MESHY 0.0 <<Cote>>
+         SECT 4 5
+         RADIUS 0.0 <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>>
+                <<R_ext_G>>
+         MIX  62 63 64 65    4 
+         68 68 68 68 68 68 68 68 68 68 68 68 ;
+  ::: TI := GEO: CARCEL 2
+         MESHX 0.0 <<Cote>>
+         MESHY 0.0 <<Cote>>
+         SECT 2 0
+         RADIUS 0.0  
+         <<R_int_TI>> 
+         <<R_ext_TI>>
+         MIX 66  66  66  66  66  66  66  66 
+              2   2   2   2   2   2   2   2 
+             67  67  67  67  67  67  67  67 ; 
+;
+
+G2S_tst FIG_tst := G2S: GEOM ;
+
+ECHO "test tst2019_1 completed" ;
+END: ;
+QUIT .

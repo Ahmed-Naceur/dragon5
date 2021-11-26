@@ -1,0 +1,148 @@
+*DECK Geo_N1
+*----
+*  Name          : Geo_N1.c2m
+*  Type          : DRAGON procedure
+*  Use           : Geometry generation for 1st Level Flux Calculation
+*                  with 32 fuel regions
+*  Author        : R. Vallerent
+*
+*  Procedure called as: 
+*
+*GEON1 := Geo_N1 :: <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>>
+*                   <<R_int_TG>> <<R_ext_TG>> <<R_int_TI>> 
+*                   <<R_ext_TI>> <<R_int_G>> <<R_ext_G>> <<Cote>>
+*                   <<CoteL>> <<RmodeN1>> ;
+*
+*  Input data   :
+*    Rcomb1     :  50/100 of outer radius of fuel (cm)
+*    Rcomb2     :  80/100 of outer radius of fuel (cm)
+*    Rcomb3     :  95/100 of outer radius of fuel (cm)
+*    Rcomb4     : 100/100 of outer radius of fuel (cm)
+*    R_int_TG   : Inner radius of cladding of guide tube (cm)
+*    R_ext_TG   : Outer radius of cladding of guide tube (cm)
+*    R_int_TI   : Inner radius of cladding of guide tube (cm)
+*    R_ext_TI   : Outer radius of cladding of guide tube (cm)
+*    R_int_G    : Inner radius of cladding of fuel tube (cm)
+*    R_ext_G    : Outer radius of cladding of fuel tube (cm)
+*    Cote       : Lattice pitch (cm)
+*    CoteL      : Lattice pitch + Water space (cm)
+*    RmodeN1    : Parameter for flux calculation in Level 1 (cm)
+*
+*  Output data  :
+*    GEON1      : Geometry for 1st Level Flux Calculation
+
+
+PARAMETER  GEON1  ::  
+       EDIT 0 
+           ::: LINKED_LIST GEON1  ; 
+   ;
+*----
+*  Modules used in this procedure
+*----
+MODULE  GEO: END: ;
+
+*----
+*  Input data recovery
+*----
+*                                                                      ;
+REAL Rcomb1       Rcomb2       Rcomb3       Rcomb4     ;
+:: >>Rcomb1<<   >>Rcomb2<<   >>Rcomb3<<   >>Rcomb4<<   ;
+REAL R_int_TG     R_ext_TG     R_int_TI     R_ext_TI   ;
+:: >>R_int_TG<< >>R_ext_TG<< >>R_int_TI<< >>R_ext_TI<< ;
+REAL R_int_G      R_ext_G      Cote         CoteL      ;
+:: >>R_int_G<<  >>R_ext_G<<  >>Cote<<     >>CoteL<<    ;
+REAL RmodeN1   ;
+:: >>RmodeN1<< ;
+
+GEON1 := GEO: :: CAR2D 9 9
+  EDIT 0
+  X- DIAG X+ REFL
+  Y- SYME Y+ DIAG
+  CELL TI C1 C1 T1 C1 C1 T2 C4 C6
+          C2 C2 C1 C2 C2 C1 C2 C6
+             C2 C1 C2 C2 C1 C2 C6
+                T1 C1 C1 T2 C4 C6
+                   C2 C1 C1 C2 C6
+                      T2 C1 C3 C6
+                         C2 C3 C6
+                            C5 C7
+                               C8
+
+  MERGE 11 1  1 10  1  1  9  4  6
+           2  2  1  2  2  1  2  6
+              2  1  2  2  1  2  6
+                10  1  1  9  4  6
+                    2  1  1  2  6
+                       9  1  3  6
+                          2  3  6
+                             5  7
+                                8
+
+* T2 -> 9 , T1 ->  10 , TI -> 11
+
+  TURN  A  A  E  A  A  E  A  A  A
+           A  E  F  A  E  D  A  A
+              C  B  G  C  H  G  A
+                 A  G  C  A  G  A
+                    A  B  D  A  A
+                       A  A  A  A
+                          A  G  A
+                             A  A
+                                A
+
+
+  ::: C1 := GEO: CARCEL 7
+         MESHX 0.0 <<Cote>>
+         MESHY 0.0 <<Cote>>
+         RADIUS 0.0 <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>>
+                <<R_int_G>> <<R_ext_G>> <<RmodeN1>>
+         MIX  9 10 11 12 3 2 4 5
+  ;
+  ::: C2 := GEO: C1
+         MIX 13 14 15 16 3 2 4 5
+  ;
+  ::: C3 := GEO: C1
+         MIX 17 18 19 20 3 2 4 5
+  ;
+  ::: C4 := GEO: C1
+         MIX 21 22 23 24 3 2 4 5
+  ;
+  ::: C5 := GEO: C1
+         MIX 25 26 27 28 3 2 4 5
+  ;
+  ::: C6 := GEO: CARCEL 7
+         MESHX 0.0 <<CoteL>>
+         MESHY 0.0 <<Cote>>
+         RADIUS 0.0 <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>>
+                <<R_int_G>> <<R_ext_G>> <<RmodeN1>>
+         MIX 29 30 31 32 3 2 4 5
+  ;
+  ::: C7 := GEO: C6
+         MIX 33 34 35 36 3 2 4 5
+  ;
+  ::: C8 := GEO: CARCEL 7
+         MESHX 0.0 <<CoteL>>
+         MESHY 0.0 <<CoteL>>
+         RADIUS 0.0 <<Rcomb1>> <<Rcomb2>> <<Rcomb3>> <<Rcomb4>>
+                <<R_int_G>> <<R_ext_G>> <<RmodeN1>>
+         MIX 37 38 39 40 3 2 4 5
+  ;
+  ::: T2 := GEO: CARCEL 2
+         MESHX 0.0 <<Cote>>
+         MESHY 0.0 <<Cote>>
+         RADIUS 0.0 <<R_int_TG>> <<R_ext_TG>>
+         MIX 6 1 6
+  ;
+  ::: T1 := GEO: T2
+         MIX 7 1 7
+  ;
+  ::: TI := GEO: CARCEL 2
+         MESHX 0.0 <<Cote>>
+         MESHY 0.0 <<Cote>>
+         RADIUS 0.0 <<R_int_TI>> <<R_ext_TI>>
+         MIX 8 1 8
+  ;
+;
+
+END: ;
+QUIT .

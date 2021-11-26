@@ -1,0 +1,92 @@
+*----
+*  TEST CASE TDCM53
+*  MACROSCOPIC CROSS SECTIONS
+*  Benchmark TRX-1 WITH MOC
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST GEOM TRACK MACRO PIJ FLUX ;
+MODULE GEO: G2S: SALT: MCCGT: MAC: ASM: FLU: GREP: END: ;
+SEQ_ASCII Fic_SAL ;
+SEQ_ASCII TRX.ps :: FILE './TRX.ps' ;
+SEQ_BINARY TRACK_FIL ;
+REAL Kinf ;
+INTEGER an2d := 6 ;
+REAL densur := 15.0 ;
+PROCEDURE assertS ;
+
+GEOM := GEO:   ::  HEX 66
+  EDIT 0
+  HBC  SA60  ALBE 1.0
+
+  CELL C1 C2 C2 C2 C2 C2 C2 C2 C3 C2 C2 C2 C2 C2 C2 C3 C2 C2 C2 C2 C3
+       C2 C2 C2 C3 C2 C2 C2 C2 C2 C2 C2 C2 C2 C2 C2 C2 C2 C2 C2 C2 C2
+       C2 C2 C2 C4 C4 C2 C2 C2 C2 C2 C2 C4 C4 C4 C4 C4 C4 C4 C4 C4 C4
+       C4 C4 C4
+
+* Description of Cells C1, C2, C3 and C4 in FA: Given below:
+* Side is 0.75527 cm and its Pitch = 1.3081663 cm
+
+* C1 is a central tube cell in FA
+      ::: C1 := GEO:  HEXCEL 2  
+   SIDE 0.75527  RADIUS 0.0 0.48 0.56
+   MIX  4 3 4 ;
+
+* C2 (A,B,C) is a fuel cell in FA
+     ::: C2 := GEO:  HEXCEL 2
+   SIDE 0.75527  RADIUS 0.0 0.386 0.455
+   MIX  1 2 4 ;
+
+* C3 is a GT cell with Control rod in FA
+    ::: C3 := GEO:  HEXCEL 4
+  SIDE  0.75527  RADIUS 0.0 0.35 0.41 0.55 0.63
+  MIX  7 5 4 5 4 ;
+
+* C4 is another fuel cell(3.0%) for D fuel in FA
+       :::  C4 := GEO:  HEXCEL 2
+   SIDE 0.75527  RADIUS 0.0 0.386 0.455
+   MIX  6 2 4 ;
+   ;
+Fic_SAL TRX.ps := G2S: GEOM :: EDIT 1 ;
+*----
+* Macroscopic XS
+*----
+MACRO := MAC: ::
+     EDIT 2 NGRO 1 NMIX 21 NIFI 1
+     READ INPUT
+     MIX 1 (*FUEL*)
+        TOTAL 0.3652        SCAT 1 1 0.3234
+        NUSIGF 0.0475       CHI 1.0
+     MIX 2 (*CLAD*)
+        TOTAL 0.4029        SCAT 1 1 0.4000
+     MIX 3 (*CLAD*)
+        TOTAL 0.4029        SCAT 1 1 0.4000
+     MIX 4 (*H2O*)
+        TOTAL 0.3683        SCAT 1 1 0.3661
+     MIX 5 (*CLAD*)
+        TOTAL 0.4029        SCAT 1 1 0.4000
+     MIX 6 (*ENRICHED FUEL*)
+        TOTAL 0.3552        SCAT 1 1 0.3100
+        NUSIGF 0.091        CHI 1.0
+     MIX 7 (*POISON B4C*)
+        TOTAL 0.9029        SCAT 1 1 0.6000
+;
+*----
+* Perform tracking
+*----
+TRACK TRACK_FIL := SALT: Fic_SAL ::
+     EDIT 1
+     TISO <<an2d>> <<densur>> LONG ;
+TRACK := MCCGT: TRACK TRACK_FIL ::
+  CACB 4 AAC 80 TMT EPSI 1E-5 MCU 100000 ;
+*----
+* Compute  flux
+*----
+PIJ := ASM: MACRO TRACK TRACK_FIL :: ARM ;
+FLUX := FLU: PIJ MACRO TRACK TRACK_FIL ::
+  TYPE K ;
+GREP: FLUX :: GETVAL 'K-INFINITY  ' 1 1 1 >>Kinf<< ;
+ECHO "@@@ Kinf=" Kinf ;
+assertS FLUX :: 'K-EFFECTIVE' 1 1.001078 ;
+ECHO "test TDCM53 completed" ;
+END: ;

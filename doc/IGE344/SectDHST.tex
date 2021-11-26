@@ -1,0 +1,137 @@
+\subsection{Contents of \dir{history} data structure}\label{sect:hstdir}
+
+This data structure contains the information required to ensure a smooth coupling of DRAGON with DONJON when a history
+based full reactor calculation is to be performed.
+
+\subsubsection{The main directory}\label{sect:historydirmain}
+
+The following records and sub-directories will be found in the first level of a \dir{history} directory:
+
+\begin{DescriptionEnregistrement}{Main records and sub-directories in \dir{history}}{8.0cm}
+\CharEnr
+  {SIGNATURE\blank{3}}{$*12$}
+   {parameter $\mathsf{SIGNA}$ containing the signature of the data structure}
+\IntEnr
+  {STATE-VECTOR}{$40$}
+  {array $\mathcal{S}^{h}_{i}$ containing various parameters that are required to describe this data structure}
+\RealEnr
+  {BUNDLELENGTH}{1}{cm}
+  {parameter $L_{z}$ containing the fuel bundle length}
+\CharEnr
+  {NAMEGLOBAL\blank{2}}{($\mathcal{S}^{h}_{1}$)$*12$}
+  {array $\mathcal{G}_{j}$ containing the names of the global parameters}
+\RealEnr
+  {PARAMGLOBAL\blank{1}}{$\mathcal{S}^{h}_{1}$}{}
+  {array $G_{j}$ containing the value of the global parameters}
+\CharEnr
+  {NAMELOCAL\blank{3}}{($\mathcal{S}^{h}_{2}$)$*12$}
+  {array $\mathcal{L}_{j}$ containing the names of the local parameters}
+\IntEnr
+  {CELLID\blank{6}}{$\mathcal{S}^{h}_{3},\mathcal{S}^{h}_{4}$}
+  {array $C_{i,j}$ containing an identification number associated with bundle $i$ and channel $j$}
+\IntEnr
+  {FUELID\blank{6}}{$\mathcal{S}^{h}_{3},\mathcal{S}^{h}_{4}$}
+  {array $F_{i,j}$ containing the fuel type associated with bundle $i$ and channel $j$}
+\DirVar
+  {\listedir{FUELDIR}}
+  {list of sub-directories $\mathsf{FUEL}_{i,j}$ that contain the properties associated with the fuel type $F_{i,j}$} 
+\DirVar
+  {\listedir{CELLDIR}}
+  {list of sub-directories $\mathsf{CELL}_{i,j}$ that contain the properties associated with the cell $C_{i,j}$} 
+\end{DescriptionEnregistrement}
+
+The signature for this data structure is $\mathsf{SIGNA}$=\verb*|L_HISTORY   |.  The array $\mathcal{S}^{h}_{i}$
+contains the following information: 
+
+\begin{itemize}
+\item $\mathcal{S}^{h}_{1}=N_{g}$ contains the number of global parameters. 
+\item $\mathcal{S}^{h}_{2}=N_{l}$ contains the number of local parameters. 
+\item $\mathcal{S}^{h}_{3}=N_{b}$ contains the number of bundles per channel.  
+\item $\mathcal{S}^{h}_{4}=N_{c}$ contains the number of channels in the core. 
+\item $\mathcal{S}^{h}_{5}=N_{s}$ contains the number of bundle shift. 
+\item $\mathcal{S}^{h}_{6}=T_{s}$ contains the type of depletion solution used. 
+\item $\mathcal{S}^{h}_{7}=T_{b}$ contains the type of burnup considered. 
+\item $\mathcal{S}^{h}_{8}=N_{I}$ contains the number of isotopes. 
+\item $\mathcal{S}^{h}_{9}=G$ contains the number of transport groups. 
+\item $\mathcal{S}^{h}_{10}=N_{r}$ contains the number of regions. 
+\item $\mathcal{S}^{h}_{11}=N_{F}$ contains the number of fuel types. 
+\end{itemize}
+
+The fuel directory name $\mathsf{FUEL}_{i,j}$ associated with fuel type $F_{i,j}$ is composed using the following
+FORTRAN instruction:
+\begin{quote}
+\verb|WRITE(|$\mathsf{FUEL}$\verb|,'(A4,I8.8)') |\verb|'FUEL'|, $F_{i,j}$
+\end{quote} 
+  This directory will contain the initial isotopic content of this fuel type. The cell directory name
+$\mathsf{CELL}_{i,j}$ associated with $C_{i,j}$ is composed using the following FORTRAN instruction:
+\begin{quote}
+\verb|WRITE(|$\mathsf{CELL}$\verb|,'(A4,I8.8)') |\verb|'CELL'|, $C_{i,j}$
+\end{quote} 
+  This directory will contain the value of the local parameters associated with cell $C_{i,j}$ as well as
+the current isotopic content of this cell.
+
+The identification number $C_{i,j}$ associated with channel $j$ and bundle $i$ can be seen as the serial number of the
+bundle located at a position in space identified by $(i,j)$. It is automatically managed by the \moc{HST:}
+module.\cite{Marleau2004a} For a fresh core $C_{i,j}=n$ where $n$ represents the cell order definition in the input
+file. Upon refueling, some bundles in channel $k$ of the core are displaced from region $(l,k)$ to
+$(m,k)$, new bundles are introduced at location $(l,k)$ and old bundles removed from location $(m,k)$. If one assumes
+that $C^{\mathrm{NEW}}$ and $C^{\mathrm{OLD}}$ represents the value of $C$ after and before refueling then we will
+have:
+\begin{eqnarray*}
+ C^{\mathrm{NEW}}_{m.k}&=&C^{\mathrm{OLD}}_{l,k} \\
+ C^{\mathrm{NEW}}_{l,k}&=&C^{\mathrm{FRESH}}_{m,k} 
+\end{eqnarray*}
+\noindent where $C^{\mathrm{FRESH}}_{m,k}$ represent a fresh fuel cell. The local parameters and burnup power density of the
+fuel cell previously located at $(m,k)$ are preserved and the fresh fuel isotopic densities is that provided in
+$F_{m,k}$, the fuel type associated with $C^{\mathrm{FRESH}}_{m,k}$.
+
+\subsubsection{The fuel type sub-directory}\label{sect:historydirfuel}
+
+Each fuel sub-directory $\mathsf{FUEL}_{i,j}$ contains the following information
+
+\begin{DescriptionEnregistrement}{Fuel type sub-directory}{7.0cm}
+\RealEnr
+  {FUELDEN-INIT}{$2$}{}
+  {array containing the initial density of heavy element in the fuel $\rho_{f}$ in g/cm$^{3}$ and the initial linear
+density of heavy element in the fuel $m_{f}$ in g/cm.}
+\CharEnr
+  {ISOTOPESUSED}{($N_{I}$)$*12$}
+  {array containing the name of isotopes used in this fuel type}
+\IntEnr
+  {ISOTOPESMIX\blank{1}}{$N_{I}$}
+  {array containing the mixture associated with each isotopes in this fuel type}
+\RealEnr
+  {ISOTOPESDENS}{$N_{I}$}{(cm b)$^{-1}$}
+  {array $\rho_{i}$ containing the density of each isotopes}
+ \end{DescriptionEnregistrement}
+
+\subsubsection{The cell type sub-directory}\label{sect:historydircell}
+
+Each cell isotopic sub-directory $\mathsf{CELL}_{i,j}$ contains the following information
+
+\begin{DescriptionEnregistrement}{Cell sub-directory}{7.0cm}
+\RealEnr
+  {FUELDEN-INIT}{$2$}{}
+  {array containing the initial density of heavy element in the fuel $\rho_{f}$  in g/cm$^{3}$ and the initial linear
+density of heavy element in the fuel $m_{f}$ in g/cm.}
+\RealEnr
+  {PARAMLOCALBR}{$N_{l}$}{}
+  {array $V^{B}_{l}$ containing the value of the local parameters before refueling}
+\RealEnr
+  {PARAMLOCALAR}{$N_{l}$}{}
+ {array $V^{A}_{l}$ containing the value of the local parameters after refueling}
+\RealEnr
+  {PARAMBURNTBR}{2}{}
+  {array containing the depletion time $T^{B}$ in days and the burnup power rate $P^{B}$ in kW/kg before refueling}
+\RealEnr
+  {PARAMBURNTAR}{2}{}
+  {array containing the depletion time $T^{A}$ in days and the burnup power rate $P^{A}$ in kW/kg after refueling}
+\RealEnr
+  {DEPL-PARAM\blank{2}}{3}{}
+  {array containing the time step $T$ in days, the burnup $B$ in kWd/kg and the irradiation $w$ in n/kb currently
+reached by the fuel in this cell}
+\RealEnr
+  {ISOTOPESDENS}{$N_{I}$}{(cm b)$^{-1}$}
+  {array $\rho_{i}$ containing the density of each isotopes}
+\end{DescriptionEnregistrement}
+\clearpage

@@ -1,0 +1,121 @@
+*----
+*  Monju 3D benchmark in SP3 approximation
+*----
+LINKED_LIST HEX3D MACRO TRACK SYSTEM FLUX EDIT ;
+MODULE GEO: MAC: TRIVAT: TRIVAA: FLUD: OUT: GREP: END: ;
+PROCEDURE assertS ;
+INTEGER IVAL ;
+*
+MACRO := MAC: ::
+ EDIT 2 NGRO 3 NMIX 5 NIFI 1 ANIS 1
+ READ INPUT
+ MIX     1 (* ACTIVE INNER CORE *)
+   NUSIGF 1.235E-02    5.225E-03  7.684E-03
+ H-FACTOR 1.235E-02    5.225E-03  7.684E-03
+    TOTAL 1.31234E-01  1.93349E-01 2.63713E-01
+     SCAT 1 1 (*1->1*) 1.00247E-01
+          2 2 (*2->2*) 1.83859E-01 (*1->2*) 2.544E-02
+          3 3 (*3->3*) 2.56380E-01 (*2->3*) 6.551E-03 (*1->3*) 5.625E-04
+ MIX     2 (* ACTIVE OUTER CORE *)
+   NUSIGF 1.467E-02    6.955E-03  9.986E-03
+ H-FACTOR 1.467E-02    6.955E-03  9.986E-03
+    TOTAL 1.30822E-01  1.93237E-01 2.62674E-01
+     SCAT 1 1 (*1->1*) 9.96078E-02
+          2 2 (*2->2*) 1.83362E-01 (*1->2*) 2.497E-02
+          3 3 (*3->3*) 2.54575E-01 (*2->3*) 6.341E-03 (*1->3*) 5.548E-04
+ MIX     3 (* RADIAL/AXIAL BLANKET *)
+   NUSIGF 8.631E-03    5.995E-04   1.381E-03
+ H-FACTOR 8.631E-03    5.995E-04   1.381E-03
+    TOTAL 1.53398E-01  2.31642E-01 3.24886E-01
+     SCAT 1 1 (*1->1*) 1.15467E-01
+          2 2 (*2->2*) 2.19799E-01 (*1->2*) 3.288E-02
+          3 3 (*3->3*) 3.17275E-01 (*2->3*) 1.000E-02 (*1->3*) 7.468E-04
+ MIX     4 (* CONTROL ROD *)
+    TOTAL 1.33333E-01  1.98295E-01 2.62674E-01
+     SCAT 1 1 (*1->1*) 1.10053E-01
+          2 2 (*2->2*) 1.85568E-01 (*1->2*) 2.185E-02
+          3 3 (*3->3*) 2.47704E-01 (*2->3*) 9.379E-03 (*1->3*) 2.163E-04
+ MIX     5 (* SODIUM CHANNEL *)
+    TOTAL 6.93722E-02  1.02187E-01 1.37118E-01
+     SCAT 1 1 (*1->1*) 5.78471E-02
+          2 2 (*2->2*) 9.85380E-02 (*1->2*) 1.130E-02
+          3 3 (*3->3*) 1.36811E-01 (*2->3*) 3.571E-03 (*1->3*) 6.718E-05
+ ;
+*
+HEX3D := GEO: :: HEXZ  133 4
+       EDIT 2
+       HBC  R120  VOID
+       SIDE 6.67417
+       Z- VOID Z+ VOID
+       MESHZ 0.0 30.0 79.0 123.0 158.0
+       SPLITZ 1 2 2 1
+       SPLITL 1
+       MIX
+       (* UPPER BLANKET *)
+       4
+       3 3
+       3 3 3 3
+       3 4 3 3 4 3
+       3 3 3 3 3 3 3 3
+       4 3 3 3 3 4 3 3 3 3
+       3 3 3 4 3 3 3 3 3 4 3 3
+       3 3 3 3 3 3 3 3 3 3 3 3 3 3
+       3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+       3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+       3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+       3 3 3 3 3 3 3 3 3 3 0 3 3 3 3 3 3 3 3 3 3 0
+       (* UPPER INNER/OUTER CORE *)
+       4
+       1 1
+       1 1 1 1
+       1 4 1 1 4 1
+       1 1 1 1 1 1 1 1
+       4 1 1 1 1 4 1 1 1 1
+       1 1 1 4 1 1 1 1 1 4 1 1
+       2 2 2 2 2 2 2 2 2 2 2 2 2 2
+       2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+       3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+       3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+       3 3 3 3 3 3 3 3 3 3 0 3 3 3 3 3 3 3 3 3 3 0
+       (* LOWER INNER/OUTER CORE *)
+       4
+       1 1
+       1 1 1 1
+       1 4 1 1 4 1
+       1 1 1 1 1 1 1 1
+       5 1 1 1 1 5 1 1 1 1
+       1 1 1 5 1 1 1 1 1 5 1 1
+       2 2 2 2 2 2 2 2 2 2 2 2 2 2
+       2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+       3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+       3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+       3 3 3 3 3 3 3 3 3 3 0 3 3 3 3 3 3 3 3 3 3 0
+       (* LOWER BLANKET *)
+       4
+       3 3
+       3 3 3 3
+       3 4 3 3 4 3
+       3 3 3 3 3 3 3 3
+       5 3 3 3 3 5 3 3 3 3
+       3 3 3 5 3 3 3 3 3 5 3 3
+       3 3 3 3 3 3 3 3 3 3 3 3 3 3
+       3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+       3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+       3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+       3 3 3 3 3 3 3 3 3 3 0 3 3 3 3 3 3 3 3 3 3 0
+       ;
+TRACK := TRIVAT: HEX3D ::
+      TITLE 'TEST 3D FBR MONJU (3 GROUPS).'
+      EDIT 2 MAXR 8000 DUAL (*IELEM=*) 2 (*ICOL=*) 3
+      SPN 3 ;
+SYSTEM := TRIVAA: MACRO TRACK ::
+      EDIT 2 ;
+FLUX := FLUD: SYSTEM TRACK ::
+      EDIT 2 ADI 6 EXTE 300 1.0E-6 ;
+EDIT := OUT: FLUX HEX3D MACRO TRACK ::
+      EDIT 2 INTG IN ;
+GREP: TRACK :: GETVAL 'STATE-VECTOR' 2 >>IVAL<< ;
+PRINT "nb of unkn =" IVAL ;
+assertS FLUX :: 'K-EFFECTIVE' 1 1.038084 ;
+ECHO "test monju3D_spn completed" ;
+END: ;

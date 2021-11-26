@@ -1,0 +1,182 @@
+\subsection{The {\tt INFO:} module}\label{sect:INFOData}
+
+The \moc{INFO:} module is mainly used to compute the number densities for
+selected isotopes at specific local conditions. The module can also be used to
+compute the density $\rho(T,p,x)$ for a mixture containing a fraction $x$ of heavy and $(1-x)$ of light water according at a temperature $T$ and pressure $p$:
+  $$
+\rho(T,p,x) = {{\ \rho_{H_2O}(T,p)\ \rho_{D_2O}(T,p)}
+\over{ x\ \rho_{H_2O}(T,p) +  (1-x) \ \rho_{D_2O}(T,p)}}\ .
+  $$
+where $\rho_{H_2O}(T,p)$ and $\rho_{D_2O}(T,p)$ will take different forms depending on the option selected.\cite{Kieffer}
+
+\vskip 0.2cm
+
+The calling specifications are:
+
+\begin{DataStructure}{Structure \dstr{INFO:}}
+\moc{INFO:} \moc{::} \dstr{descinfo}
+\end{DataStructure}
+
+\goodbreak
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dstr{descinfo}] structure containing the input data to this module
+(see \Sect{descinfo}).
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+
+\subsubsection{Data input for module {\tt INFO:}}\label{sect:descinfo}
+
+\begin{DataStructure}{Structure \dstr{info}}
+$[$ \moc{EDIT} \dusa{iprint} $]$ \\
+$[$ \moc{LIB:} $\{$ \moc{DRAGON} $|$ \moc{MATXS}  $|$ \moc{MATXS2} $|$
+                    \moc{WIMSD4} $|$ \moc{WIMSAECL} $|$ \moc{NDAS} $|$    
+                    \moc{APLIB2} $|$ \moc{APLIB1} $\}$ \\
+~~~~~~~\moc{FIL:} \dusa{NAMEFIL} $]$ \\
+$[$ \moc{TMP:} \dusa{temp} $\{$ \moc{K} $|$ \moc{C} $\}$ $]$ \\
+$[$ \moc{PUR:} \dusa{purity} $\{$ \moc{WGT\%} $|$ \moc{ATM\%} $\}$ $]$ \\
+$[$ \moc{PRES:} \dusa{pressure} $\{$ \moc{bar} $|$ \moc{Pa} $|$ \moc{kPa} $|$ \moc{MPa} $\}$ $]$ \\
+$[$ \moc{CALC} \moc{DENS} $\{$ \moc{WATER} $>>$\dusa{dens}$<<$ $|$ \moc{PWATER} $>>$\dusa{dens}$<<$ $\}$ $]$ \\
+$[$ \moc{ENR:} \dusa{enrichment} $\{$ \moc{WGT\%} $|$ \moc{ATM\%} $\}$ $]$ \\
+$[[$ \moc{ISO:} \dusa{nbiso} (\dusa{ISONAM}($i$), $i$=1,nbiso)  \\
+$\ \ $  $\{$ \moc{GET}   \moc{MASS} ($>>$\dusa{mass}($i$)$<<$, $i$=1,nbiso) $|$ 
+           \moc{CALC}  \moc{WGT\%}  $\{$  \\
+\hskip 1.5cm \moc{D2O} $>>$\dusa{nh1}$<<$ $>>$\dusa{hd2}$<<$ $>>$\dusa{no16}$<<$
+$|$\\
+\hskip 1.5cm \moc{H2O} $>>$\dusa{nh1}$<<$ $>>$\dusa{hd2}$<<$ $>>$\dusa{no16}$<<$
+$|$\\
+\hskip 1.5cm \moc{UO2} $>>$\dusa{nu5}$<<$ $>>$\dusa{hu8}$<<$ $>>$\dusa{no16}$<<$
+$|$\\
+\hskip 1.5cm \moc{THO2} $>>$\dusa{nth2}$<<$ $>>$\dusa{nu3}$<<$ $>>$\dusa{no16}$<<$
+$\}$ $\}$ 
+$]]$
+\end{DataStructure}
+
+\noindent
+where
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to modify the print level \dusa{iprint}.
+
+\item[\dusa{iprint}] index used to control the printing of the module. The
+amount of output produced by this tracking module will vary substantially
+depending on the print level specified.
+
+\item[\moc{LIB:}] keyword to specify the type of library from which the
+isotopic mass ratio is to be read. 
+
+\item[\moc{DRAGON}] keyword to specify that the isotopic depletion chain or
+the microscopic cross sections are in the DRAGLIB format.
+
+\item[\moc{MATXS}] keyword to specify that the microscopic cross sections are
+in the MATXS format of NJOY-II and NJOY-89 (no depletion data available for
+libraries using this format).
+
+\item[\moc{MATXS2}] keyword to specify that the microscopic cross sections are
+in the MATXS format of NJOY-91  (no depletion data available for libraries using
+this format).
+
+\item[\moc{WIMSD4}] keyword to specify that the isotopic depletion chain and the
+microscopic cross sections are in the WIMSD4 format.
+
+\item[\moc{WIMSAECL}] keyword to specify that the isotopic depletion chain and the
+microscopic cross sections are in the WIMS-AECL format.
+
+\item[\moc{NDAS}] keyword to specify that the isotopic depletion chain and the
+microscopic cross sections are in the NDAS format, as used in recent versions of WIMS-AECL.
+
+\item[\moc{APLIB1}] keyword to specify that the microscopic cross sections are
+in the APOLLO-1 format.
+
+\item[\moc{APLIB2}] keyword to specify that the microscopic cross sections are
+in the APOLLO-2 format.
+
+\item[\moc{FIL:}] keyword to specify the name of the file where is  stored the mass
+ratio data. 
+
+\item[\dusa{NAMEFIL}] \verb|character*8| name of the library where the mass ratio
+are stored.
+
+\item[\moc{TMP:}] keyword to specify the isotopic temperature.
+
+\item[\dusa{temp}] temperature $T$ in \moc{K} or \moc{C}.
+
+\item[\moc{PUR:}] keyword to specify the water purity, that is fraction of heavy
+water in a mix of heavy and light water.
+
+\item[\dusa{purity}] percent weight (\moc{WGT\%}) or atomic (\moc{ATM\%}) fraction of heavy
+water in a mix of heavy and light water ($100\times x$).
+
+\item[\moc{PRES:}] keyword to specify the pressure.
+
+\item[\dusa{pressure}] pressure $p$ in \moc{bar}, \moc{Pa}, \moc{kPa} or \moc{MPa}.
+
+\item[\moc{ENR:}] keyword to specify the fuel enrichment.
+
+\item[\dusa{enrichment}] fuel enrichment in weight percent (\moc{WGT\%}) or atomic
+percent (\moc{ATM\%}).
+
+\item[\moc{ISO:}] keyword to specify an isotope list. This list will be used either
+for getting mass values of isotopes or for computing number  densities.
+
+\item[\dusa{nbiso}] number of isotopic names used for a calculation (limited to
+\dusa{nbiso}$\leq 3$).
+
+\item[\dusa{ISONAM}] \verb|character*12| name of an isotope.
+
+\item[\moc{GET MASS}] keyword to recover the mass values as written in the library.
+It returns the mass value of each isotope in the output parameter \dusa{mass}. 
+
+\item[\moc{CALC}] keyword to ask the module to compute some parametric values. It
+returns one value in the output parameter \dusa{dens}. 
+
+\item[\moc{DENS}] compute density of a mixture of light and heavy water.
+
+\item[\moc{WATER}] keyword to recover the water density as a
+function of its temperature and purity (independent of pressure $p$). This option requires the setting of
+temperature and purity, and it does not affect any given list of isotope names. This module relies on the water density calculator of WIMS-AECL.\cite{WIMS}
+
+\item[\moc{PWATER}] new keyword to recover the water density as a
+function of temperature, pressure and purity developed by C. Kieffer.\cite{Kieffer} This option requires the setting of
+temperature, pressure and purity, and it does not affect any given list of isotope names. For light water, it uses the \moc{freesteam} routines.\cite{Freesteam} For heavy water, two options are considered.
+\begin{enumerate}
+\item For $90\text{ C}<T<350\text{ C}$ and $p<22$ MPa, the heavy water routines written by Ji Zhang at AECL and distributed freely by B. Garland from McMaster University are considered.\cite{McMaster}
+\item Otherwise, the density is that of obtained from \moc{freesteam} multiplied by a factor of 1.11 which is approximately the ratio of the molecular mass of D2O to H2O.
+\end{enumerate}  
+
+\item[\moc{WGT\%} \moc{D2O}] keywords to recover 3 number densities for a compound
+mixture of heavy and light water. The isotope list is assumed to contain $^{1}$H,
+$^{2}$D and $^{2}$O. Temperature and purity are supposed to be available. It returns
+concentration of these isotopes in the output parameters \dusa{nh1}, \dusa{nd2} and
+\dusa{no16}.
+
+\item[\moc{WGT\%} \moc{H2O}] is identical to \moc{WGT\%} \moc{D2O}.
+
+\item[\moc{WGT\%} \moc{UO2}] keywords to recover 3 number densities for a compound
+mixture of Uranium oxide. The isotope list is assumed to contain $^{235}$U,
+$^{238}$U and $^{16}$O. The $^{235}$U enrichment is supposed to be available. Note
+that the number densities will sum to 100. It returns concentration of these
+isotopes in the output parameters \dusa{nu5}, \dusa{nu8} and \dusa{no16}.
+
+\item[\moc{WGT\%} \moc{THO2}] keywords to recover 3 number densities for a compound
+mixture of Thorium/Uranium oxide. The isotope list is assumed to contain
+$^{232}$Th,  $^{233}$U  and $^{16}$O. The $^{233}$U enrichment is supposed to be
+available. Note that the number densities will sum to 100. It returns concentration
+of these isotopes in the output parameters \dusa{nth2}, \dusa{nu3} and \dusa{no16}.
+
+\end{ListeDeDescription}
+
+The \moc{INFO:} module works the following way. For a given isotope list, the mass is
+extracted from the library or a calculation process is expected. Once this
+calculation is has been performed, it is possible to list other isotopes and ask for
+further calculations. Finally note that the number of output parameters, denoted by
+$>>$\dusa{param}$<<$, are recovered as CLE-2000 variables in \dstr{descinfo}. The number
+of these parameters must be equal to the number of isotopes
+names given, plus the water density when a command \moc{CALC} \moc{DENS} \moc{WATER}
+is issued.
+
+\eject

@@ -1,0 +1,539 @@
+\section{Contents of a
+\dir{geometry} directory}\label{sect:geometrydir}
+
+The {\tt L\_GEOM} specification is used to store structured geometric data, i.e., data characterized by some regularity in space. Sub-geometries can be embedded at specific node positions to build a more complex geometry. The following regular geometries can be described with the {\tt L\_GEOM} specification:
+\begin{itemize}
+\item Cartesian geometries in 1D, 2D and 3D
+\item Cylindrical geometries in 1D and 2D ($R-Z$ or $R-\theta$)
+\item Spherical geometries in 1D
+\item Hexagonal geometries in 2D/3D
+\item Various types of cells in 2D/3D Cartesian or hexagonal geometry
+\item Cells with clusters of fuel rods
+\item Various synthetic geometries (Do-it-yourself Apollo1 assembly and double-heterogeneity).
+\end{itemize}
+
+This directory contains a compact description of a geometry.
+
+\subsection{State vector content for the \dir{geometry} data structure}\label{sect:geometrystate}
+
+The dimensioning parameters for this data structure, which are stored in the state vector
+$\mathcal{S}^{G}$, represent:
+
+\begin{itemize}
+\item The type of of geometry $F_{t}=\mathcal{S}^{G}_{1}$
+
+\begin{displaymath}
+F_{t} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{Virtual geometry}\\
+ 1 & \textrm{Homogeneous geometry} \\ 
+ 2 & \textrm{Cartesian 1-D geometry} \\ 
+ 3 & \textrm{Tube 1-D geometry}  \\
+ 4 & \textrm{Sphere 1-D geometry}  \\
+ 5 & \textrm{Cartesian 2-D geometry}  \\
+ 6 & \textrm{Tube ($R$-$Z$) geometry}  \\
+ 7 & \textrm{Cartesian 3-D geometry}  \\
+ 8 & \textrm{Hexagonal 2-D geometry}   \\
+ 9 & \textrm{Hexagonal 3-D geometry}  \\
+10 & \textrm{Tube ($R$-$X$) geometry}  \\
+11 & \textrm{Tube ($R$-$Y$) geometry}  \\
+12 & \textrm{hexagonal 2--D geometry with triangular mesh}  \\
+13 & \textrm{$z$-directed hexagonal 3--D geometry with triangular mesh}  \\
+15 & \textrm{Tube ($R$-$\theta$) 2-D geometry}  \\
+16 & \textrm{Triangular 2-D geometry}  \\
+17 & \textrm{Triangular 3-D geometry}  \\
+20 & \textrm{Cartesian 2-D geometry with annular sub-mesh}  \\
+21 & \textrm{Cartesian 3-D geometry with $x-$directed cylindrical sub-mesh}  \\
+22 & \textrm{Cartesian 3-D geometry with $y-$directed cylindrical sub-mesh}  \\
+23 & \textrm{Cartesian 3-D geometry with $z-$directed cylindrical sub-mesh}  \\
+24 & \textrm{Hexagonal 2-D geometry with annular sub-mesh}  \\
+25 & \textrm{Hexagonal 3-D geometry with $z-$directed cylindrical sub-mesh }  \\
+30 & \textrm{Do-it-yourself geometry}  \\
+\end{array} \right.
+\end{displaymath}
+\eject
+
+\item The number of annular or cylindric mesh intervals in the geometry $N_{r}=\mathcal{S}^{G}_{2}$
+
+\item The number of $x-$directed mesh intervals, hexagon or triangles in the geometry $N_{x}=\mathcal{S}^{G}_{3}$
+
+\item The number of $y-$directed mesh intervals in the geometry $N_{y}=\mathcal{S}^{G}_{4}$
+
+\item The number of $z-$directed mesh intervals in the geometry $N_{z}=\mathcal{S}^{G}_{5}$
+
+\item The total number of mesh intervals in the geometry $N_{k}=\mathcal{S}^{G}_{6}$
+\begin{itemize}
+\item for $F_{t}=$0 or 1, $N_{k}=1$;
+\item for $F_{t}=$2, 5 or 7, $N_{k}=\max(N_{x},1)\times \max(N_{y},1)\times \max(N_{z},1)$;
+\item for $F_{t}=$3, 6, 10 or 11, $N_{k}=N_{r}\times \max(N_{x},1)\times \max(N_{y},1)\times \max(N_{z},1)$
+\item for $F_{t}=$4, $N_{k}=N_{r}$;
+\item for $F_{t}=$8 or 9, $N_{k}=N_{x}\times \max(N_{z},1)$;
+\item for $F_{t}=$12 or 13, $N_{k} = 6\times N_{x}^{2}\times \max(N_{z},1)$;
+\item for $F_{t}=$20, 21, 22 or 23, $N_{k} = (N_{r}+1)\times \max(N_{x},1)\times \max(N_{y},1)\times \max(N_{z},1)$;
+\item for $F_{t}=$24 or 25, $N_{k} = (N_{r}+1)\times \max(N_{z},1)$.
+\end{itemize}
+
+\item The maximum number of mixtures used in this geometry $M_{m}=\mathcal{S}^{G}_{7}$
+
+\item The cell flag $F_{c}=\mathcal{S}^{G}_{8}$ 
+\begin{displaymath}
+F_{c} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{Cell option not activated} \\
+ 1 & \textrm{Cell option present} 
+\end{array} \right.
+\end{displaymath}
+
+\item The number of sub-geometries defined in this geometry $F_{g}=\mathcal{S}^{G}_{9}$ 
+
+\item The merge flag $F_{m}=\mathcal{S}^{G}_{10}$ 
+\begin{displaymath}
+F_{m} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{Merge option not activated} \\
+ 1 & \textrm{Merge option present} 
+\end{array} \right.
+\end{displaymath}
+
+\item The split flag $F_{s}=\mathcal{S}^{G}_{11}$ 
+\begin{displaymath}
+F_{s} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{Split option not activated} \\
+ 1 & \textrm{Split option present} \\
+ 2 & \textrm{Split option present. The embedded tubes are not splitted.} 
+\end{array} \right.
+\end{displaymath}
+
+\item The double heterogeneity flag $F_{\mathrm{dh}}=\mathcal{S}^{G}_{12}$ 
+\begin{displaymath}
+F_{\mathrm{dh}} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{Double heterogeneity option not activated} \\
+ 1 & \textrm{Double heterogeneity option present} 
+\end{array} \right.
+\end{displaymath}
+
+\item The number of cluster sub-geometry $N_{\mathrm{cl}}=\mathcal{S}^{G}_{13}$ 
+
+\item The type of sectorizarion $F_{\mathrm{sec}}=\mathcal{S}^{G}_{14}$.
+This information may be given only if $F_{t}\ge 20$.
+\begin{displaymath}
+F_{\mathrm{sec}} = \left\{
+\begin{array}{rl}
+-999 & \textrm{non-sectorized cell processed as a sectorized cell} \\
+-1 & \textrm{$\times$--type sectorization} \\
+ 0 & \textrm{non-sectorized cell} \\
+ 1 & \textrm{$+$--type sectorization} \\
+ 2 & \textrm{simultaneous $\times$-- and $+$--type sectorization}  \\
+ 3 & \textrm{simultaneous $\times$-- and $+$--type sectorization shifted by 22.5$^\circ$} \\
+ 4 & \textrm{windmill-type sectorization.} 
+\end{array} \right.
+\end{displaymath}
+
+\item Number of tubes that are {\sl not} splitted by the sectors if $F_{\mathrm{sec}}\ne 0$. This integer is selected in interval $0 \le F_{\mathrm{sec2}} \le N_{r}$. $F_{\mathrm{sec2}}=\mathcal{S}^{G}_{15}$.
+
+\item  The pin location option $\mathcal{S}^{G}_{18}$. When  $\mathcal{S}^{G}_{18}>0$, the pin are located according to $(r,\theta)$ in 2-D and 3-D (center along the cylinder axis in the cell into which they are inserted)  while for $\mathcal{S}^{G}_{18}<0$, the pin are
+located according to $(x,y)$ in 2-D and $(x,y,z)$ in 3-D. A value of $\mathcal{S}^{G}_{18}=0$, implies that there is no pin in the geometry.
+
+\end{itemize}
+
+\vskip 0.2cm
+
+The radii of a {\tt CARCEL}-- or {\tt HEXCEL}--type geometry are defined as
+shown in the following figure:
+
+\vbox{
+\begin{center} 
+\epsfxsize=5.5cm
+\centerline{ \epsffile{radius.eps}}
+\end{center} }
+
+In case where $F_{\mathrm{sec}}\ne 0$, the elementary cell is splitted with
+sectors. Mixture indices are specific in each splitted region. They are defined
+as in the following two figures ({\tt isect}$\equiv F_{\mathrm{sec}}$ and {\tt jsect}$\equiv F_{\mathrm{sec2}}$):
+
+\vbox{
+\begin{center} 
+\epsfxsize=16cm
+\centerline{ \epsffile{rect3c.eps}}
+\end{center} }
+
+\vbox{
+\begin{center} 
+\epsfxsize=13cm
+\centerline{ \epsffile{hexa3c.eps}}
+\end{center} }
+
+\vskip 0.2cm
+
+In case of an automatic geometry definition using the \moc{NAP:} module, the number of mixtures corresponding to assembly in the original core definition is named $N_{mxa}$ and the number of assembly along X and Y directions are $N_{ax}$ and $N_{ay}$ respectively.
+
+\subsection{The main \dir{geometry} directory}\label{sect:geometrydirmain}
+
+On its first level, the
+following records and sub-directories will be found in the \dir{geometry} directory:
+
+\begin{DescriptionEnregistrement}{Main records and sub-directories in \dir{geometry}}{7.5cm}
+\CharEnr
+  {SIGNATURE\blank{3}}{$*12$}
+  {Signature of the data structure ($\mathsf{SIGNA}=${\tt L\_GEOM\blank{6}})}
+\IntEnr
+  {STATE-VECTOR}{$40$}
+  {Vector describing the various parameters associated with this data structure $\mathcal{S}^{G}_{i}$,
+  as defined in \Sect{geometrystate}.}
+\IntEnr
+  {MIX\blank{9}}{$N_{k}$}
+  {Record containing the material mixture index $1\le i \le M_m$ per region (for positive indices) or
+  the sub-geometry index $1\le |i| \le F_g$ per region (for negative indices). {\tt MIX(I)} is set to
+  zero in voided regions {\tt I} or in regions located outside the domain.}
+\OptIntEnr
+  {HMIX\blank{8}}{$N_{k}$}{*}
+  {array $H_{i}$ containing the virtual (homogenization) mixtures associated with different regions of the geometry}
+\OptRealEnr
+  {RADIUS\blank{6}}{$N_{r}+1$}{$N_{r}\ge 1$}{cm}
+  {The radial mesh $R_{i}$ position. The first element of this vector is identical to 0.0}
+\OptRealEnr
+  {OFFCENTER\blank{3}}{$3$}{$N_{r}\ge 1$}{cm}
+  {The displacement of the center of the annular mesh from the center of a Cartesian cell}
+\OptRealEnr
+  {MESHX\blank{7}}{$N_{x}+1$}{$N_{x}\ge 1$}{cm}
+  {The $x-$directed mesh position $X_{i}$}
+\OptRealEnr
+  {MESHY\blank{7}}{$N_{y}+1$}{$N_{y}\ge 1$}{cm}
+  {The $y-$directed mesh position $Y_{i}$}
+\OptRealEnr
+  {MESHZ\blank{7}}{$N_{z}+1$}{$N_{z}\ge 1$}{cm}
+  {The $z-$directed mesh position $Z_{i}$}
+\OptRealEnr
+  {SIDE\blank{8}}{$1$}{${{\displaystyle 8\le F_{t}\le 11} \atop \displaystyle {24\le F_{t}\le 25}}$}{cm}
+  {The width of the side of the hexagon $H$}
+\OptIntEnr
+  {SPLITR\blank{6}}{$N_{r}+1$}{$F_{s}\times N_{r}\ge 1$}
+  {Record containing the radial mesh splitting $S_{r,i}$. A negative value permits a splitting into
+  equal sub-volumes; a positive value permits a splitting into equal sub-radius spacings}
+\OptIntEnr
+  {SPLITX\blank{6}}{$N_{x}$}{$F_{s}\times N_{x}\ge 1$}
+  {Record containing the $x-$directed mesh splitting $S_{x,i}$}
+\OptIntEnr
+  {SPLITY\blank{6}}{$N_{y}$}{$F_{s}\times N_{y}\ge 1$}
+  {Record containing the $y-$directed mesh splitting $S_{y,i}$}
+\OptIntEnr
+  {SPLITZ\blank{6}}{$N_{z}$}{$F_{s}\times N_{z}\ge 1$}
+  {Record containing the $z-$directed mesh splitting $S_{z,i}$}
+\OptIntEnr
+  {SPLITH\blank{6}}{$1$}{$F_{t}=12,13$}
+  {value $S_{h}$ of the triangular mesh splitting for triangular hexagons in the geometry. This will lead to a spatial triangular mesh spacing of $H_{s}=H/N_{x}$}
+\OptIntEnr
+  {SPLITL\blank{6}}{$1$}{$F_{t}=8,9$}
+  {value $S_{h}$ of the lozenge mesh splitting for hexagons in the geometry. This will lead to $3 \times${\tt SPLITL}$^2$ lozenges per hexagon. Only works with the {\tt SNT:} tracking module.}
+\OptIntEnr
+  {IHEX\blank{8}}{$1$}{$F_{t}= 8,9,12,13,24,25$}
+  {The type of hexagonal symmetry $\beta_{h}$}
+\IntEnr
+  {NCODE\blank{7}}{$6$}
+  {Record containing the types of boundary conditions on each surface
+  $N_{\beta,j}$. {\tt NCODE(1)}: {\tt X-} or {\tt HBC} condition;
+  {\tt NCODE(2)}: {\tt X+} or {\tt R+} condition; {\tt NCODE(3)}: {\tt Y-}
+  condition; {\tt NCODE(4)}: {\tt Y+} condition; {\tt NCODE(5)}: {\tt Z-}
+  condition; {\tt NCODE(6)}: {\tt Z+} condition}
+\RealEnr
+  {ZCODE\blank{7}}{$6$}{}
+  {Record containing the albedo value on each surface $\beta_{j}$}
+\IntEnr
+  {ICODE\blank{7}}{$6$}
+  {Record containing the albedo index on each surface $I_{\beta,j}$. 
+   The vector $\beta_{j}$ is used only if $I_{\beta,j}>0$ and $N_{\beta,j}=6$. In the case where
+   $I_{\beta,j}<0$ and $N_{\beta,j}=6$ the
+   vector $\beta_{p,j}$ in the directory \dir{macrolib} is used} 
+\OptIntEnr
+  {NPIN\blank{8}}{$1$}{$|\mathcal{S}^{G}_{18}|\ne 0$}
+  {Number $N_{\text{pin}}$ of identical pins in a cluster. All the pins will see identical flux}
+\OptRealEnr
+  {DPIN\blank{8}}{$1$}{$|\mathcal{S}^{G}_{18}|\ne 0$}{cm$^{-3}$}
+  {Relative density $d_{p,r}$ of pins in a cluster. In this case $N_{\text{pin}}=-1$}
+\OptRealEnr
+  {RPIN\blank{8}}{$k$}{$\mathcal{S}^{G}_{18}=1$}{cm}
+  {array $R_{\text{pin},j}$ containing the radial positions at which the center of the pins in the cluster are located with respect to the center of the cell ($k=N_{\text{pin}}$). In the case where
+   $R_{\text{pin},j}$ contains a single element ($k=1$), it is assumed that the pins are all located at the same radial position $R_{\text{ref}}=R_{\text{pin},1}$}
+\OptRealEnr
+  {APIN\blank{8}}{$k$}{$\mathcal{S}^{G}_{18}=1$}{rad}
+  {array $\theta_{\text{pin},j}$ containing the angular positions at which the center of the pins in the cluster are located with respect to the $x$, $y$ or $z$ axis
+respectively for \moc{TUBEX}, \moc{TUBEY} and \moc{TUBEZ} geometry ($k=N_{\text{pin}}$). In the case where
+   $\theta_{\text{pin},j}$ contains a single element ($k=1$), it is assumed that the first pin is located at $\theta_{\text{ref}}=\theta_{\text{pin},1}$, the remaining pins being located at
+$\theta_{\text{pin},j}=\theta_{\text{ref}}+2(j-1)\pi/N_{\text{pin}}$}
+\OptRealEnr
+  {CPINX\blank{7}}{$N_{\text{pin}}$}{$\mathcal{S}^{G}_{18}=-1$}{cm}
+  {array $X_{\text{pin},j}$ containing the $x$ positions at which the pins in the cluster are centered with respect to the center of the cell}
+\OptRealEnr
+  {CPINY\blank{7}}{$N_{\text{pin}}$}{$\mathcal{S}^{G}_{18}=-1$}{cm}
+  {array $Y_{\text{pin},j}$ containing the $y$ positions at which the pins in the cluster are centered with respect to the center of the cell}
+\OptRealEnr
+  {CPINZ\blank{7}}{$N_{\text{pin}}$}{$\mathcal{S}^{G}_{18}=-1$}{cm}
+  {array $Z_{\text{pin},j}$ containing the $z$ positions at which the pins in the cluster are centered with respect to the center of the cell}
+\OptDirEnr
+  {BIHET\blank{7}}{$F_{dh}=1$}
+  {Directory containing double-heterogeneity related data. This directory can only be present on the root directory.}
+\OptRealEnr
+  {POURCE\blank{6}}{$\mathcal{S}^{G}_{3}$}{$F_{t}=30$}{}
+  {The proportion of each cell type in the lattice $P_{j}$}
+\OptRealEnr
+  {PROCEL\blank{6}}{$\mathcal{S}^{G}_{3},\mathcal{S}^{G}_{3}$}{$F_{t}=30$}{}
+  {The pre-calculated probability for a neutron leaving a cell of type $i$ to enter in a
+  cell of type $j$ without crossing any other cell $P_{i,j}$}
+\OptCharEnr
+  {CELL\blank{8}}{$(F_{g})*12$}{$F_{c}=1$}
+  {The names of the sub-geometries ($\mathsf{CELL}_{k}$)}
+\OptIntEnr
+  {MERGE\blank{7}}{$N_{k}$}{$F_{m}=1$}
+  {The merging index corresponding to each region $G_{m,i}$}
+\OptIntEnr
+  {TURN\blank{8}}{$N_{k}$}{$F_{c}=1$}
+  {The orientation index corresponding to each region $G_{t,i}$. Negative values are used to turn a cell in the Z direction.}
+\OptCharEnr
+  {CLUSTER\blank{5}}{$(F_{cl})*12$}{$F_{cl}\ge 1$}
+  {The names of the sub-geometries making up the cluster ($\mathsf{CLUSTER}_{k}$)}
+\OptDirVar
+  {\listedir{subgeo}}{$F_{g}\ge 1$}
+  {Set of sub-directories containing a subgeometry}
+\OptCharEnr
+  {MIX-NAMES\blank{3}}{$(M_{m})*12$}{*}
+  {The names of the mixtures}
+\IntEnr
+  {A-NX\blank{8}}{$N_{ay}$}{Number of assemblies on each row}
+\IntEnr
+  {A-IBX\blank{7}}{$N_{ay}$}{Position of the first assembly on each row}
+\IntEnr
+  {A-ZONE\blank{6}}{$N_{ch}$}{Number of the assembly associated with each channel. Each assembly may be represented by several channels if they have been heterogeneously homogenized.}
+\IntEnr
+  {A-NMIXP\blank{5}}{1}{The number of mixtures in one heterogeneously homogenized assembly. $N_{mxp}$. Note for homogeneously  homogenized assembly  $N_{mxp}$ = 1.}
+\end{DescriptionEnregistrement}
+
+In the case where a cylindrical correction is applied over a full--core Cartesian
+calculation, the following additional data is provided. It is provided if and only if type 20
+({\tt CYLI}) boundary conditions are set in the $X$--$Y$ plane (see \Fig{corr}).
+
+\begin{figure}[h!]
+\begin{center} 
+\epsfxsize=5cm
+\centerline{ \epsffile{Fig6.eps}}
+\parbox{14cm}{\caption{Cylindrical correction in Cartesian geometry}
+\label{fig:corr}} 
+\end{center} 
+\end{figure}
+
+\begin{DescriptionEnregistrement}{Cylindrical correction related records in \dir{geometry}}{7.5cm}
+\RealEnr
+  {XR0\blank{9}}{$N_{\rm cyl}$}{cm}
+  {Record containing the coordinate of the $Z$ axis from which the cylindrical correction is applied to
+   Cartesian geometries. $N_{\rm cyl}$ is the number of radii.}
+\RealEnr
+  {RR0\blank{9}}{$N_{\rm cyl}$}{cm}
+  {Record containing the radius of the real cylindrical boundary (rrad).}
+\RealEnr
+  {ANG\blank{9}}{$N_{\rm cyl}$}{1}
+  {Record containing the angle (in radian) of the cylindrical notch. \dusa{ang}(ir) $= {\pi \over 2}$ by default (i.e. the correction is applied at every angle).}
+\end{DescriptionEnregistrement}
+
+The type of hexagonal symmetry $\beta_{h}$ is defined as:
+\begin{displaymath}
+\beta_{h} = \left\{
+\begin{array}{rl}
+ 1 & \textrm{S30} \\
+ 2 & \textrm{SA60} \\
+ 3 & \textrm{SB60} \\
+ 4 & \textrm{S90} \\
+ 5 & \textrm{R120} \\
+ 6 & \textrm{R180} \\
+ 7 & \textrm{SA180} \\
+ 8 & \textrm{SB180} \\
+ 9 & \textrm{COMPLETE}
+\end{array} \right.
+\end{displaymath}
+
+\textrm{S30}, \textrm{SA60} and \textrm{COMPLETE} symmetries are depicted in the following figures. The other types of hexagonal symmetries are defined in the DRAGON users guide.\cite{Dragon5}
+
+\vbox{
+\begin{center} 
+\epsfxsize=9cm
+\centerline{ \epsffile{hexs30.eps}}
+\end{center} }
+\vbox{
+\begin{center} 
+\epsfxsize=6cm
+\centerline{ \epsffile{hexcomp.eps}}
+\end{center} }
+
+{\tt NCODE} is a record containing the types of boundary conditions on each surface. In Cartesian geometry, the 6 components of {\tt NCODE} are related to sides {\tt X-}, {\tt X+}, {\tt Y-}, {\tt Y+}, {\tt Z-} and {\tt Z+}, respectively. The possibilities are:
+\begin{displaymath}
+N_{\beta,j} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{side not used} \\
+ 1 & \textrm{{\tt VOID}: zero
+re-entrant angular flux. This side is an external surface of the domain.} \\
+ 2 & \textrm{{\tt REFL}: reflection boundary condition. In 
+most DRAGON calculations, this implies} \\
+ & \textrm{white boundary conditions. In DRAGON the cell is never unfolded to take into} \\
+& \textrm{account a REFL boundary condition.} \\
+ 3 & \textrm{{\tt DIAG}: diagonal boundary condition. The side under consideration
+has the same} \\
+& \textrm{properties as that associated with a diagonal through the
+geometry. Note that two} \\
+ & \textrm{and only two {\tt DIAG} sides must be specified. The
+diagonal symmetry is only permitted} \\
+ & \textrm{for square geometry and in the following
+combinations: ({\tt X+} and {\tt Y-}) or ({\tt X-} and {\tt Y+})} \\
+ 4 & \textrm{{\tt TRAN}: translation boundary condition. The side under consideration
+is connected} \\
+& \textrm{to the opposite side of a Cartesian domain. This option 
+provides the facility to treat} \\
+ & \textrm{an infinite geometry with translation
+symmetry. The only combinations of} \\
+ & \textrm{translational symmetry permitted are related to sides ({\tt X-} and {\tt X+}) and/or} \\
+ & \textrm{({\tt Y-} and {\tt Y+}) and/or ({\tt Z-} and {\tt Z+}).} \\
+ 5 & \textrm{{\tt SYME}: symmetric reflection boundary condition. The side under consideration
+is} \\
+& \textrm{located outside the domain and that a reflection symmetry is associated with the} \\
+& \textrm{adequately directed axis running through the center of the cells closest to this side.} \\
+ 6 & \textrm{{\tt ALBE}: albedo boundary condition. The side under consideration has an
+arbitrary} \\
+& \textrm{albedo with a real value given in the record {\tt `ZCODE'} or indexed by the record} \\
+ & \textrm{{\tt `ICODE'}. This side is an external surface of the domain.} \\
+ 7 & \textrm{{\tt ZERO}: zero flux boundary condition. This side is an external surface of the domain.} \\
+ 8 & \textrm{{\tt PI/2}: $\pi$/2 rotation. The side under consideration is characterized by a $\pi / 2$ symmetry.} \\
+ &  \textrm{The only $\pi / 2$ symmetry permitted is related to sides ({\tt X-} and {\tt Y-}). This condition can} \\
+ &  \textrm{be combined with a translation boundary condition:({\tt PI/2 X- TRAN X+}) and/or} \\
+ &  \textrm{({\tt PI/2 Y- TRAN Y+}).} \\
+ 9 & \textrm{{\tt PI}: $\pi$ rotation} \\
+10 & \textrm{{\tt SSYM}: specular relexion boundary condition. Such a condition may be
+obtained by} \\
+ & \textrm{unfolding the geometry.} \\
+20 & \textrm{{\tt CYLI}: use a cylindrical correction in full--core Cartesian geometry}
+\end{array} \right.
+\end{displaymath}
+
+In cylindrical geometry, the 3 components of {\tt NCODE} are related to sides {\tt R+}, {\tt Z-} and {\tt Z+}, respectively. The possibilities are: {\tt VOID}, {\tt REFL}, {\tt ALBE} and/or {\tt ZERO}.
+
+\vskip 0.2cm
+
+In hexagonal geometry, the 3 components of {\tt NCODE} are related to sides {\tt H+} (the surface surrounding the hexagonal domain in the X--Y plane), {\tt Z-} and {\tt Z+}, respectively. The possibilities are: {\tt VOID}, {\tt REFL}, {\tt SYME}, {\tt ALBE} and/or {\tt ZERO}.
+
+\vskip 0.2cm
+
+We will now describe the exact meaning of the orientation index $G_{t,i}$. For Cartesian geometries, the eight
+possible orientations are shown in the following figure:
+
+\begin{center} 
+\epsfxsize=8cm
+\centerline{ \epsffile{oricart.eps}}
+\end{center}
+
+For hexagonal geometries, the twelve
+possible orientations are shown in the following figure:
+
+\begin{center} 
+\epsfxsize=10cm
+\centerline{ \epsffile{orihex.eps}}
+\end{center}
+
+In the case where $F_{c}=1$, the set of directory \listedir{subgeo} will have the
+same name as the variable $\mathsf{CELL}_{k}$. For example, in the case where
+$F_{g}=2$ and
+\begin{displaymath}
+\mathsf{CELL}_{k} = \left\{
+\begin{array}{lll}
+\mathtt{GEO1} & \textrm{for} & k=1\\
+\mathtt{GEO2} & \textrm{for} & k=2
+\end{array} \right.
+\end{displaymath}
+then
+the following directories will also be present in the main geometry directory:
+
+\begin{DescriptionEnregistrement}{Cell sub-geometry directory}{7.0cm}
+\DirEnr
+  {GEO1\blank{8}}
+  {A first \dir{geometry} directory}
+\DirEnr
+  {GEO2\blank{8}}
+  {A second \dir{geometry} directory}
+\end{DescriptionEnregistrement}
+
+In the case where $F_{cl}\ge1$, the set of directory \listedir{subgeo} will have the
+same name as the variable $\mathsf{CLUSTER}_{k}$. For example, in the case where
+$F_{cl}=2$ and
+\begin{displaymath}
+\mathsf{CLUSTER}_{k} = \left\{
+\begin{array}{lll}
+\mathtt{RODS1} & \textrm{for} & k=1\\
+\mathtt{RODS2} & \textrm{for} & k=2
+\end{array} \right.
+\end{displaymath}
+then
+the following directories will also be present in the main geometry directory:
+
+\begin{DescriptionEnregistrement}{Cluster sub-geometry directory}{7.0cm}
+\OptDirEnr
+  {RODS1\blank{7}}{$F_{g}\ge 1$}
+  {A first \dir{geometry} directory}
+\OptDirEnr
+  {RODS2\blank{7}}{$F_{g}\ge 1$}
+  {A second \dir{geometry} directory}
+\end{DescriptionEnregistrement}
+
+\subsection{The \moc{/BIHET/} sub-directory in \dir{geometry}}\label{sect:geometrybihet}
+
+The first level of the geometry directory may contains a double-heterogeneity directory \moc{/BIHET/} made of the
+following records:
+
+\begin{DescriptionEnregistrement}{Records in the \moc{/BIHET/} sub-directory}{7.5cm}
+\IntEnr
+  {STATE-VECTOR}{$40$}
+  {Vector describing the various parameters associated with this data structure $\mathcal{S}^{dh}_{i}$}
+\IntEnr
+  {NS\blank{10}}{$\mathcal{S}^{dh}_{1}$}
+  {The number of sub-regions in the micro-structures $N_{\mathrm{micro},i}$} 
+\RealEnr
+  {RS\blank{10}}{$\mathcal{S}^{dh}_{2},\mathcal{S}^{dh}_{1}$}{cm}
+  {The radii of the tubes or spherical shells making up the micro-structures
+   $R_{\mathrm{micro},i,j}$}
+\IntEnr
+  {MILIE\blank{7}}{$\mathcal{S}^{dh}_{3}$}
+  {The composite mixture indices used in the definition of the macro-geometry $C_{\mathrm{micro},i,j}$}
+\IntEnr
+  {MIXDIL\blank{6}}{$\mathcal{S}^{dh}_{3}$}
+  {The mixture indices associated with the diluent in each composite mixtures of the macro-geometry $D_{\mathrm{micro},i,j}$}
+\IntEnr
+  {MIXGR\blank{7}}{$\mathcal{S}^{dh}_{4},\mathcal{S}^{dh}_{3}$}
+  {The mixture indices associated with each region of the micro-structures $M_{\mathrm{micro},i,j}$}
+\RealEnr
+  {FRACT\blank{7}}{$\mathcal{S}^{dh}_{1},\mathcal{S}^{dh}_{3}$}{}
+  {The volumetric concentration of each micro-structure $\rho_{\mathrm{micro},i,j}$}
+\end{DescriptionEnregistrement}
+
+The dimensioning parameters for this data structure, which are stored in the state vector
+$\mathcal{S}^{bh}$, represent:
+
+\begin{itemize}
+
+\item The number of different kinds of macro-structures $\mathcal{S}^{dh}_{1}$ 
+
+\item $1$ plus the maximum number of annular sub-regions in any micro-structure
+$\mathcal{S}^{dh}_{2}$ 
+
+\item The number of composite mixtures to be included the macro-geometry $\mathcal{S}^{dh}_{3}$ 
+
+\item The maximum number of annular sub-regions in the micro-structure 
+$\mathcal{S}^{dh}_{4}=(\mathcal{S}^{dh}_{2}-1)\times \mathcal{S}^{dh}_{1}$ 
+
+\item The type of micro-structure $\mathcal{S}^{dh}_{5}$
+\noindent where
+\begin{displaymath}
+\mathcal{S}^{dh}_{5} = \left\{
+\begin{array}{rl}
+ 3 & \textrm{Tubular micro-structure} \\
+ 4 & \textrm{Spherical micro-structure} \\
+\end{array} \right.
+\end{displaymath}
+\end{itemize}
+
+\clearpage

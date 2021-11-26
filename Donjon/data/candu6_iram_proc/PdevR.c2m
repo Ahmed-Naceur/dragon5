@@ -1,0 +1,301 @@
+*==============================================================*
+* Procedure :  PdevR.c2m                                       *
+* Purpose   :  Adjuster rods descriptions using DONJON-4       *
+* Author    :  D. Sekki (07/07)                                *
+*==============================================================*
+PARAMETER  DEVICE INDEX ::
+                        ::: LINKED_LIST DEVICE INDEX ; ;
+
+MODULE   END: DEVINI: ;
+INTEGER  mRai  mRao  mRbi  mRci  mRco  mRdi
+         mNai  mNao  mNbi  mNci  mNco  mNdi :=
+           5     6     7     8     9    10 
+          11    12    13    14    15    16  ;
+
+*--
+* controlled adjuster rods descriptions:
+*--
+
+  DEVICE INDEX := DEVINI: INDEX :: EDIT 1 NUM-ROD 39
+
+  ROD 1
+    ROD-NAME BC01
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 197.1125 225.6875   325.700 440.000   202.060 251.590
+    DMIX <<mRdi>> <<mNdi>>
+  ENDROD
+*
+  ROD 2
+    ROD-NAME BC02C
+    LEVEL 0.0   AXIS Y  FROM H-
+    MAXPOS 254.2625 282.8375   211.400 297.125   202.060 251.590
+    DMIX <<mRco>> <<mNco>>
+  ENDROD
+*
+  ROD 3
+    ROD-NAME BC02B
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 254.2625 282.8375   297.125 468.575   202.060 251.590
+    DMIX <<mRci>> <<mNci>>
+  ENDROD
+*
+  ROD 4
+    ROD-NAME BC02A
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 254.2625 282.8375   468.575 554.300   202.060 251.590
+    DMIX <<mRco>> <<mNco>>
+  ENDROD
+*
+  ROD 5
+    ROD-NAME BC03
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 311.4125 339.9875   211.400 554.300   202.060 251.590
+    DMIX <<mRbi>> <<mNbi>>
+  ENDROD
+*
+  ROD 6
+    ROD-NAME BC04C
+    LEVEL 0.0   AXIS Y  FROM H-
+    MAXPOS 368.5625 397.1375   211.400 297.125   202.060 251.590
+    DMIX <<mRao>> <<mNao>>
+  ENDROD
+*
+  ROD 7
+    ROD-NAME BC04B
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 368.5625 397.1375   297.125 468.575   202.060 251.590
+    DMIX <<mRai>> <<mNai>>
+  ENDROD
+*
+  ROD 8
+    ROD-NAME BC04A
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 368.5625 397.1375   468.575 554.300   202.060 251.590
+    DMIX <<mRao>> <<mNao>>
+  ENDROD
+*
+  ROD 9
+    ROD-NAME BC05
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 425.7125 454.2875   211.400 554.300   202.060 251.590
+    DMIX <<mRbi>> <<mNbi>>
+  ENDROD
+*
+  ROD 10
+    ROD-NAME BC06C
+    LEVEL 0.0   AXIS Y  FROM H-
+    MAXPOS 482.8625 511.4375   211.400 297.125   202.060 251.590
+    DMIX <<mRco>> <<mNco>>
+  ENDROD
+*
+  ROD 11
+    ROD-NAME BC06B
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 482.8625 511.4375   297.125 468.575   202.060 251.590
+    DMIX <<mRci>> <<mNci>>
+  ENDROD
+*
+  ROD 12
+    ROD-NAME BC06A
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 482.8625 511.4375   468.575 554.300   202.060 251.590
+    DMIX <<mRco>> <<mNco>>
+  ENDROD
+*
+  ROD 13
+    ROD-NAME BC07
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 540.0125 568.5875   325.700 440.000   202.060 251.590
+    DMIX <<mRdi>> <<mNdi>>
+  ENDROD
+*
+  ROD 14
+    ROD-NAME BC08
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 197.1125 225.6875   325.700 440.000   276.360 325.890
+    DMIX <<mRdi>> <<mNdi>>
+  ENDROD
+*
+  ROD 15
+    ROD-NAME BC09C
+    LEVEL 0.0   AXIS Y  FROM H-
+    MAXPOS 254.2625 282.8375   211.400 297.125   276.360 325.890
+    DMIX <<mRco>> <<mNco>>
+  ENDROD
+*
+  ROD 16
+    ROD-NAME BC09B
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 254.2625 282.8375   297.125 468.575   276.360 325.890
+    DMIX <<mRci>> <<mNci>>
+  ENDROD
+*
+  ROD 17
+    ROD-NAME BC09A
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 254.2625 282.8375   468.575 554.300   276.360 325.890
+    DMIX <<mRco>> <<mNco>>
+  ENDROD
+*
+  ROD 18
+    ROD-NAME BC10
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 311.4125 339.9875   211.400 554.300   276.360 325.890
+    DMIX <<mRbi>> <<mNbi>>
+  ENDROD
+*
+  ROD 19
+    ROD-NAME BC11C
+    LEVEL 0.0   AXIS Y  FROM H-
+    MAXPOS 368.5625 397.1375   211.400 297.125   276.360 325.890
+    DMIX <<mRao>> <<mNao>>
+  ENDROD
+*
+  ROD 20
+    ROD-NAME BC11B
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 368.5625 397.1375   297.125 468.575   276.360 325.890
+    DMIX <<mRai>> <<mNai>>
+  ENDROD
+*
+  ROD 21
+    ROD-NAME BC11A
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 368.5625 397.1375   468.575 554.300   276.360 325.890
+    DMIX <<mRao>> <<mNao>>
+  ENDROD
+*
+  ROD 22
+    ROD-NAME BC12
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 425.7125 454.2875   211.400 554.300   276.360 325.890
+    DMIX <<mRbi>> <<mNbi>>
+  ENDROD
+*
+  ROD 23
+    ROD-NAME BC13C
+    LEVEL 0.0   AXIS Y  FROM H-
+    MAXPOS 482.8625 511.4375   211.400 297.125   276.360 325.890
+    DMIX <<mRco>> <<mNco>>
+  ENDROD
+*
+  ROD 24
+    ROD-NAME BC13B
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 482.8625 511.4375   297.125 468.575   276.360 325.890
+    DMIX <<mRci>> <<mNci>>
+  ENDROD
+*
+  ROD 25
+    ROD-NAME BC13A
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 482.8625 511.4375   468.575 554.300   276.360 325.890
+    DMIX <<mRco>> <<mNco>>
+  ENDROD
+*
+  ROD 26
+    ROD-NAME BC14
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 540.0125 568.5875   325.700 440.000   276.360 325.890
+    DMIX <<mRdi>> <<mNdi>>
+  ENDROD
+*
+  ROD 27
+    ROD-NAME BC15
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 197.1125 225.6875   325.700 440.000   350.650 400.180
+    DMIX <<mRdi>> <<mNdi>>
+  ENDROD
+*
+  ROD 28
+    ROD-NAME BC16C
+    LEVEL 0.0   AXIS Y  FROM H-
+    MAXPOS 254.2625 282.8375   211.400 297.125   350.650 400.180
+    DMIX <<mRco>> <<mNco>>
+  ENDROD
+*
+  ROD 29
+    ROD-NAME BC16B
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 254.2625 282.8375   297.125 468.575   350.650 400.180
+    DMIX <<mRci>> <<mNci>>
+  ENDROD
+*
+  ROD 30
+    ROD-NAME BC16A
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 254.2625 282.8375   468.575 554.300   350.650 400.180
+    DMIX <<mRco>> <<mNco>>
+  ENDROD
+*
+  ROD 31
+    ROD-NAME BC17
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 311.4125 339.9875   211.400 554.300   350.650 400.180
+    DMIX <<mRbi>> <<mNbi>>
+  ENDROD
+*
+  ROD 32
+    ROD-NAME BC18C
+    LEVEL 0.0   AXIS Y  FROM H-
+    MAXPOS 368.5625 397.1375   211.400 297.125   350.650 400.180
+    DMIX <<mRao>> <<mNao>>
+  ENDROD
+*
+  ROD 33
+    ROD-NAME BC18B
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 368.5625 397.1375   297.125 468.575   350.650 400.180
+    DMIX <<mRai>> <<mNai>>
+  ENDROD
+*
+  ROD 34
+    ROD-NAME BC18A
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 368.5625 397.1375   468.575 554.300   350.650 400.180
+    DMIX <<mRao>> <<mNao>>
+  ENDROD
+*
+  ROD 35
+    ROD-NAME BC19
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 425.7125 454.2875   211.400 554.300   350.650 400.180
+    DMIX <<mRbi>> <<mNbi>>
+  ENDROD
+*
+  ROD 36
+    ROD-NAME BC20C
+    LEVEL 0.0   AXIS Y  FROM H-
+    MAXPOS 482.8625 511.4375   211.400 297.125   350.650 400.180
+    DMIX <<mRco>> <<mNco>>
+  ENDROD
+*
+  ROD 37
+    ROD-NAME BC20B
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 482.8625 511.4375   297.125 468.575   350.650 400.180
+    DMIX <<mRci>> <<mNci>>
+  ENDROD
+*
+  ROD 38
+    ROD-NAME BC20A
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 482.8625 511.4375   468.575 554.300   350.650 400.180
+    DMIX <<mRco>> <<mNco>>
+  ENDROD
+*
+  ROD 39
+    ROD-NAME BC21
+    LEVEL 0.0   AXIS Y  FROM H+
+    MAXPOS 540.0125 568.5875   325.700 440.000   350.650 400.180
+    DMIX <<mRdi>> <<mNdi>>
+  ENDROD
+
+*--
+* create rod-devices groups:
+*--
+
+  CREATE ROD-GR 1  GROUP-ID 1  ALL ;
+
+END: ;
+QUIT .

@@ -1,0 +1,34 @@
+*----
+* Windmill geometry constructed with G2S:
+* UOX or MOX assembly with control rods out
+* 1 HEX ; 1 HEXCEL
+*----
+SEQ_ASCII HEX_FIG ;
+SEQ_ASCII HEX_PIN ;
+SEQ_ASCII HEXCEL_FIG :: FILE './HEXCEL_P12_FIG.ps' ;
+SEQ_ASCII HEXCEL_PIN :: FILE './HEXCEL_P12_PIN.dat' ;
+LINKED_LIST GEOM GEOM2 ;
+MODULE GEO: G2S: END: ;
+* 1 HEX
+GEOM := GEO: :: HEX 1
+    HBC S30 REFL
+*    SECT -1 0
+    MIX  1
+    SIDE 1. ;
+
+HEX_PIN HEX_FIG := G2S: GEOM :: DRAWNOD ;
+
+* 1 HEXCEL
+GEOM2 := GEO: :: HEXCEL 2
+    HBC S30 REFL
+    SECT -1 2
+    RADIUS 0. 0.25 0.95
+    MIX  1 1 1 1 1 1
+         2
+	 3 
+    SIDE 1. ;
+
+HEXCEL_PIN HEXCEL_FIG := G2S: GEOM2 :: DRAWNOD ;
+
+ECHO "test hex_P1_JST2 completed" ;
+END: ;

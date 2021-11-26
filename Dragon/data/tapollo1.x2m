@@ -1,0 +1,8 @@
+* Regression tests for Apollib-1 capabilities in Dragon.
+* Running time = ~ 1m
+* A. Hebert
+*
+PROCEDURE TCA131 ;
+*
+TCA131 ;
+QUIT "LIST" .

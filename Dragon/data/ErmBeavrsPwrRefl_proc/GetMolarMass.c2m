@@ -1,0 +1,766 @@
+*DECK GetMolarMass.c2m
+*======================================================
+* Name:   GetMolarMass.c2m
+* Type:   DRAGON procedure
+* Use:    Retrieve molar masses (AWR) from nuclear database
+*         Adapted with Natural Carbon to AWR ratio
+* Author: A. Bruneau 09.2013
+*         [CS-SI | IRSN/PSN-EXP/SNC/LNR]
+* Mod:    A. Bruneau 12.2013
+*         [CS-SI | IRSN/PSN-EXP/SNC/LNR]
+*         Added Ag, Cd & In for AIC rod description.
+* Mod:    A. Bruneau 02.2014
+*         [CS-SI | IRSN/PSN-EXP/SNC/LNR]
+*         Added Gd for Gd2O3
+* Mod:    A. Bruneau 06.2014
+*         [CS-SI | IRSN/PSN-EXP/SNC/LNR]
+*         Uncommented carbo/Carb
+*         Changed names carbo/Carb into cnat/CNat (for B4C)
+* Mod:    G. Tixier 09.2016
+*         [CS-SI | IRSN/PSN-EXP/SNC/LNR]
+*         Ajout S32, S33 et S34 pour materiau M5
+* Mod:    R. Nguyen Van Ho 11.2016
+*         [URANUS | IRSN/PSN-EXP/SNC/LNR]
+*         Ajout selecteur donnees nucleaires
+*------------------------------------------------------
+* Procedure called as:
+*------------------------------------------------------
+* Input Required:
+*  > Nuclear_Database
+* Output Provided:
+*  < Molar_Masses
+*======================================================
+PROCEDURE   AdaptIso ;
+PARAMETER   MolarMasses :: ::: LINKED_LIST MolarMasses ; ;
+MODULE      LIB: GREP: UTL: END: ABORT: ;
+LINKED_LIST Library ListeIsot ListeAutop Isot Awr ;
+STRING      NuclData ;
+STRING      LibType  ; ! ENDFVII1, JEF22...
+STRING      LibGenre ; ! DRAGON
+INTEGER     LibId    ;
+INTEGER     N_iso ;
+REAL        mixtemp CNatRatio ;
+
+*------------------------------------------------------
+:: >>NuclData<< >>LibType<< ;
+EVALUATE N_iso := 90 ;
+EVALUATE mixtemp := 293.16 ; (* in K *)
+
+*------------------------------------------------------
+* Recuperation des noms des isotopes
+*------------------------------------------------------
+STRING NomH2O ;
+STRING NomH1 ;
+STRING NomO16 ;
+STRING NomAm241 ;
+STRING NomAl27 ;
+STRING NomB10 NomB11 ;
+STRING NomCo59 NomCr50 NomCr52 NomCr53 NomCr54 ;
+STRING NomFe54 NomFe56 NomFe57 NomFe58 ;
+STRING NomMn55 ;
+STRING NomMo95 ;
+STRING NomNb93 ;
+STRING NomNi58 NomNi60 NomNi61 NomNi62 NomNi64 ;
+STRING NomPu238 NomPu239 NomPu240 NomPu241 NomPu242 ;
+STRING NomSiNat NomSi28 NomSi29 NomSi30 ;
+STRING NomSn112 NomSn114 NomSn115 NomSn116 NomSn117 ;
+STRING NomSn118 NomSn119 NomSn120 NomSn122 NomSn124 ;
+STRING NomTiNat NomTi46 NomTi47 NomTi48 NomTi49 NomTi50 ;
+STRING NomU234 NomU235 NomU236 NomU238 ;
+STRING NomZrNat ;
+STRING NomZr90 NomZr91 NomZr92 NomZr93 NomZr94 NomZr95 NomZr96 ;
+STRING NomCNat ;
+STRING NomAg107 NomAg109 ;
+STRING NomCd106 NomCd108 NomCd110 NomCd111 NomCd112 NomCd113 NomCd114 ;
+STRING NomCd116 ;
+STRING NomIn115 NomInNat ;
+STRING NomGd154 NomGd155 NomGd156 NomGd157 NomGd158 NomGd160 ;
+STRING NomKnat NomK39 NomK40 NomK41 NomNa23 ;
+STRING NomS32 NomS33 NomS34 ;
+STRING NomIn113 ;
+
+ListeIsot ListeAutop := AdaptIso :: <<NuclData>> <<LibType>>
+                         >>LibId<< >>LibGenre<< ;
+
+UTL: ListeIsot :: DUMP ;
+GREP: ListeIsot :: GETVAL 'H2O  ' <<LibId>> NVAL 8 >>NomH2O<< ;
+GREP: ListeIsot :: GETVAL 'H1   ' <<LibId>> NVAL 8 >>NomH1<<    ;
+GREP: ListeIsot :: GETVAL 'O16  ' <<LibId>> NVAL 8 >>NomO16<<   ;
+GREP: ListeIsot :: GETVAL 'Am241' <<LibId>> NVAL 8 >>NomAm241<< ;
+GREP: ListeIsot :: GETVAL 'Al27 ' <<LibId>> NVAL 8 >>NomAl27<<  ;
+GREP: ListeIsot :: GETVAL 'B10  ' <<LibId>> NVAL 8 >>NomB10<<   ;
+GREP: ListeIsot :: GETVAL 'B11  ' <<LibId>> NVAL 8 >>NomB11<<   ;
+GREP: ListeIsot :: GETVAL 'Co59 ' <<LibId>> NVAL 8 >>NomCo59<<  ;
+GREP: ListeIsot :: GETVAL 'Cr50 ' <<LibId>> NVAL 8 >>NomCr50<<  ;
+GREP: ListeIsot :: GETVAL 'Cr52 ' <<LibId>> NVAL 8 >>NomCr52<<  ;
+GREP: ListeIsot :: GETVAL 'Cr53 ' <<LibId>> NVAL 8 >>NomCr53<<  ;
+GREP: ListeIsot :: GETVAL 'Cr54 ' <<LibId>> NVAL 8 >>NomCr54<<  ;
+GREP: ListeIsot :: GETVAL 'Fe54 ' <<LibId>> NVAL 8 >>NomFe54<<  ;
+GREP: ListeIsot :: GETVAL 'Fe56 ' <<LibId>> NVAL 8 >>NomFe56<<  ;
+GREP: ListeIsot :: GETVAL 'Fe57 ' <<LibId>> NVAL 8 >>NomFe57<<  ;
+GREP: ListeIsot :: GETVAL 'Fe58 ' <<LibId>> NVAL 8 >>NomFe58<<  ;
+GREP: ListeIsot :: GETVAL 'Mn55 ' <<LibId>> NVAL 8 >>NomMn55<<  ;
+GREP: ListeIsot :: GETVAL 'Mo95 ' <<LibId>> NVAL 8 >>NomMo95<<  ;
+GREP: ListeIsot :: GETVAL 'Nb93 ' <<LibId>> NVAL 8 >>NomNb93<<  ;
+GREP: ListeIsot :: GETVAL 'Ni58 ' <<LibId>> NVAL 8 >>NomNi58<<  ;
+GREP: ListeIsot :: GETVAL 'Ni60 ' <<LibId>> NVAL 8 >>NomNi60<<  ;
+GREP: ListeIsot :: GETVAL 'Ni61 ' <<LibId>> NVAL 8 >>NomNi61<<  ;
+GREP: ListeIsot :: GETVAL 'Ni62 ' <<LibId>> NVAL 8 >>NomNi62<<  ;
+GREP: ListeIsot :: GETVAL 'Ni64 ' <<LibId>> NVAL 8 >>NomNi64<<  ;
+GREP: ListeIsot :: GETVAL 'Pu238' <<LibId>> NVAL 8 >>NomPu238<< ;
+GREP: ListeIsot :: GETVAL 'Pu239' <<LibId>> NVAL 8 >>NomPu239<< ;
+GREP: ListeIsot :: GETVAL 'Pu240' <<LibId>> NVAL 8 >>NomPu240<< ;
+GREP: ListeIsot :: GETVAL 'Pu241' <<LibId>> NVAL 8 >>NomPu241<< ;
+GREP: ListeIsot :: GETVAL 'Pu242' <<LibId>> NVAL 8 >>NomPu242<< ;
+GREP: ListeIsot :: GETVAL 'SiNat' <<LibId>> NVAL 8 >>NomSiNat<< ;
+GREP: ListeIsot :: GETVAL 'Si28 ' <<LibId>> NVAL 8 >>NomSi28<<  ;
+GREP: ListeIsot :: GETVAL 'Si29 ' <<LibId>> NVAL 8 >>NomSi29<<  ;
+GREP: ListeIsot :: GETVAL 'Si30 ' <<LibId>> NVAL 8 >>NomSi30<<  ;
+GREP: ListeIsot :: GETVAL 'Sn112' <<LibId>> NVAL 8 >>NomSn112<< ;
+GREP: ListeIsot :: GETVAL 'Sn114' <<LibId>> NVAL 8 >>NomSn114<< ;
+GREP: ListeIsot :: GETVAL 'Sn115' <<LibId>> NVAL 8 >>NomSn115<< ;
+GREP: ListeIsot :: GETVAL 'Sn116' <<LibId>> NVAL 8 >>NomSn116<< ;
+GREP: ListeIsot :: GETVAL 'Sn117' <<LibId>> NVAL 8 >>NomSn117<< ;
+GREP: ListeIsot :: GETVAL 'Sn118' <<LibId>> NVAL 8 >>NomSn118<< ;
+GREP: ListeIsot :: GETVAL 'Sn119' <<LibId>> NVAL 8 >>NomSn119<< ;
+GREP: ListeIsot :: GETVAL 'Sn120' <<LibId>> NVAL 8 >>NomSn120<< ;
+GREP: ListeIsot :: GETVAL 'Sn122' <<LibId>> NVAL 8 >>NomSn122<< ;
+GREP: ListeIsot :: GETVAL 'Sn124' <<LibId>> NVAL 8 >>NomSn124<< ;
+GREP: ListeIsot :: GETVAL 'TiNat' <<LibId>> NVAL 8 >>NomTiNat<< ;
+GREP: ListeIsot :: GETVAL 'Ti46 ' <<LibId>> NVAL 8 >>NomTi46<<  ;
+GREP: ListeIsot :: GETVAL 'Ti47 ' <<LibId>> NVAL 8 >>NomTi47<<  ;
+GREP: ListeIsot :: GETVAL 'Ti48 ' <<LibId>> NVAL 8 >>NomTi48<<  ;
+GREP: ListeIsot :: GETVAL 'Ti49 ' <<LibId>> NVAL 8 >>NomTi49<<  ;
+GREP: ListeIsot :: GETVAL 'Ti50 ' <<LibId>> NVAL 8 >>NomTi50<<  ;
+GREP: ListeIsot :: GETVAL 'U234 ' <<LibId>> NVAL 8 >>NomU234<<  ;
+GREP: ListeIsot :: GETVAL 'U235 ' <<LibId>> NVAL 8 >>NomU235<<  ;
+GREP: ListeIsot :: GETVAL 'U236 ' <<LibId>> NVAL 8 >>NomU236<<  ;
+GREP: ListeIsot :: GETVAL 'U238 ' <<LibId>> NVAL 8 >>NomU238<<  ;
+GREP: ListeIsot :: GETVAL 'ZrNat' <<LibId>> NVAL 8 >>NomZrNat<< ;
+GREP: ListeIsot :: GETVAL 'Zr90 ' <<LibId>> NVAL 8 >>NomZr90<<  ;
+GREP: ListeIsot :: GETVAL 'Zr91 ' <<LibId>> NVAL 8 >>NomZr91<<  ;
+GREP: ListeIsot :: GETVAL 'Zr92 ' <<LibId>> NVAL 8 >>NomZr92<<  ;
+GREP: ListeIsot :: GETVAL 'Zr93 ' <<LibId>> NVAL 8 >>NomZr93<<  ;
+GREP: ListeIsot :: GETVAL 'Zr94 ' <<LibId>> NVAL 8 >>NomZr94<<  ;
+GREP: ListeIsot :: GETVAL 'Zr95 ' <<LibId>> NVAL 8 >>NomZr95<<  ;
+GREP: ListeIsot :: GETVAL 'Zr96 ' <<LibId>> NVAL 8 >>NomZr96<<  ;
+GREP: ListeIsot :: GETVAL 'CNat ' <<LibId>> NVAL 8 >>NomCNat<<  ;
+GREP: ListeIsot :: GETVAL 'Ag107' <<LibId>> NVAL 8 >>NomAg107<< ;
+GREP: ListeIsot :: GETVAL 'Ag109' <<LibId>> NVAL 8 >>NomAg109<< ;
+GREP: ListeIsot :: GETVAL 'Cd106' <<LibId>> NVAL 8 >>NomCd106<< ;
+GREP: ListeIsot :: GETVAL 'Cd108' <<LibId>> NVAL 8 >>NomCd108<< ;
+GREP: ListeIsot :: GETVAL 'Cd110' <<LibId>> NVAL 8 >>NomCd110<< ;
+GREP: ListeIsot :: GETVAL 'Cd111' <<LibId>> NVAL 8 >>NomCd111<< ;
+GREP: ListeIsot :: GETVAL 'Cd112' <<LibId>> NVAL 8 >>NomCd112<< ;
+GREP: ListeIsot :: GETVAL 'Cd113' <<LibId>> NVAL 8 >>NomCd113<< ;
+GREP: ListeIsot :: GETVAL 'Cd114' <<LibId>> NVAL 8 >>NomCd114<< ;
+GREP: ListeIsot :: GETVAL 'Cd116' <<LibId>> NVAL 8 >>NomCd116<< ;
+GREP: ListeIsot :: GETVAL 'In113' <<LibId>> NVAL 8 >>NomIn113<< ;
+GREP: ListeIsot :: GETVAL 'In115' <<LibId>> NVAL 8 >>NomIn115<< ;
+GREP: ListeIsot :: GETVAL 'InNat' <<LibId>> NVAL 8 >>NomInNat<< ;
+GREP: ListeIsot :: GETVAL 'Gd154' <<LibId>> NVAL 8 >>NomGd154<< ;
+GREP: ListeIsot :: GETVAL 'Gd155' <<LibId>> NVAL 8 >>NomGd155<< ;
+GREP: ListeIsot :: GETVAL 'Gd156' <<LibId>> NVAL 8 >>NomGd156<< ;
+GREP: ListeIsot :: GETVAL 'Gd157' <<LibId>> NVAL 8 >>NomGd157<< ;
+GREP: ListeIsot :: GETVAL 'Gd158' <<LibId>> NVAL 8 >>NomGd158<< ;
+GREP: ListeIsot :: GETVAL 'Gd160' <<LibId>> NVAL 8 >>NomGd160<< ;
+GREP: ListeIsot :: GETVAL 'Knat ' <<LibId>> NVAL 8 >>NomKnat<< ;
+GREP: ListeIsot :: GETVAL 'K39  ' <<LibId>> NVAL 8 >>NomK39<< ;
+GREP: ListeIsot :: GETVAL 'K40  ' <<LibId>> NVAL 8 >>NomK40<< ;
+GREP: ListeIsot :: GETVAL 'K41  ' <<LibId>> NVAL 8 >>NomK41<< ;
+GREP: ListeIsot :: GETVAL 'Na23 ' <<LibId>> NVAL 8 >>NomNa23<< ;
+GREP: ListeIsot :: GETVAL 'S32  ' <<LibId>> NVAL 8 >>NomS32<< ;
+GREP: ListeIsot :: GETVAL 'S33  ' <<LibId>> NVAL 8 >>NomS33<< ;
+GREP: ListeIsot :: GETVAL 'S34  ' <<LibId>> NVAL 8 >>NomS34<< ;
+
+*------------------------------------------------------
+REAL h2o h1 o16 ;
+REAL am241 ;
+REAL al27 ;
+REAL b10 ;
+REAL b10b ;
+REAL b11 ;
+REAL b11b ;
+REAL co59 ;
+REAL cr50 ;
+REAL cr52 ;
+REAL cr53 ;
+REAL cr54 ;
+REAL fe54 ;
+REAL fe56 ;
+REAL fe57 ;
+REAL fe58 ;
+REAL mn55 ;
+REAL mo95 ;
+REAL nb93 ;
+REAL ni58 ;
+REAL ni60 ;
+REAL ni61 ;
+REAL ni62 ;
+REAL ni64 ;
+REAL pu238 ;
+REAL pu239 ;
+REAL pu240 ;
+REAL pu241 ;
+REAL pu242 ;
+REAL siNat si28 si29 si30 ;
+REAL sn112 ;
+REAL sn114 ;
+REAL sn115 ;
+REAL sn116 ;
+REAL sn117 ;
+REAL sn118 ;
+REAL sn119 ;
+REAL sn120 ;
+REAL sn122 ;
+REAL sn124 ;
+REAL tiNat ti46 ti47 ti48 ti49 ti50 ;
+REAL u234 ;
+REAL u235 ;
+REAL u236 ;
+REAL u238 ;
+REAL zrNat zr90 zr91 zr92 zr93 zr94 zr95 zr96 ;
+REAL cnat ;
+*---- added for AIC
+REAL ag107 ;
+REAL ag109 ;
+REAL cd106 ;
+REAL cd108 ;
+REAL cd110 ;
+REAL cd111 ;
+REAL cd112 ;
+REAL cd113 ;
+REAL cd114 ;
+REAL cd116 ;
+REAL in115 inNat in113 ;
+*---- added for Gd2O3
+REAL gd154 ;
+REAL gd155 ;
+REAL gd156 ;
+REAL gd157 ;
+REAL gd158 ;
+REAL gd160 ;
+*---- added for Tihange
+REAL knat k39 k40 k41 ;
+REAL na23 ;
+*---- added for M5
+REAL s32 ;
+REAL s33 ;
+REAL s34 ;
+*------------------------------------------------------
+Library := LIB: ::
+  ANIS 2
+  NMIX <<N_iso>>
+  MIXS LIB: <<LibGenre>> FIL: <<NuclData>>
+!  MIX 1 <<mixtemp>> 1.    H2O     = <<NomH2O>> 1.
+  MIX 2 <<mixtemp>> 1.    H1_H2O  = <<NomH1>>  1.
+  MIX 3 <<mixtemp>> 1.    B10     = <<NomB10>> 1.
+  MIX 4 <<mixtemp>> 1.    B10B  = <<NomB10>> 1.
+  MIX 5 <<mixtemp>> 1.    B11   = <<NomB11>> 1.
+  MIX 6 <<mixtemp>> 1.    B11B  = <<NomB11>> 1.
+  MIX 7 <<mixtemp>> 1.    CNat  = <<NomCNat>> 1.
+  MIX 8 <<mixtemp>> 1.    O16   = <<NomO16>> 1.
+  MIX 9 <<mixtemp>> 1.    Al27  = <<NomAl27>> 1.
+  MIX 10 <<mixtemp>> 1.   SiNat = <<NomSiNat>> 1.
+!  MIX 11 <<mixtemp>> 1.   Si28  = <<NomSi28>> 1.
+!  MIX 12 <<mixtemp>> 1.   Si29  = <<NomSi29>> 1.
+!  MIX 13 <<mixtemp>> 1.   Si30  = <<NomSi30>> 1.
+  MIX 14 <<mixtemp>> 1.   TiNat = <<NomTiNat>> 1.
+!  MIX 15 <<mixtemp>> 1.   Ti46  = <<NomTi46>> 1.
+!  MIX 16 <<mixtemp>> 1.   Ti47  = <<NomTi47>> 1.
+!  MIX 17 <<mixtemp>> 1.   Ti48  = <<NomTi48>> 1.
+!  MIX 18 <<mixtemp>> 1.   Ti49  = <<NomTi49>> 1.
+!  MIX 19 <<mixtemp>> 1.   Ti50  = <<NomTi50>> 1.
+  MIX 20 <<mixtemp>> 1.   Cr50  = <<NomCr50>> 1.
+  MIX 21 <<mixtemp>> 1.   Cr52  = <<NomCr52>> 1.
+  MIX 22 <<mixtemp>> 1.   Cr53  = <<NomCr53>> 1.
+  MIX 23 <<mixtemp>> 1.   Cr54  = <<NomCr54>> 1.
+  MIX 24 <<mixtemp>> 1.   Mn55  = <<NomMn55>> 1.
+  MIX 25 <<mixtemp>> 1.   Fe54  = <<NomFe54>> 1.
+  MIX 26 <<mixtemp>> 1.   Fe56  = <<NomFe56>> 1.
+  MIX 27 <<mixtemp>> 1.   Fe57  = <<NomFe57>> 1.
+  MIX 28 <<mixtemp>> 1.   Fe58  = <<NomFe58>> 1.
+  MIX 29 <<mixtemp>> 1.   Co59  = <<NomCo59>> 1.
+  MIX 30 <<mixtemp>> 1.   Ni58  = <<NomNi58>> 1.
+  MIX 31 <<mixtemp>> 1.   Ni60  = <<NomNi60>> 1.
+  MIX 32 <<mixtemp>> 1.   Ni61  = <<NomNi61>> 1.
+  MIX 33 <<mixtemp>> 1.   Ni62  = <<NomNi62>> 1.
+  MIX 34 <<mixtemp>> 1.   Ni64  = <<NomNi64>> 1.
+  MIX 35 <<mixtemp>> 1.   ZrNat = <<NomZrNat>> 1.
+!  MIX 36 <<mixtemp>> 1.   Zr90  = <<NomZr90>> 1.
+!  MIX 37 <<mixtemp>> 1.   Zr91  = <<NomZr91>> 1.
+!  MIX 38 <<mixtemp>> 1.   Zr92  = <<NomZr92>> 1.
+!  MIX 39 <<mixtemp>> 1.   Zr93  = <<NomZr93>> 1.
+!  MIX 40 <<mixtemp>> 1.   Zr94  = <<NomZr94>> 1.
+!  MIX 41 <<mixtemp>> 1.   Zr95  = <<NomZr95>> 1.
+!  MIX 42 <<mixtemp>> 1.   Zr96  = <<NomZr96>> 1.
+  MIX 43 <<mixtemp>> 1.   Nb93  = <<NomNb93>> 1.
+  MIX 44 <<mixtemp>> 1.   Mo95  = <<NomMo95>> 1.
+  MIX 45 <<mixtemp>> 1.   Ag107 = <<NomAg107>> 1.
+  MIX 46 <<mixtemp>> 1.   Ag109 = <<NomAg109>> 1.
+!  MIX 47 <<mixtemp>> 1.   Cd106 = <<NomCd106>> 1.
+!  MIX 48 <<mixtemp>> 1.   Cd108 = <<NomCd108>> 1.
+  MIX 49 <<mixtemp>> 1.   Cd110 = <<NomCd110>> 1.
+  MIX 50 <<mixtemp>> 1.   Cd111 = <<NomCd111>> 1.
+  MIX 51 <<mixtemp>> 1.   Cd112 = <<NomCd112>> 1.
+  MIX 52 <<mixtemp>> 1.   Cd113 = <<NomCd113>> 1.
+  MIX 53 <<mixtemp>> 1.   Cd114 = <<NomCd114>> 1.
+  MIX 54 <<mixtemp>> 1.   Cd116 = <<NomCd116>> 1.
+  MIX 55 <<mixtemp>> 1.   In115 = <<NomIn115>> 1.
+!  MIX 56 <<mixtemp>> 1.   InNat = <<NomInNat>> 1.
+!  MIX 57 <<mixtemp>> 1.   Sn112 = <<NomSn112>> 1.
+!  MIX 58 <<mixtemp>> 1.   Sn114 = <<NomSn114>> 1.
+  MIX 59 <<mixtemp>> 1.   Sn115 = <<NomSn115>> 1.
+  MIX 60 <<mixtemp>> 1.   Sn116 = <<NomSn116>> 1.
+  MIX 61 <<mixtemp>> 1.   Sn117 = <<NomSn117>> 1.
+  MIX 62 <<mixtemp>> 1.   Sn118 = <<NomSn118>> 1.
+  MIX 63 <<mixtemp>> 1.   Sn119 = <<NomSn119>> 1.
+  MIX 64 <<mixtemp>> 1.   Sn120 = <<NomSn120>> 1.
+  MIX 65 <<mixtemp>> 1.   Sn122 = <<NomSn122>> 1.
+  MIX 66 <<mixtemp>> 1.   Sn124 = <<NomSn124>> 1.
+  MIX 67 <<mixtemp>> 1.   Gd154 = <<NomGd154>> 1.
+  MIX 68 <<mixtemp>> 1.   Gd155 = <<NomGd155>> 1.
+  MIX 69 <<mixtemp>> 1.   Gd156 = <<NomGd156>> 1.
+  MIX 70 <<mixtemp>> 1.   Gd157 = <<NomGd157>> 1.
+  MIX 71 <<mixtemp>> 1.   Gd158 = <<NomGd158>> 1.
+  MIX 72 <<mixtemp>> 1.   Gd160 = <<NomGd160>> 1.
+  MIX 73 <<mixtemp>> 1.   U234  = <<NomU234>> 1.
+  MIX 74 <<mixtemp>> 1.   U235  = <<NomU235>> 1.
+  MIX 75 <<mixtemp>> 1.   U236  = <<NomU236>> 1.
+  MIX 76 <<mixtemp>> 1.   U238  = <<NomU238>> 1.
+  MIX 77 <<mixtemp>> 1.   Pu238 = <<NomPu238>> 1.
+  MIX 78 <<mixtemp>> 1.   Pu239 = <<NomPu239>> 1.
+  MIX 79 <<mixtemp>> 1.   Pu240 = <<NomPu240>> 1.
+  MIX 80 <<mixtemp>> 1.   Pu241 = <<NomPu241>> 1.
+  MIX 81 <<mixtemp>> 1.   Pu242 = <<NomPu242>> 1.
+  MIX 82 <<mixtemp>> 1.   Am241 = <<NomAm241>> 1.
+  MIX 83 <<mixtemp>> 1.   KNat  = <<NomKnat>> 1.
+!  MIX 84 <<mixtemp>> 1.   K39   = <<NomK39>> 1.
+!  MIX 85 <<mixtemp>> 1.   K40   = <<NomK40>> 1.
+!  MIX 86 <<mixtemp>> 1.   K41   = <<NomK41>> 1.
+  MIX 87 <<mixtemp>> 1.   Na23  = <<NomNa23>> 1.
+  MIX 88 <<mixtemp>> 1.   S32   = <<NomS32>> 1.
+  MIX 89 <<mixtemp>> 1.   S33   = <<NomS33>> 1.
+  MIX 90 <<mixtemp>> 1.   S34   = <<NomS34>> 1.
+;
+
+ *------------------------------------------------------
+* Recuperation des fractions massiques moyennes
+*------------------------------------------------------
+INTEGER NbIsot IsotStep 2NbIsot OrdrIsot ;
+STRING ListIsot ;
+REAL Var ;
+
+IF LibType 'JEF22' = THEN
+  EVALUATE NbIsot := 66 ;
+  EVALUATE 2NbIsot := NbIsot 2 * ;
+  Isot := UTL:      :: CREA ListIsot <<2NbIsot>> =
+  'h1  ' '    ' 'b10 ' '    ' 'b10b' '    ' 'b11 ' '    ' 'b11b' '    '
+  'cnat' '    ' 'o16 ' '    ' 'al27' '    ' 'siNa' 't   ' 'tiNa' 't   '
+  'cr50' '    ' 'cr52' '    ' 'cr53' '    ' 'cr54' '    ' 'mn55' '    '
+  'fe54' '    ' 'fe56' '    ' 'fe57' '    ' 'fe58' '    ' 'co59' '    '
+  'ni58' '    ' 'ni60' '    ' 'ni61' '    ' 'ni62' '    ' 'ni64' '    '
+  'zrNa' 't   ' 'nb93' '    ' 'mo95' '    ' 'ag10' '7   ' 'ag10' '9   '
+  'cd11' '0   ' 'cd11' '1   ' 'cd11' '2   ' 'cd11' '3   ' 'cd11' '4   '
+  'cd11' '6   ' 'in11' '5   ' 'sn11' '5   ' 'sn11' '6   ' 'sn11' '7   '
+  'sn11' '8   ' 'sn11' '9   ' 'sn12' '0   ' 'sn12' '2   ' 'sn12' '4   '
+  'gd15' '4   ' 'gd15' '5   ' 'gd15' '6   ' 'gd15' '7   ' 'gd15' '8   '
+  'gd16' '0   ' 'u234' '    ' 'u235' '    ' 'u236' '    ' 'u238' '    '
+  'pu23' '8   ' 'pu23' '9   ' 'pu24' '0   ' 'pu24' '1   ' 'pu24' '2   '
+  'am24' '1   ' 'knat' '    ' 'na23' '    ' 's32 ' '    ' 's33 ' '    '
+  's34 ' '    ' ;
+
+ELSEIF LibType 'ENDFVII1' = LibType 'JEFF311' = + THEN
+  EVALUATE NbIsot := 84 ;
+  EVALUATE 2NbIsot := NbIsot 2 * ;
+  Isot := UTL:      :: CREA ListIsot <<2NbIsot>> =
+  'h1  ' '    ' 'b10 ' '    ' 'b10b' '    ' 'b11 ' '    ' 'b11b' '    '
+  'cnat' '    ' 'o16 ' '    ' 'al27' '    ' 'si28' '    ' 'si29' '    '
+  'si30' '    ' 'ti46' '    ' 'ti47' '    ' 'ti48' '    ' 'ti49' '    '
+  'ti50' '    ' 'cr50' '    ' 'cr52' '    ' 'cr53' '    ' 'cr54' '    '
+  'mn55' '    ' 'fe54' '    ' 'fe56' '    ' 'fe57' '    ' 'fe58' '    '
+  'co59' '    ' 'ni58' '    ' 'ni60' '    ' 'ni61' '    ' 'ni62' '    '
+  'ni64' '    ' 'zr90' '    ' 'zr91' '    ' 'zr92' '    ' 'zr93' '    '
+  'zr94' '    ' 'zr95' '    ' 'zr96' '    ' 'nb93' '    ' 'mo95' '    '
+  'ag10' '7   ' 'ag10' '9   ' 'cd10' '6   ' 'cd10' '8   ' 'cd11' '0   '
+  'cd11' '1   ' 'cd11' '2   ' 'cd11' '3   ' 'cd11' '4   ' 'cd11' '6   '
+  'in11' '5   ' 'sn11' '2   ' 'sn11' '4   ' 'sn11' '5   ' 'sn11' '6   '
+  'sn11' '7   ' 'sn11' '8   ' 'sn11' '9   ' 'sn12' '0   ' 'sn12' '2   '
+  'sn12' '4   ' 'gd15' '4   ' 'gd15' '5   ' 'gd15' '6   ' 'gd15' '7   '
+  'gd15' '8   ' 'gd16' '0   ' 'u234' '    ' 'u235' '    ' 'u236' '    '
+  'u238' '    ' 'pu23' '8   ' 'pu23' '9   ' 'pu24' '0   ' 'pu24' '1   '
+  'pu24' '2   ' 'am24' '1   ' 'k39 ' '    ' 'k40 ' '    ' 'k41 ' '    '
+  'na23' '    ' 's32 ' '    ' 's33 ' '    ' 's34 ' '    ' ;
+
+ELSE
+  ECHO "Bib non encore definie" ;
+  ABORT: ;
+ENDIF ;
+*
+EVALUATE IsotStep := 1 ;
+EVALUATE OrdrIsot := 1 ;
+ REPEAT
+   GREP: Isot :: GETVAL ListIsot <<IsotStep>> NVAL 8 >>ListIsot<< ;
+   ECHO "ListIsot:" ListIsot ;
+
+   GREP: Library :: STEP UP 'ISOTOPESLIST' STEP AT <<OrdrIsot>>
+         GETVAL 'AWR' 1 >>Var<< ;
+  IF OrdrIsot 1 = THEN
+    Awr := UTL:     :: CREA <<ListIsot>> 1 = <<Var>> ;
+  ELSE
+    Awr := UTL: Awr :: CREA <<ListIsot>> 1 = <<Var>> ;
+  ENDIF ;
+  EVALUATE IsotStep := IsotStep 8 1 * + ;
+  EVALUATE OrdrIsot := OrdrIsot 1 + ;
+ UNTIL OrdrIsot NbIsot > ;
+
+GREP: Awr :: GETVAL 'b10' 1 >>b10<< ;
+GREP: Awr :: GETVAL 'b10b' 1 >>b10b<< ;
+GREP: Awr :: GETVAL 'b11' 1 >>b11<< ;
+GREP: Awr :: GETVAL 'b11b' 1 >>b11b<< ;
+GREP: Awr :: GETVAL 'cnat' 1 >>cnat<< ;
+GREP: Awr :: GETVAL 'o16' 1 >>o16<< ;
+GREP: Awr :: GETVAL 'al27' 1 >>al27<< ;
+GREP: Awr :: GETVAL 'cr50' 1 >>cr50<< ;
+GREP: Awr :: GETVAL 'cr52' 1 >>cr52<< ;
+GREP: Awr :: GETVAL 'cr53' 1 >>cr53<< ;
+GREP: Awr :: GETVAL 'cr54' 1 >>cr54<< ;
+GREP: Awr :: GETVAL 'nb93' 1 >>nb93<< ;
+GREP: Awr :: GETVAL 'mo95' 1 >>mo95<< ;
+GREP: Awr :: GETVAL 'fe54' 1 >>fe54<< ;
+GREP: Awr :: GETVAL 'fe56' 1 >>fe56<< ;
+GREP: Awr :: GETVAL 'fe57' 1 >>fe57<< ;
+GREP: Awr :: GETVAL 'fe58' 1 >>fe58<< ;
+GREP: Awr :: GETVAL 'mn55' 1 >>mn55<< ;
+GREP: Awr :: GETVAL 'co59' 1 >>co59<< ;
+GREP: Awr :: GETVAL 'ni58' 1 >>ni58<< ;
+GREP: Awr :: GETVAL 'ni60' 1 >>ni60<< ;
+GREP: Awr :: GETVAL 'ni61' 1 >>ni61<< ;
+GREP: Awr :: GETVAL 'ni62' 1 >>ni62<< ;
+GREP: Awr :: GETVAL 'ni64' 1 >>ni64<< ;
+GREP: Awr :: GETVAL 'ag107' 1 >>ag107<< ;
+GREP: Awr :: GETVAL 'ag109' 1 >>ag109<< ;
+GREP: Awr :: GETVAL 'cd110' 1 >>cd110<< ;
+GREP: Awr :: GETVAL 'cd111' 1 >>cd111<< ;
+GREP: Awr :: GETVAL 'cd112' 1 >>cd112<< ;
+GREP: Awr :: GETVAL 'cd113' 1 >>cd113<< ;
+GREP: Awr :: GETVAL 'cd114' 1 >>cd114<< ;
+GREP: Awr :: GETVAL 'cd116' 1 >>cd116<< ;
+GREP: Awr :: GETVAL 'sn115' 1 >>sn115<< ;
+GREP: Awr :: GETVAL 'sn116' 1 >>sn116<< ;
+GREP: Awr :: GETVAL 'sn117' 1 >>sn117<< ;
+GREP: Awr :: GETVAL 'sn118' 1 >>sn118<< ;
+GREP: Awr :: GETVAL 'sn119' 1 >>sn119<< ;
+GREP: Awr :: GETVAL 'sn120' 1 >>sn120<< ;
+GREP: Awr :: GETVAL 'sn122' 1 >>sn122<< ;
+GREP: Awr :: GETVAL 'sn124' 1 >>sn124<< ;
+GREP: Awr :: GETVAL 'gd154' 1 >>gd154<< ;
+GREP: Awr :: GETVAL 'gd155' 1 >>gd155<< ;
+GREP: Awr :: GETVAL 'gd156' 1 >>gd156<< ;
+GREP: Awr :: GETVAL 'gd157' 1 >>gd157<< ;
+GREP: Awr :: GETVAL 'gd158' 1 >>gd158<< ;
+GREP: Awr :: GETVAL 'gd160' 1 >>gd160<< ;
+GREP: Awr :: GETVAL 'u234' 1 >>u234<< ;
+GREP: Awr :: GETVAL 'u235' 1 >>u235<< ;
+GREP: Awr :: GETVAL 'u236' 1 >>u236<< ;
+GREP: Awr :: GETVAL 'u238' 1 >>u238<< ;
+GREP: Awr :: GETVAL 'pu238' 1 >>pu238<< ;
+GREP: Awr :: GETVAL 'pu239' 1 >>pu239<< ;
+GREP: Awr :: GETVAL 'pu240' 1 >>pu240<< ;
+GREP: Awr :: GETVAL 'pu241' 1 >>pu241<< ;
+GREP: Awr :: GETVAL 'pu242' 1 >>pu242<< ;
+GREP: Awr :: GETVAL 'am241' 1 >>am241<< ;
+GREP: Awr :: GETVAL 'na23' 1 >>na23<< ;
+
+IF LibType 'JEF22'      = THEN
+  GREP: Awr :: GETVAL 'h1' 1 >>h1<< ;
+  GREP: Awr :: GETVAL 'siNat' 1 >>siNat<< ;
+  GREP: Awr :: GETVAL 'tiNat' 1 >>tiNat<< ;
+  GREP: Awr :: GETVAL 'zrNat' 1 >>zrNat<< ;
+  GREP: Awr :: GETVAL 'in115' 1 >>in115<< ;
+  GREP: Awr :: GETVAL 's32' 1 >>s32<< ;
+  GREP: Awr :: GETVAL 's33' 1 >>s33<< ;
+  GREP: Awr :: GETVAL 's34' 1 >>s34<< ;
+  GREP: Awr :: GETVAL 'knat' 1 >>knat<< ;
+
+ELSEIF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
+       LibType 'JEFF312'  = +
+       LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+  GREP: Awr :: GETVAL 'h1' 1 >>h1<< ;
+  GREP: Awr :: GETVAL 'si28' 1 >>si28<< ;
+  GREP: Awr :: GETVAL 'si29' 1 >>si29<< ;
+  GREP: Awr :: GETVAL 'si30' 1 >>si30<< ;
+  GREP: Awr :: GETVAL 'ti46' 1 >>ti46<< ;
+  GREP: Awr :: GETVAL 'ti47' 1 >>ti47<< ;
+  GREP: Awr :: GETVAL 'ti48' 1 >>ti48<< ;
+  GREP: Awr :: GETVAL 'ti49' 1 >>ti49<< ;
+  GREP: Awr :: GETVAL 'ti50' 1 >>ti50<< ;
+  GREP: Awr :: GETVAL 'zr90' 1 >>zr90<< ;
+  GREP: Awr :: GETVAL 'zr91' 1 >>zr91<< ;
+  GREP: Awr :: GETVAL 'zr92' 1 >>zr92<< ;
+  GREP: Awr :: GETVAL 'zr93' 1 >>zr93<< ;
+  GREP: Awr :: GETVAL 'zr94' 1 >>zr94<< ;
+  GREP: Awr :: GETVAL 'zr95' 1 >>zr95<< ;
+  GREP: Awr :: GETVAL 'zr96' 1 >>zr96<< ;
+  GREP: Awr :: GETVAL 'cd106' 1 >>cd106<< ;
+  GREP: Awr :: GETVAL 'cd108' 1 >>cd108<< ;
+  GREP: Awr :: GETVAL 'in115' 1 >>in115<< ;
+  GREP: Awr :: GETVAL 'sn112' 1 >>sn112<< ;
+  GREP: Awr :: GETVAL 'sn114' 1 >>sn114<< ;
+  GREP: Awr :: GETVAL 's32' 1 >>s32<< ;
+  GREP: Awr :: GETVAL 's33' 1 >>s33<< ;
+  GREP: Awr :: GETVAL 's34' 1 >>s34<< ;
+  GREP: Awr :: GETVAL 'k39' 1 >>k39<< ;
+  GREP: Awr :: GETVAL 'k40' 1 >>k40<< ;
+  GREP: Awr :: GETVAL 'k41' 1 >>k41<< ;
+
+ENDIF ;
+
+*------------------------------------------------------
+* Calcul des masses molaires
+*------------------------------------------------------
+EVALUATE CNatRatio := 12.011 cnat / ;
+
+* Pour les isotopes non conflictuels
+
+EVALUATE b10   := CNatRatio b10   * ;
+EVALUATE b10b  := CNatRatio b10b  * ;
+EVALUATE b11   := CNatRatio b11   * ;
+EVALUATE b11b  := CNatRatio b11b  * ;
+EVALUATE cnat  := CNatRatio cnat  * ;
+EVALUATE o16   := CNatRatio o16   * ;
+EVALUATE al27  := CNatRatio al27  * ;
+EVALUATE cr50  := CNatRatio cr50  * ;
+EVALUATE cr52  := CNatRatio cr52  * ;
+EVALUATE cr53  := CNatRatio cr53  * ;
+EVALUATE cr54  := CNatRatio cr54  * ;
+EVALUATE nb93  := CNatRatio nb93  * ;
+EVALUATE mo95  := CNatRatio mo95  * ;
+EVALUATE fe54  := CNatRatio fe54  * ;
+EVALUATE fe56  := CNatRatio fe56  * ;
+EVALUATE fe57  := CNatRatio fe57  * ;
+EVALUATE fe58  := CNatRatio fe58  * ;
+EVALUATE mn55  := CNatRatio mn55  * ;
+EVALUATE co59  := CNatRatio co59  * ;
+EVALUATE ni58  := CNatRatio ni58  * ;
+EVALUATE ni60  := CNatRatio ni60  * ;
+EVALUATE ni61  := CNatRatio ni61  * ;
+EVALUATE ni62  := CNatRatio ni62  * ;
+EVALUATE ni64  := CNatRatio ni64  * ;
+EVALUATE ag107 := CNatRatio ag107 * ;
+EVALUATE ag109 := CNatRatio ag109 * ;
+EVALUATE cd110 := CNatRatio cd110 * ;
+EVALUATE cd111 := CNatRatio cd111 * ;
+EVALUATE cd112 := CNatRatio cd112 * ;
+EVALUATE cd113 := CNatRatio cd113 * ;
+EVALUATE cd114 := CNatRatio cd114 * ;
+EVALUATE cd116 := CNatRatio cd116 * ;
+EVALUATE sn115 := CNatRatio sn115 * ;
+EVALUATE sn116 := CNatRatio sn116 * ;
+EVALUATE sn117 := CNatRatio sn117 * ;
+EVALUATE sn118 := CNatRatio sn118 * ;
+EVALUATE sn119 := CNatRatio sn119 * ;
+EVALUATE sn120 := CNatRatio sn120 * ;
+EVALUATE sn122 := CNatRatio sn122 * ;
+EVALUATE sn124 := CNatRatio sn124 * ;
+EVALUATE gd154 := CNatRatio gd154 * ;
+EVALUATE gd155 := CNatRatio gd155 * ;
+EVALUATE gd156 := CNatRatio gd156 * ;
+EVALUATE gd157 := CNatRatio gd157 * ;
+EVALUATE gd158 := CNatRatio gd158 * ;
+EVALUATE gd160 := CNatRatio gd160 * ;
+EVALUATE u234  := CNatRatio u234  * ;
+EVALUATE u235  := CNatRatio u235  * ;
+EVALUATE u236  := CNatRatio u236  * ;
+EVALUATE u238  := CNatRatio u238  * ;
+EVALUATE pu238 := CNatRatio pu238 * ;
+EVALUATE pu239 := CNatRatio pu239 * ;
+EVALUATE pu240 := CNatRatio pu240 * ;
+EVALUATE pu241 := CNatRatio pu241 * ;
+EVALUATE pu242 := CNatRatio pu242 * ;
+EVALUATE am241 := CNatRatio am241 * ;
+EVALUATE na23 := CNatRatio na23 * ;
+
+* Pour les isotopes conflictuels (absent de certaines bibli.)
+
+IF LibType 'ENDFVI8'    = THEN
+  EVALUATE h1    := CNatRatio h1    * ;
+  EVALUATE siNat := CNatRatio siNat * ;
+  EVALUATE tiNat := CNatRatio tiNat * ;
+  EVALUATE zrNat := CNatRatio zrNat * ; ! ENDF6 connait a la fois ZrNat et ses differents isotopes
+  EVALUATE inNat := CNatRatio inNat * ;
+  EVALUATE s32   := CNatRatio s32   * ;
+  EVALUATE knat  := CNatRatio knat  * ;
+
+ELSEIF LibType 'JEF22'       = THEN
+  EVALUATE h1    := CNatRatio h1    * ;
+  EVALUATE siNat := CNatRatio siNat * ;
+  EVALUATE tiNat := CNatRatio tiNat * ;
+  EVALUATE zrNat := CNatRatio zrNat * ;
+  EVALUATE in115 := CNatRatio in115 * ;
+  EVALUATE s32   := CNatRatio s32   * ;
+  EVALUATE s33   := CNatRatio s33   * ;
+  EVALUATE s34   := CNatRatio s34   * ;
+  EVALUATE knat  := CNatRatio knat  * ;
+
+ELSEIF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
+       LibType 'JEFF312'  = +
+       LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+  EVALUATE h1    := CNatRatio h1    * ;
+  EVALUATE si28  := CNatRatio si28  * ;
+  EVALUATE si29  := CNatRatio si29  * ;
+  EVALUATE si30  := CNatRatio si30  * ;
+  EVALUATE ti46  := CNatRatio ti46 * ;
+  EVALUATE ti47  := CNatRatio ti47 * ;
+  EVALUATE ti48  := CNatRatio ti48 * ;
+  EVALUATE ti49  := CNatRatio ti49 * ;
+  EVALUATE ti50  := CNatRatio ti50 * ;
+  EVALUATE zr90 := CNatRatio zr90 * ;
+  EVALUATE zr91 := CNatRatio zr91 * ;
+  EVALUATE zr92 := CNatRatio zr92 * ;
+  EVALUATE zr93 := CNatRatio zr93 * ;
+  EVALUATE zr94 := CNatRatio zr94 * ;
+  EVALUATE zr95 := CNatRatio zr95 * ;
+  EVALUATE zr96 := CNatRatio zr96 * ;
+  EVALUATE cd106 := CNatRatio cd106 * ;
+  EVALUATE cd108 := CNatRatio cd108 * ;
+  EVALUATE in115 := CNatRatio in115 * ;
+  EVALUATE sn112 := CNatRatio sn112 * ;
+  EVALUATE sn114 := CNatRatio sn114 * ;
+  EVALUATE s32   := CNatRatio s32   * ;
+  EVALUATE s33   := CNatRatio s33   * ;
+  EVALUATE s34   := CNatRatio s34   * ;
+  EVALUATE k39  := CNatRatio k39  * ;
+  EVALUATE k40  := CNatRatio k40  * ;
+  EVALUATE k41  := CNatRatio k41  * ;
+
+ELSE
+  ECHO "Cette bibliotheque n'est pas repertoriee..." ;
+ENDIF ;
+
+
+*------------------------------------------------------
+* Creation de la liste de masses molaires
+*------------------------------------------------------
+
+* Pour les isotopes non conflictuels
+MolarMasses := UTL:             :: CREA 'B10  ' 1 = <<b10>>   ;
+MolarMasses := UTL: MolarMasses :: CREA 'B10B ' 1 = <<b10b>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'B11  ' 1 = <<b11>>   ;
+MolarMasses := UTL: MolarMasses :: CREA 'B11B ' 1 = <<b11b>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'CNat ' 1 = <<cnat>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'O16  ' 1 = <<o16>>   ;
+MolarMasses := UTL: MolarMasses :: CREA 'Al27 ' 1 = <<al27>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Cr50 ' 1 = <<cr50>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Cr52 ' 1 = <<cr52>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Cr53 ' 1 = <<cr53>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Cr54 ' 1 = <<cr54>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Mn55 ' 1 = <<mn55>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Fe54 ' 1 = <<fe54>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Fe56 ' 1 = <<fe56>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Fe57 ' 1 = <<fe57>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Fe58 ' 1 = <<fe58>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Co59 ' 1 = <<co59>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Ni58 ' 1 = <<ni58>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Ni60 ' 1 = <<ni60>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Ni61 ' 1 = <<ni61>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Ni62 ' 1 = <<ni62>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Ni64 ' 1 = <<ni64>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Nb93 ' 1 = <<nb93>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Mo95 ' 1 = <<mo95>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Ag107' 1 = <<ag107>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Ag109' 1 = <<ag109>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Cd110' 1 = <<cd110>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Cd111' 1 = <<cd111>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Cd112' 1 = <<cd112>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Cd113' 1 = <<cd113>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Cd114' 1 = <<cd114>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Cd116' 1 = <<cd116>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Sn115' 1 = <<sn115>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Sn116' 1 = <<sn116>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Sn117' 1 = <<sn117>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Sn118' 1 = <<sn118>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Sn119' 1 = <<sn119>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Sn120' 1 = <<sn120>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Sn122' 1 = <<sn122>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Sn124' 1 = <<sn124>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Gd154' 1 = <<gd154>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Gd155' 1 = <<gd155>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Gd156' 1 = <<gd156>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Gd157' 1 = <<gd157>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Gd158' 1 = <<gd158>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Gd160' 1 = <<gd160>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'U234 ' 1 = <<u234>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'U235 ' 1 = <<u235>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'U236 ' 1 = <<u236>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'U238 ' 1 = <<u238>>  ;
+MolarMasses := UTL: MolarMasses :: CREA 'Pu238' 1 = <<pu238>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Pu239' 1 = <<pu239>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Pu240' 1 = <<pu240>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Pu241' 1 = <<pu241>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Pu242' 1 = <<pu242>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Am241' 1 = <<am241>> ;
+MolarMasses := UTL: MolarMasses :: CREA 'Na23 ' 1 = <<na23>> ;
+
+* Pour les isotopes conflictuels (absents de certaines bibli.)
+
+IF LibType 'ENDFVI8'    = THEN
+  MolarMasses := UTL: MolarMasses :: CREA 'H1   ' 1 = <<h1>>    ;
+  MolarMasses := UTL: MolarMasses :: CREA 'SiNat' 1 = <<siNat>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'TiNat' 1 = <<tiNat>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'ZrNat' 1 = <<zrNat>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'InNat' 1 = <<inNat>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'S32  ' 1 = <<s32>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Knat ' 1 = <<knat>> ;
+
+ELSEIF LibType 'JEF22'       = THEN
+
+  MolarMasses := UTL: MolarMasses :: CREA 'H1   ' 1 = <<h1>>    ;
+  MolarMasses := UTL: MolarMasses :: CREA 'SiNat' 1 = <<siNat>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'TiNat' 1 = <<tiNat>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'ZrNat' 1 = <<zrNat>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'In115' 1 = <<in115>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'S32  ' 1 = <<s32>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'S33  ' 1 = <<s33>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'S34  ' 1 = <<s34>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Knat ' 1 = <<knat>> ;
+
+ELSEIF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
+       LibType 'JEFF312'  = +
+       LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+
+  MolarMasses := UTL: MolarMasses :: CREA 'H1   ' 1 = <<h1>>    ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Si28 ' 1 = <<si28>>  ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Si29 ' 1 = <<si28>>  ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Si30 ' 1 = <<si28>>  ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Ti46 ' 1 = <<ti46>>  ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Ti47 ' 1 = <<ti47>>  ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Ti48 ' 1 = <<ti48>>  ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Ti49 ' 1 = <<ti49>>  ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Ti50 ' 1 = <<ti50>>  ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Zr90 ' 1 = <<zr90>>  ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Zr91 ' 1 = <<zr91>>  ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Zr92 ' 1 = <<zr92>>  ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Zr93 ' 1 = <<zr93>>  ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Zr94 ' 1 = <<zr94>>  ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Zr95 ' 1 = <<zr95>>  ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Zr96 ' 1 = <<zr96>>  ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Cd106' 1 = <<cd106>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Cd108' 1 = <<cd108>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'In115' 1 = <<in115>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Sn112' 1 = <<sn112>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'Sn114' 1 = <<sn114>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'S32  ' 1 = <<s32>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'S33  ' 1 = <<s33>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'S34  ' 1 = <<s34>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'K39  ' 1 = <<k39>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'K40  ' 1 = <<k40>> ;
+  MolarMasses := UTL: MolarMasses :: CREA 'K41  ' 1 = <<k41>> ;
+
+ELSE
+  ECHO "Cette bibliotheque n'est pas repertoriee..." ;
+ENDIF ;
+
+*------------------------------------------------------
+END: ;
+QUIT "LIST" .

@@ -1,0 +1,3010 @@
+*DECK CreaMix.c2m
+*======================================================
+* Name:   CreaMix.c2m
+* Type:   DRAGON procedure
+* Use:    Create isotopic mixtures depending on
+*         assembly type.
+* Author: A. Bruneau 04.2015, 09.2015
+*         [CS-SI | IRSN/PSN-EXP/SNC/LNR]
+* Mod:    R. Nguyen Van Ho 11.2016
+*         [URANUS | IRSN/PSN-EXP/SNC/LNR]
+*         Ajout selecteur donnees nucleaires
+*------------------------------------------------------
+* Input Required:
+*  > Molar Masses
+*  > Metal Mixes
+*  > Gestion (STR) AssType (STR) Teneur_I (INT) ThermaExpans (INT)
+* Output Provided:
+*  < Library
+*  < Moderator concentrations
+*  < Power Conversion Factor (PowMWT, REAL)
+*======================================================
+PARAMETER Library ConcMode
+          FeNat CrNat SnNat NiNat BNat
+          ZrNat2 TiNat2 SiNat2 KNat2
+          AgNat CdNat SNat InNat
+          Zirc4 Incon SS304 M5 AIC
+          GdNat Gd2O3 BP MolarMasses ::
+      ::: LINKED_LIST
+          FeNat CrNat SnNat NiNat BNat
+          ZrNat2 TiNat2 SiNat2 KNat2
+          AgNat CdNat SNat InNat
+          Zirc4 Incon SS304 M5 AIC
+          GdNat Gd2O3 BP MolarMasses ; ;
+PROCEDURE AdaptIso ThermaExpans DeplChain ;
+MODULE    LIB: GREP: ABORT: UTL: END: ;
+LINKED_LIST ListeIsot ListeAutop ;
+LINKED_LIST ZrNat TiNat SiNat KNat ;
+ ZrNat := ZrNat2 ;
+ TiNat := TiNat2 ;
+ SiNat := SiNat2 ;
+ KNat := KNat2 ;
+
+*--------------------------------------------------------------------
+* Constant parameters
+*--------------------------------------------------------------------
+* Avogadro de 1974. Ref : History and progress in the accurate
+* determination of the Avogadro constant, P. Becker, 2001.
+* L'impact de l'utilisation d'un Avogadro plus 'recent' est environ
+* d'un pcm.
+REAL avogadro := 6.022094E+23 ;
+REAL avo_conc := avogadro 1.E-24 * ;
+
+*--------------------------------------------------------------------
+* General assembly parameters
+*--------------------------------------------------------------------
+REAL cbor dmod tmod tgain tcom tclad ;
+STRING Gestion AssType ;
+STRING NuclData ;  ! Nom de la bibliotheque de XS micro JEFF ou ENDF
+STRING LibType  ;  ! Type de bibliotheque (ENDFBVII0...)
+STRING LibGenre ;
+STRING Model    := "TIH" ; ! Model for thermal expansion
+INTEGER LibId ;  ! Type de bibliotheque de XS micro
+INTEGER Teneur_I ; ! in 100 * % (ex: 370 for 3.7%)
+REAL Main_enri ; ! = Teneur_I / 100 [%]
+REAL PowMWth   ; ! Core Thermal Power in MW
+REAL PowMWT    ; ! Power Conversion Factor in MW/T
+REAL Hactiv    ; ! Active height in cm
+REAL NbAss     ; ! Nb of assemblies
+REAL ReNorm    ; ! Re-normalization factor (for isotopic ratios)
+REAL H2OTube GrPreTube ; ! water & Grid proportions for tube
+REAL H2OCntr GrPreCntr ; ! water & Grid prop. for central cells
+REAL H2OSide GrPreSide ; ! water & Grid prop. for side cells
+REAL H2OCorn GrPreCorn ; ! water & Grid prop. for corner cells
+INTEGER ThermExp ;
+STRING CTRA ;
+STRING Grid ;
+INTEGER iU5  iU8                      ; ! SHIB inrs for U
+INTEGER iPu9 iPu0 iPu1 iPu2           ; ! SHIB inrs for Pu
+INTEGER iAg7 iAg9 iIn                 ; ! SHIB inrs for Ag & In (AIC)
+INTEGER iZrG iZrT                     ; ! SHIB inrs Zr in Clad & Tube
+INTEGER iGd4 iGd5 iGd6 iGd7 iGd8 iGd0 ; ! SHIB inrs Gd
+INTEGER iSi8 iSi9 iSi0 ;
+INTEGER iAl7 iK9 iK0 iK1 iNa3 ;         ! SHIB inrs for Pyrex
+
+*--------------------------------------------------------------------
+* Specific assembly parameters : UOX
+*--------------------------------------------------------------------
+REAL enriU   ; ! U-235 enrichment in regular fuel pin
+REAL MUO2    ; ! UO2-Molar Mass
+REAL MUPuAm  ; ! Average 'U' Molar Mass
+REAL dU      ; ! Heavy metal density [g/cm**3]
+*--- 'isotopic enrichment' (final isotopic fractions) ---------------
+REAL U4enri U5enri U6enri U8enri Pu8enri Pu9enri Pu0enri
+     Pu1enri Pu2enri Am1enri ;
+*--- fuel concentrations in at/barn/cm ------------------------------
+REAL U_tot   ; ! Total U concentration [at/barn/cm]
+REAL U4fuel U5fuel U6fuel U8fuel Pu8fuel Pu9fuel Pu0fuel
+     Pu1fuel Pu2fuel Am1fuel O_fuel :=
+     0.0    0.0    0.0    0.0    0.0     0.0     0.0
+     0.0     0.0     0.0     0.0 ;
+*--------------------------------------------------------------------
+* Specific assembly parameters : MOX
+*--------------------------------------------------------------------
+REAL enriPu    ; ! Fuel-average Pu vector enrichment
+REAL f_corn    ; ! Pu enrichment fraction for corner pins
+REAL f_side    ; ! Pu enrichment fraction for side pins
+REAL f_cntr    ; ! Pu enrichment fraction for all remaining pins
+REAL MUtot     ; ! Average 'U' Molar Mass
+REAL MPutot    ; ! Average 'Pu' Molar Mass
+REAL M_corn    ; ! Average 'U+Pu' Molar Mass for corner pins
+REAL M_side    ; ! Average 'U+Pu' Molar Mass for side pins
+REAL M_cntr    ; ! Average 'U+Pu' Molar Mass for center pins
+REAL MMOXcorn  ; ! corner MOX molar mass
+REAL MMOXside  ; ! side MOX molar mass
+REAL MMOXcntr  ; ! center MOX molar mass
+REAL MOX_corn  ; ! corner MOX concentration [molec./barn/cm]
+REAL MOX_side  ; ! side MOX concentration [molec./barn/cm]
+REAL MOX_cntr  ; ! center MOX concentration [molec./barn/cm]
+REAL f_cornPin ; ! corner pins fraction
+REAL f_sidePin ; ! side pins fraction
+REAL f_cntrPin ; ! center pins fraction
+REAL dUcorn    ; ! corner heavy metal density [g/cm**3]
+REAL dUside    ; ! side heavy metal density [g/cm**3]
+REAL dUcntr    ; ! center heavy metal density [g/cm**3]
+*--- 'isotopic enrichment' (final isotopic fractions) ---------------
+* isotopic ratios & enrichments for corner pins
+REAL Ue_corn   ; ! Total U fraction in corner pins
+REAL U4e_corn  U5e_corn  U6e_corn  U8e_corn  ;
+REAL Pue_corn  ; ! Total Pu fraction in corner pins
+REAL Pu8e_corn Pu9e_corn Pu0e_corn Pu1e_corn Pu2e_corn Am1e_corn ;
+* isotopic ratios & enrichments for side pins
+REAL Ue_side   ; ! Total U fraction in side pins
+REAL U4e_side  U5e_side  U6e_side  U8e_side  ;
+REAL Pue_side  ; ! Total Pu fraction in side pins
+REAL Pu8e_side Pu9e_side Pu0e_side Pu1e_side Pu2e_side Am1e_side ;
+* isotopic ratios & enrichments for center pins
+REAL Ue_cntr   ; ! Total U fraction in center pins
+REAL U4e_cntr  U5e_cntr  U6e_cntr  U8e_cntr  ;
+REAL Pue_cntr  ; ! Total Pu fraction in center pins
+REAL Pu8e_cntr Pu9e_cntr Pu0e_cntr Pu1e_cntr Pu2e_cntr Am1e_cntr ;
+*--- corner fuel concentrations in at/barn/cm -----------------------
+REAL UPu_corn_tot ; ! Total corner U+Pu concentration [at/barn/cm]
+REAL U4cornfuel U5cornfuel U6cornfuel U8cornfuel Pu8cornfuel
+     Pu9cornfuel Pu0cornfuel Pu1cornfuel Pu2cornfuel Am1cornfuel
+     O_corn_fuel := 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. ;
+*--- side fuel concentrations in at/barn/cm -------------------------
+REAL UPu_side_tot ; ! Total side U+Pu concentration [at/barn/cm]
+REAL U4sidefuel U5sidefuel U6sidefuel U8sidefuel Pu8sidefuel
+     Pu9sidefuel Pu0sidefuel Pu1sidefuel Pu2sidefuel Am1sidefuel
+     O_side_fuel := 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. ;
+*--- center fuel concentrations in at/barn/cm -----------------------
+REAL UPu_cntr_tot ; ! Total center U+Pu concentration [at/barn/cm]
+REAL U4cntrfuel U5cntrfuel U6cntrfuel U8cntrfuel Pu8cntrfuel
+     Pu9cntrfuel Pu0cntrfuel Pu1cntrfuel Pu2cntrfuel Am1cntrfuel
+     O_cntr_fuel := 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. ;
+*--------------------------------------------------------------------
+* Specific assembly parameters : UOX + Gd (UGd)
+*--------------------------------------------------------------------
+REAL enriUGd    ; ! U-235 enrichment in Gd pins
+REAL enriGd     ; ! Gadolinia (Gd2O3) massic enrichment
+REAL Gd2O3f     ; ! Gd2O3 fraction in UO2 + Gd2O3 pins (= enriGd / 100)
+REAL UO2Gdf     ; ! UO2 fraction un UO2 + Gd2O3 pins (= 1 - Gd2O3f)
+REAL MGd2O3     ; ! Gd2O3 Molar Mass
+REAL MUO2Gd     ; ! UO2 for UOX+Gd Molar Mass
+REAL MUPuGd     ; ! Average 'U' Molar Mass in Gd pins
+REAL M_UO2Gd2O3 ; ! Average 'UO2+Gd2O3' Molar Mass
+REAL f_GadoPin  ; ! Gado'ed pins fraction (out of 264 pins)
+REAL f_NoGdPin  ; ! Regular UOX (no Gd) pins fraction (out of 264 pins)
+REAL dUGado     ; ! Gd pins Heavy metal density [g/cm**3]
+*--- Gd2O3 isotopic fractions ---------------------------------------
+REAL Gd2O3_G4f Gd2O3_G5f Gd2O3_G6f Gd2O3_G7f Gd2O3_G8f Gd2O3_G0f
+     Gd2O3_Of ;
+*--- 'isotopic enrichment' (final isotopic fractions) ---------------
+REAL U4eGd U5eGd U6eGd U8eGd Pu9eGd Pu0eGd Pu1eGd Pu2eGd OeUO2Gd ;
+*--- fuel concentrations in at/barn/cm ------------------------------
+REAL UO2Gd2O3 ; ! Total U+Pu+Gd concentration [at/barn/cm
+REAL U4Gd_fuel U5Gd_fuel U6Gd_fuel U8Gd_fuel Pu9Gd_fuel Pu0Gd_fuel
+     Pu1Gd_fuel Pu2Gd_fuel Gd154_fuel Gd155_fuel Gd156_fuel Gd157_fuel
+     Gd158_fuel Gd160_fuel O_UGd_fuel := 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+     0. 0. 0. 0. 0. ;
+* All other SS304 densities based on dSS with dilution coefficients
+REAL dRodSS    ; ! Stainless Steel (SS304) control rod density
+REAL dCladAIC  ; ! Stainless Steel (SS304) Clad dens. (AIC Rods)
+REAL dCladSS   ; ! Stainless Steel (SS304) Clad dens. (Steel Rods)
+REAL dCladB4C  ; ! Stainless Steel (SS304) Clad dens. (B4C Rods)
+
+*------------------------------------------------------
+* Get NuclData (nom de la bibliotheque)
+*     LibType (nom generique de la bibli, ex. ENDFVII1)
+*     Gestion (TIH, BEAV)
+*     AssType (UOX, MOX, UGd)
+*     Teneur  (370, 865, etc...) '370' => 3.70%
+*     Densités d'UO2, de MOX et de combustible gadolinié
+*     Enrichissement de l'U dans UGd
+*     Teneur en Gd2O3 dans les crayons empoisonnés
+*     Nombre de crayons empoisonnés
+*------------------------------------------------------
+:: >>NuclData<< >>LibType<< >>Gestion<< >>AssType<<
+   >>Teneur_I<< >>ThermExp<< >>CTRA<< >>Grid<< ;
+EVALUATE Main_enri := Teneur_I I_TO_R 100. / ;
+
+*------------------------------------------------------
+* Molar masses (from LINKED_LIST MolarMasses)
+*------------------------------------------------------
+REAL al27 b10 b10b b11 b11b co59 cr50 cr52 cr53 cr54 fe54 fe56 fe57
+     fe58 h2o mn55 mo95 nb93 ni58 ni60 ni61 ni62 ni64 o16 pu238 pu239
+     pu240 pu241 pu242 am241 sinat si28  si29  si30  sn112 sn114 sn115
+     sn116 sn117 sn118 sn119 sn120 sn122 sn124 tinat ti46  ti47  ti48
+     ti49  ti50 u234 u235 u236 u238 zrnat zr90  zr91  zr92  zr93  zr94
+     zr95  zr96 cnat ag107 ag109 cd106 cd108 cd110 cd111 cd112 cd113
+     cd114 cd116 in115 gd154 gd155 gd156 gd157 gd158 gd160
+     knat k39 k40 k41 na23 h1 s32 s33 s34 in113 ;
+*------------------------------------------------------
+
+! Isotopes non conflictuels
+
+GREP: MolarMasses :: GETVAL 'Am241' 1 >>am241<< ;
+GREP: MolarMasses :: GETVAL 'Al27 ' 1 >>al27<<  ;
+GREP: MolarMasses :: GETVAL 'B10  ' 1 >>b10<<   ;
+GREP: MolarMasses :: GETVAL 'B10B ' 1 >>b10b<<  ;
+GREP: MolarMasses :: GETVAL 'B11  ' 1 >>b11<<   ;
+GREP: MolarMasses :: GETVAL 'B11B ' 1 >>b11b<<  ;
+GREP: MolarMasses :: GETVAL 'Co59 ' 1 >>co59<<  ;
+GREP: MolarMasses :: GETVAL 'Cr50 ' 1 >>cr50<<  ;
+GREP: MolarMasses :: GETVAL 'Cr52 ' 1 >>cr52<<  ;
+GREP: MolarMasses :: GETVAL 'Cr53 ' 1 >>cr53<<  ;
+GREP: MolarMasses :: GETVAL 'Cr54 ' 1 >>cr54<<  ;
+GREP: MolarMasses :: GETVAL 'Fe54 ' 1 >>fe54<<  ;
+GREP: MolarMasses :: GETVAL 'Fe56 ' 1 >>fe56<<  ;
+GREP: MolarMasses :: GETVAL 'Fe57 ' 1 >>fe57<<  ;
+GREP: MolarMasses :: GETVAL 'Fe58 ' 1 >>fe58<<  ;
+GREP: MolarMasses :: GETVAL 'Mn55 ' 1 >>mn55<<  ;
+GREP: MolarMasses :: GETVAL 'Mo95 ' 1 >>mo95<<  ;
+GREP: MolarMasses :: GETVAL 'Nb93 ' 1 >>nb93<<  ;
+GREP: MolarMasses :: GETVAL 'Ni58 ' 1 >>ni58<<  ;
+GREP: MolarMasses :: GETVAL 'Ni60 ' 1 >>ni60<<  ;
+GREP: MolarMasses :: GETVAL 'Ni61 ' 1 >>ni61<<  ;
+GREP: MolarMasses :: GETVAL 'Ni62 ' 1 >>ni62<<  ;
+GREP: MolarMasses :: GETVAL 'Ni64 ' 1 >>ni64<<  ;
+GREP: MolarMasses :: GETVAL 'O16  ' 1 >>o16<<   ;
+GREP: MolarMasses :: GETVAL 'Pu238' 1 >>pu238<< ;
+GREP: MolarMasses :: GETVAL 'Pu239' 1 >>pu239<< ;
+GREP: MolarMasses :: GETVAL 'Pu240' 1 >>pu240<< ;
+GREP: MolarMasses :: GETVAL 'Pu241' 1 >>pu241<< ;
+GREP: MolarMasses :: GETVAL 'Pu242' 1 >>pu242<< ;
+GREP: MolarMasses :: GETVAL 'Sn115' 1 >>sn115<< ;
+GREP: MolarMasses :: GETVAL 'Sn116' 1 >>sn116<< ;
+GREP: MolarMasses :: GETVAL 'Sn117' 1 >>sn117<< ;
+GREP: MolarMasses :: GETVAL 'Sn118' 1 >>sn118<< ;
+GREP: MolarMasses :: GETVAL 'Sn119' 1 >>sn119<< ;
+GREP: MolarMasses :: GETVAL 'Sn120' 1 >>sn120<< ;
+GREP: MolarMasses :: GETVAL 'Sn122' 1 >>sn122<< ;
+GREP: MolarMasses :: GETVAL 'Sn124' 1 >>sn124<< ;
+GREP: MolarMasses :: GETVAL 'U234 ' 1 >>u234<<  ;
+GREP: MolarMasses :: GETVAL 'U235 ' 1 >>u235<<  ;
+GREP: MolarMasses :: GETVAL 'U236 ' 1 >>u236<<  ;
+GREP: MolarMasses :: GETVAL 'U238 ' 1 >>u238<<  ;
+GREP: MolarMasses :: GETVAL 'CNat ' 1 >>cnat<<  ;
+GREP: MolarMasses :: GETVAL 'Ag107' 1 >>ag107<< ;
+GREP: MolarMasses :: GETVAL 'Ag109' 1 >>ag109<< ;
+GREP: MolarMasses :: GETVAL 'Cd110' 1 >>cd110<< ;
+GREP: MolarMasses :: GETVAL 'Cd111' 1 >>cd111<< ;
+GREP: MolarMasses :: GETVAL 'Cd112' 1 >>cd112<< ;
+GREP: MolarMasses :: GETVAL 'Cd113' 1 >>cd113<< ;
+GREP: MolarMasses :: GETVAL 'Cd114' 1 >>cd114<< ;
+GREP: MolarMasses :: GETVAL 'Cd116' 1 >>cd116<< ;
+GREP: MolarMasses :: GETVAL 'Gd154' 1 >>gd154<< ;
+GREP: MolarMasses :: GETVAL 'Gd155' 1 >>gd155<< ;
+GREP: MolarMasses :: GETVAL 'Gd156' 1 >>gd156<< ;
+GREP: MolarMasses :: GETVAL 'Gd157' 1 >>gd157<< ;
+GREP: MolarMasses :: GETVAL 'Gd158' 1 >>gd158<< ;
+GREP: MolarMasses :: GETVAL 'Gd160' 1 >>gd160<< ;
+GREP: MolarMasses :: GETVAL 'Na23'  1 >>na23<<  ;
+
+* Isotopes conflictuels
+
+* Pour les isotopes conflictuels (absents de certaines bibli.)
+
+IF LibType 'ENDFVI8'    = THEN
+  GREP: MolarMasses :: GETVAL 'H1   ' 1 >>h1<<    ;
+  GREP: MolarMasses :: GETVAL 'SiNat' 1 >>sinat<< ;
+  GREP: MolarMasses :: GETVAL 'TiNat' 1 >>tinat<< ;
+  GREP: MolarMasses :: GETVAL 'ZrNat' 1 >>zrnat<< ; ! ENDF6 connait a la fois ZrNat et ses differents isotopes
+  GREP: MolarMasses :: GETVAL 'InNat' 1 >>in115<< ;
+  GREP: MolarMasses :: GETVAL 'Knat'  1 >>knat<<  ;
+  GREP: MolarMasses :: GETVAL 'S32  ' 1 >>s32<< ;
+
+ELSEIF LibType 'JEF22'       = THEN
+
+  GREP: MolarMasses :: GETVAL 'H1   ' 1 >>h1<<    ;
+  GREP: MolarMasses :: GETVAL 'SiNat' 1 >>sinat<< ;
+  GREP: MolarMasses :: GETVAL 'TiNat' 1 >>tinat<< ;
+  GREP: MolarMasses :: GETVAL 'ZrNat' 1 >>zrnat<< ;
+  GREP: MolarMasses :: GETVAL 'In115' 1 >>in115<< ;
+  GREP: MolarMasses :: GETVAL 'Knat'  1 >>knat<<  ;
+  GREP: MolarMasses :: GETVAL 'S32  ' 1 >>s32<< ;
+  GREP: MolarMasses :: GETVAL 'S33  ' 1 >>s33<< ;
+  GREP: MolarMasses :: GETVAL 'S34  ' 1 >>s34<< ;
+
+ELSEIF LibType 'JEFF31'   =   LibType 'JEFF311'  = +
+       LibType 'JEFF312'  = +
+       LibType 'ENDFVII0' = + LibType 'ENDFVII1' = + THEN
+
+  GREP: MolarMasses :: GETVAL 'H1   ' 1 >>h1<<    ;
+  GREP: MolarMasses :: GETVAL 'Si28 ' 1 >>si28<<  ;
+  GREP: MolarMasses :: GETVAL 'Si29 ' 1 >>si28<<  ;
+  GREP: MolarMasses :: GETVAL 'Si30 ' 1 >>si28<<  ;
+  GREP: MolarMasses :: GETVAL 'Ti46 ' 1 >>ti46<<  ;
+  GREP: MolarMasses :: GETVAL 'Ti47 ' 1 >>ti47<<  ;
+  GREP: MolarMasses :: GETVAL 'Ti48 ' 1 >>ti48<<  ;
+  GREP: MolarMasses :: GETVAL 'Ti49 ' 1 >>ti49<<  ;
+  GREP: MolarMasses :: GETVAL 'Ti50 ' 1 >>ti50<<  ;
+  GREP: MolarMasses :: GETVAL 'Zr90 ' 1 >>zr90<<  ;
+  GREP: MolarMasses :: GETVAL 'Zr91 ' 1 >>zr91<<  ;
+  GREP: MolarMasses :: GETVAL 'Zr92 ' 1 >>zr92<<  ;
+  GREP: MolarMasses :: GETVAL 'Zr93 ' 1 >>zr93<<  ;
+  GREP: MolarMasses :: GETVAL 'Zr94 ' 1 >>zr94<<  ;
+  GREP: MolarMasses :: GETVAL 'Zr95 ' 1 >>zr95<<  ;
+  GREP: MolarMasses :: GETVAL 'Zr96 ' 1 >>zr96<<  ;
+  GREP: MolarMasses :: GETVAL 'Cd106' 1 >>cd106<< ;
+  GREP: MolarMasses :: GETVAL 'Cd108' 1 >>cd108<< ;
+  GREP: MolarMasses :: GETVAL 'In115' 1 >>in115<< ;
+  GREP: MolarMasses :: GETVAL 'Sn112' 1 >>sn112<< ;
+  GREP: MolarMasses :: GETVAL 'Sn114' 1 >>sn114<< ;
+  GREP: MolarMasses :: GETVAL 'K39  ' 1 >>k39<< ;
+  GREP: MolarMasses :: GETVAL 'K40  ' 1 >>k40<< ;
+  GREP: MolarMasses :: GETVAL 'K41  ' 1 >>k41<< ;
+  GREP: MolarMasses :: GETVAL 'S32  ' 1 >>s32<< ;
+  GREP: MolarMasses :: GETVAL 'S33  ' 1 >>s33<< ;
+  GREP: MolarMasses :: GETVAL 'S34  ' 1 >>s34<< ;
+
+ELSE
+  ECHO "Cette bibliotheque n'est pas repertoriee..." ;
+ENDIF ;
+
+*------------------------------------------------------
+* Recuperation des noms des isotopes
+*------------------------------------------------------
+STRING NomH2O ;
+STRING NomH1 ;
+STRING NomO16 ;
+STRING NomAm241 ;
+STRING NomAl27 ;
+STRING NomB10 NomB11 ;
+STRING NomCo59 NomCr50 NomCr52 NomCr53 NomCr54 ;
+STRING NomFe54 NomFe56 NomFe57 NomFe58 ;
+STRING NomMn55 ;
+STRING NomMo95 ;
+STRING NomNb93 ;
+STRING NomNi58 NomNi60 NomNi61 NomNi62 NomNi64 ;
+STRING NomPu238 NomPu239 NomPu240 NomPu241 NomPu242 ;
+STRING NomSiNat NomSi28 NomSi29 NomSi30 ;
+STRING NomSn112 NomSn114 NomSn115 NomSn116 NomSn117 ;
+STRING NomSn118 NomSn119 NomSn120 NomSn122 NomSn124 ;
+STRING NomTiNat NomTi46 NomTi47 NomTi48 NomTi49 NomTi50 ;
+STRING NomU234 NomU235 NomU236 NomU238 ;
+STRING NomZrNat ;
+STRING NomZr90 NomZr91 NomZr92 NomZr93 NomZr94 NomZr95 NomZr96 ;
+STRING NomCNat ;
+STRING NomAg107 NomAg109 ;
+STRING NomCd106 NomCd108 NomCd110 NomCd111 NomCd112 NomCd113 NomCd114 ;
+STRING NomCd116 ;
+STRING NomIn115 NomInNat ;
+STRING NomGd154 NomGd155 NomGd156 NomGd157 NomGd158 NomGd160 ;
+STRING NomKnat NomK39 NomK40 NomK41 NomNa23 ;
+STRING NomS32 NomS33 NomS34 NomN14 ;
+STRING NomIn113 ;
+
+ListeIsot ListeAutop := AdaptIso :: <<NuclData>> <<LibType>>
+                         >>LibId<< >>LibGenre<< ;
+
+UTL: ListeIsot :: DUMP ;
+GREP: ListeIsot :: GETVAL 'H2O  ' <<LibId>> NVAL 8 >>NomH2O<< ;
+GREP: ListeIsot :: GETVAL 'H1   ' <<LibId>> NVAL 8 >>NomH1<<    ;
+GREP: ListeIsot :: GETVAL 'O16  ' <<LibId>> NVAL 8 >>NomO16<<   ;
+GREP: ListeIsot :: GETVAL 'Am241' <<LibId>> NVAL 8 >>NomAm241<< ;
+GREP: ListeIsot :: GETVAL 'Al27 ' <<LibId>> NVAL 8 >>NomAl27<<  ;
+GREP: ListeIsot :: GETVAL 'B10  ' <<LibId>> NVAL 8 >>NomB10<<   ;
+GREP: ListeIsot :: GETVAL 'B11  ' <<LibId>> NVAL 8 >>NomB11<<   ;
+GREP: ListeIsot :: GETVAL 'Co59 ' <<LibId>> NVAL 8 >>NomCo59<<  ;
+GREP: ListeIsot :: GETVAL 'Cr50 ' <<LibId>> NVAL 8 >>NomCr50<<  ;
+GREP: ListeIsot :: GETVAL 'Cr52 ' <<LibId>> NVAL 8 >>NomCr52<<  ;
+GREP: ListeIsot :: GETVAL 'Cr53 ' <<LibId>> NVAL 8 >>NomCr53<<  ;
+GREP: ListeIsot :: GETVAL 'Cr54 ' <<LibId>> NVAL 8 >>NomCr54<<  ;
+GREP: ListeIsot :: GETVAL 'Fe54 ' <<LibId>> NVAL 8 >>NomFe54<<  ;
+GREP: ListeIsot :: GETVAL 'Fe56 ' <<LibId>> NVAL 8 >>NomFe56<<  ;
+GREP: ListeIsot :: GETVAL 'Fe57 ' <<LibId>> NVAL 8 >>NomFe57<<  ;
+GREP: ListeIsot :: GETVAL 'Fe58 ' <<LibId>> NVAL 8 >>NomFe58<<  ;
+GREP: ListeIsot :: GETVAL 'Mn55 ' <<LibId>> NVAL 8 >>NomMn55<<  ;
+GREP: ListeIsot :: GETVAL 'Mo95 ' <<LibId>> NVAL 8 >>NomMo95<<  ;
+GREP: ListeIsot :: GETVAL 'Nb93 ' <<LibId>> NVAL 8 >>NomNb93<<  ;
+GREP: ListeIsot :: GETVAL 'Ni58 ' <<LibId>> NVAL 8 >>NomNi58<<  ;
+GREP: ListeIsot :: GETVAL 'Ni60 ' <<LibId>> NVAL 8 >>NomNi60<<  ;
+GREP: ListeIsot :: GETVAL 'Ni61 ' <<LibId>> NVAL 8 >>NomNi61<<  ;
+GREP: ListeIsot :: GETVAL 'Ni62 ' <<LibId>> NVAL 8 >>NomNi62<<  ;
+GREP: ListeIsot :: GETVAL 'Ni64 ' <<LibId>> NVAL 8 >>NomNi64<<  ;
+GREP: ListeIsot :: GETVAL 'Pu238' <<LibId>> NVAL 8 >>NomPu238<< ;
+GREP: ListeIsot :: GETVAL 'Pu239' <<LibId>> NVAL 8 >>NomPu239<< ;
+GREP: ListeIsot :: GETVAL 'Pu240' <<LibId>> NVAL 8 >>NomPu240<< ;
+GREP: ListeIsot :: GETVAL 'Pu241' <<LibId>> NVAL 8 >>NomPu241<< ;
+GREP: ListeIsot :: GETVAL 'Pu242' <<LibId>> NVAL 8 >>NomPu242<< ;
+GREP: ListeIsot :: GETVAL 'SiNat' <<LibId>> NVAL 8 >>NomSiNat<< ;
+GREP: ListeIsot :: GETVAL 'Si28 ' <<LibId>> NVAL 8 >>NomSi28<<  ;
+GREP: ListeIsot :: GETVAL 'Si29 ' <<LibId>> NVAL 8 >>NomSi29<<  ;
+GREP: ListeIsot :: GETVAL 'Si30 ' <<LibId>> NVAL 8 >>NomSi30<<  ;
+GREP: ListeIsot :: GETVAL 'Sn112' <<LibId>> NVAL 8 >>NomSn112<< ;
+GREP: ListeIsot :: GETVAL 'Sn114' <<LibId>> NVAL 8 >>NomSn114<< ;
+GREP: ListeIsot :: GETVAL 'Sn115' <<LibId>> NVAL 8 >>NomSn115<< ;
+GREP: ListeIsot :: GETVAL 'Sn116' <<LibId>> NVAL 8 >>NomSn116<< ;
+GREP: ListeIsot :: GETVAL 'Sn117' <<LibId>> NVAL 8 >>NomSn117<< ;
+GREP: ListeIsot :: GETVAL 'Sn118' <<LibId>> NVAL 8 >>NomSn118<< ;
+GREP: ListeIsot :: GETVAL 'Sn119' <<LibId>> NVAL 8 >>NomSn119<< ;
+GREP: ListeIsot :: GETVAL 'Sn120' <<LibId>> NVAL 8 >>NomSn120<< ;
+GREP: ListeIsot :: GETVAL 'Sn122' <<LibId>> NVAL 8 >>NomSn122<< ;
+GREP: ListeIsot :: GETVAL 'Sn124' <<LibId>> NVAL 8 >>NomSn124<< ;
+GREP: ListeIsot :: GETVAL 'TiNat' <<LibId>> NVAL 8 >>NomTiNat<< ;
+GREP: ListeIsot :: GETVAL 'Ti46 ' <<LibId>> NVAL 8 >>NomTi46<<  ;
+GREP: ListeIsot :: GETVAL 'Ti47 ' <<LibId>> NVAL 8 >>NomTi47<<  ;
+GREP: ListeIsot :: GETVAL 'Ti48 ' <<LibId>> NVAL 8 >>NomTi48<<  ;
+GREP: ListeIsot :: GETVAL 'Ti49 ' <<LibId>> NVAL 8 >>NomTi49<<  ;
+GREP: ListeIsot :: GETVAL 'Ti50 ' <<LibId>> NVAL 8 >>NomTi50<<  ;
+GREP: ListeIsot :: GETVAL 'U234 ' <<LibId>> NVAL 8 >>NomU234<<  ;
+GREP: ListeIsot :: GETVAL 'U235 ' <<LibId>> NVAL 8 >>NomU235<<  ;
+GREP: ListeIsot :: GETVAL 'U236 ' <<LibId>> NVAL 8 >>NomU236<<  ;
+GREP: ListeIsot :: GETVAL 'U238 ' <<LibId>> NVAL 8 >>NomU238<<  ;
+GREP: ListeIsot :: GETVAL 'ZrNat' <<LibId>> NVAL 8 >>NomZrNat<< ;
+GREP: ListeIsot :: GETVAL 'Zr90 ' <<LibId>> NVAL 8 >>NomZr90<<  ;
+GREP: ListeIsot :: GETVAL 'Zr91 ' <<LibId>> NVAL 8 >>NomZr91<<  ;
+GREP: ListeIsot :: GETVAL 'Zr92 ' <<LibId>> NVAL 8 >>NomZr92<<  ;
+GREP: ListeIsot :: GETVAL 'Zr93 ' <<LibId>> NVAL 8 >>NomZr93<<  ;
+GREP: ListeIsot :: GETVAL 'Zr94 ' <<LibId>> NVAL 8 >>NomZr94<<  ;
+GREP: ListeIsot :: GETVAL 'Zr95 ' <<LibId>> NVAL 8 >>NomZr95<<  ;
+GREP: ListeIsot :: GETVAL 'Zr96 ' <<LibId>> NVAL 8 >>NomZr96<<  ;
+GREP: ListeIsot :: GETVAL 'CNat ' <<LibId>> NVAL 8 >>NomCNat<<  ;
+GREP: ListeIsot :: GETVAL 'Ag107' <<LibId>> NVAL 8 >>NomAg107<< ;
+GREP: ListeIsot :: GETVAL 'Ag109' <<LibId>> NVAL 8 >>NomAg109<< ;
+GREP: ListeIsot :: GETVAL 'Cd106' <<LibId>> NVAL 8 >>NomCd106<< ;
+GREP: ListeIsot :: GETVAL 'Cd108' <<LibId>> NVAL 8 >>NomCd108<< ;
+GREP: ListeIsot :: GETVAL 'Cd110' <<LibId>> NVAL 8 >>NomCd110<< ;
+GREP: ListeIsot :: GETVAL 'Cd111' <<LibId>> NVAL 8 >>NomCd111<< ;
+GREP: ListeIsot :: GETVAL 'Cd112' <<LibId>> NVAL 8 >>NomCd112<< ;
+GREP: ListeIsot :: GETVAL 'Cd113' <<LibId>> NVAL 8 >>NomCd113<< ;
+GREP: ListeIsot :: GETVAL 'Cd114' <<LibId>> NVAL 8 >>NomCd114<< ;
+GREP: ListeIsot :: GETVAL 'Cd116' <<LibId>> NVAL 8 >>NomCd116<< ;
+GREP: ListeIsot :: GETVAL 'In115' <<LibId>> NVAL 8 >>NomIn115<< ;
+GREP: ListeIsot :: GETVAL 'In113' <<LibId>> NVAL 8 >>NomIn113<< ;
+GREP: ListeIsot :: GETVAL 'Gd154' <<LibId>> NVAL 8 >>NomGd154<< ;
+GREP: ListeIsot :: GETVAL 'Gd155' <<LibId>> NVAL 8 >>NomGd155<< ;
+GREP: ListeIsot :: GETVAL 'Gd156' <<LibId>> NVAL 8 >>NomGd156<< ;
+GREP: ListeIsot :: GETVAL 'Gd157' <<LibId>> NVAL 8 >>NomGd157<< ;
+GREP: ListeIsot :: GETVAL 'Gd158' <<LibId>> NVAL 8 >>NomGd158<< ;
+GREP: ListeIsot :: GETVAL 'Gd160' <<LibId>> NVAL 8 >>NomGd160<< ;
+GREP: ListeIsot :: GETVAL 'Knat ' <<LibId>> NVAL 8 >>NomKnat<< ;
+GREP: ListeIsot :: GETVAL 'K39  ' <<LibId>> NVAL 8 >>NomK39<< ;
+GREP: ListeIsot :: GETVAL 'K40  ' <<LibId>> NVAL 8 >>NomK40<< ;
+GREP: ListeIsot :: GETVAL 'K41  ' <<LibId>> NVAL 8 >>NomK41<< ;
+GREP: ListeIsot :: GETVAL 'Na23 ' <<LibId>> NVAL 8 >>NomNa23<< ;
+GREP: ListeIsot :: GETVAL 'S32  ' <<LibId>> NVAL 8 >>NomS32<< ;
+GREP: ListeIsot :: GETVAL 'S33  ' <<LibId>> NVAL 8 >>NomS33<< ;
+GREP: ListeIsot :: GETVAL 'S34  ' <<LibId>> NVAL 8 >>NomS34<< ;
+GREP: ListeIsot :: GETVAL 'N14  ' <<LibId>> NVAL 8 >>NomN14<< ;
+GREP: ListeIsot :: GETVAL 'InNat' <<LibId>> NVAL 8 >>NomInNat<< ;
+
+* Les noms des isotopes autoproteges
+STRING NomSSZrNat NomSSZr90 NomSSZr91 NomSSZr92 NomSSZr93 NomSSZr94 ;
+STRING NomSSZr95 NomSSZr96 ;
+STRING NomSSAg7 NomSSAg9 ;
+STRING NomSSIn115 ;
+STRING NomSSGd4 NomSSGd5 NomSSGd6 NomSSGd7 NomSSGd8 ;
+STRING NomSSGd0 ;
+STRING NomSSU235  NomSSU236  NomSSU238 ;
+STRING NomSSPu8 NomSSPu9 NomSSPu0 NomSSPu1 NomSSPu2 ;
+STRING NomSSAm241 ;
+STRING NomSSInNat ;
+STRING NomSSIn113 ;
+
+GREP: ListeIsot :: GETVAL 'Ag107' <<LibId>> NVAL 8 >>NomSSAg7<< ;
+GREP: ListeIsot :: GETVAL 'Ag109' <<LibId>> NVAL 8 >>NomSSAg9<< ;
+GREP: ListeIsot :: GETVAL 'In115' <<LibId>> NVAL 8 >>NomSSIn115<< ;
+GREP: ListeIsot :: GETVAL 'Gd154' <<LibId>> NVAL 8 >>NomSSGd4<< ;
+GREP: ListeIsot :: GETVAL 'Gd155' <<LibId>> NVAL 8 >>NomSSGd5<< ;
+GREP: ListeIsot :: GETVAL 'Gd156' <<LibId>> NVAL 8 >>NomSSGd6<< ;
+GREP: ListeIsot :: GETVAL 'Gd157' <<LibId>> NVAL 8 >>NomSSGd7<< ;
+GREP: ListeIsot :: GETVAL 'Gd158' <<LibId>> NVAL 8 >>NomSSGd8<< ;
+GREP: ListeIsot :: GETVAL 'Gd160' <<LibId>> NVAL 8 >>NomSSGd0<< ;
+GREP: ListeIsot :: GETVAL 'U235 ' <<LibId>> NVAL 8 >>NomSSU235<<  ;
+GREP: ListeIsot :: GETVAL 'U236 ' <<LibId>> NVAL 8 >>NomSSU236<<  ;
+GREP: ListeIsot :: GETVAL 'U238 ' <<LibId>> NVAL 8 >>NomSSU238<<  ;
+GREP: ListeIsot :: GETVAL 'Pu238' <<LibId>> NVAL 8 >>NomSSPu8<< ;
+GREP: ListeIsot :: GETVAL 'Pu239' <<LibId>> NVAL 8 >>NomSSPu9<< ;
+GREP: ListeIsot :: GETVAL 'Pu240' <<LibId>> NVAL 8 >>NomSSPu0<< ;
+GREP: ListeIsot :: GETVAL 'Pu241' <<LibId>> NVAL 8 >>NomSSPu1<< ;
+GREP: ListeIsot :: GETVAL 'Pu242' <<LibId>> NVAL 8 >>NomSSPu2<< ;
+GREP: ListeIsot :: GETVAL 'Am241' <<LibId>> NVAL 8 >>NomSSAm241<< ;
+
+IF LibType 'ENDFVII1' = LibType 'ENDFVII0' = LibType 'JEFF31' =
+ LibType 'JEFF311' = LibType 'JEFF312' = + + + + THEN
+
+  GREP: ListeIsot :: GETVAL 'Zr90' <<LibId>> NVAL 8 >>NomSSZr90<< ;
+  GREP: ListeIsot :: GETVAL 'Zr91' <<LibId>> NVAL 8 >>NomSSZr91<< ;
+  GREP: ListeIsot :: GETVAL 'Zr92' <<LibId>> NVAL 8 >>NomSSZr92<< ;
+  GREP: ListeIsot :: GETVAL 'Zr94' <<LibId>> NVAL 8 >>NomSSZr94<< ;
+  GREP: ListeIsot :: GETVAL 'Zr96' <<LibId>> NVAL 8 >>NomSSZr96<< ;
+
+ELSEIF LibType 'ENDFVI8' = LibType 'JEF22' = + THEN
+
+  GREP: ListeIsot :: GETVAL 'ZrNat' <<LibId>> NVAL 8 >>NomSSZrNat<< ;
+  IF LibType 'ENDFVI8' = THEN
+    GREP: ListeIsot :: GETVAL 'InNat' <<LibId>> NVAL 8 >>NomSSInNat<< ;
+  ENDIF ;
+
+ENDIF ;
+
+*------------------------------------------------------
+REAL rFuel dUO2 TempF Alpha Beta ;
+IF Gestion "TIH" = THEN
+* Specifications TIHANGE CEA-N-2092
+  ! Thermal dilatation (p.153)
+  EVALUATE TempF := 286.0 (* C *) 9.0 * 5.0 / 32.0 + ; ! C to F
+  EVALUATE Beta := 1.0 -3.31925E-4 +
+                   4.87957E-6 TempF * +
+                   1.37101E-11 TempF 2.0 ** * +
+                   1.6161E-13 TempF 3.0 ** * + ;
+  EVALUATE rFuel := .464693 Beta * ; ! (p. 158)
+*-------------------------------------------------------------------
+*  Theoric density = 10.96 g/cm3
+*  Porosity        = 5.0 % (x0.95)      -> 10.412 (p.154)
+*  Thermal Dilatation Effects           -> 10.338 (p.153/154)
+*  Free Rod Space Modelisation, Grain boundary, Others Effects
+*    --> Dilution factor = 0.9881 (p.159)
+*  Final density at 286 deg[C] =  10.215 g/cm3
+*-------------------------------------------------------------------
+  EVALUATE dUO2 := 10.96 0.95 * Beta 3.0 ** / 0.9881 * ;
+ELSEIF Gestion "BEAV" = THEN
+  IF Teneur_I 160 = THEN
+   EVALUATE dUO2 := 10.31341 ;
+  ELSEIF Teneur_I 240 = THEN
+   EVALUATE dUO2 := 10.29748 ;
+  ELSEIF Teneur_I 310 = THEN
+   EVALUATE dUO2 := 10.30166 ;
+  ELSE
+    ECHO "BEAVRS dispose d'enrichissements specifiques. Les seuls" ;
+    ECHO "enrichissements disponibles sont 1,6, 2,4 et 3,10" ;
+    ECHO "pourcents. Specifier l'un de ces trois enrichissements." ;
+    ECHO "Actuellement :" ;
+    ECHO Main_enri ;
+    ABORT: ;
+  ENDIF ;
+  EVALUATE rFuel    := .39218   ; ! [cm]
+ELSE
+  EVALUATE rFuel    := .4095   ; ! [cm]
+  EVALUATE dUO2     := 10.07   ; ! UO2-density
+ENDIF ;
+REAL dMOX     := 10.02   ;
+REAL dGado    :=  9.83   ;
+REAL dInc dZr4 ;
+REAL U5FC     := 1E-9 ;
+
+*--------------------------------------------------------------------
+* Assembly structure
+*--------------------------------------------------------------------
+REAL dTube dClad dAICr dSS dGrid dB4C dBP ;
+* Specifications TIHANGE CEA-N-2092
+  EVALUATE dInc  := 8.089 ; ! In-718 density
+  EVALUATE dZr4  := 6.52 ;
+IF Gestion "BEAV" = THEN
+  EVALUATE dInc  := 8.2 ; ! In-718 density
+  EVALUATE dZr4  := 6.55 ;
+ENDIF ;
+IF Gestion "TIH" = THEN
+* Specifications TIHANGE CEA-N-2092
+  ! AgInCd Control Rod density
+  EVALUATE dAICr := 10.17 ; ! 20 C
+  EVALUATE TempF := 286.0 (* C *) 9.0 * 5.0 / 32.0 + ; ! C to F
+  EVALUATE Alpha := 1.25E-5 ;
+  EVALUATE dAICr := dAICr
+                    TempF 68.0 - Alpha * 1.0 + 3.0 ** / ;
+  EVALUATE dSS   := 7.79  ; ! Stainless Steel (SS304) density
+  EVALUATE dTube := dZr4  ; ! Guide Tube density
+  EVALUATE dClad := dZr4  ; ! Fuel Cladding density
+  EVALUATE dBP   := 2.27  ; ! BoroSilicate Poison Rod (BP)
+ELSEIF Gestion "BEAV" = THEN
+  EVALUATE dAICr := 10.16 ; ! 20 C
+  EVALUATE dSS   := 8.03  ; ! Stainless Steel (SS304) density
+  EVALUATE dTube := dZr4  ; ! Guide Tube density
+  EVALUATE dClad := dZr4  ; ! Fuel Cladding density
+  EVALUATE dBP   := 2.26  ; ! BoroSilicate Poison Rod (BP)
+ELSE
+  ECHO "Error --- Gestion:" Gestion "not recognized." ;
+  ABORT: ;
+ENDIF ;
+EVALUATE dB4C  := 1.79     ;
+EVALUATE dGrid := 6.691985 ;
+
+*------------------------------------------------------
+* Gestion Branching
+*------------------------------------------------------
+IF Gestion "TIH" = THEN
+  EVALUATE PowMWth := 2652.       ; ! [MW] (CEA-N-2092)
+  EVALUATE cbor    :=  600.       ; ! [ppm]
+  EVALUATE Hactiv  :=  368.         ; ! [cm]
+  EVALUATE NbAss   :=  157.         ; ! [900MWe]
+  EVALUATE dmod    :=     .716403   ; ! [g.cm-3]
+  EVALUATE tmod    :=  305.         ; ! [degC]
+  EVALUATE tcom    :=  650.         ; ! [degC]
+  EVALUATE tgain   :=  335.         ; ! [degC]
+ELSEIF Gestion "BEAV" = THEN
+  EVALUATE PowMWth := 3411.         ; ! [MW] (SLB 1100MWe)
+  EVALUATE Hactiv  :=  365.76       ; ! [cm]
+  EVALUATE NbAss   :=  193.         ; ! [1300MWe]
+  EVALUATE cbor    :=  975.         ; ! [ppm]
+  EVALUATE dmod    :=     .7398625  ; ! [g.cm-3]
+  EVALUATE tmod    :=  293.33       ; ! [degC]
+  EVALUATE tcom    :=  360.         ; ! [degC]
+  EVALUATE tgain   :=  335.         ; ! [degC]
+ELSE ! Input Error
+  ECHO "Error --- Gestion:" Gestion "not recognized." ;
+  ABORT: ;
+ENDIF ;
+*------------------------------------------------------
+* Thermal Expansion of densities (If requested)
+*------------------------------------------------------
+IF ThermExp 1 = THEN
+EVALUATE tclad := 0.12 tcom * 0.88 tmod * + ;
+EVALUATE Model := "TIH" ;
+* EVALUATE tclad := tgain ;
+ ThermaExpans ::  <<dUO2>> "UO2" <<tcom>> "Density"
+                  <<Model>> "NONE"  0. 0. 0. >>dUO2<< ;
+ ThermaExpans ::  <<dAICr>> "AIC" <<tmod>> "Density"
+                  <<Model>> "NONE"  0. 0. 0. >>dAICr<< ;
+ ThermaExpans ::  <<dTube>> "SS304" <<tmod>> "Density"
+                  <<Model>> "NONE"  0. 0. 0. >>dTube<< ;
+ ThermaExpans ::  <<dBP>> "Pyrex" <<tmod>> "Density"
+                  <<Model>> "NONE"  0. 0. 0. >>dBP<< ;
+ ThermaExpans ::  <<dClad>> "Zr4" <<tclad>> "Density"
+                  <<Model>> "NONE"  0. 0. 0. >>dClad<< ;
+ ThermaExpans ::  <<dInc>> "In718" <<tmod>> "Density"
+                  <<Model>> "NONE"  0. 0. 0. >>dInc<< ;
+ ThermaExpans ::  <<dSS>> "SS304" <<tmod>> "Density"
+                  <<Model>> "NONE"  0. 0. 0. >>dSS<< ;
+ ECHO "---------------THERMAL EXPANSION OF DENSITIES------------" ;
+ ECHO " dUO2  =  " dUO2  " at " tcom  "C." ;
+ ECHO " dAICr =  " dAICr " at " tmod  "C." ;
+ ECHO " dSS   =  " dSS   " at " tmod  "C." ;
+ ECHO " dClad =  " dClad " at " tclad "C." ;
+ ECHO " dTube =  " dTube " at " tcom  "C." ;
+ ECHO " dBP   =  " dBP   " at " tcom  "C." ;
+ ECHO " dInc  =  " dInc  " at " tcom  "C." ;
+ENDIF ;
+*------ GAINC ------
+*---- made of Zircalloy4 (with fuel-clad gap) ----
+EVALUATE dClad   := dClad 0.53677 2.0 ** 0.474956 2.0 ** -
+                          0.53677 2.0 ** 0.465793 2.0 ** - / * ;
+*------ GRILLE -------------------
+*---------------------------------
+* Mass Ratios Grille precalculee :
+*     Inconel .131668
+*     Zirc4   .868332
+*---------------------------------
+REAL InGridf := .131668 ;
+REAL Z4Gridf := .868332 ;
+REAL SSGridf := 0.0 ;
+* SS rods
+EVALUATE dRodSS      := dSS      .5525475 * ; !
+* AIC
+IF Gestion "TIH" = THEN
+  EVALUATE dCladAIC := dSS 0.5601362 2.0 ** 0.5110126 2.0 ** -
+                           0.5601362 2.0 ** 0.5078476 2.0 ** - / * ;
+ELSEIF Gestion "BEAV" = THEN
+  EVALUATE dCladAIC := dSS 0.48387 2.0 ** 0.43688 2.0 ** -
+                           0.48387 2.0 ** 0.43310 2.0 ** - / * ;
+ELSE ! Input Error
+  ECHO "Error --- Gestion:" Gestion "not recognized." ;
+  ABORT: ;
+ENDIF ;
+*
+EVALUATE dCladSS     := dSS     .87575664  * ;
+EVALUATE dCladB4C    := dSS      .8868781  * ;
+* PYREX
+REAL dCladIntBP := dSS 0.301759 2.0 ** 0.2851718 2.0 ** -
+                       0.31115  2.0 ** 0.2851718 2.0 ** - / * ;
+! 0.56013513697 = 0,55753*(1+9,8E-6*(546,8-70))
+REAL dCladExtBP := dSS 0.5601362 2.0 ** 0.5110126 2.0 ** -
+                       0.5601362 2.0 ** 0.49784   2.0 ** - / * ;
+IF Gestion "BEAV" = THEN
+  EVALUATE dCladIntBP := dSS 0.2305 2.0 ** 0.2140 2.0 ** -
+                       0.2413  2.0 ** 0.2140 2.0 ** - / * ;
+  EVALUATE dCladExtBP := dSS 0.4839 2.0 ** 0.4369 2.0 ** -
+                       0.4839  2.0 ** 0.4267 2.0 ** - / * ;
+ENDIF ;
+
+*------------------------------------------------------
+* Convert values (degC -> K ; ppm -> value)
+*------------------------------------------------------
+EVALUATE tmod  := tmod  273.15 + ; ! user temp in degC, LIB in K
+EVALUATE tcom  := tcom  273.15 + ; ! user temp in degC, LIB in K
+EVALUATE tgain := tgain 273.15 + ; ! user temp in degC, LIB in K
+EVALUATE cbor  := cbor  1.E-06 * ; !
+*------------------------------------------------------
+* Grid Dilution in Moderator for every cell
+*------------------------------------------------------
+* Le mot-clef COMB interdit 0.0, mais autorise une quantite
+* negligeable. Faut-il faire une demande de dev pour qu'il
+* accepte une quantite negligeable ?
+REAL SurfEauCntr SurfEauSide SurfEauCorn ;
+REAL ss304Cntr IncCntr Zr4Cntr
+     ss304Side IncSide Zr4Side
+     ss304Corn IncCorn Zr4Corn
+     ss304Tube IncTube Zr4Tube ;
+REAL DemiLameH2O SurfEauTube := 0.0 0.0 ;
+REAL VtotZr4 VtotInc VtotSS Vtot Zf Incf SSf := 0.0 .0 .0 .0 .0 .0 .0 ;
+REAL MtotZr4 MtotInc ;
+
+IF Gestion 'TIH' = THEN ! p155 et 159
+  EVALUATE SurfEauCntr := 1.43538098 2.0 ** $Pi_R 0.53677 2.0 ** * - ;
+  EVALUATE SurfEauSide := 1.43538098 0.07343 2.0 / * ;
+  EVALUATE SurfEauCorn := SurfEauSide 2.0 * 0.07343 2.0 /
+             0.07343 2.0 / * + ;
+*
+  EVALUATE ss304Tube := 2.205 100.0 / ;
+  EVALUATE   IncTube := 1.162 100.0 / ;
+  EVALUATE   Zr4Tube := 1.0E-20 ;
+*
+  EVALUATE ss304Cntr := 1.0E-20        ;
+  EVALUATE   IncCntr := 0.5484 100.0 / ;
+  EVALUATE   Zr4Cntr := 1.0E-20        ;
+*
+  EVALUATE ss304Side := 1.0E-20 ;
+  EVALUATE   IncSide :=
+           0.5484 100.0 / SurfEauCntr SurfEauCntr SurfEauSide + / *
+           3.041  100.0 / SurfEauSide SurfEauCntr SurfEauSide + / * + ;
+  EVALUATE   Zr4Side := 1.0E-20 ;
+*
+  EVALUATE ss304Corn := 1.0E-20 ;
+  EVALUATE   IncCorn :=
+           0.5484 100.0 / SurfEauCntr SurfEauCntr SurfEauCorn + / *
+           3.041  100.0 / SurfEauCorn SurfEauCntr SurfEauCorn + / * + ;
+  EVALUATE   Zr4Corn := 1.0E-20 ;
+*
+  EVALUATE GrPreTube := 1.0E-20 ;
+  EVALUATE GrPreCntr := 1.0E-20 ;
+  EVALUATE GrPreSide := 1.0E-20 ;
+  EVALUATE GrPreCorn := 1.0E-20 ;
+*
+  EVALUATE H2OTube := 1.0 ss304Tube - IncTube - Zr4Tube - ;
+  EVALUATE H2OCntr := 1.0 ss304Cntr - IncCntr - Zr4Cntr - ;
+  EVALUATE H2OSide := 1.0 ss304Side - IncSide - Zr4Side - ;
+  EVALUATE H2OCorn := 1.0 ss304Corn - IncCorn - Zr4Corn - ;
+
+ELSEIF Gestion "BEAV" = THEN
+! Le calcul des rapport volumique est caclule dans le fichier Dilution_grille.xslx
+*
+  EVALUATE ss304Tube := 1.0E-20 ;
+  EVALUATE   IncTube := 1.00254E-03 ;
+  EVALUATE   Zr4Tube := 2.08644E-02 ;
+*
+
+  EVALUATE ss304Cntr := 1.0E-20 ;
+  EVALUATE   IncCntr := 4.835E-04 ;
+  EVALUATE   Zr4Cntr := 1.006E-02 ;
+*
+  EVALUATE ss304Side := 4.06144E-04 ;
+  EVALUATE   IncSide := 4.56781E-04 ;
+  EVALUATE   Zr4Side := 1.28293E-02 ;
+*
+  EVALUATE ss304Corn := 7.76842E-04 ;
+  EVALUATE   IncCorn := 4.32097E-04 ;
+  EVALUATE   Zr4Corn := 1.53486E-02 ;
+*
+  EVALUATE GrPreTube := 1.0E-20 ;
+  EVALUATE GrPreCntr := 1.0E-20 ;
+  EVALUATE GrPreSide := 1.0E-20 ;
+  EVALUATE GrPreCorn := 1.0E-20 ;
+*
+  EVALUATE H2OTube := 1.0 ss304Tube - IncTube - Zr4Tube - ;
+  EVALUATE H2OCntr := 1.0 ss304Cntr - IncCntr - Zr4Cntr - ;
+  EVALUATE H2OSide := 1.0 ss304Side - IncSide - Zr4Side - ;
+  EVALUATE H2OCorn := 1.0 ss304Corn - IncCorn - Zr4Corn - ;
+ELSE ! Input Error
+  ECHO "Error --- Gestion:" Gestion "not recognized." ;
+  ABORT: ;
+ENDIF ;
+ECHO "CreaMix: GrPreTube=" GrPreTube ;
+
+*------------------------------------------------------
+* Evaluate Total Fuel Volume
+*------------------------------------------------------
+REAL VolPin     := $Pi_R rFuel * rFuel * Hactiv * ;
+REAL VolAss ;
+IF Gestion "TIH" = THEN
+  EVALUATE VolAss     := VolPin 204. * ; ! 204 fuel pins
+ELSE
+  EVALUATE VolAss     := VolPin 264. * ; ! 264 fuel pins
+ENDIF ;
+REAL TotFuelVol := VolAss NbAss * ;
+*------------------------------------------------------
+* AssType Branching
+*------------------------------------------------------
+IF AssType "UOX" = THEN
+EVALUATE iU8 iPu9 iPu0 iPu1 iPu2 iU5 iAg9 iAg7 iIn iZrG iZrT :=
+         1   2    3    4    5    6   7    8    9   10   11 ;
+EVALUATE iGd4 iGd5 iGd6 iGd7 iGd8 iGd0 := 0 0 0 0 0 0 ;
+EVALUATE enriU   := Main_enri ;
+IF Gestion "TIH" = THEN
+  IF Teneur_I 195 = THEN
+    EVALUATE U4enri  := 0.019 100.0 / ;
+    EVALUATE U6enri  := 0.012 100.0 / ;
+  ELSEIF Teneur_I 255 = THEN
+    EVALUATE U4enri  := 0.025 100.0 / ;
+    EVALUATE U6enri  := 0.016 100.0 / ;
+  ELSEIF Teneur_I 310 = THEN
+    EVALUATE U4enri  := 0.031 100.0 / ;
+    EVALUATE U6enri  := 0.019 100.0 / ;
+  ELSE
+    ECHO "Tihange dispose d'enrichissements specifiques (uranium " ;
+    ECHO "de retraitement re-enrichi). Les seuls enrichissements " ;
+    ECHO "disponibles sont 1,95, 2,55 et 3,10 pourcents. Specifier" ;
+    ECHO " l'un de ces trois enrichissements. Actuellement :" ;
+    ECHO Main_enri ;
+    ABORT: ;
+  ENDIF ;
+ELSEIF Gestion "BEAV" = THEN
+  IF Teneur_I 160 = THEN
+    EVALUATE U4enri  := 0.01288048 100.0 / ;
+    EVALUATE U6enri  := 0.0 ;
+    EVALUATE enriU   := 1.61 ;
+  ELSEIF Teneur_I 240 = THEN
+    EVALUATE U4enri  :=  0.01919944 100.0 / ;
+    EVALUATE U6enri  := 0.0 ;
+  ELSEIF Teneur_I 310 = THEN
+    EVALUATE U4enri  :=  0.02481768 100.0 / ;
+    EVALUATE U6enri  := 0.0 ;
+  ELSE
+    ECHO "BEAVRS dispose d'enrichissements specifiques. " ;
+    ECHO "Les seuls enrichissements " ;
+    ECHO "disponibles sont 1,60, 2,40 et 3,10 pourcents. Specifier" ;
+    ECHO " l'un de ces trois enrichissements. Actuellement :" ;
+    ECHO Main_enri ;
+    ABORT: ;
+  ENDIF ;
+ELSE ! Input Error
+  ECHO "Error --- Gestion:" Gestion "not recognized." ;
+  ABORT: ;
+ENDIF ;
+EVALUATE U5enri  := enriU 100. / ; ! X.XX % => 0.0XXX
+EVALUATE U8enri  := 1. U6enri - U5enri - U4enri - ;
+EVALUATE Pu8enri := 1.E-15 ;
+EVALUATE Pu9enri := 1.E-15 ;
+EVALUATE Pu0enri := 1.E-15 ;
+EVALUATE Pu1enri := 1.E-15 ;
+EVALUATE Pu2enri := 1.E-15 ;
+EVALUATE Am1enri := 1.E-15 ;
+
+*---- massic -> isotopic ratio ----
+EVALUATE U4enri  := U4enri  avo_conc * u234  / ;
+EVALUATE U5enri  := U5enri  avo_conc * u235  / ;
+EVALUATE U6enri  := U6enri  avo_conc * u236  / ;
+EVALUATE U8enri  := U8enri  avo_conc * u238  / ;
+EVALUATE Pu8enri := Pu8enri avo_conc * pu238 / ;
+EVALUATE Pu9enri := Pu9enri avo_conc * pu239 / ;
+EVALUATE Pu0enri := Pu0enri avo_conc * pu240 / ;
+EVALUATE Pu1enri := Pu1enri avo_conc * pu241 / ;
+EVALUATE Pu2enri := Pu2enri avo_conc * pu242 / ;
+EVALUATE Am1enri := Am1enri avo_conc * am241 / ;
+
+EVALUATE ReNorm  := U4enri    U5enri  + U6enri  + U8enri  +
+                    Pu8enri + Pu9enri + Pu0enri + Pu1enri +
+                    Pu2enri + Am1enri + ;
+
+EVALUATE U4enri  := U4enri  ReNorm / ;
+EVALUATE U5enri  := U5enri  ReNorm / ;
+EVALUATE U6enri  := U6enri  ReNorm / ;
+EVALUATE U8enri  := U8enri  ReNorm / ;
+EVALUATE Pu8enri := Pu8enri ReNorm / ;
+EVALUATE Pu9enri := Pu9enri ReNorm / ;
+EVALUATE Pu0enri := Pu0enri ReNorm / ;
+EVALUATE Pu1enri := Pu1enri ReNorm / ;
+EVALUATE Pu2enri := Pu2enri ReNorm / ;
+EVALUATE Am1enri := Am1enri ReNorm / ;
+
+*---- average U, UO2 molar masses ----
+EVALUATE MUPuAm  := U4enri  u234  *   U5enri  u235  * +
+                    U6enri  u236  * + U8enri  u238  * +
+                    Pu8enri pu238 * + Pu9enri pu239 * +
+                    Pu0enri pu240 * + Pu1enri pu241 * +
+                    Pu2enri pu242 * + Am1enri am241 * + ;
+
+EVALUATE MUO2    := MUPuAm 2. o16 * + ;
+
+*---- U density; U & 0 concentrations ----
+EVALUATE U_tot  := dUO2 avo_conc * MUO2 / ; ! conc_U = conc_UO2
+EVALUATE O_fuel := 2. U_tot * ; ! conc_O = 2 x conc_UO2
+EVALUATE dU := U_tot MUPuAm * avo_conc / ; ! U density in g/cm**3
+
+*----------------------------------------------------------------------
+* Final U+Pu+Am Concentrations in atm/cm/barn
+*----------------------------------------------------------------------
+EVALUATE U4fuel  := U_tot U4enri  * ;
+EVALUATE U5fuel  := U_tot U5enri  * ;
+EVALUATE U6fuel  := U_tot U6enri  * ;
+EVALUATE U8fuel  := U_tot U8enri  * ;
+EVALUATE Pu8fuel := U_tot Pu8enri * ;
+EVALUATE Pu9fuel := U_tot Pu9enri * ;
+EVALUATE Pu0fuel := U_tot Pu0enri * ;
+EVALUATE Pu1fuel := U_tot Pu1enri * ;
+EVALUATE Pu2fuel := U_tot Pu2enri * ;
+EVALUATE Am1fuel := U_tot Am1enri * ;
+ECHO "U4fuel" U4fuel ;
+ECHO "U5fuel" U5fuel ;
+ECHO "U6fuel" U6fuel ;
+ECHO "U8fuel" U8fuel ;
+ECHO "Pu8fuel" Pu8fuel ;
+ECHO "Pu9fuel" Pu9fuel ;
+ECHO "Pu0fuel" Pu0fuel ;
+ECHO "Pu1fuel" Pu1fuel ;
+ECHO "Pu2fuel" Pu2fuel ;
+ECHO "Am1fuel" Am1fuel ;
+*----------------------------------------------------------------------
+* Power conversion factor for UOX:
+* PowMWT = PowMWth / ( dU * TotFuelVol * 1.E-6 )
+* (MW/T)    (MW)   (g/cm**3)  (cm**3)    (T/g)
+*----------------------------------------------------------------------
+EVALUATE PowMWT := PowMWth dU TotFuelVol * 1.E-6 * / ;
+*----------------------------------------------------------------------
+ELSEIF AssType "MOX" = THEN
+EVALUATE iU8 iPu9 iPu0 iPu1 iPu2 iU5 iAg9 iAg7 iIn iZrG iZrT :=
+         1   2    3    4    5    6   7    8    9   10   11 ;
+EVALUATE iGd4 iGd5 iGd6 iGd7 iGd8 iGd0 := 0 0 0 0 0 0 ;
+
+*---- enrichment in isotopic ratio ----
+*---- U enrichment ----
+EVALUATE U4enri  := U4enri  avo_conc * u234  / ;
+EVALUATE U5enri  := U5enri  avo_conc * u235  / ;
+EVALUATE U6enri  := U6enri  avo_conc * u236  / ;
+EVALUATE U8enri  := U8enri  avo_conc * u238  / ;
+
+EVALUATE ReNorm  := U4enri  U5enri  + U6enri  + U8enri  + ;
+
+EVALUATE U4enri  := U4enri  ReNorm  / ;
+EVALUATE U5enri  := U5enri  ReNorm  / ;
+EVALUATE U6enri  := U6enri  ReNorm  / ;
+EVALUATE U8enri  := U8enri  ReNorm  / ;
+
+*---- average Utot ----
+EVALUATE MUtot   := U4enri  u234  *   U5enri  u235  * +
+                    U6enri  u236  * + U8enri  u238  * + ;
+
+*---- Pu enrichment ----
+EVALUATE Pu8enri := Pu8enri avo_conc * pu238 / ;
+EVALUATE Pu9enri := Pu9enri avo_conc * pu239 / ;
+EVALUATE Pu0enri := Pu0enri avo_conc * pu240 / ;
+EVALUATE Pu1enri := Pu1enri avo_conc * pu241 / ;
+EVALUATE Pu2enri := Pu2enri avo_conc * pu242 / ;
+EVALUATE Am1enri := Am1enri avo_conc * am241 / ;
+
+EVALUATE ReNorm  := Pu8enri   Pu9enri + Pu0enri +
+                    Pu1enri + Pu2enri + Am1enri + ;
+
+EVALUATE Pu8enri := Pu8enri ReNorm / ;
+EVALUATE Pu9enri := Pu9enri ReNorm / ;
+EVALUATE Pu0enri := Pu0enri ReNorm / ;
+EVALUATE Pu1enri := Pu1enri ReNorm / ;
+EVALUATE Pu2enri := Pu2enri ReNorm / ;
+EVALUATE Am1enri := Am1enri ReNorm / ;
+
+*---- average Putot ----
+EVALUATE MPutot  := Pu8enri pu238 *   Pu9enri pu239 * +
+                    Pu0enri pu240 * + Pu1enri pu241 * +
+                    Pu2enri pu242 * + Am1enri am241 * + ;
+
+*-------- CORNER --------
+EVALUATE Pue_corn := f_corn ;
+EVALUATE Ue_corn  := 1. Pue_corn - ;
+
+EVALUATE Pue_corn := Pue_corn avo_conc * MPutot / ;
+EVALUATE Ue_corn  := Ue_corn  avo_conc * MUtot  / ;
+
+EVALUATE ReNorm   := Pue_corn Ue_corn + ;
+
+EVALUATE Pue_corn := Pue_corn ReNorm / ;
+EVALUATE Ue_corn  := Ue_corn  ReNorm / ;
+
+EVALUATE U4e_corn := U4enri Ue_corn * ;
+EVALUATE U5e_corn := U5enri Ue_corn * ;
+EVALUATE U6e_corn := U6enri Ue_corn * ;
+EVALUATE U8e_corn := U8enri Ue_corn * ;
+
+EVALUATE Pu8e_corn := Pu8enri Pue_corn * ;
+EVALUATE Pu9e_corn := Pu9enri Pue_corn * ;
+EVALUATE Pu0e_corn := Pu0enri Pue_corn * ;
+EVALUATE Pu1e_corn := Pu1enri Pue_corn * ;
+EVALUATE Pu2e_corn := Pu2enri Pue_corn * ;
+EVALUATE Am1e_corn := Am1enri Pue_corn * ;
+
+*-------- SIDE --------
+EVALUATE Pue_side := f_side ;
+EVALUATE Ue_side  := 1. Pue_side - ;
+
+EVALUATE Pue_side := Pue_side avo_conc * MPutot / ;
+EVALUATE Ue_side  := Ue_side  avo_conc * MUtot  / ;
+
+EVALUATE ReNorm   := Pue_side Ue_side + ;
+
+EVALUATE Pue_side := Pue_side ReNorm / ;
+EVALUATE Ue_side  := Ue_side  ReNorm / ;
+
+EVALUATE U4e_side := U4enri Ue_side * ;
+EVALUATE U5e_side := U5enri Ue_side * ;
+EVALUATE U6e_side := U6enri Ue_side * ;
+EVALUATE U8e_side := U8enri Ue_side * ;
+
+EVALUATE Pu8e_side := Pu8enri Pue_side * ;
+EVALUATE Pu9e_side := Pu9enri Pue_side * ;
+EVALUATE Pu0e_side := Pu0enri Pue_side * ;
+EVALUATE Pu1e_side := Pu1enri Pue_side * ;
+EVALUATE Pu2e_side := Pu2enri Pue_side * ;
+EVALUATE Am1e_side := Am1enri Pue_side * ;
+
+*-------- CENTER --------
+EVALUATE Pue_cntr := f_cntr ;
+EVALUATE Ue_cntr  := 1. Pue_cntr - ;
+
+EVALUATE Pue_cntr := Pue_cntr avo_conc * MPutot / ;
+EVALUATE Ue_cntr  := Ue_cntr  avo_conc * MUtot  / ;
+
+EVALUATE ReNorm   := Pue_cntr Ue_cntr + ;
+
+EVALUATE Pue_cntr := Pue_cntr ReNorm / ;
+EVALUATE Ue_cntr  := Ue_cntr  ReNorm / ;
+
+EVALUATE U4e_cntr := U4enri Ue_cntr * ;
+EVALUATE U5e_cntr := U5enri Ue_cntr * ;
+EVALUATE U6e_cntr := U6enri Ue_cntr * ;
+EVALUATE U8e_cntr := U8enri Ue_cntr * ;
+
+EVALUATE Pu8e_cntr := Pu8enri Pue_cntr * ;
+EVALUATE Pu9e_cntr := Pu9enri Pue_cntr * ;
+EVALUATE Pu0e_cntr := Pu0enri Pue_cntr * ;
+EVALUATE Pu1e_cntr := Pu1enri Pue_cntr * ;
+EVALUATE Pu2e_cntr := Pu2enri Pue_cntr * ;
+EVALUATE Am1e_cntr := Am1enri Pue_cntr * ;
+
+*---- average UPuAm, MOX molar masses ----
+EVALUATE M_corn   := Pue_corn MPutot * Ue_corn MUtot * + ;
+EVALUATE M_side   := Pue_side MPutot * Ue_side MUtot * + ;
+EVALUATE M_cntr   := Pue_cntr MPutot * Ue_cntr MUtot * + ;
+EVALUATE MMOXcorn := M_corn 2. o16 * + ;
+EVALUATE MMOXside := M_side 2. o16 * + ;
+EVALUATE MMOXcntr := M_cntr 2. o16 * + ;
+
+*---- UPu density; MOX, UPu & 0 concentrations ----
+EVALUATE MOX_corn := dMOX avo_conc * MMOXcorn / ;
+EVALUATE MOX_side := dMOX avo_conc * MMOXside / ;
+EVALUATE MOX_cntr := dMOX avo_conc * MMOXcntr / ;
+EVALUATE UPu_corn_tot := MOX_corn ; ! conc_UPu = conc_MOX
+EVALUATE UPu_side_tot := MOX_side ; !
+EVALUATE UPu_cntr_tot := MOX_cntr ; !
+EVALUATE O_corn_fuel := 2. MOX_corn * ; ! conc_O = 2 x conc_MOX
+EVALUATE O_side_fuel := 2. MOX_side * ; !
+EVALUATE O_cntr_fuel := 2. MOX_cntr * ; !
+EVALUATE dUcorn := UPu_corn_tot M_corn * avo_conc / ;
+EVALUATE dUside := UPu_side_tot M_side * avo_conc / ;
+EVALUATE dUcntr := UPu_cntr_tot M_cntr * avo_conc / ;
+
+*----------------------------------------------------------------------
+* Final U+Pu+Am Concentrations in atm/cm/barn
+*--- Corner -----------------------------------------------------------
+EVALUATE U4cornfuel  := UPu_corn_tot U4e_corn  * ;
+EVALUATE U5cornfuel  := UPu_corn_tot U5e_corn  * ;
+EVALUATE U6cornfuel  := UPu_corn_tot U6e_corn  * ;
+EVALUATE U8cornfuel  := UPu_corn_tot U8e_corn  * ;
+EVALUATE Pu8cornfuel := UPu_corn_tot Pu8e_corn * ;
+EVALUATE Pu9cornfuel := UPu_corn_tot Pu9e_corn * ;
+EVALUATE Pu0cornfuel := UPu_corn_tot Pu0e_corn * ;
+EVALUATE Pu1cornfuel := UPu_corn_tot Pu1e_corn * ;
+EVALUATE Pu2cornfuel := UPu_corn_tot Pu2e_corn * ;
+EVALUATE Am1cornfuel := UPu_corn_tot Am1e_corn * ;
+*--- Side -------------------------------------------------------------
+EVALUATE U4sidefuel  := UPu_side_tot U4e_side  * ;
+EVALUATE U5sidefuel  := UPu_side_tot U5e_side  * ;
+EVALUATE U6sidefuel  := UPu_side_tot U6e_side  * ;
+EVALUATE U8sidefuel  := UPu_side_tot U8e_side  * ;
+EVALUATE Pu8sidefuel := UPu_side_tot Pu8e_side * ;
+EVALUATE Pu9sidefuel := UPu_side_tot Pu9e_side * ;
+EVALUATE Pu0sidefuel := UPu_side_tot Pu0e_side * ;
+EVALUATE Pu1sidefuel := UPu_side_tot Pu1e_side * ;
+EVALUATE Pu2sidefuel := UPu_side_tot Pu2e_side * ;
+EVALUATE Am1sidefuel := UPu_side_tot Am1e_side * ;
+*--- Center -----------------------------------------------------------
+EVALUATE U4cntrfuel  := UPu_cntr_tot U4e_cntr  * ;
+EVALUATE U5cntrfuel  := UPu_cntr_tot U5e_cntr  * ;
+EVALUATE U6cntrfuel  := UPu_cntr_tot U6e_cntr  * ;
+EVALUATE U8cntrfuel  := UPu_cntr_tot U8e_cntr  * ;
+EVALUATE Pu8cntrfuel := UPu_cntr_tot Pu8e_cntr * ;
+EVALUATE Pu9cntrfuel := UPu_cntr_tot Pu9e_cntr * ;
+EVALUATE Pu0cntrfuel := UPu_cntr_tot Pu0e_cntr * ;
+EVALUATE Pu1cntrfuel := UPu_cntr_tot Pu1e_cntr * ;
+EVALUATE Pu2cntrfuel := UPu_cntr_tot Pu2e_cntr * ;
+EVALUATE Am1cntrfuel := UPu_cntr_tot Am1e_cntr * ;
+*----------------------------------------------------------------------
+* Power conversion factor for MOX:
+* PowMWT = PowMWth / [ ( dUcorn * TotFuelVol * f_cornPin ) +
+* (MW/T)    (MW)       ( dUside * TotFuelVol * f_sidePin ) +
+*                      ( dUcntr * TotFuelVol * f_cntrPin ) ] * 1.E-6
+*                       (g/cm**3)  (cm**3)     (unitless)      (T/g)
+*----------------------------------------------------------------------
+EVALUATE PowMWT := PowMWth dUcorn TotFuelVol * f_cornPin *
+                          dUside TotFuelVol * f_sidePin * +
+                          dUcntr TotFuelVol * f_cntrPin * + 1.E-6 * / ;
+*----------------------------------------------------------------------
+ELSEIF AssType "UGd" = AssType "UGd8" = + THEN
+EVALUATE iU8 iGd5 iGd7 iGd4 iGd6 iGd8 iGd0 iPu9 iPu0 iPu1 iPu2 iU5 iAg9
+          iAg7 iIn iZrG iZrT :=
+         1   2    3    4    5    6    7    8    9    10   11   12  13
+          14   15  16   17 ;
+EVALUATE enriU   := Main_enri ;
+EVALUATE enriUGd := 3.0 ;
+EVALUATE enriGd  := 8. ;
+EVALUATE f_GadoPin :=  12. 264. / ; !  12 pins with Gd out of 264 tot
+EVALUATE f_NoGdPin := 252. 264. / ; ! 252 regular pins out of 264 tot
+*----------------------------------------------------------------------
+* GADOLINIUM FUEL
+*----------------------------------------------------------------------
+EVALUATE U4eGd  := 1.E-15 ;
+EVALUATE U5eGd  := enriUGd 100. / ;
+EVALUATE U6eGd  := 1.E-15 ;
+EVALUATE Pu9eGd := 1.E-15 ;
+EVALUATE Pu0eGd := 1.E-15 ;
+EVALUATE Pu1eGd := 1.E-15 ;
+EVALUATE Pu2eGd := 1.E-15 ;
+EVALUATE U8eGd  := 1. U4eGd  - U5eGd  - U6eGd  -
+                      Pu9eGd - Pu0eGd - Pu1eGd - Pu2eGd - ;
+
+*---- enrichment in isotopic ratio ----
+EVALUATE U4eGd  := U4eGd  avo_conc * u234  / ;
+EVALUATE U5eGd  := U5eGd  avo_conc * u235  / ;
+EVALUATE U6eGd  := U6eGd  avo_conc * u236  / ;
+EVALUATE U8eGd  := U8eGd  avo_conc * u238  / ;
+EVALUATE Pu9eGd := Pu9eGd avo_conc * pu239 / ;
+EVALUATE Pu0eGd := Pu0eGd avo_conc * pu240 / ;
+EVALUATE Pu1eGd := Pu1eGd avo_conc * pu241 / ;
+EVALUATE Pu2eGd := Pu2eGd avo_conc * pu242 / ;
+
+EVALUATE ReNorm := U4eGd    U5eGd  + U6eGd  + U8eGd  +
+                   Pu9eGd + Pu0eGd + Pu1eGd + Pu2eGd + ;
+
+EVALUATE U4eGd  := U4eGd  ReNorm / ;
+EVALUATE U5eGd  := U5eGd  ReNorm / ;
+EVALUATE U6eGd  := U6eGd  ReNorm / ;
+EVALUATE U8eGd  := U8eGd  ReNorm / ;
+EVALUATE Pu9eGd := Pu9eGd ReNorm / ;
+EVALUATE Pu0eGd := Pu0eGd ReNorm / ;
+EVALUATE Pu1eGd := Pu1eGd ReNorm / ;
+EVALUATE Pu2eGd := Pu2eGd ReNorm / ;
+
+*---- average U, UO2 molar masses for fuel with Gd ----
+EVALUATE MUPuGd := U4eGd  u234  *   U5eGd  u235  * +
+                   U6eGd  u236  * + U8eGd  u238  * +
+                   Pu9eGd pu239 * + Pu0eGd pu240 * +
+                   Pu1eGd pu241 * + Pu2eGd pu242 * + ;
+
+EVALUATE MUO2Gd := MUPuGd 2. o16 * + ;
+*----------------------------------------------------------------------
+* Gd2O3 and UO2 for UO2 + Gd2O3 mix
+* Massic proportions: Gd2O3       (enriGd / 100)
+*                     UO2 for Gd  (1 - enriGd / 100)
+*----------------------------------------------------------------------
+EVALUATE Gd2O3f := enriGd 100. / ;
+EVALUATE UO2Gdf := 1. Gd2O3f - ;
+
+GREP: Gd2O3 :: GETVAL 'AvgMolM     ' 1 >>MGd2O3<<    ;
+GREP: Gd2O3 :: GETVAL 'GadOxG4frIso' 1 >>Gd2O3_G4f<< ;
+GREP: Gd2O3 :: GETVAL 'GadOxG5frIso' 1 >>Gd2O3_G5f<< ;
+GREP: Gd2O3 :: GETVAL 'GadOxG6frIso' 1 >>Gd2O3_G6f<< ;
+GREP: Gd2O3 :: GETVAL 'GadOxG7frIso' 1 >>Gd2O3_G7f<< ;
+GREP: Gd2O3 :: GETVAL 'GadOxG8frIso' 1 >>Gd2O3_G8f<< ;
+GREP: Gd2O3 :: GETVAL 'GadOxG0frIso' 1 >>Gd2O3_G0f<< ;
+GREP: Gd2O3 :: GETVAL 'GadOxOfrIso ' 1 >>Gd2O3_Of<<  ;
+
+*---- massic to isotopic ratios ----
+EVALUATE Gd2O3f := Gd2O3f avo_conc * MGd2O3 / ;
+EVALUATE UO2Gdf := UO2Gdf avo_conc * MUO2Gd / ;
+
+EVALUATE ReNorm := Gd2O3f UO2Gdf + ;
+
+EVALUATE Gd2O3f := Gd2O3f ReNorm / ;
+EVALUATE UO2Gdf := UO2Gdf ReNorm / ;
+
+*---- average UO2+Gd2O3 molar mass ----
+EVALUATE M_UO2Gd2O3 := Gd2O3f MGd2O3 * UO2Gdf MUO2Gd * + ;
+
+*---- U density; U & O total concentrations ----
+*     conc_U  = conc_UO2+Gd2O3
+*     conc_O  = 3 x conc_Gd2O3 + 2 x conc_UO2(Gd)
+EVALUATE UO2Gd2O3 := dGado avo_conc * M_UO2Gd2O3 / ;
+EVALUATE dUGado   := UO2Gd2O3 MUO2Gd * avo_conc / ;
+
+EVALUATE U4eGd   := U4eGd  UO2Gdf * ;
+EVALUATE U5eGd   := U5eGd  UO2Gdf * ;
+EVALUATE U6eGd   := U6eGd  UO2Gdf * ;
+EVALUATE U8eGd   := U8eGd  UO2Gdf * ;
+EVALUATE Pu9eGd  := Pu9eGd UO2Gdf * ;
+EVALUATE Pu0eGd  := Pu0eGd UO2Gdf * ;
+EVALUATE Pu1eGd  := Pu1eGd UO2Gdf * ;
+EVALUATE Pu2eGd  := Pu2eGd UO2Gdf * ;
+EVALUATE OeUO2Gd := 2.     UO2Gdf * ;
+
+EVALUATE Gd2O3_G4f := Gd2O3_G4f Gd2O3f * ;
+EVALUATE Gd2O3_G5f := Gd2O3_G5f Gd2O3f * ;
+EVALUATE Gd2O3_G6f := Gd2O3_G6f Gd2O3f * ;
+EVALUATE Gd2O3_G7f := Gd2O3_G7f Gd2O3f * ;
+EVALUATE Gd2O3_G8f := Gd2O3_G8f Gd2O3f * ;
+EVALUATE Gd2O3_G0f := Gd2O3_G0f Gd2O3f * ;
+EVALUATE Gd2O3_Of  := Gd2O3_Of  Gd2O3f * ;
+
+*----------------------------------------------------------------------
+* REGULAR UOX FUEL
+*----------------------------------------------------------------------
+EVALUATE enriU   := Main_enri ;
+*EVALUATE U4enri  := 1.E-15 ;
+*EVALUATE U4enri  := enriU 100. / 0.01003 * 0.00006 - ;
+EVALUATE U4enri  := 0.0335 100. / ;
+EVALUATE U5enri  := enriU 100. / ;
+EVALUATE U6enri  := 0.0061 100. / ;
+*EVALUATE U6enri  := 1.E-15 ;
+EVALUATE U8enri  := 1. U6enri - U5enri - U4enri - ;
+EVALUATE Pu8enri := 1.E-15 ;
+EVALUATE Pu9enri := 1.E-15 ;
+EVALUATE Pu0enri := 1.E-15 ;
+EVALUATE Pu1enri := 1.E-15 ;
+EVALUATE Pu2enri := 1.E-15 ;
+EVALUATE Am1enri := 1.E-15 ;
+
+*---- enrichment in isotopic ratio ----
+EVALUATE U4enri  := U4enri  avo_conc * u234  / ;
+EVALUATE U5enri  := U5enri  avo_conc * u235  / ;
+EVALUATE U6enri  := U6enri  avo_conc * u236  / ;
+EVALUATE U8enri  := U8enri  avo_conc * u238  / ;
+EVALUATE Pu8enri := Pu8enri avo_conc * pu238 / ;
+EVALUATE Pu9enri := Pu9enri avo_conc * pu239 / ;
+EVALUATE Pu0enri := Pu0enri avo_conc * pu240 / ;
+EVALUATE Pu1enri := Pu1enri avo_conc * pu241 / ;
+EVALUATE Pu2enri := Pu2enri avo_conc * pu242 / ;
+EVALUATE Am1enri := Am1enri avo_conc * am241 / ;
+
+EVALUATE ReNorm  := U4enri    U5enri  + U6enri  + U8enri  +
+                    Pu8enri + Pu9enri + Pu0enri + Pu1enri +
+                    Pu2enri + Am1enri + ;
+
+EVALUATE U4enri  := U4enri  ReNorm / ;
+EVALUATE U5enri  := U5enri  ReNorm / ;
+EVALUATE U6enri  := U6enri  ReNorm / ;
+EVALUATE U8enri  := U8enri  ReNorm / ;
+EVALUATE Pu8enri := Pu8enri ReNorm / ;
+EVALUATE Pu9enri := Pu9enri ReNorm / ;
+EVALUATE Pu0enri := Pu0enri ReNorm / ;
+EVALUATE Pu1enri := Pu1enri ReNorm / ;
+EVALUATE Pu2enri := Pu2enri ReNorm / ;
+EVALUATE Am1enri := Am1enri ReNorm / ;
+
+*---- average U, UO2 molar masses ----
+EVALUATE MUPuAm  := U4enri  u234  *   U5enri  u235  * +
+                    U6enri  u236  * + U8enri  u238  * +
+                    Pu8enri pu238 * + Pu9enri pu239 * +
+                    Pu0enri pu240 * + Pu1enri pu241 * +
+                    Pu2enri pu242 * + Am1enri am241 * + ;
+
+EVALUATE MUO2    := MUPuAm 2. o16 * + ;
+
+*---- U density; U & 0 concentrations ----
+EVALUATE U_tot   := dUO2 avo_conc * MUO2 / ; ! conc_u = conc_uo2
+EVALUATE O_fuel  := 2. U_tot * ; ! conc_o = 2 x conc_uo2
+EVALUATE dU := U_tot MUPuAm * avo_conc / ; ! U density in g/cm**3
+
+*----------------------------------------------------------------------
+* Final U+Pu+Am Concentrations in atm/cm/barn
+*--- Regular UOX ------------------------------------------------------
+EVALUATE U4fuel  := U_tot U4enri  * ;
+EVALUATE U5fuel  := U_tot U5enri  * ;
+EVALUATE U6fuel  := U_tot U6enri  * ;
+EVALUATE U8fuel  := U_tot U8enri  * ;
+EVALUATE Pu8fuel := U_tot Pu8enri * ;
+EVALUATE Pu9fuel := U_tot Pu9enri * ;
+EVALUATE Pu0fuel := U_tot Pu0enri * ;
+EVALUATE Pu1fuel := U_tot Pu1enri * ;
+EVALUATE Pu2fuel := U_tot Pu2enri * ;
+EVALUATE Am1fuel := U_tot Am1enri * ;
+*--- UOX with Gd  -----------------------------------------------------
+EVALUATE U4Gd_fuel  := U4eGd    UO2Gd2O3 * ;
+EVALUATE U5Gd_fuel  := U5eGd    UO2Gd2O3 * ;
+EVALUATE U6Gd_fuel  := U6eGd    UO2Gd2O3 * ;
+EVALUATE U8Gd_fuel  := U8eGd    UO2Gd2O3 * ;
+EVALUATE Pu9Gd_fuel := Pu9eGd   UO2Gd2O3 * ;
+EVALUATE Pu0Gd_fuel := Pu0eGd   UO2Gd2O3 * ;
+EVALUATE Pu1Gd_fuel := Pu1eGd   UO2Gd2O3 * ;
+EVALUATE Pu2Gd_fuel := Pu2eGd   UO2Gd2O3 * ;
+EVALUATE Gd154_fuel := Gd2O3_G4f UO2Gd2O3 * ;
+EVALUATE Gd155_fuel := Gd2O3_G5f UO2Gd2O3 * ;
+EVALUATE Gd156_fuel := Gd2O3_G6f UO2Gd2O3 * ;
+EVALUATE Gd157_fuel := Gd2O3_G7f UO2Gd2O3 * ;
+EVALUATE Gd158_fuel := Gd2O3_G8f UO2Gd2O3 * ;
+EVALUATE Gd160_fuel := Gd2O3_G0f UO2Gd2O3 * ;
+EVALUATE O_UGd_fuel := OeUO2Gd  Gd2O3_Of  + UO2Gd2O3 * ;
+*----------------------------------------------------------------------
+* Power conversion factor for UOX+Gd:
+* PowMWT = PowMWth / [ ( dU     * TotFuelVol * f_NoGdPin ) +
+* (MW/T)    (MW)       ( dUGado * TotFuelVol * f_GadoPin ) ] * 1.E-6
+*                       (g/cm**3)  (cm**3)     (unitless)      (T/g)
+*----------------------------------------------------------------------
+EVALUATE PowMWT := PowMWth dU    TotFuelVol * f_NoGdPin *
+                          dUGado TotFuelVol * f_GadoPin * + 1.E-6 * / ;
+*----------------------------------------------------------------------
+ELSE ! Input Error
+  ECHO "Error --- AssType:" AssType "not recognized." ;
+  ABORT: ;
+ENDIF ;
+*----------------------------------------------------------------------
+:: <<PowMWT>> ;
+
+*------ MODETI ------
+REAL MBNat   B10f    B11f    ;
+REAL BTot    ;
+REAL H_mti O_mti H2O_mti B10_mti B11_mti ;
+
+GREP: BNat :: GETVAL 'AvgMolM ' 1 >>MBNat<< ;
+GREP: BNat :: GETVAL 'B10frIso' 1 >>B10f<<  ;
+GREP: BNat :: GETVAL 'B11frIso' 1 >>B11f<<  ;
+
+EVALUATE BTot  := dmod cbor * avo_conc * MBNat / ;
+
+REAL MH2O := 18.01528 ;
+
+EVALUATE H2O_mti := 0. ;
+EVALUATE H_mti   := dmod avo_conc * MH2O / 2. * ;
+EVALUATE O_mti   := dmod avo_conc * MH2O / ;
+
+EVALUATE B10_mti := BTot B10f * ;
+EVALUATE B11_mti := BTot B11f * ;
+
+*ECHO "CONC MODETI" ;
+*ECHO "H2O_mti" H2O_mti ;
+*ECHO "H_mti  " H_mti ;
+*ECHO "O_mti  " O_mti ;
+*ECHO "B10_mti" B10_mti ;
+*ECHO "B11_mti" B11_mti ;
+
+*------ TUBE ------
+*---- Made of Zircalloy4 ----
+REAL MZ4 ;
+REAL ZrNatZ4f Zr90Z4f  Zr91Z4f  Zr92Z4f  Zr93Z4f
+     Zr94Z4f  Zr95Z4f  Zr96Z4f ;
+REAL Fe54Z4f  Fe56Z4f  Fe57Z4f  Fe58Z4f  ;
+REAL Cr50Z4f  Cr52Z4f  Cr53Z4f  Cr54Z4f  ;
+REAL Sn112Z4f Sn114Z4f Sn115Z4f Sn116Z4f Sn117Z4f
+     Sn118Z4f Sn119Z4f Sn120Z4f Sn122Z4f Sn124Z4f ;
+REAL O16Z4f   ;
+
+*---- Isotopic Ratios ----
+GREP: Zirc4 :: GETVAL 'AvgMolM     ' 1 >>MZ4<<      ;
+GREP: Zirc4 :: GETVAL 'O16Z4frIso  ' 1 >>O16Z4f<<   ;
+GREP: Zirc4 :: GETVAL 'Fe54Z4frIso ' 1 >>Fe54Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Fe56Z4frIso ' 1 >>Fe56Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Fe57Z4frIso ' 1 >>Fe57Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Fe58Z4frIso ' 1 >>Fe58Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Cr50Z4frIso ' 1 >>Cr50Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Cr52Z4frIso ' 1 >>Cr52Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Cr53Z4frIso ' 1 >>Cr53Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Cr54Z4frIso ' 1 >>Cr54Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'ZrNatfrIso  ' 1 >>ZrNatZ4f<< ;
+GREP: Zirc4 :: GETVAL 'Zr90Z4frIso ' 1 >>Zr90Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Zr91Z4frIso ' 1 >>Zr91Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Zr92Z4frIso ' 1 >>Zr92Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Zr93Z4frIso ' 1 >>Zr93Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Zr94Z4frIso ' 1 >>Zr94Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Zr95Z4frIso ' 1 >>Zr95Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Zr96Z4frIso ' 1 >>Zr96Z4f<<  ;
+GREP: Zirc4 :: GETVAL 'Sn112Z4frIso' 1 >>Sn112Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn114Z4frIso' 1 >>Sn114Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn115Z4frIso' 1 >>Sn115Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn116Z4frIso' 1 >>Sn116Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn117Z4frIso' 1 >>Sn117Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn118Z4frIso' 1 >>Sn118Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn119Z4frIso' 1 >>Sn119Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn120Z4frIso' 1 >>Sn120Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn122Z4frIso' 1 >>Sn122Z4f<< ;
+GREP: Zirc4 :: GETVAL 'Sn124Z4frIso' 1 >>Sn124Z4f<< ;
+
+*---- Atomic concentrations ----
+REAL     Tubconc := dTube    avo_conc * MZ4 / ;
+
+REAL     Fe54T   := Fe54Z4f  Tubconc * ;
+REAL     Fe56T   := Fe56Z4f  Tubconc * ;
+REAL     Fe57T   := Fe57Z4f  Tubconc * ;
+REAL     Fe58T   := Fe58Z4f  Tubconc * ;
+REAL     Cr50T   := Cr50Z4f  Tubconc * ;
+REAL     Cr52T   := Cr52Z4f  Tubconc * ;
+REAL     Cr53T   := Cr53Z4f  Tubconc * ;
+REAL     Cr54T   := Cr54Z4f  Tubconc * ;
+REAL     O16T    := O16Z4f   Tubconc * ;
+REAL     ZrNatT  := ZrNatZ4f Tubconc * ;
+REAL     Zr90T   := Zr90Z4f  Tubconc * ;
+REAL     Zr91T   := Zr91Z4f  Tubconc * ;
+REAL     Zr92T   := Zr92Z4f  Tubconc * ;
+REAL     Zr93T   := Zr93Z4f  Tubconc * ;
+REAL     Zr94T   := Zr94Z4f  Tubconc * ;
+REAL     Zr95T   := Zr95Z4f  Tubconc * ;
+REAL     Zr96T   := Zr96Z4f  Tubconc * ;
+REAL     Sn112T  := Sn112Z4f Tubconc * ;
+REAL     Sn114T  := Sn114Z4f Tubconc * ;
+REAL     Sn115T  := Sn115Z4f Tubconc * ;
+REAL     Sn116T  := Sn116Z4f Tubconc * ;
+REAL     Sn117T  := Sn117Z4f Tubconc * ;
+REAL     Sn118T  := Sn118Z4f Tubconc * ;
+REAL     Sn119T  := Sn119Z4f Tubconc * ;
+REAL     Sn120T  := Sn120Z4f Tubconc * ;
+REAL     Sn122T  := Sn122Z4f Tubconc * ;
+REAL     Sn124T  := Sn124Z4f Tubconc * ;
+
+*ECHO "CONC TUBE" ;
+*ECHO "Fe54T  " Fe54T  ;
+*ECHO "Fe56T  " Fe56T  ;
+*ECHO "Fe57T  " Fe57T  ;
+*ECHO "Fe58T  " Fe58T  ;
+*ECHO "Cr50T  " Cr50T  ;
+*ECHO "Cr52T  " Cr52T  ;
+*ECHO "Cr53T  " Cr53T  ;
+*ECHO "Cr54T  " Cr54T  ;
+*ECHO "O16T   " O16T   ;
+*ECHO "ZrNatT " ZrNatT ;
+*ECHO "Zr90T  " Zr90T  ;
+*ECHO "Zr91T  " Zr91T  ;
+*ECHO "Zr92T  " Zr92T  ;
+*ECHO "Zr93T  " Zr93T  ;
+*ECHO "Zr94T  " Zr94T  ;
+*ECHO "Zr95T  " Zr95T  ;
+*ECHO "Zr96T  " Zr96T  ;
+*ECHO "Sn112T " Sn112T ;
+*ECHO "Sn114T " Sn114T ;
+*ECHO "Sn115T " Sn115T ;
+*ECHO "Sn116T " Sn116T ;
+*ECHO "Sn117T " Sn117T ;
+*ECHO "Sn118T " Sn118T ;
+*ECHO "Sn119T " Sn119T ;
+*ECHO "Sn120T " Sn120T ;
+*ECHO "Sn122T " Sn122T ;
+*ECHO "Sn124T " Sn124T ;
+
+*------ GAINC ------
+*---- made of Zircalloy4 (with fuel-clad gap) ----
+REAL     Gaiconc := dClad    avo_conc * MZ4 / ;
+
+REAL     Fe54Cl  := Fe54Z4f  Gaiconc * ;
+REAL     Fe56Cl  := Fe56Z4f  Gaiconc * ;
+REAL     Fe57Cl  := Fe57Z4f  Gaiconc * ;
+REAL     Fe58Cl  := Fe58Z4f  Gaiconc * ;
+REAL     Cr50Cl  := Cr50Z4f  Gaiconc * ;
+REAL     Cr52Cl  := Cr52Z4f  Gaiconc * ;
+REAL     Cr53Cl  := Cr53Z4f  Gaiconc * ;
+REAL     Cr54Cl  := Cr54Z4f  Gaiconc * ;
+REAL     O16Cl   := O16Z4f   Gaiconc * ;
+REAL     ZrNatCl := ZrNatZ4f Gaiconc * ;
+REAL     Zr90Cl  := Zr90Z4f  Gaiconc * ;
+REAL     Zr91Cl  := Zr91Z4f  Gaiconc * ;
+REAL     Zr92Cl  := Zr92Z4f  Gaiconc * ;
+REAL     Zr93Cl  := Zr93Z4f  Gaiconc * ;
+REAL     Zr94Cl  := Zr94Z4f  Gaiconc * ;
+REAL     Zr95Cl  := Zr95Z4f  Gaiconc * ;
+REAL     Zr96Cl  := Zr96Z4f  Gaiconc * ;
+REAL     Sn112Cl := Sn112Z4f Gaiconc * ;
+REAL     Sn114Cl := Sn114Z4f Gaiconc * ;
+REAL     Sn115Cl := Sn115Z4f Gaiconc * ;
+REAL     Sn116Cl := Sn116Z4f Gaiconc * ;
+REAL     Sn117Cl := Sn117Z4f Gaiconc * ;
+REAL     Sn118Cl := Sn118Z4f Gaiconc * ;
+REAL     Sn119Cl := Sn119Z4f Gaiconc * ;
+REAL     Sn120Cl := Sn120Z4f Gaiconc * ;
+REAL     Sn122Cl := Sn122Z4f Gaiconc * ;
+REAL     Sn124Cl := Sn124Z4f Gaiconc * ;
+
+*ECHO "CONC GAINC" ;
+*ECHO "Fe54Cl  " Fe54Cl  ;
+*ECHO "Fe56Cl  " Fe56Cl  ;
+*ECHO "Fe57Cl  " Fe57Cl  ;
+*ECHO "Fe58Cl  " Fe58Cl  ;
+*ECHO "Cr50Cl  " Cr50Cl  ;
+*ECHO "Cr52Cl  " Cr52Cl  ;
+*ECHO "Cr53Cl  " Cr53Cl  ;
+*ECHO "Cr54Cl  " Cr54Cl  ;
+*ECHO "O16Cl   " O16Cl   ;
+*ECHO "ZrNatCl " ZrNatCl ;
+*ECHO "Zr90Cl  " Zr90Cl  ;
+*ECHO "Zr91Cl  " Zr91Cl  ;
+*ECHO "Zr92Cl  " Zr92Cl  ;
+*ECHO "Zr93Cl  " Zr93Cl  ;
+*ECHO "Zr94Cl  " Zr94Cl  ;
+*ECHO "Zr95Cl  " Zr95Cl  ;
+*ECHO "Zr96Cl  " Zr96Cl  ;
+*ECHO "Sn112Cl " Sn112Cl ;
+*ECHO "Sn114Cl " Sn114Cl ;
+*ECHO "Sn115Cl " Sn115Cl ;
+*ECHO "Sn116Cl " Sn116Cl ;
+*ECHO "Sn117Cl " Sn117Cl ;
+*ECHO "Sn118Cl " Sn118Cl ;
+*ECHO "Sn119Cl " Sn119Cl ;
+*ECHO "Sn120Cl " Sn120Cl ;
+*ECHO "Sn122Cl " Sn122Cl ;
+*ECHO "Sn124Cl " Sn124Cl ;
+
+*------ GAINC ------
+*---- made of M5 (with fuel-clad gap) ----
+REAL MM5 ;
+REAL Fe54M5f Fe56M5f Fe57M5f Fe58M5f ;
+REAL O16M5f  ZrM5f  Nb93M5f ;
+REAL Zr90M5f Zr91M5f Zr92M5f Zr93M5f Zr94M5f Zr95M5f Zr96M5f ;
+REAL S32M5f  S33M5f  S34M5f  ;
+
+*---- Isotopic Ratios ----
+GREP: M5 :: GETVAL 'AvgMolM    ' 1 >>MM5<<     ;
+GREP: M5 :: GETVAL 'Fe54M5frIso' 1 >>Fe54M5f<< ;
+GREP: M5 :: GETVAL 'Fe56M5frIso' 1 >>Fe56M5f<< ;
+GREP: M5 :: GETVAL 'Fe57M5frIso' 1 >>Fe57M5f<< ;
+GREP: M5 :: GETVAL 'Fe58M5frIso' 1 >>Fe58M5f<< ;
+GREP: M5 :: GETVAL 'O16M5frIso ' 1 >>O16M5f<<  ;
+GREP: M5 :: GETVAL 'ZrM5frIso  ' 1 >>ZrM5f<<   ;
+GREP: M5 :: GETVAL 'Zr90M5frIso' 1 >>Zr90M5f<< ;
+GREP: M5 :: GETVAL 'Zr91M5frIso' 1 >>Zr91M5f<< ;
+GREP: M5 :: GETVAL 'Zr92M5frIso' 1 >>Zr92M5f<< ;
+GREP: M5 :: GETVAL 'Zr93M5frIso' 1 >>Zr93M5f<< ;
+GREP: M5 :: GETVAL 'Zr94M5frIso' 1 >>Zr94M5f<< ;
+GREP: M5 :: GETVAL 'Zr95M5frIso' 1 >>Zr95M5f<< ;
+GREP: M5 :: GETVAL 'Zr96M5frIso' 1 >>Zr96M5f<< ;
+GREP: M5 :: GETVAL 'Nb93M5frIso' 1 >>Nb93M5f<< ;
+GREP: M5 :: GETVAL 'S32M5frIso ' 1 >>S32M5f<<  ;
+GREP: M5 :: GETVAL 'S33M5frIso ' 1 >>S33M5f<<  ;
+GREP: M5 :: GETVAL 'S34M5frIso ' 1 >>S34M5f<<  ;
+
+REAL GaiconcM5 := dClad avo_conc * MM5 / ;
+
+REAL Fe54M5Cl := Fe54M5f GaiconcM5 * ;
+REAL Fe56M5Cl := Fe56M5f GaiconcM5 * ;
+REAL Fe57M5Cl := Fe57M5f GaiconcM5 * ;
+REAL Fe58M5Cl := Fe58M5f GaiconcM5 * ;
+REAL O16M5Cl  := O16M5f  GaiconcM5 * ;
+REAL ZrM5Cl   := ZrM5f   GaiconcM5 * ;
+REAL Zr90M5Cl := Zr90M5f GaiconcM5 * ;
+REAL Zr91M5Cl := Zr91M5f GaiconcM5 * ;
+REAL Zr92M5Cl := Zr92M5f GaiconcM5 * ;
+REAL Zr93M5Cl := Zr93M5f GaiconcM5 * ;
+REAL Zr94M5Cl := Zr94M5f GaiconcM5 * ;
+REAL Zr95M5Cl := Zr95M5f GaiconcM5 * ;
+REAL Zr96M5Cl := Zr96M5f GaiconcM5 * ;
+REAL Nb93M5Cl := Nb93M5f GaiconcM5 * ;
+REAL S32M5Cl  := S32M5f  GaiconcM5 * ;
+REAL S33M5Cl  := S33M5f  GaiconcM5 * ;
+REAL S34M5Cl  := S34M5f  GaiconcM5 * ;
+
+*ECHO "CONC GAINC" ;
+*ECHO "Fe54M5Cl " Fe54M5Cl  ;
+*ECHO "Fe56M5Cl " Fe56M5Cl  ;
+*ECHO "Fe57M5Cl " Fe57M5Cl  ;
+*ECHO "Fe58M5Cl " Fe58M5Cl  ;
+*ECHO "O16M5Cl  " O16M5Cl   ;
+*ECHO "ZrM5Cl   " ZrM5Cl    ;
+*ECHO "Zr90M5Cl " Zr90M5Cl  ;
+*ECHO "Zr91M5Cl " Zr91M5Cl  ;
+*ECHO "Zr92M5Cl " Zr92M5Cl  ;
+*ECHO "Zr93M5Cl " Zr93M5Cl  ;
+*ECHO "Zr94M5Cl " Zr94M5Cl  ;
+*ECHO "Zr95M5Cl " Zr95M5Cl  ;
+*ECHO "Zr96M5Cl " Zr96M5Cl  ;
+*ECHO "Nb93M5Cl " Nb93M5Cl  ;
+*ECHO "S32M5Cl  " S32M5Cl   ;
+*ECHO "S33M5Cl  " S33M5Cl   ;
+*ECHO "S34M5Cl  " S34M5Cl   ;
+
+*------ GRILLE ------
+REAL MSS304 ;
+REAL Fe54SSf Fe56SSf Fe57SSf Fe58SSf ;
+REAL Ni58SSf Ni60SSf Ni61SSf Ni62SSf Ni64SSf ;
+REAL Cr50SSf Cr52SSf Cr53SSf Cr54SSf ;
+REAL MnSSf   SiSSf  Si28SSf  Si29SSf  Si30SSf ;
+
+GREP: SS304 :: GETVAL 'AvgMolM     ' 1 >>MSS304<<  ;
+GREP: SS304 :: GETVAL 'Fe54SSfrIso ' 1 >>Fe54SSf<< ;
+GREP: SS304 :: GETVAL 'Fe56SSfrIso ' 1 >>Fe56SSf<< ;
+GREP: SS304 :: GETVAL 'Fe57SSfrIso ' 1 >>Fe57SSf<< ;
+GREP: SS304 :: GETVAL 'Fe58SSfrIso ' 1 >>Fe58SSf<< ;
+GREP: SS304 :: GETVAL 'Ni58SSfrIso ' 1 >>Ni58SSf<< ;
+GREP: SS304 :: GETVAL 'Ni60SSfrIso ' 1 >>Ni60SSf<< ;
+GREP: SS304 :: GETVAL 'Ni61SSfrIso ' 1 >>Ni61SSf<< ;
+GREP: SS304 :: GETVAL 'Ni62SSfrIso ' 1 >>Ni62SSf<< ;
+GREP: SS304 :: GETVAL 'Ni64SSfrIso ' 1 >>Ni64SSf<< ;
+GREP: SS304 :: GETVAL 'Cr50SSfrIso ' 1 >>Cr50SSf<< ;
+GREP: SS304 :: GETVAL 'Cr52SSfrIso ' 1 >>Cr52SSf<< ;
+GREP: SS304 :: GETVAL 'Cr53SSfrIso ' 1 >>Cr53SSf<< ;
+GREP: SS304 :: GETVAL 'Cr54SSfrIso ' 1 >>Cr54SSf<< ;
+GREP: SS304 :: GETVAL 'Mn55SSfrIso ' 1 >>MnSSf<<   ;
+GREP: SS304 :: GETVAL 'SiNatSSfrIso' 1 >>SiSSf<<   ;
+GREP: SS304 :: GETVAL 'Si28SSfrIso ' 1 >>Si28SSf<<   ;
+GREP: SS304 :: GETVAL 'Si29SSfrIso ' 1 >>Si29SSf<<   ;
+GREP: SS304 :: GETVAL 'Si30SSfrIso ' 1 >>Si30SSf<<   ;
+
+REAL MInc ;
+REAL Ni58Inf Ni60Inf Ni61Inf Ni62Inf Ni64Inf ;
+REAL Cr50Inf Cr52Inf Cr53Inf Cr54Inf ;
+REAL Fe54Inf Fe56Inf Fe57Inf Fe58Inf ;
+REAL B10BInf B11BInf ;
+REAL TiNatInf Ti46Inf Ti47Inf Ti48Inf Ti49Inf Ti50Inf ;
+REAL SiNatInf Si28Inf Si29Inf Si30Inf ;
+REAL Al27Inf Mo95Inf Co59Inf Mn55Inf Nb93Inf ;
+
+GREP: Incon :: GETVAL 'AvgMolM    ' 1 >>MInc<<    ;
+GREP: Incon :: GETVAL 'Ni58InfrIso' 1 >>Ni58Inf<< ;
+GREP: Incon :: GETVAL 'Ni60InfrIso' 1 >>Ni60Inf<< ;
+GREP: Incon :: GETVAL 'Ni61InfrIso' 1 >>Ni61Inf<< ;
+GREP: Incon :: GETVAL 'Ni62InfrIso' 1 >>Ni62Inf<< ;
+GREP: Incon :: GETVAL 'Ni64InfrIso' 1 >>Ni64Inf<< ;
+GREP: Incon :: GETVAL 'Cr50InfrIso' 1 >>Cr50Inf<< ;
+GREP: Incon :: GETVAL 'Cr52InfrIso' 1 >>Cr52Inf<< ;
+GREP: Incon :: GETVAL 'Cr53InfrIso' 1 >>Cr53Inf<< ;
+GREP: Incon :: GETVAL 'Cr54InfrIso' 1 >>Cr54Inf<< ;
+GREP: Incon :: GETVAL 'Fe54InfrIso' 1 >>Fe54Inf<< ;
+GREP: Incon :: GETVAL 'Fe56InfrIso' 1 >>Fe56Inf<< ;
+GREP: Incon :: GETVAL 'Fe57InfrIso' 1 >>Fe57Inf<< ;
+GREP: Incon :: GETVAL 'Fe58InfrIso' 1 >>Fe58Inf<< ;
+GREP: Incon :: GETVAL 'B10InfrIso ' 1 >>B10BInf<< ;
+GREP: Incon :: GETVAL 'B11InfrIso ' 1 >>B11BInf<< ;
+GREP: Incon :: GETVAL 'Al27InfrIso' 1 >>Al27Inf<< ;
+GREP: Incon :: GETVAL 'Mo95InfrIso' 1 >>Mo95Inf<< ;
+GREP: Incon :: GETVAL 'TiNatInfrIso' 1 >>TiNatInf<< ;
+GREP: Incon :: GETVAL 'Ti46InfrIso ' 1 >>Ti46Inf<<  ;
+GREP: Incon :: GETVAL 'Ti47InfrIso ' 1 >>Ti47Inf<<  ;
+GREP: Incon :: GETVAL 'Ti48InfrIso ' 1 >>Ti48Inf<<  ;
+GREP: Incon :: GETVAL 'Ti49InfrIso ' 1 >>Ti49Inf<<  ;
+GREP: Incon :: GETVAL 'Ti50InfrIso ' 1 >>Ti50Inf<<  ;
+GREP: Incon :: GETVAL 'SiNatInfrIso' 1 >>SiNatInf<< ;
+GREP: Incon :: GETVAL 'Si28InfrIso ' 1 >>Si28Inf<<  ;
+GREP: Incon :: GETVAL 'Si29InfrIso ' 1 >>Si29Inf<<  ;
+GREP: Incon :: GETVAL 'Si30InfrIso ' 1 >>Si30Inf<<  ;
+GREP: Incon :: GETVAL 'Co59InfrIso' 1 >>Co59Inf<< ;
+GREP: Incon :: GETVAL 'Mn55InfrIso' 1 >>Mn55Inf<< ;
+GREP: Incon :: GETVAL 'Nb93InfrIso' 1 >>Nb93Inf<< ;
+
+*---- Grille Isotopic mass ratios ----
+EVALUATE InGridf := InGridf avo_conc * MInc / ;
+EVALUATE Z4Gridf := Z4Gridf avo_conc * MZ4  / ;
+EVALUATE SSGridf := SSGridf avo_conc * MSS304  / ;
+
+EVALUATE ReNorm  := InGridf Z4Gridf SSGridf + + ;
+
+EVALUATE InGridf := InGridf ReNorm  / ;
+EVALUATE Z4Gridf := Z4Gridf ReNorm  / ;
+EVALUATE SSGridf := SSGridf ReNorm  / ;
+
+*---- Grille Atomic Concentration ----
+REAL     MGrid   := InGridf MInc * Z4Gridf MZ4 * +
+                    SSGridf MSS304 * + ;
+REAL     Griconc := dGrid avo_conc * MGrid / ;
+
+REAL     Ni58Gr  := Ni58Inf  InGridf *
+                    Ni58SSf  SSGridf * + Griconc * ;
+REAL     Ni60Gr  := Ni60Inf  InGridf *
+                    Ni60SSf  SSGridf * + Griconc * ;
+REAL     Ni61Gr  := Ni61Inf  InGridf *
+                    Ni61SSf  SSGridf * + Griconc * ;
+REAL     Ni62Gr  := Ni62Inf  InGridf *
+                    Ni62SSf  SSGridf * + Griconc * ;
+REAL     Ni64Gr  := Ni64Inf  InGridf *
+                    Ni64SSf  SSGridf * + Griconc * ;
+REAL     Cr50Gr  := Cr50Inf  InGridf *
+                    Cr50Z4f  Z4Gridf * +
+                    Cr50SSf  SSGridf * + Griconc * ;
+REAL     Cr52Gr  := Cr52Inf  InGridf *
+                    Cr52Z4f  Z4Gridf * +
+                    Cr52SSf  SSGridf * + Griconc * ;
+REAL     Cr53Gr  := Cr53Inf  InGridf *
+                    Cr53Z4f  Z4Gridf * +
+                    Cr53SSf  SSGridf * + Griconc * ;
+REAL     Cr54Gr  := Cr54Inf  InGridf *
+                    Cr54Z4f  Z4Gridf * +
+                    Cr54SSf  SSGridf * + Griconc * ;
+REAL     Fe54Gr  := Fe54Inf  InGridf *
+                    Fe54Z4f  Z4Gridf * +
+                    Fe54SSf  SSGridf * + Griconc * ;
+REAL     Fe56Gr  := Fe56Inf  InGridf *
+                    Fe56Z4f  Z4Gridf * +
+                    Fe56SSf  SSGridf * + Griconc * ;
+REAL     Fe57Gr  := Fe57Inf  InGridf *
+                    Fe57Z4f  Z4Gridf * +
+                    Fe57SSf  SSGridf * + Griconc * ;
+REAL     Fe58Gr  := Fe58Inf  InGridf *
+                    Fe58Z4f  Z4Gridf * +
+                    Fe58SSf  SSGridf * + Griconc * ;
+REAL     B10BGr  := B10BInf  InGridf *   Griconc * ;
+REAL     B11BGr  := B11BInf  InGridf *   Griconc * ;
+REAL     Al27Gr  := Al27Inf  InGridf *   Griconc * ;
+REAL     Mo95Gr  := Mo95Inf  InGridf *   Griconc * ;
+REAL     TiNatGr := TiNatInf InGridf *   Griconc * ;
+REAL     Ti46Gr  := Ti46Inf  InGridf *   Griconc * ;
+REAL     Ti47Gr  := Ti47Inf  InGridf *   Griconc * ;
+REAL     Ti48Gr  := Ti48Inf  InGridf *   Griconc * ;
+REAL     Ti49Gr  := Ti49Inf  InGridf *   Griconc * ;
+REAL     Ti50Gr  := Ti50Inf  InGridf *   Griconc * ;
+REAL     SiNatGr   := SiNatInf   InGridf *
+                    SiSSf    SSGridf * + Griconc * ;
+REAL     Si28Gr   := Si28Inf   InGridf *
+                    Si28SSf    SSGridf * + Griconc * ;
+REAL     Si29Gr   := Si29Inf   InGridf *
+                    Si29SSf    SSGridf * + Griconc * ;
+REAL     Si30Gr   := Si30Inf   InGridf *
+                    Si30SSf    SSGridf * + Griconc * ;
+REAL     Co59Gr  := Co59Inf  InGridf *   Griconc * ;
+REAL     Mn55Gr  := Mn55Inf  InGridf *
+                    MnSSf    SSGridf * + Griconc * ;
+REAL     Nb93Gr  := Nb93Inf  InGridf *   Griconc * ;
+REAL     Sn112Gr := Sn112Z4f Z4Gridf *   Griconc * ;
+REAL     Sn114Gr := Sn114Z4f Z4Gridf *   Griconc * ;
+REAL     Sn115Gr := Sn115Z4f Z4Gridf *   Griconc * ;
+REAL     Sn116Gr := Sn116Z4f Z4Gridf *   Griconc * ;
+REAL     Sn117Gr := Sn117Z4f Z4Gridf *   Griconc * ;
+REAL     Sn118Gr := Sn118Z4f Z4Gridf *   Griconc * ;
+REAL     Sn119Gr := Sn119Z4f Z4Gridf *   Griconc * ;
+REAL     Sn120Gr := Sn120Z4f Z4Gridf *   Griconc * ;
+REAL     Sn122Gr := Sn122Z4f Z4Gridf *   Griconc * ;
+REAL     Sn124Gr := Sn124Z4f Z4Gridf *   Griconc * ;
+REAL     O16Gr   := O16Z4f   Z4Gridf *   Griconc * ;
+REAL     ZrNatGr := ZrNatZ4f Z4Gridf *   Griconc * ;
+REAL     Zr90Gr  := Zr90Z4f  Z4Gridf *   Griconc * ;
+REAL     Zr91Gr  := Zr91Z4f  Z4Gridf *   Griconc * ;
+REAL     Zr92Gr  := Zr92Z4f  Z4Gridf *   Griconc * ;
+REAL     Zr93Gr  := Zr93Z4f  Z4Gridf *   Griconc * ;
+REAL     Zr94Gr  := Zr94Z4f  Z4Gridf *   Griconc * ;
+REAL     Zr95Gr  := Zr95Z4f  Z4Gridf *   Griconc * ;
+REAL     Zr96Gr  := Zr96Z4f  Z4Gridf *   Griconc * ;
+
+*ECHO "CONC GRILLE" ;
+*ECHO "Ni58Gr " Ni58Gr  ;
+*ECHO "Ni60Gr " Ni60Gr  ;
+*ECHO "Ni61Gr " Ni61Gr  ;
+*ECHO "Ni62Gr " Ni62Gr  ;
+*ECHO "Ni64Gr " Ni64Gr  ;
+*ECHO "Cr50Gr " Cr50Gr  ;
+*ECHO "Cr52Gr " Cr52Gr  ;
+*ECHO "Cr53Gr " Cr53Gr  ;
+*ECHO "Cr54Gr " Cr54Gr  ;
+*ECHO "Fe54Gr " Fe54Gr  ;
+*ECHO "Fe56Gr " Fe56Gr  ;
+*ECHO "Fe57Gr " Fe57Gr  ;
+*ECHO "Fe58Gr " Fe58Gr  ;
+*ECHO "B10BGr " B10BGr  ;
+*ECHO "B11BGr " B11BGr  ;
+*ECHO "Al27Gr " Al27Gr  ;
+*ECHO "Mo95Gr " Mo95Gr  ;
+*ECHO "TiNatGr " TiNatGr ;
+*ECHO "Ti46Gr  " Ti46Gr  ;
+*ECHO "Ti47Gr  " Ti47Gr  ;
+*ECHO "Ti48Gr  " Ti48Gr  ;
+*ECHO "Ti49Gr  " Ti49Gr  ;
+*ECHO "Ti50Gr  " Ti50Gr  ;
+*ECHO "SiNatGr " SiNatGr ;
+*ECHO "Si28Gr  " Si28Gr  ;
+*ECHO "Si29Gr  " Si29Gr  ;
+*ECHO "Si30Gr  " Si30Gr  ;
+*ECHO "Co59Gr " Co59Gr  ;
+*ECHO "Mn55Gr " Mn55Gr  ;
+*ECHO "Nb93Gr " Nb93Gr  ;
+*ECHO "Sn112Gr" Sn112Gr ;
+*ECHO "Sn114Gr" Sn114Gr ;
+*ECHO "Sn115Gr" Sn115Gr ;
+*ECHO "Sn116Gr" Sn116Gr ;
+*ECHO "Sn117Gr" Sn117Gr ;
+*ECHO "Sn118Gr" Sn118Gr ;
+*ECHO "Sn119Gr" Sn119Gr ;
+*ECHO "Sn120Gr" Sn120Gr ;
+*ECHO "Sn122Gr" Sn122Gr ;
+*ECHO "Sn124Gr" Sn124Gr ;
+*ECHO "O16Gr  " O16Gr   ;
+*ECHO "ZrNatGr " ZrNatGr ;
+*ECHO "Zr90Gr  " Zr90Gr  ;
+*ECHO "Zr91Gr  " Zr91Gr  ;
+*ECHO "Zr92Gr  " Zr92Gr  ;
+*ECHO "Zr93Gr  " Zr93Gr  ;
+*ECHO "Zr94Gr  " Zr94Gr  ;
+*ECHO "Zr95Gr  " Zr95Gr  ;
+*ECHO "Zr96Gr  " Zr96Gr  ;
+
+*------ Composants differencies des grilles : Zr4 ------
+REAL     GrConcZr  := dZr4    avo_conc * MZ4 / ;
+
+REAL Fe54Z4  := Fe54Z4f  GrConcZr * ;
+REAL Fe56Z4  := Fe56Z4f  GrConcZr * ;
+REAL Fe57Z4  := Fe57Z4f  GrConcZr * ;
+REAL Fe58Z4  := Fe58Z4f  GrConcZr * ;
+REAL Cr50Z4  := Cr50Z4f  GrConcZr * ;
+REAL Cr52Z4  := Cr52Z4f  GrConcZr * ;
+REAL Cr53Z4  := Cr53Z4f  GrConcZr * ;
+REAL Cr54Z4  := Cr54Z4f  GrConcZr * ;
+REAL O16Z4   := O16Z4f   GrConcZr * ;
+REAL ZrNatZ4 := ZrNatZ4f GrConcZr * ;
+REAL Zr90Z4  := Zr90Z4f  GrConcZr * ;
+REAL Zr91Z4  := Zr91Z4f  GrConcZr * ;
+REAL Zr92Z4  := Zr92Z4f  GrConcZr * ;
+REAL Zr93Z4  := Zr93Z4f  GrConcZr * ;
+REAL Zr94Z4  := Zr94Z4f  GrConcZr * ;
+REAL Zr95Z4  := Zr95Z4f  GrConcZr * ;
+REAL Zr96Z4  := Zr96Z4f  GrConcZr * ;
+REAL Sn112Z4 := Sn112Z4f GrConcZr * ;
+REAL Sn114Z4 := Sn114Z4f GrConcZr * ;
+REAL Sn115Z4 := Sn115Z4f GrConcZr * ;
+REAL Sn116Z4 := Sn116Z4f GrConcZr * ;
+REAL Sn117Z4 := Sn117Z4f GrConcZr * ;
+REAL Sn118Z4 := Sn118Z4f GrConcZr * ;
+REAL Sn119Z4 := Sn119Z4f GrConcZr * ;
+REAL Sn120Z4 := Sn120Z4f GrConcZr * ;
+REAL Sn122Z4 := Sn122Z4f GrConcZr * ;
+REAL Sn124Z4 := Sn124Z4f GrConcZr * ;
+
+*------ Composants differencies des grilles : Inconel ------
+REAL     GrConcInc := dInc    avo_conc * MInc / ;
+
+REAL Ni58Inc := Ni58Inf GrConcInc * ;
+REAL Ni60Inc := Ni60Inf GrConcInc * ;
+REAL Ni61Inc := Ni61Inf GrConcInc * ;
+REAL Ni62Inc := Ni62Inf GrConcInc * ;
+REAL Ni64Inc := Ni64Inf GrConcInc * ;
+REAL Cr50Inc := Cr50Inf GrConcInc * ;
+REAL Cr52Inc := Cr52Inf GrConcInc * ;
+REAL Cr53Inc := Cr53Inf GrConcInc * ;
+REAL Cr54Inc := Cr54Inf GrConcInc * ;
+REAL Fe54Inc := Fe54Inf GrConcInc * ;
+REAL Fe56Inc := Fe56Inf GrConcInc * ;
+REAL Fe57Inc := Fe57Inf GrConcInc * ;
+REAL Fe58Inc := Fe58Inf GrConcInc * ;
+REAL B10BInc := B10BInf GrConcInc * ;
+REAL B11BInc := B11BInf GrConcInc * ;
+REAL Al27Inc := Al27Inf GrConcInc * ;
+REAL Mo95Inc := Mo95Inf GrConcInc * ;
+REAL TiNatInc := TiNatInf  GrConcInc * ;
+REAL Ti46Inc := Ti46Inf GrConcInc * ;
+REAL Ti47Inc := Ti47Inf GrConcInc * ;
+REAL Ti48Inc := Ti48Inf GrConcInc * ;
+REAL Ti49Inc := Ti49Inf GrConcInc * ;
+REAL Ti50Inc := Ti50Inf GrConcInc * ;
+REAL SiNatInc := SiNatInf  GrConcInc * ;
+REAL Si28Inc := Si28Inf GrConcInc * ;
+REAL Si29Inc := Si29Inf GrConcInc * ;
+REAL Si30Inc := Si30Inf GrConcInc * ;
+REAL Co59Inc := Co59Inf GrConcInc * ;
+REAL Mn55Inc := Mn55Inf GrConcInc * ;
+REAL Nb93Inc := Nb93Inf GrConcInc * ;
+
+*------ GAINA, GAINAA, ABS_ACIER ------
+*---- made of SS304 Stainless Steel (with rod-clad gap) ----
+
+REAL     SSconc := dSS     avo_conc * MSS304 / ;
+
+REAL     SiSS := SiSSf   SSconc * ;
+REAL     Si28SS  := Si28SSf  SSconc * ;
+REAL     Si29SS  := Si29SSf  SSconc * ;
+REAL     Si30SS  := Si30SSf  SSconc * ;
+REAL     Fe54SS  := Fe54SSf  SSconc * ;
+REAL     Fe56SS  := Fe56SSf  SSconc * ;
+REAL     Fe57SS  := Fe57SSf  SSconc * ;
+REAL     Fe58SS  := Fe58SSf  SSconc * ;
+REAL     Ni58SS  := Ni58SSf  SSconc * ;
+REAL     Ni60SS  := Ni60SSf  SSconc * ;
+REAL     Ni61SS  := Ni61SSf  SSconc * ;
+REAL     Ni62SS  := Ni62SSf  SSconc * ;
+REAL     Ni64SS  := Ni64SSf  SSconc * ;
+REAL     Cr50SS  := Cr50SSf  SSconc * ;
+REAL     Cr52SS  := Cr52SSf  SSconc * ;
+REAL     Cr53SS  := Cr53SSf  SSconc * ;
+REAL     Cr54SS  := Cr54SSf  SSconc * ;
+REAL     MnSS    := MnSSf    SSconc * ;
+
+*----- ASB_ACIER: Steel Rods ------
+REAL     RodSSconc   := dRodSS   avo_conc * MSS304 / ;
+
+REAL     SiSSRo      := SiSSf RodSSconc * ;
+REAL     Si28SSRo    := Si28SSf  RodSSconc * ;
+REAL     Si29SSRo    := Si29SSf  RodSSconc * ;
+REAL     Si30SSRo    := Si30SSf  RodSSconc * ;
+REAL     Fe54SSRo    := Fe54SSf RodSSconc * ;
+REAL     Fe56SSRo    := Fe56SSf RodSSconc * ;
+REAL     Fe57SSRo    := Fe57SSf RodSSconc * ;
+REAL     Fe58SSRo    := Fe58SSf RodSSconc * ;
+REAL     Ni58SSRo    := Ni58SSf RodSSconc * ;
+REAL     Ni60SSRo    := Ni60SSf RodSSconc * ;
+REAL     Ni61SSRo    := Ni61SSf RodSSconc * ;
+REAL     Ni62SSRo    := Ni62SSf RodSSconc * ;
+REAL     Ni64SSRo    := Ni64SSf RodSSconc * ;
+REAL     Cr50SSRo    := Cr50SSf RodSSconc * ;
+REAL     Cr52SSRo    := Cr52SSf RodSSconc * ;
+REAL     Cr53SSRo    := Cr53SSf RodSSconc * ;
+REAL     Cr54SSRo    := Cr54SSf RodSSconc * ;
+REAL     MnSSRo      := MnSSf   RodSSconc * ;
+
+*ECHO "----ABS_ACIER----" ;
+*ECHO "SiSSRo" SiSSRo ;
+*ECHO "Si28SSRo " Si28SSRo  ;
+*ECHO "Si29SSRo " Si29SSRo  ;
+*ECHO "Si30SSRo " Si30SSRo  ;
+*ECHO "Fe54SSRo" Fe54SSRo ;
+*ECHO "Fe56SSRo" Fe56SSRo ;
+*ECHO "Fe57SSRo" Fe57SSRo ;
+*ECHO "Fe58SSRo" Fe58SSRo ;
+*ECHO "Ni58SSRo" Ni58SSRo ;
+*ECHO "Ni60SSRo" Ni60SSRo ;
+*ECHO "Ni61SSRo" Ni61SSRo ;
+*ECHO "Ni62SSRo" Ni62SSRo ;
+*ECHO "Ni64SSRo" Ni64SSRo ;
+*ECHO "Cr50SSRo" Cr50SSRo ;
+*ECHO "Cr52SSRo" Cr52SSRo ;
+*ECHO "Cr53SSRo" Cr53SSRo ;
+*ECHO "Cr54SSRo" Cr54SSRo ;
+*ECHO "MnSSRo  " MnSSRo   ;
+
+*----- GAINA & GAINAA: clad-rod gap for AIC Rods ------
+REAL     CladAICconc := dCladAIC avo_conc * MSS304 / ;
+
+REAL     SiCladAIC   := SiSSf    CladAICconc * ;
+REAL     Si28CladAIC  := Si28SSf  CladAICconc * ;
+REAL     Si29CladAIC  := Si29SSf  CladAICconc * ;
+REAL     Si30CladAIC  := Si30SSf  CladAICconc * ;
+REAL     Fe54CladAIC := Fe54SSf  CladAICconc * ;
+REAL     Fe56CladAIC := Fe56SSf  CladAICconc * ;
+REAL     Fe57CladAIC := Fe57SSf  CladAICconc * ;
+REAL     Fe58CladAIC := Fe58SSf  CladAICconc * ;
+REAL     Ni58CladAIC := Ni58SSf  CladAICconc * ;
+REAL     Ni60CladAIC := Ni60SSf  CladAICconc * ;
+REAL     Ni61CladAIC := Ni61SSf  CladAICconc * ;
+REAL     Ni62CladAIC := Ni62SSf  CladAICconc * ;
+REAL     Ni64CladAIC := Ni64SSf  CladAICconc * ;
+REAL     Cr50CladAIC := Cr50SSf  CladAICconc * ;
+REAL     Cr52CladAIC := Cr52SSf  CladAICconc * ;
+REAL     Cr53CladAIC := Cr53SSf  CladAICconc * ;
+REAL     Cr54CladAIC := Cr54SSf  CladAICconc * ;
+REAL     MnCladAIC   := MnSSf    CladAICconc * ;
+
+*ECHO "----GAINA_AIC----" ;
+*ECHO "SiCladAIC"    SiCladAIC ;
+*ECHO "Si28CladAIC " Si28CladAIC  ;
+*ECHO "Si29CladAIC " Si29CladAIC  ;
+*ECHO "Si30CladAIC " Si30CladAIC  ;
+*ECHO "Fe54CladAIC" Fe54CladAIC ;
+*ECHO "Fe56CladAIC" Fe56CladAIC ;
+*ECHO "Fe57CladAIC" Fe57CladAIC ;
+*ECHO "Fe58CladAIC" Fe58CladAIC ;
+*ECHO "Ni58CladAIC" Ni58CladAIC ;
+*ECHO "Ni60CladAIC" Ni60CladAIC ;
+*ECHO "Ni61CladAIC" Ni61CladAIC ;
+*ECHO "Ni62CladAIC" Ni62CladAIC ;
+*ECHO "Ni64CladAIC" Ni64CladAIC ;
+*ECHO "Cr50CladAIC" Cr50CladAIC ;
+*ECHO "Cr52CladAIC" Cr52CladAIC ;
+*ECHO "Cr53CladAIC" Cr53CladAIC ;
+*ECHO "Cr54CladAIC" Cr54CladAIC ;
+*ECHO "MnCladAIC  " MnCladAIC   ;
+
+*----- GAINA & GAINAA: clad-rod gap for Steel Rods ------
+REAL     CladSSconc  := dCladSS avo_conc * MSS304 / ;
+
+REAL     SiCladSS := SiSSf CladSSconc * ;
+REAL     Si28CladSS  := Si28SSf  CladSSconc * ;
+REAL     Si29CladSS  := Si29SSf  CladSSconc * ;
+REAL     Si30CladSS  := Si30SSf  CladSSconc * ;
+REAL     Fe54CladSS  := Fe54SSf CladSSconc * ;
+REAL     Fe56CladSS  := Fe56SSf CladSSconc * ;
+REAL     Fe57CladSS  := Fe57SSf CladSSconc * ;
+REAL     Fe58CladSS  := Fe58SSf CladSSconc * ;
+REAL     Ni58CladSS  := Ni58SSf CladSSconc * ;
+REAL     Ni60CladSS  := Ni60SSf CladSSconc * ;
+REAL     Ni61CladSS  := Ni61SSf CladSSconc * ;
+REAL     Ni62CladSS  := Ni62SSf CladSSconc * ;
+REAL     Ni64CladSS  := Ni64SSf CladSSconc * ;
+REAL     Cr50CladSS  := Cr50SSf CladSSconc * ;
+REAL     Cr52CladSS  := Cr52SSf CladSSconc * ;
+REAL     Cr53CladSS  := Cr53SSf CladSSconc * ;
+REAL     Cr54CladSS  := Cr54SSf CladSSconc * ;
+REAL     MnCladSS    := MnSSf   CladSSconc * ;
+
+*ECHO "----GAINA_ABS_ACIER----" ;
+*ECHO "SiCladSS" SiCladSS ;
+*ECHO "Si28CladSS " Si28CladSS ;
+*ECHO "Si29CladSS " Si29CladSS ;
+*ECHO "Si30CladSS " Si30CladSS ;
+*ECHO "Fe54CladSS" Fe54CladSS ;
+*ECHO "Fe56CladSS" Fe56CladSS ;
+*ECHO "Fe57CladSS" Fe57CladSS ;
+*ECHO "Fe58CladSS" Fe58CladSS ;
+*ECHO "Ni58CladSS" Ni58CladSS ;
+*ECHO "Ni60CladSS" Ni60CladSS ;
+*ECHO "Ni61CladSS" Ni61CladSS ;
+*ECHO "Ni62CladSS" Ni62CladSS ;
+*ECHO "Ni64CladSS" Ni64CladSS ;
+*ECHO "Cr50CladSS" Cr50CladSS ;
+*ECHO "Cr52CladSS" Cr52CladSS ;
+*ECHO "Cr53CladSS" Cr53CladSS ;
+*ECHO "Cr54CladSS" Cr54CladSS ;
+*ECHO "MnCladSS  " MnCladSS   ;
+
+*----- GAINA & GAINAA: clad-rod gap for B4C Rods ------
+REAL     CladB4Cconc := dCladB4C avo_conc * MSS304 / ;
+
+REAL     SiCladB4C := SiSSf CladB4Cconc * ;
+REAL     Si28CladB4C  := Si28SSf  CladB4Cconc * ;
+REAL     Si29CladB4C  := Si29SSf  CladB4Cconc * ;
+REAL     Si30CladB4C  := Si30SSf  CladB4Cconc * ;
+REAL     Fe54CladB4C := Fe54SSf CladB4Cconc * ;
+REAL     Fe56CladB4C := Fe56SSf CladB4Cconc * ;
+REAL     Fe57CladB4C := Fe57SSf CladB4Cconc * ;
+REAL     Fe58CladB4C := Fe58SSf CladB4Cconc * ;
+REAL     Ni58CladB4C := Ni58SSf CladB4Cconc * ;
+REAL     Ni60CladB4C := Ni60SSf CladB4Cconc * ;
+REAL     Ni61CladB4C := Ni61SSf CladB4Cconc * ;
+REAL     Ni62CladB4C := Ni62SSf CladB4Cconc * ;
+REAL     Ni64CladB4C := Ni64SSf CladB4Cconc * ;
+REAL     Cr50CladB4C := Cr50SSf CladB4Cconc * ;
+REAL     Cr52CladB4C := Cr52SSf CladB4Cconc * ;
+REAL     Cr53CladB4C := Cr53SSf CladB4Cconc * ;
+REAL     Cr54CladB4C := Cr54SSf CladB4Cconc * ;
+REAL     MnCladB4C   := MnSSf   CladB4Cconc * ;
+
+*ECHO "----GAINA_B4C----" ;
+*ECHO "SiCladB4C" SiCladB4C ;
+*ECHO "Si28CladB4C " Si28CladB4C ;
+*ECHO "Si29CladB4C " Si29CladB4C ;
+*ECHO "Si30CladB4C " Si30CladB4C ;
+*ECHO "Fe54CladB4C" Fe54CladB4C ;
+*ECHO "Fe56CladB4C" Fe56CladB4C ;
+*ECHO "Fe57CladB4C" Fe57CladB4C ;
+*ECHO "Fe58CladB4C" Fe58CladB4C ;
+*ECHO "Ni58CladB4C" Ni58CladB4C ;
+*ECHO "Ni60CladB4C" Ni60CladB4C ;
+*ECHO "Ni61CladB4C" Ni61CladB4C ;
+*ECHO "Ni62CladB4C" Ni62CladB4C ;
+*ECHO "Ni64CladB4C" Ni64CladB4C ;
+*ECHO "Cr50CladB4C" Cr50CladB4C ;
+*ECHO "Cr52CladB4C" Cr52CladB4C ;
+*ECHO "Cr53CladB4C" Cr53CladB4C ;
+*ECHO "Cr54CladB4C" Cr54CladB4C ;
+*ECHO "MnCladB4C  " MnCladB4C   ;
+
+*====================================================================
+*                TIHANGE GAINE  (BP Interior Cladding)
+*====================================================================
+REAL     CladIntconc := dCladIntBP avo_conc * MSS304 / ;
+*----
+REAL     Fe54CladInt := Fe54SSf CladIntconc * ;
+REAL     Fe56CladInt := Fe56SSf CladIntconc * ;
+REAL     Fe57CladInt := Fe57SSf CladIntconc * ;
+REAL     Fe58CladInt := Fe58SSf CladIntconc * ;
+REAL     Ni58CladInt := Ni58SSf CladIntconc * ;
+REAL     Ni60CladInt := Ni60SSf CladIntconc * ;
+REAL     Ni61CladInt := Ni61SSf CladIntconc * ;
+REAL     Ni62CladInt := Ni62SSf CladIntconc * ;
+REAL     Ni64CladInt := Ni64SSf CladIntconc * ;
+REAL     Cr50CladInt := Cr50SSf CladIntconc * ;
+REAL     Cr52CladInt := Cr52SSf CladIntconc * ;
+REAL     Cr53CladInt := Cr53SSf CladIntconc * ;
+REAL     Cr54CladInt := Cr54SSf CladIntconc * ;
+REAL     MnCladInt   := MnSSf   CladIntconc * ;
+*----------------------------
+*ECHO "----GAININT ----" ;
+*ECHO "Fe54CladInt" Fe54CladInt ;
+*ECHO "Fe56CladInt" Fe56CladInt ;
+*ECHO "Fe57CladInt" Fe57CladInt ;
+*ECHO "Fe58CladInt" Fe58CladInt ;
+*ECHO "Ni58CladInt" Ni58CladInt ;
+*ECHO "Ni60CladInt" Ni60CladInt ;
+*ECHO "Ni61CladInt" Ni61CladInt ;
+*ECHO "Ni62CladInt" Ni62CladInt ;
+*ECHO "Ni64CladInt" Ni64CladInt ;
+*ECHO "Cr50CladInt" Cr50CladInt ;
+*ECHO "Cr52CladInt" Cr52CladInt ;
+*ECHO "Cr53CladInt" Cr53CladInt ;
+*ECHO "Cr54CladInt" Cr54CladInt ;
+*ECHO "MnCladInt  " MnCladInt   ;
+*----------------------------
+*====================================================================
+*                TIHANGE GAINE  (BP Exterior Cladding)
+*====================================================================
+REAL     CladExtconc := dCladExtBP avo_conc * MSS304 / ;
+*----
+*----
+REAL     Fe54CladExt := Fe54SSf CladExtconc * ;
+REAL     Fe56CladExt := Fe56SSf CladExtconc * ;
+REAL     Fe57CladExt := Fe57SSf CladExtconc * ;
+REAL     Fe58CladExt := Fe58SSf CladExtconc * ;
+REAL     Ni58CladExt := Ni58SSf CladExtconc * ;
+REAL     Ni60CladExt := Ni60SSf CladExtconc * ;
+REAL     Ni61CladExt := Ni61SSf CladExtconc * ;
+REAL     Ni62CladExt := Ni62SSf CladExtconc * ;
+REAL     Ni64CladExt := Ni64SSf CladExtconc * ;
+REAL     Cr50CladExt := Cr50SSf CladExtconc * ;
+REAL     Cr52CladExt := Cr52SSf CladExtconc * ;
+REAL     Cr53CladExt := Cr53SSf CladExtconc * ;
+REAL     Cr54CladExt := Cr54SSf CladExtconc * ;
+REAL     MnCladExt   := MnSSf   CladExtconc * ;
+*----------------------------
+*ECHO "----GAINEXT ----" ;
+*ECHO "Fe54CladExt" Fe54CladExt ;
+*ECHO "Fe56CladExt" Fe56CladExt ;
+*ECHO "Fe57CladExt" Fe57CladExt ;
+*ECHO "Fe58CladExt" Fe58CladExt ;
+*ECHO "Ni58CladExt" Ni58CladExt ;
+*ECHO "Ni60CladExt" Ni60CladExt ;
+*ECHO "Ni61CladExt" Ni61CladExt ;
+*ECHO "Ni62CladExt" Ni62CladExt ;
+*ECHO "Ni64CladExt" Ni64CladExt ;
+*ECHO "Cr50CladExt" Cr50CladExt ;
+*ECHO "Cr52CladExt" Cr52CladExt ;
+*ECHO "Cr53CladExt" Cr53CladExt ;
+*ECHO "Cr54CladExt" Cr54CladExt ;
+*ECHO "MnCladExt  " MnCladExt   ;
+*----------------------------
+
+*------ AIC ------
+*---- made of Ag+In+Cd ----
+REAL MAIC ;
+REAL Ag107AICf Ag109AICf ;
+REAL Cd106AICf Cd108AICf Cd110AICf Cd111AICf Cd112AICf Cd113AICf ;
+REAL Cd114AICf Cd116AICf ;
+*REAL InAICf    ;
+REAL In115AICf In113AICf ;
+
+GREP: AIC :: GETVAL 'AvgMolM     ' 1 >>MAIC<<      ;
+GREP: AIC :: GETVAL 'Ag107AICfIso' 1 >>Ag107AICf<< ;
+GREP: AIC :: GETVAL 'Ag109AICfIso' 1 >>Ag109AICf<< ;
+GREP: AIC :: GETVAL 'Cd106AICfIso' 1 >>Cd106AICf<< ;
+GREP: AIC :: GETVAL 'Cd108AICfIso' 1 >>Cd108AICf<< ;
+GREP: AIC :: GETVAL 'Cd110AICfIso' 1 >>Cd110AICf<< ;
+GREP: AIC :: GETVAL 'Cd111AICfIso' 1 >>Cd111AICf<< ;
+GREP: AIC :: GETVAL 'Cd112AICfIso' 1 >>Cd112AICf<< ;
+GREP: AIC :: GETVAL 'Cd113AICfIso' 1 >>Cd113AICf<< ;
+GREP: AIC :: GETVAL 'Cd114AICfIso' 1 >>Cd114AICf<< ;
+GREP: AIC :: GETVAL 'Cd116AICfIso' 1 >>Cd116AICf<< ;
+*GREP: AIC :: GETVAL 'In115AICfIso' 1 >>InAICf<<    ;
+GREP: AIC :: GETVAL 'In115AICfIso' 1 >>In115AICf<< ;
+GREP: AIC :: GETVAL 'In113AICfIso' 1 >>In113AICf<< ;
+
+REAL     AICconc  := dAICr     avo_conc * MAIC / ;
+
+REAL     Ag107AIC := Ag107AICf AICconc  * ;
+REAL     Ag109AIC := Ag109AICf AICconc  * ;
+REAL     Cd106AIC := Cd106AICf AICconc  * ;
+REAL     Cd108AIC := Cd108AICf AICconc  * ;
+REAL     Cd110AIC := Cd110AICf AICconc  * ;
+REAL     Cd111AIC := Cd111AICf AICconc  * ;
+REAL     Cd112AIC := Cd112AICf AICconc  * ;
+REAL     Cd113AIC := Cd113AICf AICconc  * ;
+REAL     Cd114AIC := Cd114AICf AICconc  * ;
+REAL     Cd116AIC := Cd116AICf AICconc  * ;
+*REAL     InAIC    := InAICf    AICconc  * ;
+REAL     In115AIC := In115AICf AICconc  * ;
+REAL     In113AIC := In113AICf AICconc  * ;
+
+*ECHO "Ag107AIC" Ag107AIC ;
+*ECHO "Ag109AIC" Ag109AIC ;
+*ECHO "Cd106AIC" Cd106AIC ;
+*ECHO "Cd108AIC" Cd108AIC ;
+*ECHO "Cd110AIC" Cd110AIC ;
+*ECHO "Cd111AIC" Cd111AIC ;
+*ECHO "Cd112AIC" Cd112AIC ;
+*ECHO "Cd113AIC" Cd113AIC ;
+*ECHO "Cd114AIC" Cd114AIC ;
+*ECHO "Cd116AIC" Cd116AIC ;
+*ECHO "In115AIC" In115AIC ;
+*ECHO "In113AIC" In113AIC ;
+
+*------ BNATB ------
+*---- Natural Boron for structure ----
+REAL MBNatB  B10Bf   B11Bf   ;
+
+GREP: BNat :: GETVAL 'AvgMolM ' 1 >>MBNatB<< ;
+GREP: BNat :: GETVAL 'B10frIso' 1 >>B10Bf<<  ;
+GREP: BNat :: GETVAL 'B11frIso' 1 >>B11Bf<<  ;
+
+*------ B4C Control Rods ------
+* Isotopic Composition : BNatB .8
+*                        CNat  .2
+REAL MB4C ;
+REAL BNatBrodf := .8 ;
+REAL CNatrodf  := .2 ;
+
+REAL B10Brodf  := BNatBrodf B10Bf * ;
+REAL B11Brodf  := BNatBrodf B11Bf * ;
+
+EVALUATE MB4C    := MBNatB BNatBrodf * cnat CNatrodf * + ;
+REAL     B4Cconc := dB4C     avo_conc * MB4C / ;
+
+REAL     B10Brod := B10Brodf B4Cconc * ;
+REAL     B11Brod := B11Brodf B4Cconc * ;
+REAL     Crod    := CNatrodf B4Cconc * ;
+
+*ECHO "----B4C----" ;
+*ECHO "B10Brod" B10Brod ;
+*ECHO "B11Brod" B11Brod ;
+*ECHO "Crod   " Crod    ;
+
+*--------------------------------------------------------------------
+*                 BP_T : Tihange Burnable Poison
+*--------------------------------------------------------------------
+REAL MBP ;
+REAL B10BPf B11BPf ;
+REAL O16BPf SiNatBPf Al27BPf KNatBPf Na23BPf ;
+REAL Si28BPf Si29BPf Si30BPf K39BPf K40BPf K41BPf ;
+
+*
+GREP: BP :: GETVAL 'AvgMolM     ' 1 >>MBP<<      ;
+GREP: BP :: GETVAL 'B10BPfrIso  ' 1 >>B10BPf<<   ;
+GREP: BP :: GETVAL 'B11BPfrIso  ' 1 >>B11BPf<<   ;
+GREP: BP :: GETVAL 'O16BPfrIso  ' 1 >>O16BPf<<   ;
+GREP: BP :: GETVAL 'SiNatBPfrIso' 1 >>SiNatBPf<< ;
+GREP: BP :: GETVAL 'Si28BPfrIso ' 1 >>Si28BPf<<  ;
+GREP: BP :: GETVAL 'Si29BPfrIso ' 1 >>Si29BPf<<  ;
+GREP: BP :: GETVAL 'Si30BPfrIso ' 1 >>Si30BPf<<  ;
+GREP: BP :: GETVAL 'Al27BPfrIso ' 1 >>Al27BPf<<  ;
+GREP: BP :: GETVAL 'KNatBPfrIso ' 1 >>KNatBPf<<  ;
+GREP: BP :: GETVAL 'K39BPfrIso  ' 1 >>K39BPf<<   ;
+GREP: BP :: GETVAL 'K40BPfrIso  ' 1 >>K40BPf<<   ;
+GREP: BP :: GETVAL 'K41BPfrIso  ' 1 >>K41BPf<<   ;
+GREP: BP :: GETVAL 'Na23BPfrIso ' 1 >>Na23BPf<<  ;
+*--------------------------------------------------------------------
+REAL     BP_Tconc  := dBP avo_conc * MBP / ;
+*
+REAL     B10BP := B10BPf BP_Tconc  * ;
+REAL     B11BP := B11BPf BP_Tconc  * ;
+REAL     O16BP := O16BPf BP_Tconc  * ;
+REAL     SiNatBP := SiNatBPf BP_Tconc  * ;
+REAL     Si28BP := Si28BPf BP_Tconc  * ;
+REAL     Si29BP := Si29BPf BP_Tconc  * ;
+REAL     Si30BP := Si30BPf BP_Tconc  * ;
+REAL     Al27BP := Al27BPf BP_Tconc  * ;
+REAL     KNatBP := KNatBPf BP_Tconc  * ;
+REAL     K39BP := K39BPf BP_Tconc  * ;
+REAL     K40BP := K40BPf BP_Tconc  * ;
+REAL     K41BP := K41BPf BP_Tconc  * ;
+REAL     Na23BP := Na23BPf BP_Tconc  * ;
+*----------------------------
+*ECHO "----BP_T----" ;
+*ECHO "MBP      "  MBP      ;
+*ECHO "BP_Tconc "  BP_Tconc ;
+*ECHO "B10BP    "  B10BP    ;
+*ECHO "B11BP    "  B11BP    ;
+*ECHO "O16BP    "  O16BP    ;
+*ECHO "SiNatBP  "  SiNatBP  ;
+*ECHO "Si28BP  "  Si28BP  ;
+*ECHO "Si29BP  "  Si29BP  ;
+*ECHO "Si30BP  "  Si30BP  ;
+*ECHO "Al27BP   "  Al27BP   ;
+*ECHO "KNatBP   "  KNatBP   ;
+*ECHO "K39BP   "  K39BP   ;
+*ECHO "K40BP   "  K40BP   ;
+*ECHO "K41BP   "  K41BP   ;
+*ECHO "Na23BP   "  Na23BP   ;
+*----------------------------
+
+*------------------------------------------------------
+* inrs order ('NAMISO = NISO <<conc>> inrs SHIB')
+* adding Mixes: ABSO, ABS_ACIER, GAINA+GAINAA
+* WARNING: Last (highest) Mix number MUST be equal to Nmix
+*------------------------------------------------------
+
+
+*------------------------------------------------------
+* Materiaux de base:      1 ->    9
+* Moderateurs:           10 ->   19
+* Structures:   Tubes    20
+*               Barres   21 ->   29
+*               Gaines   30 ->   39
+* Combustibles: UOX     100 ->  109
+*               MOX     110 ->  139
+*               UGd     140 -> Nmix
+*------------------------------------------------------
+* Materiaux de base
+*    1 - SS304
+*    2 - Inconel
+*    3 - Zircalloy-4
+*    4 - Grilles precalculees
+*    5 - Eau boree
+*    6 - Isotopes de barre virtuelle
+*    7 - Eau boree tube instrumentation
+* Moderateurs
+*   10 - MODE   [moderateur cellule centrale]
+*   11 - MODEL  [moderateur cellule en peripherie (avec lame d'eau)]
+*   12 - MODEC  [moderateur cellule en coin (double lame d'eau)]
+*   13 - MODETI [moderateur cellule tube (interieur du tube)+Isotopes de barres AIC a 0]
+*   14 - MODETE [moderateur cellule tube (exterieur du tube)]
+*   15 - MODETII [moderateur cellule tube (interieur du tube d'instrumentation)]
+* Structures: Tubes
+*   20 - TUBE
+* Structures: Barres
+*   21 - AIC    [Barres AIC]
+*   22 - ACIER  [Barres acier]
+*   23 - B4C    [Barres B4C]
+* Structures: Gaines
+*   30 - GAINC  [Gaine combustible UOX/MOX/UGd]
+*   31 - GAINA  [Gaine Barres AIC]
+*   32 - GAINS  [Gaine Barres ACIER]
+*   33 - GAINB  [Gaine Barres B4C]
+*   34 - GAINE BP INT ACIER SS304
+*   35 - GAINE BP EXT ACIER SS304
+*   36 - GAINC M5 [Gaine combustible]
+* Poison consommable (Pyrex)
+*   60 - PYREX
+* Combustibles UOX
+*  100 - COMB   [UOX 1ere couronne (centre a Rcomb*0.5^1/2) <=> 0 a r1]
+*  101 - COMB   [UOX 2e couronne]
+*  102 - COMB   [UOX 3e couronne]
+*  103 - COMB   [UOX 4e couronne (r3 a Rcomb)]
+* Combustibles MOX
+*  110 - COMB1  [MOX 'faible' 1ere couronne]
+*  111 - COMB1  [MOX 'faible' 2e couronne]
+*  112 - COMB1  [MOX 'faible' 3e couronne]
+*  113 - COMB1  [MOX 'faible' 4e couronne]
+*  120 - COMB2  [MOX 'moyen' 1ere couronne]
+*  121 - COMB2  [MOX 'moyen' 2e couronne]
+*  122 - COMB2  [MOX 'moyen' 3e couronne]
+*  123 - COMB2  [MOX 'moyen' 4e couronne]
+*  130 - COMB3  [MOX 'fort' 1ere couronne]
+*  131 - COMB3  [MOX 'fort' 2e couronne]
+*  132 - COMB3  [MOX 'fort' 3e couronne]
+*  133 - COMB3  [MOX 'fort' 4e couronne]
+* Combustibles UGd
+*  140 - COMB   [UOX+Gd 1ere couronne (centre a Rcomb*0.2^1/2)]
+*  141 - COMB   [UOX+Gd 2e couronne]
+*  142 - COMB   [UOX+Gd 3e couronne]
+*  143 - COMB   [UOX+Gd 4e couronne]
+*  144 - COMB   [UOX+Gd 5e couronne]
+* Nmix - COMB   [UOX+Gd 6e couronne] --- Nmix = 145
+*------------------------------------------------------
+*------------------------------------------------------
+* Depletion Chains
+*------------------------------------------------------
+
+INTEGER  Nmix := 145 ; ! Highest mix number must be equal to Nmix
+
+! Procedure de definition de la chaine de decroissance
+STRING Autop := "SUBG" ;
+Library := DeplChain :: <<Nmix>> <<NuclData>> <<LibType>>
+                        <<LibGenre>> <<CTRA>> <<Autop>> ;
+
+Library := LIB: Library :: EDIT 1
+CTRA <<CTRA>>
+* Attention: si plusieurs appels a LIB: doivent etre faits, il faut
+* necessairement specifier pour chaque appel CTRA <<CTRA>>. Un bug
+* (non resolu actuellement) est present qui entraine des ecarts
+* lorsque cette condition n'est pas specifiee a chaque appel.
+
+  MIXS LIB: <<LibGenre>> FIL: <<NuclData>>
+
+  MIX 1 <<tmod>> NOEV (* SS304 *)
+    Fe54  = <<NomFe54>>  <<Fe54SS>>
+    Fe56  = <<NomFe56>>  <<Fe56SS>>
+    Fe57  = <<NomFe57>>  <<Fe57SS>>
+    Fe58  = <<NomFe58>>  <<Fe58SS>>
+    Ni58  = <<NomNi58>>  <<Ni58SS>>
+    Ni60  = <<NomNi60>>  <<Ni60SS>>
+    Ni61  = <<NomNi61>>  <<Ni61SS>>
+    Ni62  = <<NomNi62>>  <<Ni62SS>>
+    Ni64  = <<NomNi64>>  <<Ni64SS>>
+    Cr50  = <<NomCr50>>  <<Cr50SS>>
+    Cr52  = <<NomCr52>>  <<Cr52SS>>
+    Cr53  = <<NomCr53>>  <<Cr53SS>>
+    Cr54  = <<NomCr54>>  <<Cr54SS>>
+    Mn55  = <<NomMn55>>  <<MnSS>>
+    SiNat = <<NomSiNat>>   <<SiSS>>
+!    Si28  = <<NomSi28>>    <<Si28SS>>
+!    Si29  = <<NomSi29>>    <<Si29SS>>
+!    Si30  = <<NomSi30>>    <<Si30SS>>
+  MIX 2 <<tmod>> NOEV (* Inconel *)
+    Ni58  = <<NomNi58>>  <<Ni58Inc>>
+    Ni60  = <<NomNi60>>  <<Ni60Inc>>
+    Ni61  = <<NomNi61>>  <<Ni61Inc>>
+    Ni62  = <<NomNi62>>  <<Ni62Inc>>
+    Ni64  = <<NomNi64>>  <<Ni64Inc>>
+    Cr50  = <<NomCr50>>  <<Cr50Inc>>
+    Cr52  = <<NomCr52>>  <<Cr52Inc>>
+    Cr53  = <<NomCr53>>  <<Cr53Inc>>
+    Cr54  = <<NomCr54>>  <<Cr54Inc>>
+    Fe54  = <<NomFe54>>  <<Fe54Inc>>
+    Fe56  = <<NomFe56>>  <<Fe56Inc>>
+    Fe57  = <<NomFe57>>  <<Fe57Inc>>
+    Fe58  = <<NomFe58>>  <<Fe58Inc>>
+    B10   = <<NomB10>>   <<B10BInc>>
+    B11   = <<NomB11>>   <<B11BInc>>
+    Al27  = <<NomAl27>>  <<Al27Inc>>
+    Mo95  = <<NomMo95>>  <<Mo95Inc>>
+    TiNat = <<NomTiNat>>    <<TiNatInc>>
+!    Ti46     = <<NomTi46>>    <<Ti46Inc>>
+!    Ti47     = <<NomTi47>>    <<Ti47Inc>>
+!    Ti48     = <<NomTi48>>    <<Ti48Inc>>
+!    Ti49     = <<NomTi49>>    <<Ti49Inc>>
+!    Ti50     = <<NomTi50>>    <<Ti50Inc>>
+    SiNat    = <<NomSiNat>>   <<SiNatInc>>
+!    Si28     = <<NomSi28>>    <<Si28Inc>>
+!    Si29     = <<NomSi29>>    <<Si29Inc>>
+!    Si30     = <<NomSi30>>    <<Si30Inc>>
+    Co59  = <<NomCo59>>  <<Co59Inc>>
+    Mn55  = <<NomMn55>>  <<Mn55Inc>>
+    Nb93  = <<NomNb93>>  <<Nb93Inc>>
+  MIX 3 <<tmod>> NOEV (* Zr4 *)
+    Fe54  = <<NomFe54>>  <<Fe54Z4>>
+    Fe56  = <<NomFe56>>  <<Fe56Z4>>
+    Fe57  = <<NomFe57>>  <<Fe57Z4>>
+    Fe58  = <<NomFe58>>  <<Fe58Z4>>
+    Cr50  = <<NomCr50>>  <<Cr50Z4>>
+    Cr52  = <<NomCr52>>  <<Cr52Z4>>
+    Cr53  = <<NomCr53>>  <<Cr53Z4>>
+    Cr54  = <<NomCr54>>  <<Cr54Z4>>
+    O16   = <<NomO16>>   <<O16Z4>>
+    ZrNat = <<NomZrNat>>    <<ZrNatZ4>>
+!    Zr90     = <<NomZr90>>    <<Zr90Z4>>
+!    Zr91     = <<NomZr91>>    <<Zr91Z4>>
+!    Zr92     = <<NomZr92>>    <<Zr92Z4>>
+!    Zr93     = <<NomZr93>>    <<Zr93Z4>>
+!    Zr94     = <<NomZr94>>    <<Zr94Z4>>
+!    Zr95     = <<NomZr95>>    <<Zr95Z4>>
+!    Zr96     = <<NomZr96>>    <<Zr96Z4>>
+!    Sn112 = <<NomSn112>> <<Sn112Z4>>
+!    Sn114 = <<NomSn114>> <<Sn114Z4>>
+    Sn115 = <<NomSn115>> <<Sn115Z4>>
+    Sn116 = <<NomSn116>> <<Sn116Z4>>
+    Sn117 = <<NomSn117>> <<Sn117Z4>>
+    Sn118 = <<NomSn118>> <<Sn118Z4>>
+    Sn119 = <<NomSn119>> <<Sn119Z4>>
+    Sn120 = <<NomSn120>> <<Sn120Z4>>
+    Sn122 = <<NomSn122>> <<Sn122Z4>>
+    Sn124 = <<NomSn124>> <<Sn124Z4>>
+  MIX 4 <<tmod>> NOEV (* GRILLE PRECALCULEE *)
+    Ni58  = <<NomNi58>>  <<Ni58Gr>>
+    Ni60  = <<NomNi60>>  <<Ni60Gr>>
+    Ni61  = <<NomNi61>>  <<Ni61Gr>>
+    Ni62  = <<NomNi62>>  <<Ni62Gr>>
+    Ni64  = <<NomNi64>>  <<Ni64Gr>>
+    Cr50  = <<NomCr50>>  <<Cr50Gr>>
+    Cr52  = <<NomCr52>>  <<Cr52Gr>>
+    Cr53  = <<NomCr53>>  <<Cr53Gr>>
+    Cr54  = <<NomCr54>>  <<Cr54Gr>>
+    Fe54  = <<NomFe54>>  <<Fe54Gr>>
+    Fe56  = <<NomFe56>>  <<Fe56Gr>>
+    Fe57  = <<NomFe57>>  <<Fe57Gr>>
+    Fe58  = <<NomFe58>>  <<Fe58Gr>>
+    B10   = <<NomB10>>   <<B10BGr>>
+    B11   = <<NomB11>>   <<B11BGr>>
+    Al27  = <<NomAl27>>  <<Al27Gr>>
+    Mo95  = <<NomMo95>>  <<Mo95Gr>>
+    TiNat = <<NomTiNat>>   <<TiNatGr>>
+!    Ti46     = <<NomTi46>> <<Ti46Gr>>
+!    Ti47     = <<NomTi47>> <<Ti47Gr>>
+!    Ti48     = <<NomTi48>> <<Ti48Gr>>
+!    Ti49     = <<NomTi49>> <<Ti49Gr>>
+!    Ti50     = <<NomTi50>> <<Ti50Gr>>
+    SiNat = <<NomSiNat>>    <<SiNatGr>>
+!    Si28     = <<NomSi28>>    <<Si28Gr>>
+!    Si29     = <<NomSi29>>    <<Si29Gr>>
+!    Si30     = <<NomSi30>>    <<Si30Gr>>
+    Co59  = <<NomCo59>>  <<Co59Gr>>
+    Mn55  = <<NomMn55>>  <<Mn55Gr>>
+    Nb93  = <<NomNb93>>  <<Nb93Gr>>
+!    Sn112 = <<NomSn112>> <<Sn112Gr>>
+!    Sn114 = <<NomSn114>> <<Sn114Gr>>
+    Sn115 = <<NomSn115>> <<Sn115Gr>>
+    Sn116 = <<NomSn116>> <<Sn116Gr>>
+    Sn117 = <<NomSn117>> <<Sn117Gr>>
+    Sn118 = <<NomSn118>> <<Sn118Gr>>
+    Sn119 = <<NomSn119>> <<Sn119Gr>>
+    Sn120 = <<NomSn120>> <<Sn120Gr>>
+    Sn122 = <<NomSn122>> <<Sn122Gr>>
+    Sn124 = <<NomSn124>> <<Sn124Gr>>
+    O16   = <<NomO16>>   <<O16Gr>>
+    ZrNat    = <<NomZrNat>>    <<ZrNatGr>>
+!    Zr90     = <<NomZr90>>    <<Zr90Gr>>
+!    Zr91     = <<NomZr91>>    <<Zr91Gr>>
+!    Zr92     = <<NomZr92>>    <<Zr92Gr>>
+!    Zr93     = <<NomZr93>>    <<Zr93Gr>>
+!    Zr94     = <<NomZr94>>    <<Zr94Gr>>
+!    Zr95     = <<NomZr95>>    <<Zr95Gr>>
+!    Zr96     = <<NomZr96>>    <<Zr96Gr>>
+  MIX 5 <<tmod>> NOEV ! (* Eau normale *)
+!    H2O      = <<NomH2O>> <<H2O_mti>>
+    H1_H2O   = <<NomH1>>       <<H_mti>>
+    O16      = <<NomO16>>      <<O_mti>>
+    B10      =  <<NomB10>>    <<B10_mti>>
+    B11      =  <<NomB11>>    <<B11_mti>>
+  MIX 6 <<tmod>> NOEV
+*--- Isotopes de Barres pour Modeti a 0 ---------------
+* Utilité à réévaluer sur un calcul de Saphyb
+!    Ag107    = <<NomAg107>>    0.
+    Ag109    = <<NomAg109>>    0.
+!    Cd106    = <<NomCd106>>    0.
+!    Cd108    = <<NomCd108>>    0.
+    Cd110    = <<NomCd110>>    0.
+    Cd111    = <<NomCd111>>    0.
+    Cd112    = <<NomCd112>>    0.
+    Cd113    = <<NomCd113>>    0.
+    Cd114    = <<NomCd114>>    0.
+    Cd116    = <<NomCd116>>    0.
+    In115    = <<NomIn115>>    0.
+!    In113    = <<NomIn113>>    0.
+    B10      = <<NomB10>>    0.
+    B11      = <<NomB11>>    0.
+    CNat     = <<NomCNat>>      0.
+  MIX 7   <<tmod>> NOEV ! (* Eau normale pour Tube Instr *)
+!    H2O      = <<NomH2O>> <<H2O_mti>>
+    H1_H2O   = <<NomH1>>       <<H_mti>>
+    O16      = <<NomO16>>      <<O_mti>>
+    B10      =  <<NomB10>>    <<B10_mti>>
+    B11      =  <<NomB11>>    <<B11_mti>>
+    U5DET    =  <<NomU235>>   <<U5FC>>
+*---- Fin Isotopes de Barres pour Modeti a 0 ----------
+  MIX 10 (* MODE *)
+    COMB 1 <<ss304Cntr>>
+         2 <<IncCntr>>
+         3 <<Zr4Cntr>>
+         4 <<GrPreCntr>>
+         5 <<H2OCntr>>
+  MIX 11 (* MODEL *)
+    COMB 1 <<ss304Side>>
+         2 <<IncSide>>
+         3 <<Zr4Side>>
+         4 <<GrPreSide>>
+         5 <<H2OSide>>
+  MIX 12 (* MODEC *)
+    COMB 1 <<ss304Corn>>
+         2 <<IncCorn>>
+         3 <<Zr4Corn>>
+         4 <<GrPreCorn>>
+         5 <<H2OCorn>>
+  MIX 13 (* MODETI *)
+    COMB 5 1.0
+        6 1.0E-20
+  MIX 14 (* MODETE *)
+    COMB 1 <<ss304Tube>>
+         2 <<IncTube>>
+         3 <<Zr4Tube>>
+         4 <<GrPreTube>>
+         5 <<H2OTube>>
+  MIX 15 (* MODETI POUR TUBE INSTR*)
+    COMB 6 1.0E-20
+         7 1.0
+*--- TUBES --------------------------------------------
+  MIX 20 <<tmod>> NOEV (* TUBE *)
+    Fe54     = <<NomFe54>>     <<Fe54T>>
+    Fe56     = <<NomFe56>>     <<Fe56T>>
+    Fe57     = <<NomFe57>>     <<Fe57T>>
+    Fe58     = <<NomFe58>>     <<Fe58T>>
+    Cr50     = <<NomCr50>>     <<Cr50T>>
+    Cr52     = <<NomCr52>>     <<Cr52T>>
+    Cr53     = <<NomCr53>>     <<Cr53T>>
+    Cr54     = <<NomCr54>>     <<Cr54T>>
+    O16      = <<NomO16>>      <<O16T>>
+    ZrNat    = <<NomZrNat>>    <<ZrNatT>> <<iZrT>> SHIB <<NomSSZrNat>>
+!    Zr90     = <<NomZr90>>     <<Zr90T>> <<iZrT>> SHIB <<NomSSZr90>>
+!    Zr91     = <<NomZr91>>     <<Zr91T>> <<iZrT>> SHIB <<NomSSZr91>>
+!    Zr92     = <<NomZr92>>     <<Zr92T>> <<iZrT>> SHIB <<NomSSZr92>>
+!    Zr93     = <<NomZr93>>     <<Zr93T>>
+!    Zr94     = <<NomZr94>>     <<Zr94T>> <<iZrT>> SHIB <<NomSSZr94>>
+!    Zr95     = <<NomZr95>>     <<Zr95T>>
+!    Zr96     = <<NomZr96>>     <<Zr96T>> <<iZrT>> SHIB <<NomSSZr96>>
+!    Sn112    = <<NomSn112>>    <<Sn112T>>
+!    Sn114    = <<NomSn114>>    <<Sn114T>>
+    Sn115    = <<NomSn115>>    <<Sn115T>>
+    Sn116    = <<NomSn116>>    <<Sn116T>>
+    Sn117    = <<NomSn117>>    <<Sn117T>>
+    Sn118    = <<NomSn118>>    <<Sn118T>>
+    Sn119    = <<NomSn119>>    <<Sn119T>>
+    Sn120    = <<NomSn120>>    <<Sn120T>>
+    Sn122    = <<NomSn122>>    <<Sn122T>>
+    Sn124    = <<NomSn124>>    <<Sn124T>>
+
+*--- BARRES -------------------------------------------
+  MIX 21 <<tmod>> NOEV (* ABSO AIC *)
+!    Ag107    = <<NomAg107>>    <<Ag107AIC>> <<iAg7>> SHIB <<NomSSAg7>>
+    Ag109    = <<NomAg109>>    <<Ag109AIC>> <<iAg9>> SHIB <<NomSSAg9>>
+!    Cd106    = <<NomCd106>>    <<Cd106AIC>>
+!    Cd108    = <<NomCd108>>    <<Cd108AIC>>
+    Cd110    = <<NomCd110>>    <<Cd110AIC>>
+    Cd111    = <<NomCd111>>    <<Cd111AIC>>
+    Cd112    = <<NomCd112>>    <<Cd112AIC>>
+    Cd113    = <<NomCd113>>    <<Cd113AIC>>
+    Cd114    = <<NomCd114>>    <<Cd114AIC>>
+    Cd116    = <<NomCd116>>    <<Cd116AIC>>
+    In115    = <<NomIn115>>    <<In115AIC>> <<iIn>> SHIB <<NomSSIn115>>
+!    In113    = <<NomIn113>>    <<In113AIC>> <<iIn>> SHIB <<NomSSIn113>>
+
+  MIX 22 <<tmod>> NOEV (* ABS_ACIER *)
+    Fe54     = <<NomFe54>>     <<Fe54SSRo>>
+    Fe56     = <<NomFe56>>     <<Fe56SSRo>>
+    Fe57     = <<NomFe57>>     <<Fe57SSRo>>
+    Fe58     = <<NomFe58>>     <<Fe58SSRo>>
+    Ni58     = <<NomNi58>>     <<Ni58SSRo>>
+    Ni60     = <<NomNi60>>     <<Ni60SSRo>>
+    Ni61     = <<NomNi61>>     <<Ni61SSRo>>
+    Ni62     = <<NomNi62>>     <<Ni62SSRo>>
+    Ni64     = <<NomNi64>>     <<Ni64SSRo>>
+    Cr50     = <<NomCr50>>     <<Cr50SSRo>>
+    Cr52     = <<NomCr52>>     <<Cr52SSRo>>
+    Cr53     = <<NomCr53>>     <<Cr53SSRo>>
+    Cr54     = <<NomCr54>>     <<Cr54SSRo>>
+    Mn55     = <<NomMn55>>     <<MnSSRo>>
+    SiNat    = <<NomSiNat>>    <<SiSSRo>>
+!    Si28     = <<NomSi28>>     <<Si28SSRo>>
+!    Si29     = <<NomSi29>>     <<Si29SSRo>>
+!    Si30     = <<NomSi30>>     <<Si30SSRo>>
+  MIX 23 <<tmod>> NOEV (* ABSO B4C *)
+    B10B     = <<NomB10>>      <<B10Brod>>
+    B11B     = <<NomB11>>      <<B11Brod>>
+    CNat     = <<NomCNat>>      <<Crod>>
+
+*--- GAINES -------------------------------------------
+  MIX 30 <<tgain>> NOEV (* GAINE COMB *)
+    Fe54     = <<NomFe54>>     <<Fe54Cl>>
+    Fe56     = <<NomFe56>>     <<Fe56Cl>>
+    Fe57     = <<NomFe57>>     <<Fe57Cl>>
+    Fe58     = <<NomFe58>>     <<Fe58Cl>>
+    Cr50     = <<NomCr50>>     <<Cr50Cl>>
+    Cr52     = <<NomCr52>>     <<Cr52Cl>>
+    Cr53     = <<NomCr53>>     <<Cr53Cl>>
+    Cr54     = <<NomCr54>>     <<Cr54Cl>>
+    O16      = <<NomO16>>      <<O16Cl>>
+    ZrNat    = <<NomZrNat>>    <<ZrNatCl>> <<iZrG>> SHIB <<NomSSZrNat>>
+!    Zr90     = <<NomZr90>>     <<Zr90Cl>> <<iZrG>> SHIB <<NomSSZr90>>
+!    Zr91     = <<NomZr91>>     <<Zr91Cl>> <<iZrG>> SHIB <<NomSSZr91>>
+!    Zr92     = <<NomZr92>>     <<Zr92Cl>> <<iZrG>> SHIB <<NomSSZr92>>
+!    Zr93     = <<NomZr93>>     <<Zr93Cl>>
+!    Zr94     = <<NomZr94>>     <<Zr94Cl>> <<iZrG>> SHIB <<NomSSZr94>>
+!    Zr95     = <<NomZr95>>     <<Zr95Cl>>
+!    Zr96     = <<NomZr96>>     <<Zr96Cl>> <<iZrG>> SHIB <<NomSSZr96>>
+!    Sn112    = <<NomSn112>>  <<Sn112Cl>>
+!    Sn114    = <<NomSn114>>  <<Sn114Cl>>
+    Sn115    = <<NomSn115>>  <<Sn115Cl>>
+    Sn116    = <<NomSn116>>  <<Sn116Cl>>
+    Sn117    = <<NomSn117>>  <<Sn117Cl>>
+    Sn118    = <<NomSn118>>  <<Sn118Cl>>
+    Sn119    = <<NomSn119>>  <<Sn119Cl>>
+    Sn120    = <<NomSn120>>  <<Sn120Cl>>
+    Sn122    = <<NomSn122>>  <<Sn122Cl>>
+    Sn124    = <<NomSn124>>  <<Sn124Cl>>
+
+  MIX 31 <<tmod>> NOEV (* GAINA & GAINAA for ABSO AIC *)
+    Fe54     = <<NomFe54>>     <<Fe54CladAIC>>
+    Fe56     = <<NomFe56>>     <<Fe56CladAIC>>
+    Fe57     = <<NomFe57>>     <<Fe57CladAIC>>
+    Fe58     = <<NomFe58>>     <<Fe58CladAIC>>
+    Ni58     = <<NomNi58>>     <<Ni58CladAIC>>
+    Ni60     = <<NomNi60>>     <<Ni60CladAIC>>
+    Ni61     = <<NomNi61>>     <<Ni61CladAIC>>
+    Ni62     = <<NomNi62>>     <<Ni62CladAIC>>
+    Ni64     = <<NomNi64>>     <<Ni64CladAIC>>
+    Cr50     = <<NomCr50>>     <<Cr50CladAIC>>
+    Cr52     = <<NomCr52>>     <<Cr52CladAIC>>
+    Cr53     = <<NomCr53>>     <<Cr53CladAIC>>
+    Cr54     = <<NomCr54>>     <<Cr54CladAIC>>
+    Mn55     = <<NomMn55>>     <<MnCladAIC>>
+    SiNat    = <<NomSiNat>>    <<SiCladAIC>>
+!    Si28     = <<NomSi28>>     <<Si28CladAIC>>
+!    Si29     = <<NomSi29>>     <<Si29CladAIC>>
+!    Si30     = <<NomSi30>>     <<Si30CladAIC>>
+
+  MIX 32 <<tmod>> NOEV (* GAINA & GAINAA for ABS_ACIER *)
+    Fe54     = <<NomFe54>>     <<Fe54CladSS>>
+    Fe56     = <<NomFe56>>     <<Fe56CladSS>>
+    Fe57     = <<NomFe57>>     <<Fe57CladSS>>
+    Fe58     = <<NomFe58>>     <<Fe58CladSS>>
+    Ni58     = <<NomNi58>>     <<Ni58CladSS>>
+    Ni60     = <<NomNi60>>     <<Ni60CladSS>>
+    Ni61     = <<NomNi61>>     <<Ni61CladSS>>
+    Ni62     = <<NomNi62>>     <<Ni62CladSS>>
+    Ni64     = <<NomNi64>>     <<Ni64CladSS>>
+    Cr50     = <<NomCr50>>     <<Cr50CladSS>>
+    Cr52     = <<NomCr52>>     <<Cr52CladSS>>
+    Cr53     = <<NomCr53>>     <<Cr53CladSS>>
+    Cr54     = <<NomCr54>>     <<Cr54CladSS>>
+    Mn55     = <<NomMn55>>     <<MnCladSS>>
+    SiNat    = <<NomSiNat>>    <<SiCladSS>>
+!    Si28     = <<NomSi28>>     <<Si28CladSS>>
+!    Si29     = <<NomSi29>>     <<Si29CladSS>>
+!    Si30     = <<NomSi30>>     <<Si30CladSS>>
+
+  MIX 33 <<tmod>> NOEV (* GAINA & GAINAA for ABSO B4C *)
+    Fe54     = <<NomFe54>>     <<Fe54CladB4C>>
+    Fe56     = <<NomFe56>>     <<Fe56CladB4C>>
+    Fe57     = <<NomFe57>>     <<Fe57CladB4C>>
+    Fe58     = <<NomFe58>>     <<Fe58CladB4C>>
+    Ni58     = <<NomNi58>>     <<Ni58CladB4C>>
+    Ni60     = <<NomNi60>>     <<Ni60CladB4C>>
+    Ni61     = <<NomNi61>>     <<Ni61CladB4C>>
+    Ni62     = <<NomNi62>>     <<Ni62CladB4C>>
+    Ni64     = <<NomNi64>>     <<Ni64CladB4C>>
+    Cr50     = <<NomCr50>>     <<Cr50CladB4C>>
+    Cr52     = <<NomCr52>>     <<Cr52CladB4C>>
+    Cr53     = <<NomCr53>>     <<Cr53CladB4C>>
+    Cr54     = <<NomCr54>>     <<Cr54CladB4C>>
+    Mn55     = <<NomMn55>>     <<MnCladB4C>>
+    SiNat    = <<NomSiNat>>    <<SiCladB4C>>
+!    Si28     = <<NomSi28>>     <<Si28CladB4C>>
+!    Si29     = <<NomSi29>>     <<Si29CladB4C>>
+!    Si30     = <<NomSi30>>     <<Si30CladB4C>>
+
+  MIX 34 <<tmod>> NOEV (* GAINE BP INT ACIER SS304 *)
+    Fe54     = <<NomFe54>>   <<Fe54CladInt>>
+    Fe56     = <<NomFe56>>   <<Fe56CladInt>>
+    Fe57     = <<NomFe57>>   <<Fe57CladInt>>
+    Fe58     = <<NomFe58>>   <<Fe58CladInt>>
+    Ni58     = <<NomNi58>>   <<Ni58CladInt>>
+    Ni60     = <<NomNi60>>   <<Ni60CladInt>>
+    Ni61     = <<NomNi61>>   <<Ni61CladInt>>
+    Ni62     = <<NomNi62>>   <<Ni62CladInt>>
+    Ni64     = <<NomNi64>>   <<Ni64CladInt>>
+    Cr50     = <<NomCr50>>   <<Cr50CladInt>>
+    Cr52     = <<NomCr52>>   <<Cr52CladInt>>
+    Cr53     = <<NomCr53>>   <<Cr53CladInt>>
+    Cr54     = <<NomCr54>>   <<Cr54CladInt>>
+    Mn55     = <<NomMn55>>   <<MnCladInt>>
+
+  MIX 35 <<tmod>> NOEV (* GAINE BP EXT ACIER SS304 *)
+    Fe54     = <<NomFe54>>   <<Fe54CladExt>>
+    Fe56     = <<NomFe56>>   <<Fe56CladExt>>
+    Fe57     = <<NomFe57>>   <<Fe57CladExt>>
+    Fe58     = <<NomFe58>>   <<Fe58CladExt>>
+    Ni58     = <<NomNi58>>   <<Ni58CladExt>>
+    Ni60     = <<NomNi60>>   <<Ni60CladExt>>
+    Ni61     = <<NomNi61>>   <<Ni61CladExt>>
+    Ni62     = <<NomNi62>>   <<Ni62CladExt>>
+    Ni64     = <<NomNi64>>   <<Ni64CladExt>>
+    Cr50     = <<NomCr50>> <<Cr50CladExt>>
+    Cr52     = <<NomCr52>>   <<Cr52CladExt>>
+    Cr53     = <<NomCr53>>   <<Cr53CladExt>>
+    Cr54     = <<NomCr54>>   <<Cr54CladExt>>
+    Mn55     = <<NomMn55>>   <<MnCladExt>>
+
+  MIX 36 <<tmod>> NOEV (* GAINE M5 *)
+    Fe54     = <<NomFe54>> <<Fe54M5Cl>>
+    Fe56     = <<NomFe56>> <<Fe56M5Cl>>
+    Fe57     = <<NomFe57>> <<Fe57M5Cl>>
+    Fe58     = <<NomFe58>> <<Fe58M5Cl>>
+    O16      = <<NomO16>>  <<O16M5Cl>>
+    ZrNat    = <<NomZrNat>>   <<ZrM5Cl>>   <<iZrG>> SHIB <<NomSSZrNat>>
+!    Zr90     = <<NomZr90>>    <<Zr90M5Cl>> <<iZrG>> SHIB <<NomSSZr90>>
+!    Zr91     = <<NomZr91>>    <<Zr91M5Cl>> <<iZrG>> SHIB <<NomSSZr91>>
+!    Zr92     = <<NomZr92>>    <<Zr92M5Cl>> <<iZrG>> SHIB <<NomSSZr92>>
+!    Zr93     = <<NomZr93>>    <<Zr93M5Cl>>
+!    Zr94     = <<NomZr94>>    <<Zr94M5Cl>> <<iZrG>> SHIB <<NomSSZr94>>
+!    Zr95     = <<NomZr95>>    <<Zr95M5Cl>>
+!    Zr96     = <<NomZr96>>    <<Zr96M5Cl>> <<iZrG>> SHIB <<NomSSZr96>>
+    Nb93     = <<NomNb93>> <<Nb93M5Cl>>
+    S32      = <<NomS32>>  <<S32M5Cl>>
+    S33      = <<NomS33>>  <<S33M5Cl>>
+    S34      = <<NomS34>>  <<S34M5Cl>>
+
+  MIX 59 <<tmod>> NOEV (* Air, origine CRISTAL *)
+    N14      = <<NomN14>>    4.19850E-5
+    O16      = <<NomO16>>    1.12630E-5
+
+  MIX 60 <<tmod>> (* BP Pyrex *)
+    B10      = <<NomB10>> <<B10BP>>
+    B11      = <<NomB11>>    <<B11BP>>
+    O16      = <<NomO16>>    <<O16BP>>
+    SiNat    = <<NomSiNat>>  <<SiNatBP>>
+!    Si28    = <<NomSi28>>  <<Si28BP>>
+!    Si29    = <<NomSi29>>  <<Si29BP>>
+!    Si30    = <<NomSi30>>  <<Si30BP>>
+    Al27     = <<NomAl27>>   <<Al27BP>>
+    KNat     = <<NomKnat>>   <<KNatBP>>
+!    K39     = <<NomK39>>   <<K39BP>>
+!    K40     = <<NomK40>>   <<K40BP>>
+!    K41     = <<NomK41>>   <<K41BP>>
+    Na23     = <<NomNa23>>   <<Na23BP>>
+
+*--- COMB UOX -----------------------------------------
+  MIX 100 <<tcom>> (* COMB *)
+    U234     = <<NomU234>>   <<U4fuel>>
+    U235     = <<NomU235>>   <<U5fuel>>  <<iU5>> SHIB <<NomSSU235>>
+    U236     = <<NomU236>>   <<U6fuel>>
+    U238     = <<NomU238>>   <<U8fuel>>  <<iU8>> SHIB <<NomSSU238>>
+    PU238    = <<NomPu238>>  <<Pu8fuel>>
+    PU239    = <<NomPu239>>  <<Pu9fuel>> <<iPu9>> SHIB <<NomSSPu9>>
+    PU240    = <<NomPu240>>  <<Pu0fuel>> <<iPu0>> SHIB <<NomSSPu0>>
+    PU241    = <<NomPu241>>  <<Pu1fuel>> <<iPu1>> SHIB <<NomSSPu1>>
+    PU242    = <<NomPu242>>  <<Pu2fuel>> <<iPu2>> SHIB <<NomSSPu2>>
+    AM241    = <<NomAm241>>  <<Am1fuel>>
+    O16      = <<NomO16>>    <<O_fuel>>
+  MIX 101 COMB 100 1.
+  MIX 102 COMB 100 1.
+  MIX 103 COMB 100 1.
+
+*--- COMB MOX -----------------------------------------
+  MIX 110 <<tcom>> (* COMB_P [LOW PU] *)
+    U234     = <<NomU234>>   <<U4cornfuel>>
+    U235     = <<NomU235>>   <<U5cornfuel>>  <<iU5>> SHIB <<NomSSU235>>
+    U236     = <<NomU236>>   <<U6cornfuel>>
+    U238     = <<NomU238>>   <<U8cornfuel>>  <<iU8>> SHIB <<NomSSU238>>
+    PU238    = <<NomPu238>>  <<Pu8cornfuel>>
+    PU239    = <<NomPu239>>  <<Pu9cornfuel>> <<iPu9>> SHIB <<NomSSPu9>>
+    PU240    = <<NomPu240>>  <<Pu0cornfuel>> <<iPu0>> SHIB <<NomSSPu0>>
+    PU241    = <<NomPu241>>  <<Pu1cornfuel>> <<iPu1>> SHIB <<NomSSPu1>>
+    PU242    = <<NomPu242>>  <<Pu2cornfuel>> <<iPu2>> SHIB <<NomSSPu2>>
+    AM241    = <<NomAm241>>  <<Am1cornfuel>>
+    O16      = <<NomO16>>    <<O_corn_fuel>>
+  MIX 111 COMB 110 1.
+  MIX 112 COMB 110 1.
+  MIX 113 COMB 110 1.
+
+  MIX 120 <<tcom>> (* COMB_I [AVG PU] *)
+    U234     = <<NomU234>>   <<U4sidefuel>>
+    U235     = <<NomU235>>   <<U5sidefuel>>  <<iU5>> SHIB <<NomSSU235>>
+    U236     = <<NomU236>>   <<U6sidefuel>>
+    U238     = <<NomU238>>   <<U8sidefuel>>  <<iU8>> SHIB <<NomSSU238>>
+    PU238    = <<NomPu238>>  <<Pu8sidefuel>>
+    PU239    = <<NomPu239>>  <<Pu9sidefuel>> <<iPu9>> SHIB <<NomSSPu9>>
+    PU240    = <<NomPu240>>  <<Pu0sidefuel>> <<iPu0>> SHIB <<NomSSPu0>>
+    PU241    = <<NomPu241>>  <<Pu1sidefuel>> <<iPu1>> SHIB <<NomSSPu1>>
+    PU242    = <<NomPu242>>  <<Pu2sidefuel>> <<iPu2>> SHIB <<NomSSPu2>>
+    AM241    = <<NomAm241>>  <<Am1sidefuel>>
+    O16      = <<NomO16>>    <<O_side_fuel>>
+  MIX 121 COMB 120 1.
+  MIX 122 COMB 120 1.
+  MIX 123 COMB 120 1.
+
+  MIX 130 <<tcom>> (* COMB_C [HIGH PU] *)
+    U234     = <<NomU234>>   <<U4cntrfuel>>
+    U235     = <<NomU235>>   <<U5cntrfuel>>  <<iU5>> SHIB <<NomSSU235>>
+    U236     = <<NomU236>>   <<U6cntrfuel>>
+    U238     = <<NomU238>>   <<U8cntrfuel>>  <<iU8>> SHIB <<NomSSU238>>
+    PU238    = <<NomPu238>>  <<Pu8cntrfuel>>
+    PU239    = <<NomPu239>>  <<Pu9cntrfuel>> <<iPu9>> SHIB <<NomSSPu9>>
+    PU240    = <<NomPu240>>  <<Pu0cntrfuel>> <<iPu0>> SHIB <<NomSSPu0>>
+    PU241    = <<NomPu241>>  <<Pu1cntrfuel>> <<iPu1>> SHIB <<NomSSPu1>>
+    PU242    = <<NomPu242>>  <<Pu2cntrfuel>> <<iPu2>> SHIB <<NomSSPu2>>
+    AM241    = <<NomAm241>>  <<Am1cntrfuel>>
+    O16      = <<NomO16>>    <<O_cntr_fuel>>
+  MIX 131 COMB 130 1.
+  MIX 132 COMB 130 1.
+  MIX 133 COMB 130 1.
+
+*--- COMB UGd -----------------------------------------
+  MIX 140 <<tcom>> (* COMB with Gd *)
+    Gd154    = <<NomGd154>>  <<Gd154_fuel>> <<iGd4>> SHIB <<NomSSGd4>>
+    Gd155    = <<NomGd155>>  <<Gd155_fuel>> <<iGd5>> SHIB <<NomSSGd5>>
+    Gd156    = <<NomGd156>>  <<Gd156_fuel>> <<iGd6>> SHIB <<NomSSGd6>>
+    Gd157    = <<NomGd157>>  <<Gd157_fuel>> <<iGd7>> SHIB <<NomSSGd7>>
+    Gd158    = <<NomGd158>>  <<Gd158_fuel>> <<iGd8>> SHIB <<NomSSGd8>>
+    Gd160    = <<NomGd160>>  <<Gd160_fuel>> <<iGd0>> SHIB <<NomSSGd0>>
+    U234     = <<NomU234>>   <<U4Gd_fuel>>
+    U235     = <<NomU235>>   <<U5Gd_fuel>>  <<iU5>>  SHIB <<NomSSU235>>
+    U236     = <<NomU236>>   <<U6Gd_fuel>>
+    U238     = <<NomU238>>   <<U8Gd_fuel>>  <<iU8>>  SHIB <<NomSSU238>>
+    PU238    = <<NomPu238>>  0.
+    PU239    = <<NomPu239>>  <<Pu9Gd_fuel>> <<iPu9>> SHIB <<NomSSPu9>>
+    PU240    = <<NomPu240>>  <<Pu0Gd_fuel>> <<iPu0>> SHIB <<NomSSPu0>>
+    PU241    = <<NomPu241>>  <<Pu1Gd_fuel>> <<iPu1>> SHIB <<NomSSPu1>>
+    PU242    = <<NomPu242>>  <<Pu2Gd_fuel>> <<iPu2>> SHIB <<NomSSPu2>>
+    AM241    = <<NomAm241>>  0.
+    O16      = <<NomO16>>    <<O_UGd_fuel>>
+  MIX 141 COMB 140 1.
+  MIX 142 COMB 140 1.
+  MIX 143 COMB 140 1.
+  MIX 144 COMB 140 1.
+! Highest Mix number MUST be equal to NMIX
+  MIX <<Nmix>> COMB 140 1.
+  ;
+
+*------------------------------------------------------
+* Moderator for every cell, all based on MODETI (internal guide tube):
+*   MODETE (external guide tube) proportion
+*   MODE   (central fuel pins)   proportion
+*   MODEL  (side fuel pins)      proportion
+*   MODEC  (corner fuel pin)     proportion
+*------------------------------------------------------
+* 'MODETE' (MODErateur Tube Externe)
+*------------------------------------------------------
+REAL H2O_mte   := H2OTube H2O_mti * ;
+REAL H_mte     := H2OTube H_mti   * ;
+REAL O_mte     := H2OTube O_mti   * ;
+REAL B10_mte   := H2OTube B10_mti * ;
+REAL B11_mte   := H2OTube B11_mti * ;
+REAL B10B_mte  := GrPreTube B10BGr  * ;
+REAL B11B_mte  := GrPreTube B11BGr  * ;
+
+*ECHO "MODETE CONC" ;
+*ECHO "H2O_mte  "  H2O_mte   ;
+*ECHO "H_mte     "  H_mte   ;
+*ECHO "O_mte     "  O_mte   ;
+*ECHO "B10_mte  "  B10_mte   ;
+*ECHO "B11_mte  "  B11_mte   ;
+*ECHO "B10B_mte "  B10B_mte  ;
+*ECHO "B11B_mte "  B11B_mte  ;
+
+*------------------------------------------------------
+* 'MODE' (MODErateur cellule centrale)
+*------------------------------------------------------
+REAL H2O_mod   := H2OCntr H2O_mti * ;
+REAL H_mod     := H2OCntr H_mti   * ;
+REAL O_mod     := H2OCntr O_mti   * ;
+REAL B10_mod   := H2OCntr B10_mti * ;
+REAL B11_mod   := H2OCntr B11_mti * ;
+REAL B10B_mod  := GrPreCntr B10BGr  * ;
+REAL B11B_mod  := GrPreCntr B11BGr  * ;
+
+*ECHO "MODE CONC" ;
+*ECHO "H2O_mod  "  H2O_mod   ;
+*ECHO "H_mod     "  H_mod   ;
+*ECHO "O_mod     "  O_mod   ;
+*ECHO "B10_mod  "  B10_mod   ;
+*ECHO "B11_mod  "  B11_mod   ;
+*ECHO "B10B_mod "  B10B_mod  ;
+*ECHO "B11B_mod "  B11B_mod  ;
+
+*------------------------------------------------------
+* 'MODEL' (MODErateur cellule Laterale)
+*------------------------------------------------------
+REAL H2O_mdl   := H2OSide H2O_mti * ;
+REAL H_mdl     := H2OSide H_mti   * ;
+REAL O_mdl     := H2OSide O_mti   * ;
+REAL B10_mdl   := H2OSide B10_mti * ;
+REAL B11_mdl   := H2OSide B11_mti * ;
+REAL B10B_mdl  := GrPreSide B10BGr  * ;
+REAL B11B_mdl  := GrPreSide B11BGr  * ;
+
+*ECHO "MODEL CONC" ;
+*ECHO "H2O_mdl  "  H2O_mdl   ;
+*ECHO "H_mdl     "  H_mdl     ;
+*ECHO "O_mdl     "  O_mdl     ;
+*ECHO "B10_mdl  "  B10_mdl   ;
+*ECHO "B11_mdl  "  B11_mdl   ;
+*ECHO "B10B_mdl "  B10B_mdl  ;
+*ECHO "B11B_mdl "  B11B_mdl  ;
+
+*------------------------------------------------------
+* 'MODEC' (MODErateur cellule Coin)
+*------------------------------------------------------
+REAL H2O_mdc   := H2OCorn H2O_mti * ;
+REAL H_mdc     := H2OCorn H_mti   * ;
+REAL O_mdc     := H2OCorn O_mti   * ;
+REAL B10_mdc   := H2OCorn B10_mti * ;
+REAL B11_mdc   := H2OCorn B11_mti * ;
+REAL B10B_mdc  := GrPreCorn B10BGr  * ;
+REAL B11B_mdc  := GrPreCorn B11BGr  * ;
+
+*ECHO "MODEC CONC" ;
+*ECHO "H2O_mdc  "  H2O_mdc   ;
+*ECHO "H_mdc     "  H_mdc     ;
+*ECHO "O_mdc     "  O_mdc     ;
+*ECHO "B10_mdc  "  B10_mdc   ;
+*ECHO "B11_mdc  "  B11_mdc   ;
+*ECHO "B10B_mdc "  B10B_mdc  ;
+*ECHO "B11B_mdc "  B11B_mdc  ;
+
+*------------------------------------------------------
+* Somme des B10/B11 des grilles et de ceux de l'eau,
+* pour ConcMode (variation de CB lors du MakeSap).
+* Il serait mieux de supprimer cette 'astuce' et
+* d'isoler les calculs de H2O, B10 et B11 dans une
+* procedure appelee par CreaMix et MakeSap1BU.
+* NB : d'ici la, en realite, le calcul realise dans
+* MakeSap1BU n'est pas tout a fait exact (auparavant,
+* il ne l'etait pas non plus suite a un bug ...).
+* L'astuce ne marche que si cette variation lineaire
+* ne s'applique que sur le B10 et B11 de l'eau. En
+* pratique, le B10 et le B11 des grilles est trop peu
+* present pour avoir un impact.
+*------------------------------------------------------
+
+EVALUATE B10_mod := B10_mod B10B_mod + ;
+EVALUATE B11_mod := B11_mod B11B_mod + ;
+EVALUATE B10_mdl := B10_mdl B10B_mdl + ;
+EVALUATE B11_mdl := B11_mdl B11B_mdl + ;
+EVALUATE B10_mdc := B10_mdc B10B_mdc + ;
+EVALUATE B11_mdc := B11_mdc B11B_mdc + ;
+EVALUATE B10_mte := B10_mte B10B_mte + ;
+EVALUATE B11_mte := B11_mte B11B_mte + ;
+
+*------------------------------------------------------
+* Moderator Concentrations - for CBOR DMOD variation
+*------------------------------------------------------
+ConcMode := UTL:          :: CREA 'MODETI' 4 =
+  <<H_mti>>
+  <<O_mti>>
+  <<B10_mti>>
+  <<B11_mti>>
+  ;
+ConcMode := UTL: ConcMode :: CREA 'MODETE' 4 =
+  <<H_mte>>
+  <<O_mte>>
+  <<B10_mte>>
+  <<B11_mte>>
+  ;
+ConcMode := UTL: ConcMode :: CREA 'MODE  ' 4 =
+  <<H_mod>>
+  <<O_mod>>
+  <<B10_mod>>
+  <<B11_mod>>
+  ;
+ConcMode := UTL: ConcMode :: CREA 'MODEL ' 4 =
+  <<H_mdl>>
+  <<O_mdl>>
+  <<B10_mdl>>
+  <<B11_mdl>>
+  ;
+ConcMode := UTL: ConcMode :: CREA 'MODEC ' 4 =
+  <<H_mdc>>
+  <<O_mdc>>
+  <<B10_mdc>>
+  <<B11_mdc>>
+  ;
+*------------------------------------------------------
+END: ;
+QUIT "LIST" .

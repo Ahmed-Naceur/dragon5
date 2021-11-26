@@ -1,0 +1,395 @@
+*DECK MicWULZC.c2m
+*----------
+*  Name          : MicWULZC.c2m
+*  Type          : DRAGON procedure
+*  Use           : Add LZC mixtures to Gentilly-2 fuel microlib 
+*                  with cross sections from the WLUP based 69 
+*                  groups  (LibName = IAEA69).
+*                  (cluster model)
+*  Author        : G. Marleau
+*  Date          : 2006/03/01
+*  
+*  Procedure description: 
+*    MicroLib := MicWULZC MicroLib ::
+*      <<PrtLev>> <<Position>> <<Type>> ;
+*  
+*    MicroLib      : XSM_FILE containing the updated microlib where:
+*                    Mix 15 = LZC zone to fill or empty
+*                    Mix 16 = Guide tube
+*                    Mix 17 = mixture in bubbler for scavenger 1
+*                    Mix 18 = mixture around bubbler for scavenger 1
+*                    Mix 19 = mixture in scavenger 1
+*                    Mix 20 = mixture around scavenger 1
+*                    Mix 21 = mixture in bubbler for scavenger 2
+*                    Mix 22 = mixture around bubbler for scavenger 2
+*                    Mix 23 = mixture in scavenger 2
+*                    Mix 24 = mixture around scavenger 2
+*                    Mix 25 = mixture in bubbler for scavenger 3
+*                    Mix 26 = mixture around bubbler for scavenger 3
+*                    Mix 27 = mixture in scavenger 3
+*                    Mix 28 = mixture around scavenger 3
+*                    Mix 29 = mixture in balance for feeder 1
+*                    Mix 30 = mixture around balance for feeder 1
+*                    Mix 31 = mixture in feeder 1
+*                    Mix 32 = mixture around feeder 1
+*                    Mix 33 = mixture in balance for feeder 2
+*                    Mix 34 = mixture around balance for feeder 2
+*                    Mix 35 = mixture in feeder 2
+*                    Mix 36 = mixture around feeder 2
+*    PrtLev        : Print Level
+*                    0  -> Minimum print
+*                    1  -> Standard print
+*                    10 -> Debug  
+*    Position      : LZC position
+*                    NO  -> LZC and guide tubes absent.
+*                    OUT -> LZC empty.
+*                    IN  -> LZC filled.
+*    Type          : LZC type
+*                    10  -> 1 scavenger tube 0 feeder tube (default)
+*                    21  -> 2 scavenger tubes 1 feeder tube
+*                    32  -> 3 scavenger tubes 2 feeder tubes
+*
+*
+* 
+*----------
+* Define procedure parameters and options and read
+* the procedure input data
+*----
+PARAMETER MicroLib :: EDIT 0 ::: XSM_FILE MicroLib ; ;
+INTEGER   PrtLev ;
+STRING    Position Type ;
+::  >>PrtLev<< >>Position<< >>Type<< ;
+*----------
+*  Define modules
+*----------
+MODULE  INFO: LIB:  DELETE:  ;
+*----------
+*  Library and isotope names
+*----------
+REAL    Mtemp Mprty := 345.66 99.92 ;
+REAL    MwgtH1  MwgtD2  MwgtO16  Mdens ;
+REAL    Wtemp Wprty := Mtemp  0.001  ;
+REAL    WwgtH1  WwgtD2  WwgtO16  Wdens ;
+REAL 
+  BNZrNb         BNZr         BNZrII         :=
+  0.00021        0.00031      0.00005962     ;  
+REAL 
+  B10ZrNb        B10Zr        B10ZrII 
+  B11ZrNb        B11Zr        B11ZrII        :=
+  0.199 BNZrNb * 0.199 BNZr * 0.199 BNZrII * 
+  0.801 BNZrNb * 0.801 BNZr * 0.801 BNZrII * ;  
+*----------
+*  Library and isotope names
+*----------
+STRING   LibName 
+         IsoU5    IsoU8    IsoU6    IsoPu9   IsoO16 
+         IsoH1    IsoD2    IsoB10   IsoB11   IsoBn
+         IsoZr    IsoFe    IsoFeA   IsoCr    IsoNi 
+         IsoNb    IsoC     IsoSi    IsoMn    IsoCu
+         IsoMo    IsoAl    IsoHe4   IsoN     IsoTi    
+         IsoCd    IsoCo59                          :=
+        "IAEA69"               
+        "2235"   "8238"   "236"    "6239"   "6016"
+        "3001"   "3002"   "10"     "11"     "1011"
+        "91"     "2056"   "2056"   "52"     "58"     
+        "93"     "2012"   "29"     "55"     "3063" 
+        "96"     "27"     "4"      "14"     "48"
+        "2113"   "1059"                            ; 
+INFO: ::
+  TMP: <<Mtemp>> K 
+  PUR: <<Mprty>> WGT% 
+  CALC DENS WATER >>Mdens<<
+  LIB: WIMSD4 FIL: <<LibName>>
+  ISO: 3        <<IsoH1>>   <<IsoD2>>   <<IsoO16>> 
+  CALC WGT% D2O >>MwgtH1<<  >>MwgtD2<<  >>MwgtO16<<   ;
+INFO: ::
+  TMP: <<Wtemp>> K 
+  PUR: <<Wprty>> WGT% 
+  CALC DENS WATER >>Wdens<<
+  LIB: WIMSD4 FIL: <<LibName>>
+  ISO: 3        <<IsoH1>>   <<IsoD2>>   <<IsoO16>> 
+  CALC WGT% D2O >>WwgtH1<<  >>WwgtD2<<  >>WwgtO16<<   ;
+*----------
+*  Complete Microscopic cross section library
+*----------
+IF Position "IN" = THEN
+  IF Type "32" = THEN
+    MicroLib   := LIB: MicroLib ::
+      EDIT <<PrtLev>>
+      NMIX 36  CTRA WIMS
+      MIXS LIB: WIMSD4 FIL: <<LibName>>
+      MIX  15  <<Wtemp>>  <<Wdens>>  
+        H1  = <<IsoH1>>  <<WwgtH1>>     D2  = <<IsoD2>>  <<WwgtD2>> 
+        O16 = <<IsoO16>> <<WwgtO16>>  
+      MIX 16 <<Mtemp>>   6.4003        
+        ZR  = <<IsoZr>>   98.2083        FE = <<IsoFe>>   0.135 
+        CR  = <<IsoCr>>   0.10           NI = <<IsoNi>>   0.055
+*        BN  = <<IsoBn>>   <<BNZrII>>
+        B10 = <<IsoB10>>  <<B10ZrII>>    B11 = <<IsoB11>>  <<B10ZrII>> 
+*Scavanger 1 
+      MIX  17 <<Mtemp>>  0.0014     
+        HE4 = <<IsoHe4>> 100.0  
+      MIX  18 COMB 16 100.0 
+      MIX  19 COMB 15 100.0  
+      MIX  20 COMB 16 100.0 
+*Scavanger 2 
+      MIX  21 COMB 17 100.0 
+      MIX  22 COMB 18 100.0 
+      MIX  23 COMB 19 100.0 
+      MIX  24 COMB 20 100.0 
+*Scavanger 3 
+      MIX  25 COMB 17 100.0 
+      MIX  26 COMB 18 100.0 
+      MIX  27 COMB 19 100.0 
+      MIX  28 COMB 20 100.0 
+*Feeder 1
+      MIX  29 COMB 17 100.0 
+      MIX  30 COMB 18 100.0 
+      MIX  31 COMB 19 100.0 
+      MIX  32 COMB 20 100.0 
+*Feeder 2
+      MIX  33 COMB 17 100.0 
+      MIX  34 COMB 18 100.0 
+      MIX  35 COMB 19 100.0 
+      MIX  36 COMB 20 100.0 
+      ;
+  ELSEIF Type "21" = THEN
+    MicroLib   := LIB: MicroLib ::
+      EDIT <<PrtLev>>
+      NMIX 36  CTRA WIMS
+      MIXS LIB: WIMSD4 FIL: <<LibName>>
+      MIX  15  <<Wtemp>>  <<Wdens>>  
+        H1  = <<IsoH1>>  <<WwgtH1>>     D2  = <<IsoD2>>  <<WwgtD2>> 
+        O16 = <<IsoO16>> <<WwgtO16>>  
+      MIX 16 <<Mtemp>>   6.4003        
+        ZR  = <<IsoZr>>   98.2083        FE = <<IsoFe>>   0.135 
+        CR  = <<IsoCr>>   0.10           NI = <<IsoNi>>   0.055
+*        BN  = <<IsoBn>>   <<BNZrII>>
+        B10 = <<IsoB10>>  <<B10ZrII>>    B11 = <<IsoB11>>  <<B10ZrII>> 
+*Scavanger 1 
+      MIX  17 <<Mtemp>>  0.0014     
+        HE4 = <<IsoHe4>> 100.0  
+      MIX  18 COMB 16 100.0 
+      MIX  19 COMB 15 100.0  
+      MIX  20 COMB 16 100.0 
+*Scavanger 2 
+      MIX  21 COMB 17 100.0 
+      MIX  22 COMB 18 100.0 
+      MIX  23 COMB 19 100.0 
+      MIX  24 COMB 20 100.0 
+*Scavanger 3 
+      MIX  25 COMB 15 100.0 
+      MIX  26 COMB 15 100.0 
+      MIX  27 COMB 15 100.0 
+      MIX  28 COMB 15 100.0 
+*Feeder 1
+      MIX  29 COMB 17 100.0 
+      MIX  30 COMB 18 100.0 
+      MIX  31 COMB 19 100.0 
+      MIX  32 COMB 20 100.0 
+*Feeder 2
+      MIX  33 COMB 15 100.0 
+      MIX  34 COMB 15 100.0 
+      MIX  35 COMB 15 100.0 
+      MIX  36 COMB 15 100.0 
+      ;
+  ELSE 
+    MicroLib   := LIB: MicroLib ::
+      EDIT <<PrtLev>>
+      NMIX 36  CTRA WIMS
+      MIXS LIB: WIMSD4 FIL: <<LibName>>
+      MIX  15  <<Wtemp>>  <<Wdens>>  
+        H1  = <<IsoH1>>  <<WwgtH1>>     D2  = <<IsoD2>>  <<WwgtD2>> 
+        O16 = <<IsoO16>> <<WwgtO16>>  
+      MIX 16 <<Mtemp>>   6.4003        
+        ZR  = <<IsoZr>>   98.2083        FE = <<IsoFe>>   0.135 
+        CR  = <<IsoCr>>   0.10           NI = <<IsoNi>>   0.055
+*        BN  = <<IsoBn>>   <<BNZrII>>
+        B10 = <<IsoB10>>  <<B10ZrII>>    B11 = <<IsoB11>>  <<B10ZrII>> 
+*Scavanger 1 
+      MIX  17 <<Mtemp>>  0.0014     
+        HE4 = <<IsoHe4>> 100.0  
+      MIX  18 COMB 16 100.0 
+      MIX  19 COMB 15 100.0  
+      MIX  20 COMB 16 100.0 
+*Scavanger 2 
+      MIX  21 COMB 15 100.0 
+      MIX  22 COMB 15 100.0 
+      MIX  23 COMB 15 100.0 
+      MIX  24 COMB 15 100.0 
+*Scavanger 3 
+      MIX  25 COMB 15 100.0 
+      MIX  26 COMB 15 100.0 
+      MIX  27 COMB 15 100.0 
+      MIX  28 COMB 15 100.0 
+*Feeder 1
+      MIX  29 COMB 15 100.0 
+      MIX  30 COMB 15 100.0 
+      MIX  31 COMB 15 100.0 
+      MIX  32 COMB 15 100.0 
+*Feeder 2
+      MIX  33 COMB 15 100.0 
+      MIX  34 COMB 15 100.0 
+      MIX  35 COMB 15 100.0 
+      MIX  36 COMB 15 100.0 
+      ;
+  ENDIF ;
+ELSEIF Position "OUT" = THEN
+  IF Type "32" = THEN
+    MicroLib   := LIB: MicroLib ::
+      EDIT <<PrtLev>>
+      NMIX 36  CTRA WIMS
+      MIXS LIB: WIMSD4 FIL: <<LibName>>
+      MIX  15  <<Mtemp>>  0.0014     
+        HE4 = <<IsoHe4>> 100.0        
+      MIX 16 <<Mtemp>>   6.4003        
+        ZR  = <<IsoZr>>   98.2083        FE = <<IsoFe>>   0.135 
+        CR  = <<IsoCr>>   0.10           NI = <<IsoNi>>   0.055
+*        BN  = <<IsoBn>>   <<BNZrII>>
+        B10 = <<IsoB10>>  <<B10ZrII>>    B11 = <<IsoB11>>  <<B10ZrII>>
+*Scavanger 1 
+      MIX  17 COMB 15 100.0 
+      MIX  18 COMB 16 100.0 
+      MIX  19  <<Wtemp>>  <<Wdens>>  
+        H1  = <<IsoH1>>  <<WwgtH1>>     D2  = <<IsoD2>>  <<WwgtD2>> 
+        O16 = <<IsoO16>> <<WwgtO16>>  
+      MIX  20 COMB 16 100.0 
+*Scavanger 2 
+      MIX  21 COMB 17 100.0 
+      MIX  22 COMB 18 100.0 
+      MIX  23 COMB 19 100.0 
+      MIX  24 COMB 20 100.0 
+*Scavanger 3 
+      MIX  25 COMB 17 100.0 
+      MIX  26 COMB 18 100.0 
+      MIX  27 COMB 19 100.0 
+      MIX  28 COMB 20 100.0 
+*Feeder 1
+      MIX  29 COMB 17 100.0 
+      MIX  30 COMB 18 100.0 
+      MIX  31 COMB 19 100.0 
+      MIX  32 COMB 20 100.0 
+*Feeder 2
+      MIX  33 COMB 17 100.0 
+      MIX  34 COMB 18 100.0 
+      MIX  35 COMB 19 100.0 
+      MIX  36 COMB 20 100.0 
+      ;
+  ELSEIF Type "21" = THEN
+    MicroLib   := LIB: MicroLib ::
+      EDIT <<PrtLev>>
+      NMIX 36  CTRA WIMS
+      MIXS LIB: WIMSD4 FIL: <<LibName>>
+      MIX  15  <<Mtemp>>  0.0014     
+        HE4 = <<IsoHe4>> 100.0        
+      MIX 16 <<Mtemp>>   6.4003        
+        ZR  = <<IsoZr>>   98.2083        FE = <<IsoFe>>   0.135 
+        CR  = <<IsoCr>>   0.10           NI = <<IsoNi>>   0.055
+*        BN  = <<IsoBn>>   <<BNZrII>>
+        B10 = <<IsoB10>>  <<B10ZrII>>    B11 = <<IsoB11>>  <<B10ZrII>> 
+*Scavanger 1 
+      MIX  17 COMB 15 100.0 
+      MIX  18 COMB 16 100.0 
+      MIX  19  <<Wtemp>>  <<Wdens>>  
+        H1  = <<IsoH1>>  <<WwgtH1>>     D2  = <<IsoD2>>  <<WwgtD2>> 
+        O16 = <<IsoO16>> <<WwgtO16>>  
+      MIX  20 COMB 16 100.0 
+*Scavanger 2 
+      MIX  21 COMB 17 100.0 
+      MIX  22 COMB 18 100.0 
+      MIX  23 COMB 19 100.0 
+      MIX  24 COMB 20 100.0 
+*Scavanger 3 
+      MIX  25 COMB 15 100.0 
+      MIX  26 COMB 15 100.0 
+      MIX  27 COMB 15 100.0 
+      MIX  28 COMB 15 100.0 
+*Feeder 1
+      MIX  29 COMB 17 100.0 
+      MIX  30 COMB 18 100.0 
+      MIX  31 COMB 19 100.0 
+      MIX  32 COMB 20 100.0 
+*Feeder 2
+      MIX  33 COMB 15 100.0 
+      MIX  34 COMB 15 100.0 
+      MIX  35 COMB 15 100.0 
+      MIX  36 COMB 15 100.0 
+      ;
+  ELSE 
+    MicroLib   := LIB: MicroLib ::
+      EDIT <<PrtLev>>
+      NMIX 36  CTRA WIMS
+      MIXS LIB: WIMSD4 FIL: <<LibName>>
+      MIX  15  <<Mtemp>>  0.0014     
+        HE4 = <<IsoHe4>> 100.0        
+      MIX 16 <<Mtemp>>   6.4003        
+        ZR  = <<IsoZr>>   98.2083        FE = <<IsoFe>>   0.135 
+        CR  = <<IsoCr>>   0.10           NI = <<IsoNi>>   0.055
+*        BN  = <<IsoBn>>   <<BNZrII>>
+        B10 = <<IsoB10>>  <<B10ZrII>>    B11 = <<IsoB11>>  <<B10ZrII>> 
+*Scavanger 1 
+      MIX  17 COMB 15 100.0 
+      MIX  18 COMB 16 100.0 
+      MIX  19  <<Wtemp>>  <<Wdens>>  
+        H1  = <<IsoH1>>  <<WwgtH1>>     D2  = <<IsoD2>>  <<WwgtD2>> 
+        O16 = <<IsoO16>> <<WwgtO16>>  
+      MIX  20 COMB 16 100.0 
+*Scavanger 2 
+      MIX  21 COMB 15 100.0 
+      MIX  22 COMB 15 100.0 
+      MIX  23 COMB 15 100.0 
+      MIX  24 COMB 15 100.0 
+*Scavanger 3 
+      MIX  25 COMB 15 100.0 
+      MIX  26 COMB 15 100.0 
+      MIX  27 COMB 15 100.0 
+      MIX  28 COMB 15 100.0 
+*Feeder 1
+      MIX  29 COMB 15 100.0 
+      MIX  30 COMB 15 100.0 
+      MIX  31 COMB 15 100.0 
+      MIX  32 COMB 15 100.0 
+*Feeder 2
+      MIX  33 COMB 15 100.0 
+      MIX  34 COMB 15 100.0 
+      MIX  35 COMB 15 100.0 
+      MIX  36 COMB 15 100.0 
+      ;
+  ENDIF ;
+ELSE
+  MicroLib   := LIB: MicroLib ::
+    EDIT <<PrtLev>>
+    NMIX 36  CTRA WIMS
+    MIXS LIB: WIMSD4 FIL: <<LibName>>
+    MIX  15  <<Mtemp>>  <<Mdens>>  
+      H1  = <<IsoH1>>  <<MwgtH1>>     D2  = <<IsoD2>>  <<MwgtD2>> 
+      O16 = <<IsoO16>> <<MwgtO16>>  
+    MIX  16 COMB 15 100.0 
+*Scavanger 1 
+    MIX  17 COMB 15 100.0 
+    MIX  18 COMB 15 100.0 
+    MIX  19 COMB 15 100.0 
+    MIX  20 COMB 15 100.0 
+*Scavanger 2 
+    MIX  21 COMB 15 100.0 
+    MIX  22 COMB 15 100.0 
+    MIX  23 COMB 15 100.0 
+    MIX  24 COMB 15 100.0 
+*Scavanger 3 
+    MIX  25 COMB 15 100.0 
+    MIX  26 COMB 15 100.0 
+    MIX  27 COMB 15 100.0 
+    MIX  28 COMB 15 100.0 
+*Feeder 1
+    MIX  29 COMB 15 100.0 
+    MIX  30 COMB 15 100.0 
+    MIX  31 COMB 15 100.0 
+    MIX  32 COMB 15 100.0 
+*Feeder 2
+    MIX  33 COMB 15 100.0 
+    MIX  34 COMB 15 100.0 
+    MIX  35 COMB 15 100.0 
+    MIX  36 COMB 15 100.0 
+    ;
+ENDIF ;
+QUIT .

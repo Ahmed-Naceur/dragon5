@@ -1,0 +1,22 @@
+*----
+*  Define STRUCTURES and MODULES used
+*----
+LINKED_LIST TOTO FLUX MACRO GROUP ;
+SEQ_ASCII Macrolib FLUX2 ;
+MODULE UTL: DELETE: GREP: END: ;
+PROCEDURE TESTproc assertS ;
+REAL value ;
+*
+MACRO := Macrolib ;
+GROUP := MACRO :: STEP UP GROUP STEP AT 1 ;
+GREP: GROUP :: GETVAL NTOT0 2 >>value<< ;
+ECHO "value=" value ;
+*
+FLUX2 := TESTproc MACRO :: 1.703945 ;
+FLUX := FLUX2 :: EDIT 99 ;
+FLUX2 := DELETE: FLUX2 ;
+assertS FLUX :: 'K-EFFECTIVE' 1  1.703945 ;
+*
+ECHO "test TEST completed" ;
+END: ;
+QUIT "XREF" .

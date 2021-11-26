@@ -1,0 +1,250 @@
+*----
+*  Name          : history_mphy.x2m
+*  Type          : Microdepletion calculation of a pincell with step
+*                  variation of coolant density
+*
+*----
+*  STRUCTURES, MODULES and PROCEDURES definitions
+*----
+LINKED_LIST Geom Track Flux Cpo Matex Lib MicroF MacroF Macro2 Fmap
+            Dmicro Dmacro System Power Burnup DONNEES ;
+MODULE      GEO: RESINI: TRIVAT: TRIVAA: GREP: FIND0: NCR: FLUD: FLPOW:
+            MACINI: USPLIT: EVO: TINST: UTL: DELETE: END: ;
+PROCEDURE   assertS ;
+SEQ_ASCII   _ACompo ;
+INTEGER     maxstep := 67 ;
+REAL        Fuelpwr := 38.425 ; ! W/g ou kW/kg ou MW/t
+REAL        Mass := 4.655149E-3 ; ! kg
+REAL        Tbeg Tend BUbeg BUend Delt burnup ;
+REAL        dens_mod_nx1 dens_mod_nx2 ;
+REAL        alpha beta ;
+DONNEES := UTL: ::
+  CREA
+    burn <<maxstep>> =
+            0.0       9.375    18.75     37.5      75.0     150.0
+          237.5     325.0     412.5     500.0     625.0     750.0
+         1000.0    1250.0    1500.0    1750.0    2000.0    2500.0
+         3000.0    3500.0    4000.0    4500.0    5000.0    5500.0
+         6000.0    6500.0    7000.0    7500.0    8000.0    8500.0
+         9000.0    9500.0   10000.0   10500.0   11000.0   11500.0
+        12000.0   12500.0   13000.0   13500.0   14000.0   14500.0
+        15000.0   15500.0   16000.0   16500.0   17000.0   17500.0
+        18000.0   18500.0   19000.0   19500.0   20000.0   22000.0
+        24000.0   26000.0   28000.0   30000.0   32000.0   34000.0
+        36000.0   38000.0   40000.0   50000.0   60000.0   70000.0
+        80000.0
+  ;
+*----
+*  Calculation options
+*----
+STRING  Dir := "EDI2B" ;
+REAL    dens_mod_0 dens_mod_1 dens_mod_2 := 1.0 0.3 0.8 ;
+REAL    powi := Fuelpwr Mass * 1.E3 / ;
+ECHO "total reactor power=" powi "MW" ;
+
+*----
+*  Recover the Multicompo
+*----
+Cpo := _ACompo ;
+
+INTEGER MaxR := 10000 ;
+INTEGER Iter := 1 ;
+REAL keff11 keff12 keff1n dens_mod ;
+REAL Y1 Y2 ROOT YNEW ;
+LOGICAL CONV ;
+
+REAL Cote      := 1.26  ;
+Geom := GEO: :: CAR3D 1 1 1
+         MESHX 0.0 <<Cote>>
+         MESHY 0.0 <<Cote>>
+         MESHZ 0.0 1.0
+         X- REFL X+ REFL    Y- REFL Y+ REFL    Z- REFL Z+ REFL
+         MIX  1
+;
+
+Geom Matex := USPLIT: Geom :: NGRP 2 MAXR <<MaxR>>
+               NFUEL 1  FMIX  1
+;
+
+Track := TRIVAT: Geom ::
+   EDIT 1 MAXR <<MaxR>> MCFD 1 ;
+
+*--
+* Fuel map definition
+*--
+Fmap Matex := RESINI: Matex ::
+  ::: GEO: CAR3D 1 1 1
+  EDIT 0
+  X- REFL X+ REFL    Y- REFL Y+ REFL    Z- REFL Z+ REFL
+  MIX 1
+  MESHX 0.0 <<Cote>>
+  MESHY 0.0 <<Cote>>
+  MESHZ 0.0 1.0
+  ;
+NXNAME '01' NYNAME  'A'
+NCOMB 1
+B-ZONE 1
+
+ADD-PARAM PNAME 'D-COOL' PARKEY 'DCA' GLOBAL
+ADD-PARAM PNAME 'D-COOLH' PARKEY 'DCAH' GLOBAL
+BTYPE INST-BURN
+INST-BVAL CHAN 0.0 
+SET-PARAM 'D-COOL' <<dens_mod_0>>
+SET-PARAM 'D-COOLH' <<dens_mod_0>>
+FUEL WEIGHT <<Mass>>
+;
+*--
+* Cross-section database interpolation
+*--
+MicroF := NCR: Cpo Fmap ::
+       EDIT 2
+       MICRO LINEAR
+       TABLE Cpo <<Dir>> 'burnup'
+       MIX 1
+         INST-BURN
+       ENDMIX ;
+       
+MacroF := MicroF :: STEP UP 'MACROLIB' ;
+  
+Macro2 Matex := MACINI: Matex MacroF :: FUEL ;
+  
+*--
+* Steady-state diffusion calculation
+*--
+System := TRIVAA: Macro2 Track ;
+
+Flux := FLUD: System Track :: EDIT 1 ADI 4 ACCE 5 3 ;
+System MacroF Macro2 := DELETE: System MacroF Macro2 ;
+
+GREP: Flux :: GETVAL 'K-EFFECTIVE' 1 >>keff11<< ;
+ECHO "+++ Burnup= 0.0 Keff=" keff11 ;
+
+*--
+* Power calculation
+*--
+Power Fmap := FLPOW: Fmap Flux Track Matex
+              :: EDIT 10 PTOT <<powi>> ;
+
+Burnup MicroF := EVO: MicroF Power ::
+   EDIT 1 FLUX_POW PIFI SAVE 0.0 DAY KEEP ;
+
+EVALUATE Tend BUend := 0.0 0.0 ;
+
+* MICRO-DEPLETION
+INTEGER istep := 1 ;
+WHILE istep maxstep < DO
+  EVALUATE istep := istep 1 + ;
+  ECHO "istep=" istep "/" maxstep ;
+
+  EVALUATE BUbeg Tbeg := BUend Tend ;
+  GREP: DONNEES :: GETVAL 'burn' <<istep>> >>BUend<< ;
+  EVALUATE Tend := BUend Fuelpwr / ;
+  
+  ECHO "Tbeg=" Tbeg "Tend=" Tend ;
+
+  IF BUend 40000.0 = THEN
+    EVALUATE dens_mod := dens_mod_1 ;
+    Fmap := RESINI: Fmap ::
+      SET-PARAM 'D-COOL' <<dens_mod>>
+      SET-PARAM 'D-COOLH' <<dens_mod>>
+    ;
+    ECHO "++++++" ;
+  ELSEIF BUend 60000.0 = THEN
+    EVALUATE dens_mod := dens_mod_2 ;
+    Fmap := RESINI: Fmap ::
+      SET-PARAM 'D-COOL' <<dens_mod>>
+      SET-PARAM 'D-COOLH' <<dens_mod>>
+    ;
+    ECHO "++++++" ;
+  ENDIF ;
+
+  Burnup MicroF := EVO: Burnup MicroF Power ::
+   EDIT 1 FLUX_POW RUNG NOEX PIFI DEPL <<Tbeg>> <<Tend>> DAY KEEP ;
+* INTERPOLATION FOR THE MICROSCOPIC CROSS SECTIONS
+* The RES keyword limits multiparameter interpolation to microscopic XS
+ EVALUATE Delt := Tend Tbeg - ;
+ Fmap := TINST: Fmap Power :: EDIT 1 TIME <<Delt>> DAY PICK >>burnup<< ;
+ IF BUend 60000.0 >= THEN
+   * evaluate correction for dens_mod_0 -> dens_mod_1 step
+   EVALUATE alpha := 40000.0 BUend / ;
+   EVALUATE beta := 1.0 alpha - ;
+   EVALUATE dens_mod_nx1 := dens_mod_1 beta * dens_mod_0 alpha * + ;
+   ECHO "compute ADD1 term for DCA=" dens_mod_nx1 ;
+   * evaluate correction for dens_mod_1 -> dens_mod_2 step
+   EVALUATE alpha := 60000.0 BUend / ;
+   EVALUATE beta := 1.0 alpha - ;
+   EVALUATE dens_mod_nx2 := dens_mod_2 beta * dens_mod_1 alpha * + ;
+   ECHO "compute ADD2 term for DCA=" dens_mod_nx2 ;
+   MicroF := NCR: MicroF Cpo Fmap :: EDIT 0
+         MICRO RES PURE
+         TABLE Cpo <<Dir>> 'burnup'
+         MIX 1 INST-BURN
+           SET LINEAR 'burnup' MAP
+           SET LINEAR 'DCA' MAP
+           SET LINEAR 'DCAH' MAP
+           ADD 'DCAH' <<dens_mod_1>> <<dens_mod_nx1>>
+              REF 'burnup' 40000.0
+                  'DCA' <<dens_mod_1>>
+              ENDREF
+           ADD 'DCAH' MAP <<dens_mod_nx2>>
+              REF 'burnup' 60000.0
+                  'DCA' SAMEASREF
+              ENDREF
+         ENDMIX ;
+ ELSEIF BUend 40000.0 >= THEN
+   * evaluate correction for dens_mod_0 -> dens_mod_1 step
+   EVALUATE alpha := 40000.0 BUend / ;
+   EVALUATE beta := 1.0 alpha - ;
+   EVALUATE dens_mod_nx1 := dens_mod_1 beta * dens_mod_0 alpha * + ;
+   ECHO "compute ADD term for DCA=" dens_mod_nx1 ;
+   MicroF := NCR: MicroF Cpo Fmap :: EDIT 0
+         MICRO RES PURE
+         TABLE Cpo <<Dir>> 'burnup'
+         MIX 1 INST-BURN
+           SET LINEAR 'burnup' MAP
+           SET LINEAR 'DCA' MAP
+           SET LINEAR 'DCAH' MAP
+           ADD 'DCAH' MAP <<dens_mod_nx1>>
+              REF 'burnup' 40000.0
+                  'DCA' SAMEASREF
+              ENDREF
+         ENDMIX ;
+ ELSE
+   MicroF := NCR: MicroF Cpo Fmap :: EDIT 0
+         MICRO RES PURE
+         TABLE Cpo <<Dir>> 'burnup'
+         MIX 1
+           INST-BURN
+         ENDMIX ;
+ ENDIF ;
+ MacroF := MicroF :: STEP UP 'MACROLIB' ;
+
+  Flux Power := DELETE: Flux Power ;
+* Flux CALCULATION
+
+  Macro2 Matex := MACINI: Matex MacroF :: EDIT 1 FUEL ;
+  
+  System := TRIVAA: Macro2 Track :: EDIT 0 ;
+  Flux := FLUD: System Track ::  EDIT 1 ADI 4 ACCE 5 3 ;
+  GREP: Flux :: GETVAL 'K-EFFECTIVE' 1 >>keff11<< ;
+  ECHO "+++ Burnup=" burnup " Keff=" keff11 ;
+* Power CALCULATION
+  Power Fmap := FLPOW: Fmap Flux Track Matex
+                :: EDIT 10 PTOT <<powi>> ;
+
+  Burnup MicroF := EVO: Burnup MicroF Power  ::
+   FLUX_POW PIFI SAVE <<Tend>> DAY KEEP ;
+
+  System Macro2 MacroF := DELETE: System Macro2 MacroF ;
+  IF BUend 40000.0 = THEN
+    assertS Flux :: 'K-EFFECTIVE' 1 0.6839732 ;
+  ELSEIF BUend 60000.0 = THEN
+    assertS Flux :: 'K-EFFECTIVE' 1 0.9521325 ;
+  ELSEIF BUend 80000.0 = THEN
+    assertS Flux :: 'K-EFFECTIVE' 1 0.8601936 ;
+  ENDIF ;
+ENDWHILE ;
+
+ECHO "test history_mphy.x2m completed" ;
+END: ;
+QUIT "LIST" .

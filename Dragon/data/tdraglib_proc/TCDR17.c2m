@@ -1,0 +1,206 @@
+*----
+*  TEST CASE TCDR17
+*  Test editing capability and create a database for a fuel ring 
+*  depletion
+*  172-GROUP JEF2.2 DRAGLIB
+*----
+*  Define STRUCTURES and MODULES used
+*----
+PARAMETER  saCOMPO2 :: ::: SEQ_ASCII saCOMPO2 ; ;
+LINKED_LIST
+  GEOM DISCR LIBRARY CP CALC OUT BURNUP DATABASE ;
+MODULE
+  LIB: GEO: SYBILT: SHI: ASM: FLU: EDI: DELETE:
+  EVO: COMPO: END: ;
+REAL
+  Power    Delt   Timec   Timei Timef :=
+  31.9713  1.0    300.0   0.0   0.0 ;
+PROCEDURE assertS ;
+*----
+*  Microscopic cross sections from Jef 2.2 Draglib
+*  - Mix 1 : fuel 1
+*  - Mix 2 : fuel 2
+*  - Mix 3 : water
+*----
+LIBRARY := LIB: ::
+  EDIT 0
+  NMIX 3 CTRA WIMS
+  ANIS 2
+  DEPL LIB: DRAGON FIL: DLIB_J2
+  MIXS LIB: DRAGON FIL: DLIB_J2
+  MIX 1 600.0                       
+    O16      = O16    4.61309E-2 1
+    U235     = U235   1.66078E-4 1 
+    U238     = U238   2.28994E-2 1
+    Np239    = Np239  0.0 1
+    Pu239    = Pu239  0.0 1
+    Pu240    = Pu240  0.0 1
+    Pu241    = Pu241  0.0 1
+    Rh105    = Rh105  0.0 1
+    Cd113    = Cd113  0.0 1
+    I135     = I135   0.0 1
+    Xe135    = Xe135  0.0 1
+    Nd145    = Nd145  0.0 1
+    Nd146    = Nd146  0.0 1
+    Nd147    = Nd147  0.0 1
+    Nd148    = Nd148  0.0 1
+    Pm147    = Pm147  0.0 1
+    Pm148    = Pm148  0.0 1
+    Pm148m   = Pm148m 0.0 1
+    Pm149    = Pm149  0.0 1
+    Pm151    = Pm151  0.0 1
+    Sm147    = Sm147  0.0 1
+    Sm149    = Sm149  0.0 1
+    Sm150    = Sm150  0.0 1
+    Sm151    = Sm151  0.0 1
+    Sm152    = Sm152  0.0 1
+    Eu153    = Eu153  0.0 1
+    Eu154    = Eu154  0.0 1
+    Eu155    = Eu155  0.0 1
+    Eu156    = Eu156  0.0 1
+    Gd157    = Gd157  0.0 1
+  MIX 2 600.0
+    O16      = O16    4.61309E-2 1
+    U235     = U235   3.2E-4 1 
+    U238     = U238   2.28994E-2 1
+    Np239    = Np239  0.0 1
+    Pu239    = Pu239  0.0 1
+    Pu240    = Pu240  0.0 1
+    Pu241    = Pu241  0.0 1
+    Rh105    = Rh105  0.0 1
+    Cd113    = Cd113  0.0 1
+    I135     = I135   0.0 1
+    Xe135    = Xe135  0.0 1
+    Nd145    = Nd145  0.0 1
+    Nd146    = Nd146  0.0 1
+    Nd147    = Nd147  0.0 1
+    Nd148    = Nd148  0.0 1
+    Pm147    = Pm147  0.0 1
+    Pm148    = Pm148  0.0 1
+    Pm148m   = Pm148m 0.0 1
+    Pm149    = Pm149  0.0 1
+    Pm151    = Pm151  0.0 1
+    Sm147    = Sm147  0.0 1
+    Sm149    = Sm149  0.0 1
+    Sm150    = Sm150  0.0 1
+    Sm151    = Sm151  0.0 1
+    Sm152    = Sm152  0.0 1
+    Eu153    = Eu153  0.0 1
+    Eu154    = Eu154  0.0 1
+    Eu155    = Eu155  0.0 1
+    Eu156    = Eu156  0.0 1
+    Gd157    = Gd157  0.0 1
+    I129     = I129   0.0 1
+  MIX 3 600.0
+    H1H2O    = H1_H2O 4.42326E-2    O16H2O  = O16   2.21163E-2
+    B10      = B10    2.02222E-6    B11     = B11   8.19107E-6 ;
+*----
+*  2D Geometry
+*----
+GEOM := GEO: :: CARCEL 2
+  X- REFL X+ REFL MESHX 0.0 1.26209
+  Y- REFL Y+ REFL MESHY 0.0 1.26209
+  RADIUS 0.0 0.39306 0.45802 SPLITR 2 1
+  MIX  1 2 3 ;
+*----
+*  Self-Shielding calculation SYBIL
+*  Transport calculation      SYBIL
+*----
+DISCR := SYBILT: GEOM ::
+  MAXR 4 QUA1 5 QUA2 6 5 ;
+LIBRARY := SHI: LIBRARY DISCR :: EDIT 0 NOLJ ;
+
+CP := ASM: LIBRARY DISCR ;
+CALC := FLU: CP LIBRARY DISCR :: EDIT 0
+  TYPE K B0 ;
+
+*----
+* During the homogeneization, we keep a single mixture with 
+* all the isotopes and the homogeneized cross sections (ALLX)
+*----
+OUT := EDI:  CALC LIBRARY DISCR ::
+  EDIT 1 UPS SAVE ON 'fuel' MERGE COMP MICR ALLX 29 U235 U238 Np239
+  Pu239 Pu240 Pu241 Rh105 Cd113 I135 Xe135 Nd145 Nd146 Nd147 Nd148
+  Pm147 Pm148 Pm148m Pm149 Pm151 Sm147 Sm149 Sm150 Sm151 Sm152
+  Eu153 Eu154 Eu155 Eu156 Gd157
+  COND 4.0  ;
+*---
+* Creation of databases for other DONJON and DRAGON calculations
+*---
+DATABASE := COMPO: ::
+  EDIT 5
+  STEP UP 'fuel'
+    COMM  'Multi-parameter reactor database for fuel' ENDC
+    PARA  'BURN' IRRA
+    PARA  'FLUB' FLUB
+    INIT  ;
+*---
+* Register the isotopic properties for the initial burnup
+*---
+BURNUP LIBRARY := EVO: LIBRARY CALC DISCR ::
+   SAVE 0.0 DAY POWR <<Power>> ;
+assertS CALC :: 'K-EFFECTIVE' 1 9.225872E-01 ;
+DATABASE := COMPO: DATABASE OUT BURNUP LIBRARY ::
+  EDIT 0
+  ALLX
+  STEP UP *
+  SET 0.0 DAY  ;
+*----
+* Perform depletion
+*----
+EVALUATE Timec := 1.0 ;
+EVALUATE Delt := 1.0 ;
+EVALUATE Timei := 0.0 ;
+
+WHILE Timei Timec < DO
+  EVALUATE Timef := Timei Delt + ;
+  IF Timei 0.0 = THEN
+    BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC DISCR ::
+      EDIT 0 DEPL <<Timei>> <<Timef>> DAY POWR <<Power>> ;
+  ELSE
+    BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC DISCR ::
+      EDIT 0 NOEX DEPL <<Timei>> <<Timef>> DAY POWR <<Power>> ;
+  ENDIF ;
+
+  CP := DELETE: CP ;
+  CP := ASM: LIBRARY DISCR :: ;
+  CALC := FLU: CALC CP LIBRARY DISCR :: TYPE K B0 ;
+
+  BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC DISCR ::
+    SAVE <<Timef>> DAY POWR <<Power>> ;
+
+  OUT := EDI: OUT CALC LIBRARY DISCR ::
+    EDIT 1 UPS SAVE ON 'fuel' MERGE COMP MICR ALLX 29 U235 U238 Np239
+    Pu239 Pu240 Pu241 Rh105 Cd113 I135 Xe135 Nd145 Nd146 Nd147 Nd148
+    Pm147 Pm148 Pm148m Pm149 Pm151 Sm147 Sm149 Sm150 Sm151 Sm152
+    Eu153 Eu154 Eu155 Eu156 Gd157
+    COND 4.0  ;
+
+  DATABASE := COMPO: DATABASE OUT BURNUP LIBRARY ::
+    EDIT 0
+    ALLX
+    STEP UP *
+    SET <<Timef>> DAY  ;
+*----
+*  change delta t for burnup and final time if required
+*----
+  IF Timef Timec = THEN
+    IF Timec 10.0 = THEN
+      EVALUATE Delt Timec := 10.0 200.0 ;
+    ENDIF ;
+    IF Timec 5.0 = THEN
+      EVALUATE Delt Timec := 5.0 10.0 ;
+    ENDIF ;
+    IF Timec 1.0 = THEN
+      EVALUATE Delt Timec := 4.0 5.0 ;
+    ENDIF ;
+  ENDIF ;
+  EVALUATE Timei := Timef ;
+ENDWHILE ;
+
+saCOMPO2 := DATABASE ;
+
+assertS CALC :: 'K-EFFECTIVE' 1 9.392296E-01 ;
+ECHO "test TCDR17 completed" ;
+END: ;
+QUIT .

@@ -1,0 +1,241 @@
+****************************************************************
+*                                                              *
+* Procedure :  InitSteady.c2m                                  *
+* Purpose   :  initialize objects for Steady procedure         *
+* Author    :  V. Salino                                       *
+*                                                              *
+* CALL      :                                                  *
+*  Flux Thermo XeMicroF XeBurn Fmap Matex := InitSteady        *
+*  Fmap Matex ReflXS Track ;                                   *
+*                                                              *
+****************************************************************
+PARAMETER Flux Thermo MicroF Burn Fmap Matex SapUOX SapMOX 
+          MacroRefl Track ::
+  ::: LINKED_LIST Flux Thermo MicroF Burn Fmap 
+                  Matex SapUOX SapMOX MacroRefl Track ; ;
+MODULE SCR: NCR: MACINI: RESINI: TRIVAA: FLUD: FLPOW: THM: EVO:
+       GREP: DELETE: ABORT: END: ;
+*--
+* Local objects and variable
+*--
+LINKED_LIST MacroTot MacroF System PowerIter ;
+REAL CBinterp := 0.0 ;
+*--
+* Procedure arguments
+*--
+INTEGER CycleIndex ;
+  :: >>CycleIndex<< ;
+*--
+* Thermalhydraulics parameters
+*--
+REAL dx       := 21.5 ;
+REAL Tot_tub  := 6.6E-03 2.0 ** $Pi_R * 25.0  * ;
+REAL Tot_pin  := 4.7E-03 2.0 ** $Pi_R * 264.0 * ;
+REAL asssect  := dx dx * 1.E-04 * Tot_tub - Tot_pin - ;
+REAL coresect := 157.0 asssect * ;
+*--
+* Flat power distribution
+*--
+REAL Ptot := 2750. ;
+REAL BundPow := Ptot 157.0 / 29.0 / 1.0E+3 * (* MW to kW *) ;
+Fmap := RESINI: Fmap ::
+  BUNDLE-POW SAME <<BundPow>> ;
+*--
+* Thermalhydraulics computation
+*--
+    Thermo Fmap := THM: Fmap ::
+      EDIT 0
+      CRITFL 4.00E+6 (* W/m^2 *)
+      ASSMB 264 25
+      CWSECT <<coresect>> 60000.0
+      INLET  155.0E+05 550.0
+      RADIUS 4.1E-03 4.2E-03 4.7E-03 6.6E-03
+      SET-PARAM 'C-BORE' <<CBinterp>>
+      CONV 50 50 50 0.1 1.0E-3
+      RELAX 0.4 ;
+*--
+* Saphyb Interpolation
+* Historic effects are neglected for simplicity's sake
+*--
+IF CycleIndex 1 = THEN
+  MicroF := SCR: SapUOX SapMOX Fmap ::
+    EDIT 0
+    MICRO LINEAR
+    TABLE SapUOX 'BURN'
+    MIX 4
+       INST-BURN
+        SET TF  526.85 ! Celsius
+        SET TCA 326.85 ! Celsius
+        SET DCA 0.659 ! g/cm3
+        SET ppmB 500.0 ! ppm
+        ADD 'TF' 526.85 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'TCA' 326.85 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'DCA' 0.659 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'ppmB' 500.0 MAP
+          REF 'BURN' SAMEASREF ENDREF
+       MICRO ALL
+           'B10'      *
+           'B11'      *
+           'Xe135'    0.
+           'I135'     0.
+           'Nd147'    0.
+           'Pm147'    0.
+           'Pm148'    0.
+           'Pm148m'   0.
+           'Pm149'    0.
+           'Sm149'    0.
+           '*MAC*RES' 1.
+    ENDMIX
+    TABLE SapMOX 'BURN'
+    MIX 5
+       INST-BURN
+        SET TF  526.85 ! Celsius
+        SET TCA 326.85 ! Celsius
+        SET DCA 0.659 ! g/cm3
+        SET ppmB 500.0 ! ppm
+        ADD 'TF' 526.85 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'TCA' 326.85 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'DCA' 0.659 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'ppmB' 500.0 MAP
+          REF 'BURN' SAMEASREF ENDREF
+       MICRO ALL
+           'B10'      *
+           'B11'      *
+           'Xe135'    0.
+           'I135'     0.
+           'Nd147'    0.
+           'Pm147'    0.
+           'Pm148'    0.
+           'Pm148m'   0.
+           'Pm149'    0.
+           'Sm149'    0.
+           '*MAC*RES' 1.
+    ENDMIX
+  CHAIN
+  B10      STABLE
+  B11      STABLE
+  I135   NG    0.
+  Xe135  NG    0. FROM DECAY 1.0E+00 I135
+  Nd147  STABLE
+  Pm147  STABLE
+  Pm148  STABLE
+  Pm148m STABLE
+  Pm149  STABLE
+  Sm149  STABLE
+  MACT     NFTOT 0.
+  ENDCHAIN
+  ;
+ELSE
+  ECHO "Cross section interpolation after SIM:" ;
+  MicroF := SCR: MicroF SapUOX SapMOX Fmap ::
+    EDIT 0 RES
+    MICRO LINEAR
+    TABLE SapUOX 'BURN'
+    MIX 4
+       INST-BURN
+        SET TF  526.85 ! Celsius
+        SET TCA 326.85 ! Celsius
+        SET DCA 0.659 ! g/cm3
+        SET ppmB 500.0 ! ppm
+        ADD 'TF' 526.85 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'TCA' 326.85 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'DCA' 0.659 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'ppmB' 500.0 MAP
+          REF 'BURN' SAMEASREF ENDREF
+       MICRO ALL
+           'B10'      *
+           'B11'      *
+!           'Xe135'    *
+!           'I135'     *
+!           'Nd147'    *
+!           'Pm147'    *
+!           'Pm148'    *
+!           'Pm148m'   *
+!           'Pm149'    *
+!           'Sm149'    *
+           '*MAC*RES' 1.
+    ENDMIX
+    TABLE SapMOX 'BURN'
+    MIX 5
+       INST-BURN
+        SET TF  526.85 ! Celsius
+        SET TCA 326.85 ! Celsius
+        SET DCA 0.659 ! g/cm3
+        SET ppmB 500.0 ! ppm
+        ADD 'TF' 526.85 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'TCA' 326.85 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'DCA' 0.659 MAP
+          REF 'BURN' SAMEASREF ENDREF
+        ADD 'ppmB' 500.0 MAP
+          REF 'BURN' SAMEASREF ENDREF
+       MICRO ALL
+           'B10'      *
+           'B11'      *
+!           'Xe135'    *
+!           'I135'     *
+!           'Nd147'    *
+!           'Pm147'    *
+!           'Pm148'    *
+!           'Pm148m'   *
+!           'Pm149'    *
+!           'Sm149'    *
+           '*MAC*RES' 1.
+    ENDMIX
+  CHAIN
+  B10      STABLE
+  B11      STABLE
+  I135   NG    0.
+  Xe135  NG    0. FROM DECAY 1.0E+00 I135
+  Nd147  STABLE
+  Pm147  STABLE
+  Pm148  STABLE
+  Pm148m STABLE
+  Pm149  STABLE
+  Sm149  STABLE
+  MACT     NFTOT 0.
+  ENDCHAIN
+  ;
+ENDIF ;
+
+MacroF := MicroF :: STEP UP "MACROLIB" ;
+*--
+* Reflector interpolation
+*--
+*--
+* Flux and power computation
+*--
+MacroTot Matex := MACINI: Matex MacroRefl MacroF ;
+MacroF := DELETE: MacroF ;
+System := TRIVAA: MacroTot Track :: EDIT 0 ;
+MacroTot := DELETE: MacroTot ;
+Flux := FLUD: System Track :: EDIT 0 ACCE 5 3 ;
+System := DELETE: System ;
+PowerIter Fmap := FLPOW: Fmap Flux Track Matex ::
+  EDIT 0 PTOT <<Ptot>> PRINT DISTR POWER ;
+*--
+* Xenon saturation
+*--
+Burn MicroF := EVO: MicroF PowerIter ::
+  EDIT 0 FLUX_POW PIFI SAVE 0. DAY KEEP ;
+IF CycleIndex 1 = THEN
+ECHO "pas de refroidissement" ;
+ELSE
+Burn MicroF := EVO: Burn MicroF PowerIter ::
+  EDIT 0 RUNG FLUX_POW PIFI DEPL 30. DAY COOL ;
+ENDIF ;
+*Flux PowerIter := DELETE: Flux PowerIter ;
+PowerIter := DELETE: PowerIter ;
+
+END: ;
+

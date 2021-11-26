@@ -1,0 +1,95 @@
+\subsection{The \moc{DETECT:} module}\label{sect:flpow}
+
+\vskip 0.2cm
+The \moc{DETECT:} module is used to compute the mean flux at each detector site
+and the response of each detector.
+
+\noindent
+The \moc{DETECT:} module specifications are:
+
+\begin{DataStructure}{Structure \moc{DETECT:}}
+\dusa{DETEC} \moc{:=} \moc{DETECT:} \dusa{DETEC} \dusa{FLUX}  \dusa{TRACK} 
+\dusa{GEOM} \moc{::}
+ \dstr{descdetect} \moc{;}
+\end{DataStructure}
+
+\noindent where
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\dusa{DETEC}] \texttt{character*12} name of the \dds{detect}
+containing the detector positions and responses. 
+
+\item[\dusa{FLUX}] \texttt{character*12} name of the \dds{flux}  
+containing the flux solution computed by
+the \moc{FLUD:} or \moc{FLPOW:} modules. To obtain a correct result, the best is to
+use a normalized flux, coming from the \moc{FLPOW:} module. In this case, the fluxes
+are normalized to the reactor power.
+
+\item[\dusa{TRACK}] \texttt{character*12} name of the \dds{track}
+containing the TRIVAC tracking.
+
+\item[\dusa{GEOM}] \texttt{character*12} name of the \dds{geometry} 
+containing the mesh-splitting geometry created by the
+\moc{USPLIT:} or \moc{GEO:} modules.
+
+\item[\dstr{descdetect}] structure containing the data to module 
+\moc{DETECT:}.
+
+\end{ListeDeDescription}
+
+\vskip 0.2cm
+
+\subsubsection{Input data to the \moc{DETECT:} module}
+
+\noindent
+Note that the fuel-lattice power distribution can be printed only on the screen.\\
+
+\begin{DataStructure}{Structure \dstr{descdetect}}
+
+$[$ \moc{EDIT} \dusa{iprt} $]$ 
+\moc{TIME} \dusa{dt} 
+\moc{REF} \dusa{kc}  \\
+$[$ \moc{NORM} \dusa{vnorm} $]$  \\
+$[$ SIMEX $\{$ SPLINE $|$ PARAB $\}$ $]$ \\
+;
+\end{DataStructure}
+
+\noindent where
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] key word used to set \dusa{iprt}.
+
+\item[\dusa{iprt}] index used to control the printing in module \moc{
+DETECT:}. =0 for no print; =1 for minimum printing(default value); 
+=4 for printing each detector name; =5 for finite element numbers 
+and total number of finite elements for each detector. 
+
+\item[\moc{TIME}] key word used to set \dusa{dt}.
+
+\item[\dusa{dt}] time step between two calls to the \moc{DETECT:} module. 
+
+\item[\moc{REF}] key word used to set \dusa{kc}.
+
+\item[\dusa{kc}] index used to control the type of calculation,
+ =0 for reference calculation; =1 normal calculation. The reference responses are
+used to obtain detector current responses in full power fractions.
+
+\item[\moc{NORM}] key word used to set \dusa{vnorm}.
+
+\item[\dusa{vnorm}] value used to normalized responses of all the detectors
+present in \dds{detect}.
+
+\item[\moc{SIMEX}] key word used to specify that a polynomial interpolation of 
+detector fluxes according to HQSIMEX method. This interpolation will be 
+applied only for vanadium detectors, under \dusa{NAMTYP} of value 
+\texttt{VANAD\_REGUL}.
+
+\item[\moc{SPLINE}] key word to specify that the flux at detector site
+will be computed with a spline method. 
+
+\item[\moc{PARAB}] key word to specify that the flux at detector site
+will be computed with a parabolic method. 
+
+\end{ListeDeDescription}
+\clearpage

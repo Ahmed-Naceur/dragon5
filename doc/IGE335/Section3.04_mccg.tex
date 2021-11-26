@@ -1,0 +1,153 @@
+\subsubsection{The {\tt MCCGT:} tracking module}\label{sect:MCCGData}
+
+This module {\sl must} follow a call to module \moc{EXCELT:} or \moc{NXT:}. Its calling
+specification is:
+
+\begin{DataStructure}{Structure \dstr{MCCGT:}}
+\dusa{TRKNAM} \moc{:=} \moc{MCCGT:} \dusa{TRKNAM} \dusa{TRKFIL} 
+$[$ \dusa{GEONAM} $]$ \moc{::} \dstr{descmccg}
+\end{DataStructure}
+
+\noindent  where
+\begin{ListeDeDescription}{mmmmmmm}
+
+\item[\dusa{TRKNAM}] {\tt character*12} name of the \dds{tracking} data
+structure that will contain region volume and surface area vectors in
+addition to region identification pointers and other tracking information. It is provided by \moc{EXCELT:} or \moc{NXT:} operator and modified by \moc{MCCGT:} operator.
+
+\item[\dusa{TRKFIL}] {\tt character*12} name of the sequential binary tracking file used to store the tracks lengths. This file is provided by \moc{EXCELT:} or \moc{NXT:} operator and used without modification by \moc{MCCGT:} operator.
+
+\item[\dusa{GEONAM}] {\tt character*12} name of the optional \dds{geometry} data
+structure. This structure is only required to recover double-heterogeneity data.
+
+\item[\dstr{descmccg}] structure describing the transport tracking data
+specific to \moc{MCCGT:}.
+
+\end{ListeDeDescription}
+
+\vskip 0.15cm
+
+The \moc{MCCGT:} specific tracking data in \dstr{descmccg} is defined as
+
+\begin{DataStructure}{Structure \dstr{descmccg}}
+$[$ \moc{EDIT} \dusa{iprint} $]$ \\
+$[$ $\{$ \moc{LCMD} $|$ \moc{OPP1} $|$ \moc{OGAU} $|$ \moc{GAUS} $|$ \moc{DGAU} $|$ \moc{CACA} $|$ \moc{CACB} $\}~[$ \dusa{nmu} $]~]$ \\
+$\{$ \moc{DIFC} $[~\{$ \moc{NONE} $|$ \moc{DIAG} $|$ \moc{FULL} $|$ \moc{ILU0} $\}~]$ $~[$ \moc{TMT} $]$ $~[$ \moc{LEXA} $]$ \\
+$~~~~~|$ \\
+$~~~~~[~[$ \moc{AAC} \dusa{iaca} $[~\{$ \moc{NONE} $|$ \moc{DIAG} $|$ \moc{FULL} $|$ \moc{ILU0} $\}~]~[$ \moc{TMT} $]~]~[$ \moc{SCR} \dusa{iscr} $]~[$ \moc{LEXA} $]~]$ \\
+$~~~~~[$ \moc{KRYL} \dusa{ikryl} $]$ \\
+$~~~~~[$ \moc{MCU} \dusa{imcu} $]$ \\
+$~~~~~[$ \moc{HDD} \dusa{xhdd} $]$ \\
+$~~~~~[~\{$ \moc{SC} $|$ \moc{LDC} $\}~]$ \\
+$~~~~~[$ \moc{LEXF} $]$ \\
+$~~~~~[$ \moc{STIS} \dusa{istis} $]$ \\
+$\}~$ \\
+$~~~~~[$ \moc{MAXI} \dusa{nmaxi} $]$ \\
+$~~~~~[$ \moc{EPSI} \dusa{xepsi} $]$ \\
+$~~~~~[$ \moc{ADJ} $]$ \\
+ {\tt ;}
+\end{DataStructure}
+
+\noindent
+where
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{EDIT}] keyword used to modify the print level iprint.
+
+\item[\dusa{iprint}] index used to control the printing in this operator.
+
+\item[\moc{LCMD}] keyword to specify that optimized (McDaniel--type) polar integration angles are to be
+selected for the method of characteristics.\cite{LCMD} The conservation is ensured only for isotropic scattering.
+
+\item[\moc{OPP1}] keyword to specify that $P_1$ constrained optimized (McDaniel--type) polar integration angles are to be selected for the method of characteristics.\cite{LeTellierpa} The conservation is ensured only for isotropic and linearly anisotropic scattering.
+
+\item[\moc{OGAU}] keyword to specify that Optimized Gauss polar integration angles are to be
+selected for the method of characteristics.\cite{LCMD,LeTellierpa} The conservation is ensured up to $P_{\dusa{nmu}-1}$ scattering.
+
+\item[\moc{GAUS}] keyword to specify that the polar integration angles are to be selected as a single Gauss-Legendre quadrature for the method of characteristics in interval ($-\pi/2$, $\pi/2$). The conservation is ensured up to $P_{\dusa{nmu}-1}$ scattering. This is the default option.
+
+\item[\moc{DGAU}] keyword to specify that the polar integration angles are to be selected as a double Gauss-Legendre quadrature for the method of characteristics in intervals ($-\pi/2$, $0$) and ($0$, $\pi/2$). The conservation is ensured up to $P_{\dusa{nmu}-1}$ scattering.
+
+\item[\moc{CACA}] keyword to specify that CACTUS type equal weight polar integration angles are to be
+selected for the method of characteristics.\cite{CACTUS} The conservation is ensured only for isotropic scattering.
+
+\item[\moc{CACB}] keyword to specify that CACTUS type uniformly distributed integration polar angles
+are to be selected for the method of characteristics.\cite{CACTUS} The conservation is ensured only for isotropic scattering.
+
+\item[\dusa{nmu}] user-defined number of polar angles for the integration of the tracks with the method of characteristics for 2D geometries. By default, a value consistent with \dusa{nangl} is computed by the code. For \moc{LCMD}, \moc{OPP1}, \moc{OGAU} quadratures, \dusa{nmu} is limited to 2, 3 or 4.
+
+\item[\moc{DIFC}] keyword used to specify that only an ACA-simplified transport flux calculation is to be performed (not by default). In this case, the maximum
+number of ACA iterations is set to \dusa{nmaxi}.
+
+\item[\moc{LEXA}] keyword used to force the usage of exact exponentials in the preconditioner calculation (not by default).
+
+\item[\moc{MAXI}] keyword to specify the maximum number of scattering iterations performed in each energy group. This keyword is also used to set the number of Bi-CGSTAB iterations to solve the ACA-simplified system if \moc{DIFC} is present.
+
+\item[\dusa{nmaxi}] the maximum number of iterations. The default value is \dusa{nmaxi}=20.
+
+\item[\moc{EPSI}] keyword to specify the convergence criterion on inner
+iterations (or ACA-simplified flux calculation if \moc{DIFC} is present).
+
+\item[\dusa{xepsi}] convergence criterion. The default value is \dusa{xepsi}=1.0$\times$10$^{-5}$.
+
+\item[\moc{AAC}] keyword to set the ACA preconditioning of inner/multigroup
+iterations in case where a transport solution is selected.\cite{cdd,suslov2}
+
+\item[\dusa{iaca}] $0$/$>0$: ACA preconditioning of inner or multigroup iterations off/on. The default value is \dusa{iaca}=1. If \moc{MAXI} is set to 1, ACA is used as a rebalancing technique for multigroup-inner mixed iterations and \dusa{iaca} is the maximum number of iterations allowed to solve the ACA system (e.g. 100).
+
+\item[\moc{NONE}] no preconditioning for the iterative resolution by Bi-CGSTAB of the ACA system.
+
+\item[\moc{DIAG}] diagonal preconditioning for the iterative resolution by Bi-CGSTAB of the ACA system.
+
+\item[\moc{FULL}] full-matrix preconditioning for the iterative resolution by Bi-CGSTAB of the ACA system.
+
+\item[\moc{ILU0}] ILU0 preconditioning for the iterative resolution by Bi-CGSTAB of the ACA system (This is the default option).
+
+\item[\moc{TMT}] two-step collapsing version of ACA which uses a tracking merging technique while building the ACA matrices. 
+
+\item[\moc{SCR}] keyword to set the SCR preconditioning of inner/multigroup
+iterations.\cite{gmres}
+
+\item[\dusa{iscr}] $0$/$>0$: SCR preconditioning of inner or multigroup iterations off/on. The default value is \dusa{iscr}=0. If \moc{MAXI} is set to 1, SCR is used as a rebalancing technique for multigroup-inner mixed iterations and \dusa{iscr} is the maximum number of iterations allowed to solve the SCR system. When anisotropic scattering is considered, SCR provides an acceleration of anisotropic flux moments. If both ACA and SCR are selected (\dusa{iscr}$>0$ and \dusa{iaca}$>0$), a two-step acceleration scheme (equivalent to ACA when isotropic scattering is considered) involving both methods is used.
+
+\item[\moc{KRYL}] keyword to enable the Krylov acceleration of scattering iterations performed in each energy group.\cite{gmres}
+
+\item[\dusa{ikryl}] $0$: GMRES/Bi-CGSTAB acceleration not used; $>0$: dimension of the Krylov subspace in GMRES; $<0$: Bi-CGSTAB is used.
+The default value is \dusa{ikryl}=10.
+
+\item[\moc{MCU}] keyword used to specify the maximum dimension of the connection matrix for memory allocation.
+
+\item[\dusa{imcu}] The default value is eight (resp. twelve) times the number of volumes and external surfaces for 2D (resp. 3D) geometries.
+
+\item[\moc{HDD}] keyword to select the integration scheme along the tracking lines.
+
+\item[\dusa{xhdd}] selection criterion:
+
+$$
+xhdd = \left\{
+\begin{array}{rl}
+ 0.0 & \textrm{step characteristics scheme} \\
+>0.0 & \textrm{diamond differencing scheme.}
+\end{array} \right.
+$$
+
+The default value is \dusa{xhdd}=0.0 so that the step characteristics method is used.
+
+\item[\moc{LEXF}] keyword used to force the usage of exact exponentials in the flux calculation (not by default).
+
+\item[\moc{SC}] keyword used to select the step characteristics (SC) or DD0 diamond differencing approximation. This
+option is a flat source approximation (default option).
+
+\item[\moc{LDC}] keyword used to select the linear discontinuous characteristics (LDC) or DD1 diamond differencing approximation. This
+option is a linear source approximation.
+
+\item[\moc{STIS}] keyword to select the tracking integration strategy.
+
+\item[\dusa{istis}] $0$: a direct approach with asymptotical treatment is used; $1$: a ``source term isolation'' approach with asymptotical treatment is used (this technique tends to reduce the computational cost and increase the numerical stability but requires the calculation of angular mode-to-mode self-collision probabilities); $-1$:  an "MOCC/MCI"-like approach is used (it tends to reduce further more the computational cost as it doesn't feature any asymptotical treatment for vanishing optical thicknesses). Note that when a zero total cross section is found with \dusa{istis}=-1, it is reset to 1. The default value is \dusa{istis}=1 for $P_{L \le 3}$ anisotropy and 0 otherwise.
+
+\item[\moc{ADJ}] keyword to select an adjoint solution of ACA and characteristics systems. A direct solution is
+set by default.
+
+\end{ListeDeDescription}
+\eject
