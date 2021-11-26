@@ -138,8 +138,7 @@ unknown vector. $\mathcal{S}^{t}_{11}\le\mathcal{S}^{t}_{2}$.
    & \textrm{polynomial basis). \Eq{tratr4} or \Eq{tratr5} is used.} \\
  3 & \textrm{Nodal collocation method with full tensorial products (mesh-centered finite} \\
    & \textrm{differences or dual finite elements with Gauss-Lobatto quadrature). \Eq{tratr2} or} \\
-   & \textrm{\Eq{tratr3} is used.} \\
- 4 & \textrm{Nodal expansion method (NEM).}
+   & \textrm{\Eq{tratr3} is used.}
 \end{array} \right.
 \end{displaymath}
 
@@ -232,11 +231,9 @@ void boundary conditions if {\tt ICOL} $=3$ and {\tt NLF}$\ne 0$:
 \begin{array}{rl}
  0 & \textrm{Use a ({\tt NLF}$+1$)--point quadrature consistent with $P_{{\rm NLF}-1}$ theory} \\
  1 & \textrm{Use a {\tt NLF}--point quadrature consistent with $S_{\rm NLF}$ theory} \\
- 2 & \textrm{Use an analytical integration consistent with diffusion theory.}
+ 2 & \textrm{Use an analytical integration consistent with diffusion theory}
 \end{array} \right.
 \end{displaymath}
-
-\item $\mathcal{S}^{t}_{39}$: ({\tt IGMAX}) Hyperbolic nodal expansion functions are used in energy groups indices $\ge$ {\tt IGMAX}.
 
 \end{itemize}
 

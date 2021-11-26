@@ -191,16 +191,20 @@ C        ELSEIF((HSIGN.EQ.'L_MATEX'))THEN
 *----
 *  Pin Power Reconstruction
 *----
+C 2000 CALL NAPPPR(IPMAP,IPTRK,IPFLU,IPMTX,IPMPP,IPMAC,NSTATE)
  2000 CALL NAPPPR(IPMAP,IPTRK,IPFLU,IPMTX,IPMAC,NSTATE)
       GOTO 9000
+      
 *----
 *  Automatic geometry unfolding
 *----
  3000 CALL NAPGEO(IPGNW,IPGOD,IPCPO,NSTATE)
       GOTO 9000
+     
 *----
 * END
 *----
+
 *
  9000 RETURN
       END

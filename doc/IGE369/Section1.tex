@@ -2140,7 +2140,6 @@ structure ({\tt L\_FLUX} signature) containing a transport solution.
 \begin{DataStructure}{Structure \dstr{descval}}
 $[$ \moc{EDIT} \dusa{iprint} $]$ \\
 $[$ \moc{MODE} \dusa{imode} $]$ \\
-$[$ \moc{POWR} \dusa{power} $]$ \\
 \moc{DIM} \dusa{dim} (\dusa{dxyz}$(i)$, $i=1,dim$) \\
 ;
 \end{DataStructure}
@@ -2160,10 +2159,6 @@ will produce increasing amounts of output.
 \item[\dusa{imode}] index of the flux harmonic recovered by the {\tt VAL:} module if the {\tt MONI} keyword was set in module {\tt FLUD:}
 (see Sect.~\ref{sect:fld_data}). By default, it is assumed that the {\tt MONI} keyword was not used.
 
-\item[\moc{POWR}] keyword used to set \dusa{power}.
-
-\item[\dusa{power}] value of the power in MW used to normalize the flux. By default, the flux is not normalized.
-
 \item[\moc{DIM}] keyword to specify the number \dusa{dim}.
 
 \item[\dusa{dim}] number of dimension of the geometry. 
@@ -2171,156 +2166,3 @@ will produce increasing amounts of output.
 \item[\dusa{dxyz}] mesh interval along each direction which is used to define the grid where the flux is interpolated. 
 
 \end{ListeDeDescription}
-
-\clearpage
-
-\subsection{The {\tt NSST:} module}
-
-The {\tt NSST:} module is used to perform a {\sc tracking} for the nodal
-expansion method (NEM).\cite{brisingr} The actual implementation is limited to
-1D Cartesian geometries.
-
-\vskip 0.08cm
-
-The nodal expansion method is based on an expansion of the {\sl transverse integrated flux} in terms of polynomials defined
-over the $(-0.5,0.5)$ interval:
-\begin{eqnarray}
-\nonumber P_0(u)\negthinspace &=&\negthinspace 1\\
-\nonumber P_1(u)\negthinspace &=&\negthinspace u\\
-\nonumber P_2(u)\negthinspace &=&\negthinspace u^2-{1\over 12}\\
-\nonumber P_3(u)\negthinspace &=&\negthinspace \left( u^2-{1\over 4}\right)u\\
-P_4(u)\negthinspace &=&\negthinspace \left( u^2-{1\over 4}\right)\left( u^2-{1\over 20}\right)
-\label{eq:nem1}
-\end{eqnarray}
-There is the option of using hyperbolic functions in some energy groups:
-\begin{eqnarray}
-\nonumber P_3(u)\negthinspace &=&\negthinspace \sinh(\zeta u)\\
-P_4(u)\negthinspace &=&\negthinspace \cosh(\zeta u)-{2\over \zeta}\, \sinh(\zeta/2)
-\label{eq:nem2}
-\end{eqnarray}
-\noindent where
-\begin{equation}
-\zeta=\Delta x\sqrt{\Sigma_{{\rm r},g} \over D_g}
-\end{equation}
-\noindent where $\Delta x$, $\Sigma_{{\rm r},g}$ and $D_g$ are the node width (cm), the macroscopic removal cross section (cm$^{-1}$)
-and the diffusion coefficient (cm) in group $g$, respectively.
-
-\vskip 0.08cm
-
-The calling specifications are:
-
-\begin{DataStructure}{Structure \dstr{NSST:}}
-\dusa{TRACK} \moc{:=} \moc{NSST:} $[$ \dusa{TRACK} $]$ \dusa{GEOM}  \moc{::} \dstr{NSST\_data}
-\end{DataStructure}
-
-\goodbreak
-\noindent where
-\begin{ListeDeDescription}{mmmmmm}
-
-\item[\dusa{TRACK}] {\tt character*12} of the {\sc lcm} object (type {\tt L\_TRIVAC}) 
-containing the {\sc tracking} information. If \dusa{TRACK} appears on the RHS, the
-previous settings will be applied by default.
-
-\item[\dusa{GEOM}] {\tt character*12} of the {\sc lcm} object (type {\tt
-L\_GEOM}) containing the geometry.
-
-\item[\dstr{NSST\_data}] structure containing the data to module {\tt NSST:} (see Sect.~\ref{sect:NSST_data}).
-
-\end{ListeDeDescription}
-
-\clearpage
-
-\subsubsection{Data input for module {\tt NSST:}}\label{sect:NSST_data}
-
-\begin{DataStructure}{Structure \dstr{NSST\_data}}
-$[$ \moc{EDIT} \dusa{iprint} $]$ \\
-$[$ \moc{TITL} \dusa{TITLE} $]$ \\
-$[$ \moc{HYPE} \dusa{igmax} $]$ \\
-;
-\end{DataStructure}
-
-\noindent where
-\begin{ListeDeDescription}{mmmmmm}
-
-\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
-
-\item[\dusa{iprint}] index used to control the printing  in module {\tt
-NSST:}. =0 for no print; =1 for minimum printing (default value); Larger
-values produce increasing amounts of output.
-
-\item[\moc{TITL}] keyword which allows the run title to be set.
-
-\item[\dusa{TITLE}] the title associated with a nodal expansion method run. This
-title may contain up to 72 characters. The default when \moc{TITL} is not specified is no title.
-
-\item[\moc{HYPE}] keyword used to specify the type of nodal expansion base functions used to represent the transverse integrated flux.
-methods. By default, the polynomial base~(\ref{eq:nem1}) is used.
-
-\item[\dusa{igmax}] hyperbolic base functions~(\ref{eq:nem2}) are used for energy groups with indices $\ge$ \dusa{igmax}.
-
-\end{ListeDeDescription}
-
-\clearpage
-
-\subsection{The {\tt NSSF:} module}
-
-The {\tt NSSF:} module is used to compute the solution to an eigenvalue problem corresponding to a nodal expansion method (NEM) discretization. The actual implementation is limited to
-1D Cartesian geometries. The calling specifications are:
-
-\begin{DataStructure}{Structure \dstr{NSSF:}}
-\dusa{FLUX} \moc{:=} \moc{NSSF:} \dusa{TRACK} \dusa{MACRO} \moc{::} \dstr{NSSF\_data}
-\end{DataStructure}
-
-\noindent where
-\begin{ListeDeDescription}{mmmmmm}
-
-\item[\dusa{FLUX}] {\tt character*12} name of the {\sc lcm} object (type {\tt L\_FLUX}) containing the solution.
-
-\item[\dusa{TRACK}] {\tt character*12} name of the {\sc lcm} object (type {\tt L\_TRACK}) containing the {\sc tracking}.
-
-\item[\dusa{MACRO}] {\tt character*12} name of the {\sc lcm} object (type {\tt L\_MACROLIB}) containing the cross sections, diffusion coefficients and discontinuity
-factors.
-
-\item[\dstr{NSSF\_data}] structure containing the data to module {\tt NSSF:} (see Sect.~\ref{sect:fld_data}).
-
-\end{ListeDeDescription}
-
-\vskip 0.2cm
-
-\subsubsection{Data input for module {\tt NSSF:}}\label{sect:fld_data}
-
-\begin{DataStructure}{Structure \dstr{NSSF\_data}}
-$[$ \moc{EDIT} \dusa{iprint} $]$ \\
-$[$ \moc{EXTE}  $[$ \dusa{maxout} $]~[$ \dusa{epsout} $]~]$ \\
-$[$ \moc{NODF} $]$ \\
-$[$ \moc{BUCK} \dusa{valb2} $]$  \\
-;
-\end{DataStructure}
-
-\noindent where
-\begin{ListeDeDescription}{mmmmmm}
-
-\item[\moc{EDIT}] keyword used to set \dusa{iprint}.
-
-\item[\dusa{iprint}] index used to control the printing  in module {\tt NSSF:}.
-=0 for no print; =1 for minimum printing (default value).
-
-\item[\moc{EXTE}] keyword to specify that the control parameters for the
-external iteration are to be modified. 
-
-\item[\dusa{maxout}] maximum number of external iterations. The fixed default
-value is \dusa{maxout} $=1000$.
-
-\item[\dusa{epsout}] convergence criterion for the external iterations. The
-fixed default value is \dusa{epsout} $=1.0\times 10^{-6}$.
-
-\item[\moc{NODF}] keyword used to force discontinuity factors to one.
-
-\item[\moc{BUCK}] keyword used to specify the fixed buckling. By default,
-\dusa{valb2} $=0$ cm$^{-2}$
-
-\item[\dusa{valb2}] value of the fixed total buckling in cm$^{-2}$.
-
-\end{ListeDeDescription}
-
-\clearpage

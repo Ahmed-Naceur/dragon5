@@ -1,0 +1,22 @@
+#!/bin/sh
+if [ $# = 0 ]
+   then
+   echo "usage: electron_1D.access directory" 1>&2
+   exit 1
+fi
+ln -s $1/data/cepxsr-dragon/matxs_water_cepxsr_94Ne_94Ng.txt _cepxsr_94Ne_94Ng 
+ln -s $1/data/cepxsr-dragon/matxs_water_cepxsr_80Ne_80Ng.txt _cepxsr_80Ne_80Ng 
+ln -s $1/data/cepxsr-dragon/matxs_water_cepxsr_12Ne_12Ng.txt _cepxsr_12Ne_12Ng 
+ln -s $1/data/cepxsr-dragon/matxs_water_cepxsr_100Ne_100Ng.txt _cepxsr_100Ne_100Ng 
+ln -s $1/data/cepxsr-dragon/matxs_water_cepxsr_21Ne_21Ng.txt _cepxsr_21Ne_21Ng 
+
+ln -s $1/data/cepxs-dragon/FMAC_e_3.0MeV_0g_80e_P8_NC.txt .
+ln -s $1/data/cepxsr-dragon/matxs_H_O_cepxsr_80Ne_0Ng.txt _matxs_cepxsr_80Ne_0Ng
+ln -s $1/data/cepxsr-dragon/matxs_O_cepxsr_80Ne_80Ng.txt _matxs_O_cepxsr_80Ne_80Ng
+ln -s $1/data/cepxsr-dragon/matxs_water_cepxsr_20Ne_20Ng.txt _cepxsr_20Ne_20Ng
+ln -s $1/data/tmatxs2_proc/matxsW.txt _matxsW
+Hello World2
+Hello World3
+Hello World4
+ls -l
+echo "electron_1D access script terminated"

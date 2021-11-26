@@ -14,10 +14,6 @@ TRACK1
 LINK.SYSTEM                                                                     
          4         4         4
 SYS         
-->       1      12       3       1                                 <-   
-OPTION                                                                          
-         4
-P1  
 ->       1      12      10     295                                 <-   
 FLUX                                                                            
 ->       2       0       2     443                                 <-   00000001

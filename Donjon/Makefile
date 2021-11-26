@@ -53,7 +53,6 @@ tests :
 	./rdonjon rep1300_reflector.x2m -quiet
 	./rdonjon rep1300_reflector_sp1.x2m -quiet
 	./rdonjon rep900.x2m -quiet
-	./rdonjon rep900cluster.x2m -quiet
 	./rdonjon rep900EnrichCOMPO.x2m -quiet
 	./rdonjon rep900EnrichCOMPOhet.x2m -quiet
 	./rdonjon rep900_iram.x2m -quiet

@@ -1,0 +1,209 @@
+*---
+*  TEST CASE TCM67
+*  FMAC-M generated homogeneous macrolib
+*  1D slab sn electron-photon coupled testcase from ROZ6
+*----
+*----
+*  Define STRUCTURES and MODULES used
+*----
+MODULE GEO: FMAC: MAC: SNT: ASM: FLU: PSOUR: OUT: DELETE: END: UTL:
+       HEAT: ABORT: ;
+LINKED_LIST  EMACRO EMACRO2 GMACRO GMACRO2 PMACRO PMACRO2 GEOM
+       ETRACK GTRACK PTRACK SYSTEM EFLUX GFLUX PFLUX
+       ESOURCE GSOURCE PSOURCE EEDITS GEDITS PEDITS DEPOS ;
+REAL esum DELTA ;
+SEQ_ASCII FMAC_M :: FILE './water.txt' ;
+
+
+*----
+*  Set and track the geometry
+*----
+
+
+GEOM := GEO: :: CAR1D 2
+           X- VOID  X+ VOID
+           MIX 1 2
+           MESHX 0.0 0.3 8.0
+           SPLITX 20 400
+           ;
+ETRACK := SNT: GEOM ::
+      TITLE 'Coupled electron-positron-photon transport scheme'
+      EDIT 2 MAXR 1000000 DIAM 0 NLIVO SN 32 SCAT 16 EPSI 1.E-4
+      MAXI 300 BFPG ;
+PTRACK := ETRACK ;
+GTRACK := ETRACK ;
+GTRACK := SNT: GTRACK GEOM :: EDIT 2 BTE ;
+
+
+*----
+*  Extract atomic data
+*----
+
+
+EMACRO := FMAC: FMAC_M ::
+  EDIT 2
+  PARTICLE BETA
+;
+EMACRO2 := EMACRO ;
+EMACRO := MAC: EMACRO EMACRO2 ::
+     MIX 2 1 OLDL
+     ;
+EMACRO2 := DELETE: EMACRO2 ;
+
+
+GMACRO := FMAC: FMAC_M ::
+  EDIT 2
+  PARTICLE GAMA
+;
+GMACRO2 := GMACRO ;
+GMACRO := MAC: GMACRO GMACRO2 ::
+     MIX 2 1 OLDL
+;
+GMACRO2 := DELETE: GMACRO2 ;
+
+PMACRO := FMAC: FMAC_M ::
+  EDIT 2
+  PARTICLE POSITR
+;
+PMACRO2 := PMACRO ;
+PMACRO := MAC: PMACRO PMACRO2 ::
+     MIX 2 1 OLDL
+;
+PMACRO2 := DELETE: PMACRO2 ;
+
+
+*----
+*  Compute the electron source and flux
+*----
+
+
+REAL qsour := 0.000001 ;
+* 1E10 2.0 / $Pi_R / ;
+ECHO "qsour=" qsour ;
+EMACRO := MAC: EMACRO ::
+     READ INPUT
+     MIX 1 FIXE
+     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     ;
+SYSTEM := ASM: EMACRO ETRACK :: EDIT 2 ARM ;
+EFLUX := FLU: EMACRO ETRACK SYSTEM ::
+    EDIT 1 TYPE S EXTE 100
+    ;
+EEDITS := OUT: EFLUX ETRACK EMACRO GEOM ::
+    EDIT 2 COND INTG NONE
+    ;
+SYSTEM := DELETE: SYSTEM ;
+
+
+*----
+*  Compute the photon source and flux
+*----
+
+
+GSOURCE := PSOUR: GMACRO GTRACK EFLUX ::
+   EDIT 1
+   PARTICLE BETA
+   ;
+SYSTEM := ASM: GMACRO GTRACK :: EDIT 1 ARM ;
+GFLUX := FLU: GMACRO GTRACK SYSTEM GSOURCE ::
+    EDIT 2 TYPE S EXTE 100
+    ;
+GEDITS := OUT: GFLUX GTRACK GMACRO GEOM ::
+    EDIT 2 COND INTG NONE
+    ;
+SYSTEM := DELETE: SYSTEM ;
+
+
+*----
+*  Compute the primary energy deposition
+*----
+
+
+DEPOS := HEAT: EEDITS GEDITS ::
+    EDIT 1 ! SOUR 1.0 ! 0.0518134 ! 1/(\ro_{W} g/cm^{3})
+    ;
+EEDITS GEDITS EFLUX := DELETE: EEDITS GEDITS EFLUX ;
+
+
+*----
+*  Compute the secondary electron source and flux
+*----
+
+
+ESOURCE := PSOUR: EMACRO ETRACK GFLUX ::
+   EDIT 1
+   PARTICLE GAMA
+   ;
+SYSTEM := ASM: EMACRO ETRACK :: EDIT 1 ARM ;
+EFLUX := FLU: EMACRO ETRACK SYSTEM ESOURCE ::
+    EDIT 2 TYPE S EXTE 100
+    ;
+EEDITS := OUT: EFLUX ETRACK EMACRO GEOM ::
+    EDIT 2 COND INTG NONE
+    ;
+SYSTEM := DELETE: SYSTEM ;
+
+
+*----
+*  Compute the secondary positron source and flux
+*----
+
+
+PSOURCE := PSOUR: PMACRO PTRACK GFLUX ::
+   EDIT 1
+   PARTICLE GAMA
+   ;
+SYSTEM := ASM: PMACRO PTRACK :: EDIT 1 ARM ;
+PFLUX := FLU: PMACRO PTRACK SYSTEM PSOURCE ::
+   EDIT 2 TYPE S EXTE 100
+   ;
+PEDITS := OUT: PFLUX PTRACK PMACRO GEOM ::
+   EDIT 2 COND INTG NONE
+   ;
+SYSTEM GSOURCE GFLUX := DELETE: SYSTEM GSOURCE GFLUX ;
+
+
+*----
+*  Compute the secondary photon source and flux
+*----
+
+
+GSOURCE := PSOUR: GMACRO GTRACK EFLUX PFLUX ::
+   EDIT 1
+   PARTICLE BETA POSITR
+   ;
+SYSTEM := ASM: GMACRO GTRACK :: EDIT 1 ARM ;
+GFLUX := FLU: GMACRO GTRACK SYSTEM GSOURCE ::
+    EDIT 2 TYPE S EXTE 100
+    ;
+GEDITS := OUT: GFLUX GTRACK GMACRO GEOM ::
+    EDIT 2 COND INTG NONE
+    ;
+SYSTEM ESOURCE := DELETE: SYSTEM ESOURCE ;
+
+
+*----
+*  Compute the secondary total energy deposition
+*----
+DEPOS := HEAT: DEPOS EEDITS PEDITS GEDITS ::
+    EDIT 1 PICKE >>esum<<
+    ;
+ECHO "total energy deposition=" esum "MeV/cc" ;
+*
+ECHO "Calculations completed" ;
+END: ;

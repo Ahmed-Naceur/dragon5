@@ -1,0 +1,143 @@
+*--------------------------------------------------------------------- 
+*  Electron Source on 1D Slab Geometry
+*  CEPXSR library
+*  Author: Ahmed Naceur
+*---------------------------------------------------------------------
+
+* --- Define STRUCTURES and MODULES used
+
+MODULE       GEO: LIB: MAC: SNT: ASM: FLU: HEAT: OUT: DELETE: 
+             UTL: END: EDI: ;
+PROCEDURE    assertS ;
+LINKED_LIST   MACRO DEPOS MICRO OLDMACRO GEOM TRACK SYSTEM FLUX 
+              EEDIT EDITION ;
+
+SEQ_ASCII    edition.txt  :: FILE 'edition.txt' ;              
+SEQ_ASCII    edep.txt     :: FILE 'edep.txt' ;
+SEQ_ASCII    edit.txt     :: FILE 'edit.txt' ;
+SEQ_ASCII    micro.txt    :: FILE 'micro.txt' ;
+SEQ_ASCII    macro.txt    :: FILE 'macro.txt' ;
+SEQ_ASCII    flux.txt     :: FILE 'flux.txt' ;
+SEQ_ASCII    system.txt   :: FILE 'system.txt' ;
+SEQ_ASCII    geom.txt     :: FILE 'geom.txt' ;
+SEQ_ASCII    track.txt    :: FILE 'track.txt' ;
+
+* --- Geometry 
+
+GEOM := GEO: :: CAR1D 2
+           X- VOID  X+ VOID
+           MIX  1 2
+           MESHX 0.0 0.3 2.0
+           SPLITX 30 70
+           ;
+
+* --- Tracking       
+
+TRACK := SNT: GEOM ::
+             TITLE 'Water-Slab:Cepxsr-Dragon'
+             EDIT 2 MAXR 1000 DIAM 1 NLIVO SN 32 SCAT 8 EPSI 1.E-5
+             QUAD 6 MAXI 800 BFPL ;
+
+* --- Library access
+
+MICRO := LIB: :: 
+      EDIT 99
+      NMIX 1 
+      ANIS 8
+      MIXS LIB: MATXS2 FIL: _test 
+      MIX  1  300.0  1.0 NOGAS
+      Hnat = h 0.111894 
+      Onat = o 0.888106
+;
+
+
+* --- Library structuring 
+
+MACRO := MICRO :: STEP UP MACROLIB ;
+
+* UTL: MACRO :: STEP UP GROUP STEP AT 1 DIR IMPR ESTOPW ;
+OLDMACRO := MACRO ;
+MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;
+OLDMACRO := DELETE: OLDMACRO ;
+
+
+* --- Specify fixed particle source density   
+
+REAL qsour :=  1.E10 2.0 / $Pi_R / ; ! [cm-3 s-1]
+MACRO := MAC: MACRO ::
+      READ INPUT
+      MIX 1 FIXE
+! -- 300 groups
+!     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0    
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+! -- 100 groups     
+!     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0     
+! -- 80 groups     
+     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0
+     ;
+
+macro.txt := MACRO ;
+
+* ---- Electron flux
+
+SYSTEM := ASM: MACRO TRACK :: EDIT 0 ARM ;
+FLUX  := FLU: MACRO TRACK SYSTEM :: EDIT 0 TYPE S EXTE 300 ;
+
+* --- Recover flux and reaction rates
+
+EEDIT := OUT: FLUX TRACK MACRO GEOM MICRO  :: EDIT 2 COND INTG NONE ;
+
+edit.txt  := EEDIT ;  
+track.txt := TRACK ;
+geom.txt := GEOM ; 
+system.txt := SYSTEM ;
+micro.txt := MICRO ;
+flux.txt  := FLUX  ;
+
+LINKED_LIST GEDIT ;
+GEDIT := EEDIT ;
+
+* ---- Energy deposition
+
+*DEPOS := HEAT: EEDIT GEDIT :: EDIT 99 ;
+
+*edep.txt := EEDIT ; 
+
+EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM := DELETE: 
+  EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM ; 
+
+END: ;
+
+QUIT "LIST" .
+
+

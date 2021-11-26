@@ -84,8 +84,7 @@ I_{\rm df} = \left\{
 \begin{array}{ll}
 0 & \textrm{no discontinuity factor information}\\
 1 & \textrm{multigroup boundary current information is available}\\
-2 & \textrm{discontinuity factor information (see \Sect{macroADF}) is available}\\
-3 & \textrm{matrix ($G \times G$) discontinuity factor information (see \Sect{macroADF}) is available.}
+2 & \textrm{discontinuity factor information (see \Sect{macroADF}) is available.}
 \end{array} \right.
 \end{displaymath}
 \item Adjoint macrolib flag $I_{\rm adj}=\mathcal{S}^{M}_{13}$:
@@ -160,7 +159,7 @@ directory:
   {Lethargy width of each group $U_{g}$}
 \OptRealEnr
   {ALBEDO\blank{6}}{$N_{A}, G$}{$N_{A}> 0$}{}
-  {Multigroup and surface ordered physical albedos. The dimension is R$(N_{A},G,G)$ in case where matrix albedos are used.}
+  {Multigroup and surface ordered physical albedos.}
 \OptRealEnr
   {VOLUME\blank{6}}{$N_{m}$}{$\mathcal{M}\ge 2$}{cm$^{3}$~~}
   {Volume of region containing this mixture $V_{m}$}
@@ -560,10 +559,10 @@ discontinuity factors or to perform Selengut-type normalization with the {\sl su
 
 \begin{DescriptionEnregistrement}{Records in the \moc{/ADF/} sub-directory}{7.5cm}
 \OptIntEnr
-  {NTYPE\blank{7}}{$1$}{$I_{\rm df} \ge 2$}
+  {NTYPE\blank{7}}{$1$}{$I_{\rm df} = 2$}
   {Number of ADF-type boundary flux edits.}
 \OptCharEnr
-  {HADF\blank{8}}{({\tt NTYPE})$*8$}{$I_{\rm df} \ge 2$}
+  {HADF\blank{8}}{({\tt NTYPE})$*8$}{$I_{\rm df} = 2$}
   {Name of each ADF-type boundary flux edit. Any name can be used, but some
   names are standard. Standard names are: $=$ \moc{FD\_C}:
   corner flux edition; $=$ \moc{FD\_B}: surface (assembly gap) flux edition; $=$ \moc{FD\_H}:
@@ -573,11 +572,8 @@ discontinuity factors or to perform Selengut-type normalization with the {\sl su
   {Multigroup boundary currents $J^{g}_{\rm out}$ and $J^{g}_{\rm in}$. These values correspond to surfaces where
   a \moc{VOID} or \moc{ALBE} boundary condition is set in DRAGON.}
 \OptRealVar
-  {\listedir{type}}{$N_{m},G$}{$I_{\rm df} = 2$}{}
-  {Averaged fluxes in boundary regions or discontinuity factors in a material mixture. Name {\sl type} is a component of {\tt HADF} array.}
-\OptRealVar
-  {\listedir{type}}{$N_{m},G,G$}{$I_{\rm df} = 3$}{}
-  {Matrix discontinuity factors in a material mixture. Name {\sl type} is a component of {\tt HADF} array.}
+  {\listedir{type}}{$G$}{$I_{\rm df} = 2$}{}
+  {Averaged fluxes in boundary regions. Name {\sl type} is a component of {\tt HADF} array.}
 \end{DescriptionEnregistrement}
 
 \subsection{The \moc{/GFF/} sub-directory in \dir{macrolib}}\label{sect:macroGFF}

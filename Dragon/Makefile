@@ -29,6 +29,5 @@ tests :
 	./rdragon uo2_evo_xsm.x2m -quiet
 	./rdragon C2D20.x2m -quiet
 	./rdragon CFC-CELL.x2m -quiet
-	./rdragon ErmBeavrsPwrRefl.x2m -quiet
 	./rdragon RegtestCNG_mccg.x2m -quiet
 	./rdragon RegtestLZC_mccg.x2m -quiet

@@ -1,0 +1,199 @@
+*DECK INFWD4
+      SUBROUTINE INFWD4(CFILNA,IVERW,IPRINT,NBISO,HNAMIS,AWRISO)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* To recover mass for isotopes of WIMS-D4 or WIMS-E libraries.
+*
+*Copyright:
+* Copyright (C) 2002 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
+*
+*Author(s): G. Marleau, A. Hebert
+*
+*Parameters: input
+* CFILNA  WIMS file name.
+* IVERW   TYPE OF FILE (=4: WIMS-D4; =5: WIMS-E).
+* IPRINT  print flag.
+* NBISO   number of isotopes.
+* HNAMIS  isotope names.
+*
+*Parameters: output
+* AWRISO  isotope weights.
+*
+*-----------------------------------------------------------------------
+*
+      IMPLICIT   NONE
+      INTEGER    IVERW,IOUT,IPRINT,NBISO,KDROPN,KDRCLS
+      PARAMETER (IOUT=6)
+      CHARACTER  CFILNA*64,HNAMIS(NBISO)*8
+      REAL       AWRISO(NBISO)
+      EXTERNAL   KDROPN,KDRCLS
+*----
+*  MEMORY ALLOCATION PARAMETERS
+*----
+      INTEGER      IBASE(1)
+      REAL         RBASE(1)
+      COMMON       RBASE
+      EQUIVALENCE (RBASE(1),IBASE(1))
+*----
+*  WIMS-D4 LIBRARY PARAMETERS
+*----
+      INTEGER      IUNIT,IUTYPE,IACTO,IACTC,LRIND,MAXISO,LPZ
+      PARAMETER   (IUTYPE=2,IACTO=2,IACTC=1,LRIND=0,MAXISO=246,LPZ=8)
+      CHARACTER    CWISO(MAXISO)*8
+      INTEGER      NPZ(LPZ),IWISO(MAXISO),NEL,NGROUP,IEL,IELRT,JEL,
+     >             IDIEL,IZ,NFIEL,NTMP,NRIEL,IDUM,IERR,IT,JSO,ISOF,
+     >             IP1OPT,ISORD(MAXISO)
+      REAL         AWR,RDUM
+      IF(CFILNA.EQ.' ' )THEN
+        CALL XABORT('INFWD4: WIMS LIBRARY HAS NOT BEEN SET')
+      ENDIF
+*----
+*  OPEN WIMS-D4 LIBRARY
+*  READ GENERAL DIMENSIONING
+*----
+      IUNIT=KDROPN(CFILNA,IACTO,IUTYPE,LRIND)
+      IF(IUNIT.LE.0) CALL XABORT(
+     > 'INFWD4: WIMS-D4 LIBRARY CANNOT BE OPENED FOR MIXS :'//CFILNA)
+      READ(IUNIT) (NPZ(IT),IT=1,LPZ)
+      NEL=NPZ(1)
+      NGROUP=NPZ(2)
+      IF(NEL.GT.MAXISO) THEN
+        WRITE(IOUT,9000) MAXISO,NEL
+        CALL XABORT('INFWD4: INVALID NUMBER OF ISOTOPES')
+      ENDIF
+      IF(NBISO.GT.MAXISO) THEN
+        WRITE(IOUT,9001) NBISO,NEL
+        CALL XABORT('INFWD4: INVALID NUMBER OF ISOTOPES')
+      ENDIF
+*----
+*  READ ISOTOPE ID NUMBER AND CREATE EQUIVALENT ISOTOPE NAME
+*  SCAN TO ASSOCIATE WIMS ISOTOPE NUMBER WITH DRAGON ISOTOPE NUMBER
+*  VERIFY IF ALL ISOTOPES REQUIRED ARE PRESENT
+*----
+      READ(IUNIT) (IWISO(IEL),IEL=1,NEL)
+      DO 100 IEL=1,NEL
+        CWISO(IEL)='        '
+        IF     (IWISO(IEL).LT.10) THEN
+          WRITE(CWISO(IEL),'(I1)') IWISO(IEL)
+        ELSE IF(IWISO(IEL).LT.100) THEN
+          WRITE(CWISO(IEL),'(I2)') IWISO(IEL)
+        ELSE IF(IWISO(IEL).LT.1000) THEN
+          WRITE(CWISO(IEL),'(I3)') IWISO(IEL)
+        ELSE IF(IWISO(IEL).LT.10000) THEN
+          WRITE(CWISO(IEL),'(I4)') IWISO(IEL)
+        ELSE IF(IWISO(IEL).LT.100000) THEN
+          WRITE(CWISO(IEL),'(I5)') IWISO(IEL)
+        ELSE IF(IWISO(IEL).LT.1000000) THEN
+          WRITE(CWISO(IEL),'(I6)') IWISO(IEL)
+        ELSE IF(IWISO(IEL).LT.10000000) THEN
+          WRITE(CWISO(IEL),'(I7)') IWISO(IEL)
+        ELSE IF(IWISO(IEL).LT.100000000) THEN
+          WRITE(CWISO(IEL),'(I8)') IWISO(IEL)
+        ENDIF
+        DO 101 JSO=1,NBISO
+          IF(HNAMIS(JSO).EQ.CWISO(IEL)) THEN
+            ISORD(JSO)=IEL
+          ENDIF
+ 101    CONTINUE
+ 100  CONTINUE
+      IF(IPRINT.GE.100) THEN
+        WRITE(IOUT,6000) (CWISO(IEL),IEL=1,NEL)
+      ENDIF
+      DO 102 JSO=1,NBISO
+        IF(ISORD(JSO).EQ.0) THEN
+          WRITE(IOUT,9002) HNAMIS(JSO),CFILNA
+          CALL XABORT('INFWD4: MISSING ISOTOPE')
+        ENDIF
+ 102  CONTINUE
+*----
+*  SKIP GROUP STRUCTURE, FISSION SPECTRUM, DEPLETION CHAIN
+*  AND END RECORD
+*----
+      READ(IUNIT) RDUM
+      IF(IVERW.EQ.4) READ(IUNIT) RDUM
+      DO 110 IEL=1,NEL
+        READ(IUNIT) IDUM
+ 110  CONTINUE
+      IF(IVERW.EQ.4) READ(IUNIT) RDUM
+      DO 120 IELRT=1,NEL
+        IF(IVERW.EQ.4) THEN
+          READ(IUNIT) IDIEL,AWR,IZ,NFIEL,NTMP,NRIEL
+          ISOF=0
+          IP1OPT=1
+        ELSE IF(IVERW.EQ.5) THEN
+          READ(IUNIT) IDIEL,AWR,IZ,NFIEL,NTMP,NRIEL,ISOF,IP1OPT
+        ENDIF
+*----
+*  LOCATE ISOTOPE IN LIST OF LIBRARY ISOTOPES IN THE CASE
+*  WHERE LIBRARY IS NOT COMPLETE OR THE ORDER OF ISOTOPE
+*  STORED IS DIFFERENT FROM THAT OF THE ISOTOPE NAMES
+*----
+        IEL=0
+        DO 121 JEL=1,NEL
+          IF(IDIEL.EQ.IWISO(JEL)) THEN
+            IEL=JEL
+            GO TO 125
+          ENDIF
+ 121    CONTINUE
+        CALL XABORT('INFWD4: WIMSD4 LIBRARY INCOMPLETE')
+ 125    CONTINUE
+*----
+*   SCAN TO SEE IF ISOTOPE IS REQUIRED AND GET WEIGHTS.
+*----
+        DO 150 JSO=1,NBISO
+          IF(ISORD(JSO).EQ.IEL) THEN
+             AWRISO(JSO)=AWR
+             GO TO 155
+          ENDIF
+ 150    CONTINUE
+ 155    CONTINUE
+*----
+*  OTHER RECORDS FOR THIS ISOTOPE
+*----
+        READ(IUNIT) RDUM
+        IF(NFIEL.GT.1) THEN
+          READ(IUNIT) RDUM
+        ENDIF
+        READ(IUNIT) IDUM
+        IF(NTMP.GT.0) THEN
+          READ(IUNIT) RDUM
+          DO 140 IT=1,NTMP
+            READ(IUNIT) RDUM
+            IF(NFIEL.GT.1) THEN
+              READ(IUNIT) RDUM
+            ENDIF
+            READ(IUNIT) IDUM
+ 140      CONTINUE
+        ENDIF
+        IF(ISOF.NE.0) READ(IUNIT) RDUM
+        IF(IP1OPT.NE.1) THEN
+          DO 130 IT=1,NTMP
+            READ(IUNIT) IDUM
+ 130      CONTINUE
+        ENDIF
+        IF(IVERW.EQ.4) READ(IUNIT) RDUM
+ 120  CONTINUE
+      IERR=KDRCLS(IUNIT,IACTC)
+      IF(IERR.LT.0) CALL XABORT(
+     > 'INFWD4: Impossible to close WIMS-D4 library '//CFILNA)
+*----
+*  RETURN
+*----
+      RETURN
+*----
+*  FORMAT
+*----
+ 9000 FORMAT(/' MAXIMUM NUMBER OF ISOTOPE SPECIFIED :',I10/
+     >        ' NUMBER OF ISOTOPE IN LIBRARY        :',I10)
+ 9001 FORMAT(/' NUMBER OF ISOTOPE TO TREAT   :',I10/
+     >        ' NUMBER OF ISOTOPE IN LIBRARY :',I10)
+ 9002 FORMAT(/' INFWD4: MATERIAL/ISOTOPE ',A64,
+     >        ' IS MISSING ON WIMS-D4 FILE ',A8)
+ 6000 FORMAT(1X,'ISOTOPES ON LIBRARY'/6(4X,A8))
+      END

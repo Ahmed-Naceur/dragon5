@@ -1,0 +1,211 @@
+*DECK SAPCAL
+      SUBROUTINE SAPCAL(IMPX,IPSAP,IPDEPL,IPEDIT,LCRON)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* To store the results of an elementary calculation in the Saphyb.
+*
+*Copyright:
+* Copyright (C) 2007 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): A. Hebert
+*
+*Parameters: input
+* IMPX    print parameter.
+* IPSAP   pointer to the Saphyb.
+* IPDEPL  pointer to the burnup object (L_BURNUP signature).
+* IPEDIT  pointer to the edition object (L_EDIT signature).
+* LCRON   flag set to .TRUE. to put kinetics data into divers directory.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      TYPE(C_PTR) IPSAP,IPDEPL,IPEDIT,IPSPH
+      INTEGER IMPX
+      LOGICAL LCRON
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER (NDIMSA=50,NSTATE=40,MAXMAC=2)
+      INTEGER IDATA(NDIMSA),IPAR(NSTATE),TYPMAC(MAXMAC)
+      REAL BIRRAD(2)
+      CHARACTER CDIRO*12,HSMG*131,TEXT20*20
+*----
+*  ALLOCATABLE ARRAYS
+*----
+      INTEGER, ALLOCATABLE, DIMENSION(:) :: HMIX,IWORKT,IWORKR
+      REAL, ALLOCATABLE, DIMENSION(:) :: VOL,REGFLX
+*
+      CALL LCMGTC(IPEDIT,'LAST-EDIT',12,1,CDIRO)
+      CALL LCMSIX(IPEDIT,CDIRO,1)
+      CALL LCMLEN(IPEDIT,'STATE-VECTOR',ILONG,ITYLCM)
+      IF(ILONG.NE.0) THEN
+         CALL LCMGET(IPEDIT,'STATE-VECTOR',IPAR)
+         NBISO=IPAR(2)
+         NED=IPAR(13)
+         NPRC=IPAR(19)
+         NDFI=IPAR(20)
+      ELSE
+         NBISO=0
+         NDFI=0
+      ENDIF
+      CALL LCMSIX(IPEDIT,'MACROLIB',1)
+      CALL LCMGET(IPEDIT,'STATE-VECTOR',IPAR)
+      NG=IPAR(1)
+      NMIL=IPAR(2)
+      NL=IPAR(3)
+      IF(IPAR(4).GT.1) CALL XABORT('SAPCAL: CANNOT PROCESS MULTIPLE FI'
+     1 //'SSION SPECTRA.')
+      NED=IPAR(5)
+      ITRANC=IPAR(6)
+      NPRC=IPAR(7)
+      IDF=IPAR(12)
+      CALL LCMLEN(IPEDIT,'SPH',ILEN,ITYLCM)
+      IF(ILEN.NE.0) THEN
+         IPSPH=LCMGID(IPEDIT,'SPH')
+         CALL LCMGET(IPSPH,'STATE-VECTOR',IPAR)
+         IMC=IPAR(6)
+      ELSE
+         IMC=0
+      ENDIF
+*
+      CALL LCMGET(IPSAP,'DIMSAP',IDATA)
+      NREA=IDATA(4)
+      NISO=IDATA(5)
+      NMAC=IDATA(6)
+      NADRX=IDATA(18)
+      ICAL=IDATA(19)+1
+      IF(IDATA(19).EQ.0) THEN
+*        COMPLETE DIMSAP AND CONTENU DIRECTORY.
+         IF(IDATA(7).EQ.0) THEN
+            IDATA(7)=NMIL
+            ALLOCATE(HMIX(5*NMIL))
+            DO 10 IMIL=1,NMIL
+            TEXT20=' '
+            WRITE(TEXT20,'(3HMIX,I5.5)') IMIL
+            READ(TEXT20,'(5A4)') (HMIX((IMIL-1)*5+I0),I0=1,5)
+   10       CONTINUE
+            CALL LCMSIX(IPSAP,'geom',1)
+            CALL LCMPUT(IPSAP,'NOMMIL',5*NMIL,3,HMIX)
+            CALL LCMSIX(IPSAP,' ',2)
+            DEALLOCATE(HMIX)
+         ELSE IF(NMIL.NE.IDATA(7)) THEN
+            WRITE(HSMG,'(42HSAPCAL: ELEMENTARY CALCULATION WITH AN INV,
+     1      22HALIB NB. OF MIXTURES =,I7,3H NE,I7,1H.)') NMIL,IDATA(7)
+            CALL XABORT(HSMG)
+         ENDIF
+         IDATA(20)=NG
+         IDATA(31)=NPRC
+         CALL LCMSIX(IPSAP,'contenu',1)
+         ALLOCATE(IWORKT(NMIL),IWORKR(NMIL))
+         CALL XDISET(IWORKT,NMIL,0)
+         CALL XDISET(IWORKR,NMIL,0)
+         IF(NMAC.GT.0) CALL LCMGET(IPSAP,'TYPMAC',TYPMAC)
+         DO 20 IMAC=1,NMAC
+         IF(TYPMAC(IMAC).EQ.1) CALL XDISET(IWORKT,NMIL,IMAC)
+         IF(TYPMAC(IMAC).EQ.2) CALL XDISET(IWORKR,NMIL,IMAC)
+   20    CONTINUE
+         CALL LCMPUT(IPSAP,'TOTMAC',NMIL,1,IWORKT)
+         CALL LCMPUT(IPSAP,'RESMAC',NMIL,1,IWORKR)
+         DEALLOCATE(IWORKR,IWORKT)
+         CALL LCMSIX(IPSAP,' ',2)
+*
+*        RECOVER MIXTURE VOLUMES.
+         ALLOCATE(VOL(NMIL))
+         CALL LCMGET(IPEDIT,'VOLUME',VOL)
+         CALL LCMSIX(IPSAP,'geom',1)
+         CALL LCMPUT(IPSAP,'XVOLMT',NMIL,2,VOL)
+         DEALLOCATE(VOL)
+         CALL LCMSIX(IPSAP,' ',2)
+      ELSE
+         IF(NMIL.NE.IDATA(7)) THEN
+            WRITE(HSMG,'(42HSAPCAL: ELEMENTARY CALCULATION WITH AN INV,
+     1      22HALIB NB. OF MIXTURES =,I7,3H NE,I7,1H.)') NMIL,IDATA(7)
+            CALL XABORT(HSMG)
+         ELSE IF(NG.NE.IDATA(20)) THEN
+            WRITE(HSMG,'(42HSAPCAL: ELEMENTARY CALCULATION WITH AN INV,
+     1      20HALIB NB. OF GROUPS =,I7,3H NE,I7,1H.)') NG,IDATA(20)
+            CALL XABORT(HSMG)
+         ENDIF
+      ENDIF
+      CALL LCMSIX(IPEDIT,' ',2)
+*----
+*  RECOVER THE FLUX NORMALIZATION FACTOR.
+*----
+      IF(C_ASSOCIATED(IPDEPL)) THEN
+         CALL LCMGET(IPDEPL,'BURNUP-IRRAD',BIRRAD)
+         BURN=BIRRAD(1)
+         CALL LCMLEN(IPDEPL,'FLUX-NORM',ILONG,ITYLCM)
+         IF(ILONG.EQ.0) THEN
+            WRITE(HSMG,'(40HSAPCAL: THE ''FLUX-NORM'' RECORD IS NOT SE,
+     1      20HT FOR BURNUP STEP AT,E12.5,14H MW-DAY/TONNE.)') BURN
+            CALL XABORT(HSMG)
+         ENDIF
+         CALL LCMGET(IPDEPL,'FLUX-NORM',FNORM)
+         IF(IMPX.GT.0) WRITE(6,100) FNORM,BURN
+      ELSE
+         FNORM=1.0
+         IF(IMPX.GT.0) WRITE(6,110)
+      ENDIF
+*----
+*  RECOVER THE CROSS SECTIONS.
+*----
+      ALLOCATE(REGFLX(NG))
+      MAXRDA=(NREA*NG+NL*NG+NL*NG*NG)*(NISO+NMAC)
+      MAXIDA=(2*NG+7)*NL*(NISO+NMAC)
+      CALL SAPCA2(IPSAP,IPEDIT,NREA,NISO,NMAC,NADRX,NED,NPRC,NG,NL,
+     1 ITRANC,IMC,NMIL,NBISO,ICAL,MAXRDA,MAXIDA,FNORM,LCRON,NISOTS,
+     2 NMILNR,NISFS,NISPS,NISYS,REGFLX)
+*----
+*  RECOVER DISCONTINUITY FACTOR INFORMATION.
+*----
+      IF(IDF.EQ.2) CALL SAPIDF(IPSAP,IPEDIT,NG,ICAL,FNORM,REGFLX)
+      DEALLOCATE(REGFLX)
+*----
+*  COMPLETE DIMSAP.
+*----
+      IDATA(18)=NADRX
+      IF(IDATA(21).EQ.0) THEN
+         IDATA(21)=NISYS
+         IDATA(32)=NISOTS
+         IDATA(33)=NMILNR
+      ELSE
+         IF(NISYS.NE.IDATA(21)) THEN
+            WRITE(HSMG,'(42HSAPCAL: ELEMENTARY CALCULATION WITH AN INV,
+     1      21HALIB VALUE OF NISOY =,I7,3H NE,I7,1H.)') NISYS,IDATA(21)
+            CALL XABORT(HSMG)
+         ELSE IF(NISOTS.NE.IDATA(32)) THEN
+            WRITE(HSMG,'(43HSAPCAL: ELEMENTARY CALCULATION WITH AN INVA,
+     1      21HLIB NB. OF ISOTOPES =,I7,3H NE,I7,1H.)') NISOTS,IDATA(32)
+            CALL XABORT(HSMG)
+         ELSE IF(NMILNR.NE.IDATA(33)) THEN
+            WRITE(HSMG,'(43HSAPCAL: ELEMENTARY CALCULATION WITH AN INVA,
+     1      47HLIB NB. OF MIXTURES WITH DELAYED NEUTRON DATA =,I7,3H NE,
+     2      I7,1H.)') NMILNR,IDATA(33)
+            CALL XABORT(HSMG)
+         ENDIF
+      ENDIF
+*----
+*  RECOVER THE FISSION YIELDS.
+*----
+      IF(NISYS.GT.0) THEN
+         CALL SAPGEY(IPSAP,IPEDIT,NISO,NMAC,NG,NMIL,NBISO,ICAL,NDFI,
+     1   NISFS,NISPS,NISYS)
+      ENDIF
+*
+      CALL LCMSIX(IPEDIT,' ',2)
+      CALL LCMPUT(IPSAP,'DIMSAP',NDIMSA,1,IDATA)
+      RETURN
+*
+  100 FORMAT(45H SAPCAL: NORMALIZE THE FLUX WITH THE FACTOR =,1P,E12.5,
+     1 26H TAKEN FROM BURNUP STEP AT,E12.5,14H MW-DAY/TONNE.)
+  110 FORMAT(36H SAPCAL: THE FLUX IS NOT NORMALIZED.)
+      END

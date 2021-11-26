@@ -1,0 +1,304 @@
+*DECK FLDTMX
+      FUNCTION FLDTMX(F,N,IBLSZ,ITER,IPTRK,IPSYS,IPFLUX) RESULT(X)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Multiplication of A^(-1)B times the harmonic flux in TRIVAC.
+*
+*Copyright:
+* Copyright (C) 2020 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): A. Hebert
+*
+*Parameters: input
+* F       harmonic flux vector.
+* N       number of unknowns in one harmonic.
+* IBLSZ   block size of the Arnoldi Hessenberg matrix.
+* ITER    Arnoldi iteration index.
+* IPTRK   L_TRACK pointer to the tracking information.
+* IPSYS   L_SYSTEM pointer to system matrices.
+* IPFLUX  L_FLUX pointer to the solution.
+*
+*Parameters: output
+* X       result of the multiplication.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      INTEGER, INTENT(IN) :: N,IBLSZ,ITER
+      COMPLEX(KIND=8), DIMENSION(N,IBLSZ), INTENT(IN) :: F
+      COMPLEX(KIND=8), DIMENSION(N,IBLSZ) :: X
+      TYPE(C_PTR) IPTRK,IPSYS,IPFLUX
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER(NSTATE=40)
+      INTEGER ISTATE(NSTATE)
+      REAL EPSCON(5),TIME(2)
+      CHARACTER TEXT12*12,HSMG*131
+      LOGICAL LADJ,LUPS
+      REAL(KIND=8) DERTOL
+      INTERFACE
+        FUNCTION FLDONE(X,B,N,IPTRK,IPSYS,IPFLUX) RESULT(Y)
+          USE GANLIB
+          INTEGER, INTENT(IN) :: N
+          REAL(KIND=8), DIMENSION(N), INTENT(IN) :: X, B
+          REAL(KIND=8), DIMENSION(N) :: Y
+          TYPE(C_PTR) IPTRK,IPSYS,IPFLUX
+        END FUNCTION FLDONE
+      END INTERFACE
+*----
+*  ALLOCATABLE ARRAYS
+*----
+      REAL, DIMENSION(:), ALLOCATABLE :: WORK
+      REAL, DIMENSION(:,:), ALLOCATABLE :: GAF1,GRAD
+      REAL, DIMENSION(:), POINTER :: AGAR
+      REAL(KIND=8), DIMENSION(:), ALLOCATABLE :: DWORK1,DWORK2
+      TYPE(C_PTR) AGAR_PTR
+*
+*     TIME(1) : CPU TIME FOR THE SOLUTION OF LINEAR SYSTEMS.
+*     TIME(2) : CPU TIME FOR BILINEAR PRODUCT EVALUATIONS.
+      CALL LCMGET(IPFLUX,'CPU-TIME',TIME)
+      CALL KDRCPU(TK1)
+*----
+*  RECOVER INFORMATION FROM IPTRK, IPSYS AND IPFLUX
+*----
+      CALL LCMGET(IPTRK,'STATE-VECTOR',ISTATE)
+      NEL=ISTATE(1)
+      NUN=ISTATE(2)
+      NLF=ISTATE(30)
+      CALL LCMGET(IPSYS,'STATE-VECTOR',ISTATE)
+      NGRP=ISTATE(1)
+      LL4=ISTATE(2)
+      ITY=ISTATE(4)
+      NBMIX=ISTATE(7)
+      NAN=ISTATE(8)
+      IF(ITY.EQ.13) LL4=LL4*NLF/2 ! SPN cases
+      CALL LCMGET(IPFLUX,'STATE-VECTOR',ISTATE)
+      LADJ=ISTATE(3).EQ.10
+      ICL1=ISTATE(8)
+      ICL2=ISTATE(9)
+      IREBAL=ISTATE(10)
+      MAXINR=ISTATE(11)
+      NADI=ISTATE(13)
+      NSTARD=ISTATE(15)
+      IMPX=ISTATE(40)
+      CALL LCMGET(IPFLUX,'EPS-CONVERGE',EPSCON)
+      EPSINR=EPSCON(1)
+      EPSMSR=EPSCON(4)
+      IF(LL4*NGRP.NE.N) CALL XABORT('FLDTMX: INCONSISTENT UNKNOWNS.')
+*----
+*  SCRATCH STORAGE ALLOCATION
+*----
+      ALLOCATE(WORK(NUN),GAF1(NUN,NGRP),GRAD(NUN,NGRP))
+*----
+*  CHECK FOR UP-SCATTERING.
+*----
+      LUPS=.FALSE.
+      DO 20 IGR=1,NGRP-1
+      DO 10 JGR=IGR+1,NGRP
+      WRITE(TEXT12,'(1HA,2I3.3)') IGR,JGR
+      CALL LCMLEN(IPSYS,TEXT12,ILONG,ITYLCM)
+      IF(ILONG.GT.0) THEN
+        LUPS=.TRUE.
+        MAXINR=MAX(MAXINR,10)
+        GO TO 30
+      ENDIF
+   10 CONTINUE
+   20 CONTINUE
+*----
+*  MAIN LOOP OVER MODES.
+*----
+   30 DO 240 IMOD=1,IBLSZ
+      IF(LADJ) THEN
+*       ADJOINT SOLUTION
+*----
+*  COMPUTE B TIMES THE FLUX.
+*----
+        DO 70 IGR=1,NGRP
+        DO 40 I=1,LL4
+        GAF1(I,IGR)=0.0
+   40   CONTINUE
+        DO 60 JGR=1,NGRP
+        WRITE(TEXT12,'(1HB,2I3.3)') JGR,IGR
+        CALL LCMLEN(IPSYS,TEXT12,ILONG,ITYLCM)
+        IF(ILONG.EQ.0) GO TO 60
+        CALL LCMGPD(IPSYS,TEXT12,AGAR_PTR)
+        CALL C_F_POINTER(AGAR_PTR,AGAR,(/ ILONG /))
+        DO 50 I=1,ILONG
+        IOF=(JGR-1)*LL4+I
+        GAF1(I,IGR)=GAF1(I,IGR)+AGAR(I)*REAL(F(IOF,IMOD),KIND=4)
+        IF(ABS(AIMAG(F(IOF,IMOD))).GT.1.0E-8) THEN
+          WRITE(HSMG,'(13HFLDTMX: FLUX(,2I8,2H)=,1P,2E12.4,
+     1    12H IS COMPLEX.)') IOF,IMOD,F(IOF,IMOD)
+          CALL XABORT(HSMG)
+        ENDIF
+   50   CONTINUE
+   60   CONTINUE
+   70   CONTINUE
+        CALL KDRCPU(TK2)
+        TIME(2)=TIME(2)+(TK2-TK1)
+*----
+*  COMPUTE A^(-1)B WITHOUT DOWN-SCATTERING.
+*----
+        DO 120 IGR=NGRP,1,-1
+        CALL KDRCPU(TK1)
+        DO 80 I=1,LL4
+        GRAD(I,IGR)=GAF1(I,IGR)
+   80   CONTINUE
+        DO 110 JGR=NGRP,IGR+1,-1
+        WRITE(TEXT12,'(1HA,2I3.3)') JGR,IGR
+        CALL LCMLEN(IPSYS,TEXT12,ILONG,ITYLCM)
+        IF(ILONG.EQ.0) GO TO 110
+        IF(ITY.EQ.13) THEN
+          CALL MTLDLM(TEXT12,IPTRK,IPSYS,LL4,ITY,GRAD(1,JGR),WORK)
+          DO 90 I=1,LL4
+          GRAD(I,IGR)=GRAD(I,IGR)+WORK(I)
+   90     CONTINUE
+        ELSE
+          CALL LCMGPD(IPSYS,TEXT12,AGAR_PTR)
+          CALL C_F_POINTER(AGAR_PTR,AGAR,(/ ILONG /))
+          DO 100 I=1,ILONG
+          GRAD(I,IGR)=GRAD(I,IGR)+AGAR(I)*GRAD(I,JGR)
+  100     CONTINUE
+        ENDIF
+  110   CONTINUE
+        CALL KDRCPU(TK2)
+        TIME(2)=TIME(2)+(TK2-TK1)
+*
+        CALL KDRCPU(TK1)
+        WRITE(TEXT12,'(1HA,2I3.3)') IGR,IGR
+        IF(NSTARD.EQ.0) THEN
+          WRITE(TEXT12,'(1HA,2I3.3)') IGR,IGR
+          CALL FLDADI(TEXT12,IPTRK,IPSYS,LL4,ITY,GRAD(1,IGR),NADI)
+          JTER=NADI
+        ELSE
+*         use a GMRES solution of the linear system
+          DERTOL=EPSMSR
+          ISTATE(39)=IGR
+          CALL LCMPUT(IPFLUX,'STATE-VECTOR',NSTATE,1,ISTATE)
+          ALLOCATE(DWORK1(LL4),DWORK2(LL4))
+          DWORK1(:LL4)=GRAD(:LL4,IGR) ! source
+          DWORK2(:LL4)=0.0            ! estimate of the flux
+          CALL FLDMRA(DWORK1,FLDONE,LL4,DERTOL,NSTARD,NADI,IMPX,IPTRK,
+     1    IPSYS,IPFLUX,DWORK2,JTER)
+          GRAD(:LL4,IGR)=REAL(DWORK2(:LL4))
+          DEALLOCATE(DWORK2,DWORK1)
+        ENDIF
+        CALL KDRCPU(TK2)
+        TIME(1)=TIME(1)+(TK2-TK1)
+  120   CONTINUE
+      ELSE
+*       DIRECT SOLUTION
+*----
+*  COMPUTE B TIMES THE FLUX.
+*----
+        DO 160 IGR=1,NGRP
+        DO 130 I=1,LL4
+        GAF1(I,IGR)=0.0
+  130   CONTINUE
+        DO 150 JGR=1,NGRP
+        WRITE(TEXT12,'(1HB,2I3.3)') IGR,JGR
+        CALL LCMLEN(IPSYS,TEXT12,ILONG,ITYLCM)
+        IF(ILONG.EQ.0) GO TO 150
+        CALL LCMGPD(IPSYS,TEXT12,AGAR_PTR)
+        CALL C_F_POINTER(AGAR_PTR,AGAR,(/ ILONG /))
+        DO 140 I=1,ILONG
+        IOF=(JGR-1)*LL4+I
+        GAF1(I,IGR)=GAF1(I,IGR)+AGAR(I)*REAL(F(IOF,IMOD),KIND=4)
+        IF(ABS(AIMAG(F(IOF,IMOD))).GT.1.0E-8) THEN
+          WRITE(HSMG,'(13HFLDTMX: FLUX(,2I8,2H)=,1P,2E12.4,
+     1    12H IS COMPLEX.)') IOF,IMOD,F(IOF,IMOD)
+          CALL XABORT(HSMG)
+        ENDIF
+  140   CONTINUE
+  150   CONTINUE
+  160   CONTINUE
+        CALL KDRCPU(TK2)
+        TIME(2)=TIME(2)+(TK2-TK1)
+*----
+*  COMPUTE A^(-1)B WITHOUT UP-SCATTERING.
+*----
+        DO 210 IGR=1,NGRP
+        CALL KDRCPU(TK1)
+        DO 170 I=1,LL4
+        GRAD(I,IGR)=GAF1(I,IGR)
+  170   CONTINUE
+        DO 200 JGR=1,IGR-1
+        WRITE(TEXT12,'(1HA,2I3.3)') IGR,JGR
+        CALL LCMLEN(IPSYS,TEXT12,ILONG,ITYLCM)
+        IF(ILONG.EQ.0) GO TO 200
+        IF(ITY.EQ.13) THEN
+          CALL MTLDLM(TEXT12,IPTRK,IPSYS,LL4,ITY,GRAD(1,JGR),WORK)
+          DO 180 I=1,LL4
+          GRAD(I,IGR)=GRAD(I,IGR)+WORK(I)
+  180     CONTINUE
+        ELSE
+          CALL LCMGPD(IPSYS,TEXT12,AGAR_PTR)
+          CALL C_F_POINTER(AGAR_PTR,AGAR,(/ ILONG /))
+          DO 190 I=1,ILONG
+          GRAD(I,IGR)=GRAD(I,IGR)+AGAR(I)*GRAD(I,JGR)
+  190     CONTINUE
+        ENDIF
+  200   CONTINUE
+        CALL KDRCPU(TK2)
+        TIME(2)=TIME(2)+(TK2-TK1)
+*
+        CALL KDRCPU(TK1)
+        IF(NSTARD.EQ.0) THEN
+          WRITE(TEXT12,'(1HA,2I3.3)') IGR,IGR
+          CALL FLDADI(TEXT12,IPTRK,IPSYS,LL4,ITY,GRAD(1,IGR),NADI)
+          JTER=-NADI
+        ELSE
+*         use a GMRES solution of the linear system
+          DERTOL=EPSMSR
+          ISTATE(39)=IGR
+          CALL LCMPUT(IPFLUX,'STATE-VECTOR',NSTATE,1,ISTATE)
+          ALLOCATE(DWORK1(LL4),DWORK2(LL4))
+          DWORK1(:LL4)=GRAD(:LL4,IGR) ! source
+          DWORK2(:LL4)=0.0            ! estimate of the flux
+          CALL FLDMRA(DWORK1,FLDONE,LL4,DERTOL,NSTARD,NADI,IMPX,IPTRK,
+     1    IPSYS,IPFLUX,DWORK2,JTER)
+          GRAD(:LL4,IGR)=REAL(DWORK2(:LL4))
+          DEALLOCATE(DWORK2,DWORK1)
+        ENDIF
+        CALL KDRCPU(TK2)
+        TIME(1)=TIME(1)+(TK2-TK1)
+  210   CONTINUE
+      ENDIF
+*----
+*  PERFORM THERMAL (UP/DOWN-SCATTERING) ITERATIONS.
+*----
+      KTER=0
+      IF((IREBAL.EQ.1).OR.LUPS) THEN
+        CALL FLDTHR(IPTRK,IPSYS,IPFLUX,LADJ,LL4,ITY,NUN,NGRP,ICL1,ICL2,
+     1  IMPX,NADI,NSTARD,MAXINR,EPSINR,KTER,TIME(1),TIME(2),GRAD)
+      ENDIF
+      DO 230 IGR=1,NGRP
+      DO 220 I=1,LL4
+      IOF=(IGR-1)*LL4+I
+      X(IOF,IMOD)=GRAD(I,IGR)
+  220 CONTINUE
+  230 CONTINUE
+*----
+*  END OF LOOP OVER MODES.
+*----
+  240 CONTINUE
+      CALL LCMPUT(IPFLUX,'CPU-TIME',2,2,TIME)
+      IF(IMPX.GT.10) WRITE(6,250) ITER,JTER,KTER
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
+      DEALLOCATE(GRAD,GAF1,WORK)
+      RETURN
+  250 FORMAT(49H FLDTMX: MATRIX MULTIPLICATION AT IRAM ITERATION=,I5,
+     1 18H INNER ITERATIONS=,I5,20H THERMAL ITERATIONS=,I5)
+      END FUNCTION FLDTMX

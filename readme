@@ -1,6 +1,6 @@
 #
 # Instructions for configuring Version5 components on MS-DOS system
-# DRAGON5-VERSION5.0.7_ev2184
+#
 cd %homepath%\Version5\
 .\script\instver5
 

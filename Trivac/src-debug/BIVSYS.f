@@ -1,0 +1,243 @@
+*DECK BIVSYS
+      SUBROUTINE BIVSYS(IPTRK,IPMACR,IPSYS,IMPX,NGRP,NEL,NBFIS,NALBP,
+     1 MAT,VOL,NBMIX)
+*
+*-----------------------------------------------------------------------
+*
+*Purpose:
+* Recover the diffusion coefficient and cross-section data in LCM
+* object with pointer IPMACR, compute and store the corresponding
+* system matrices.
+*
+*Copyright:
+* Copyright (C) 2002 Ecole Polytechnique de Montreal
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version
+*
+*Author(s): A. Hebert
+*
+*Parameters: input
+* IPTRK   L_TRACK pointer to the bivac tracking information.
+* IPMACR  L_MACROLIB pointer to the cross sections.
+* IPSYS   L_SYSTEM pointer to system matrices.
+* IMPX    print parameter (equal to zero for no print).
+* NGRP    number of energy groups.
+* NEL     total number of finite elements.
+* NBFIS   number of fissionable isotopes.
+* NALBP   number of physical albedos per energy group.
+* MAT     index-number of the mixture type assigned to each volume.
+* VOL     volumes.
+* NBMIX   total number of material mixtures in the macrolib.
+*
+*-----------------------------------------------------------------------
+*
+      USE GANLIB
+*----
+*  SUBROUTINE ARGUMENTS
+*----
+      TYPE(C_PTR) IPTRK,IPMACR,IPSYS
+      INTEGER IMPX,NGRP,NEL,NBFIS,NALBP,MAT(NEL),NBMIX
+      REAL VOL(NEL)
+*----
+*  LOCAL VARIABLES
+*----
+      PARAMETER (NSTATE=40)
+      INTEGER ISTATE(NSTATE)
+      CHARACTER TEXT12*12,HSMG*131
+      LOGICAL LFIS
+      TYPE(C_PTR) JPMACR,KPMACR
+      INTEGER, DIMENSION(:), ALLOCATABLE :: IJJ,NJJ,IPOS
+      REAL, DIMENSION(:), ALLOCATABLE :: WORK
+      REAL, DIMENSION(:,:), ALLOCATABLE :: ALBP,GAMMA,SGD,ZUFIS
+      REAL, DIMENSION(:,:,:), ALLOCATABLE :: CHI
+*
+      ALB(X)=0.5*(1.0-X)/(1.0+X)
+*----
+*  SCRATCH STORAGE ALLOCATION
+*----
+      ALLOCATE(IJJ(NBMIX),NJJ(NBMIX),IPOS(NBMIX))
+      ALLOCATE(GAMMA(NALBP,NGRP),SGD(NBMIX,3),WORK(NBMIX*NGRP),
+     1 CHI(NBMIX,NBFIS,NGRP),ZUFIS(NBMIX,NBFIS))
+*----
+*  PROCESS PHYSICAL ALBEDO INFORMATION AND CALCULATION OF
+*  MULTIGROUP ALBEDO FUNCTIONS
+*----
+      IF(NALBP.GT.0) THEN
+         ALLOCATE(ALBP(NALBP,NGRP))
+         CALL LCMGET(IPMACR,'ALBEDO',ALBP)
+         CALL LCMGET(IPTRK,'STATE-VECTOR',ISTATE)
+         IELEM=ISTATE(8)
+         ICOL=ISTATE(9)
+         DO IGR=1,NGRP
+            CALL XDRSET(GAMMA(1,IGR),NALBP,0.0)
+            DO IALB=1,NALBP
+               IF((IELEM.LT.0).OR.(ICOL.EQ.4)) THEN
+                  GAMMA(IALB,IGR)=ALB(ALBP(IALB,IGR))
+               ELSE IF(ALBP(IALB,IGR).NE.1.0) THEN
+                  GAMMA(IALB,IGR)=1.0/ALB(ALBP(IALB,IGR))
+               ELSE
+                  GAMMA(IALB,IGR)=1.0E20
+               ENDIF
+            ENDDO
+            WRITE(TEXT12,'(9HALBEDO-FU,I3.3)') IGR
+            CALL LCMPUT(IPSYS,TEXT12,NALBP,2,GAMMA(1,IGR))
+         ENDDO
+         DEALLOCATE(ALBP)
+      ENDIF
+*
+      JPMACR=LCMGID(IPMACR,'GROUP')
+      DO 70 IGR=1,NGRP
+*     PROCESS SECONDARY GROUP IGR.
+      KPMACR=LCMGIL(JPMACR,IGR)
+*----
+*  PROCESS LEAKAGE AND REMOVAL TERMS
+*----
+      CALL LCMLEN(KPMACR,'NTOT0',LENGT,ITYLCM)
+      IF(LENGT.EQ.0) THEN
+         CALL XABORT('BIVSYS: NO TOTAL CROSS SECTIONS.')
+      ELSE IF(LENGT.GT.NBMIX) THEN
+         CALL XABORT('BIVSYS: INVALID LENGTH FOR TOTAL CROSS SECTIONS.')
+      ENDIF
+      CALL LCMGET(KPMACR,'NTOT0',SGD(1,3))
+      CALL LCMLEN(KPMACR,'SIGW00',LENGT,ITYLCM)
+      IF(LENGT.GT.0) THEN
+         IF(LENGT.GT.NBMIX) CALL XABORT('BIVSYS: INVALID LENGTH FOR '
+     1   //'''SIGW00'' CROSS SECTIONS.')
+         CALL LCMGET(KPMACR,'SIGW00',SGD(1,1))
+         DO 10 IBM=1,NBMIX
+         SGD(IBM,3)=SGD(IBM,3)-SGD(IBM,1)
+   10    CONTINUE
+      ENDIF
+      CALL LCMLEN(KPMACR,'DIFF',LENGT1,ITYLCM)
+      IF(LENGT1.GT.0) THEN
+         IF(LENGT1.GT.NBMIX) CALL XABORT('BIVSYS: INVALID LENGTH FOR'
+     1   //' DIFF (ISOTROPIC DIFFUSION COEFFICIENT).')
+         CALL LCMGET(KPMACR,'DIFF',SGD(1,1))
+         DO 20 IBM=1,NBMIX
+         SGD(IBM,2)=SGD(IBM,1)
+   20    CONTINUE
+      ENDIF
+      CALL LCMLEN(KPMACR,'DIFFX',LENGT2,ITYLCM)
+      IF(LENGT2.GT.0) THEN
+         IF(LENGT2.GT.NBMIX) CALL XABORT('BIVSYS: INVALID LENGTH FOR'
+     1   //' DIFFX (ANISOTROPIC DIFFUSION COEFFICIENT).')
+         CALL LCMGET(KPMACR,'DIFFX',SGD(1,1))
+         DO 30 IBM=1,NBMIX
+         SGD(IBM,2)=SGD(IBM,1)
+   30    CONTINUE
+      ENDIF
+      CALL LCMLEN(KPMACR,'DIFFY',LENGT3,ITYLCM)
+      IF(LENGT3.GT.0) THEN
+         IF(LENGT3.GT.NBMIX) CALL XABORT('BIVSYS: INVALID LENGTH FOR'
+     1   //' DIFFY (ANISOTROPIC DIFFUSION COEFFICIENT).')
+         CALL LCMGET(KPMACR,'DIFFY',SGD(1,2))
+      ENDIF
+      IF((LENGT1.EQ.0).AND.(LENGT2.EQ.0)) THEN
+         CALL XABORT('BIVSYS: NO DIFFUSION COEFFICIENTS.')
+      ENDIF
+      DO 35 IBM=1,NBMIX
+      IF((SGD(IBM,1).LT.0.0).OR.(SGD(IBM,3).LT.0.0)) THEN
+         WRITE(HSMG,'(28HBIVSYS: NEGATIVE XS IN GROUP,I5)') IGR
+         CALL XABORT(HSMG)
+      ENDIF
+   35 CONTINUE
+      WRITE(TEXT12,'(1HA,2I3.3)') IGR,IGR
+      CALL BIVASM(TEXT12,0,IPTRK,IPSYS,IMPX,NBMIX,NEL,0,3,NALBP,MAT,
+     1 VOL,GAMMA(1,IGR),SGD)
+*----
+*  PROCESS SCATTERING TERMS
+*----
+      CALL LCMLEN(KPMACR,'NJJS00',LENGT,ITYLCM)
+      IF(LENGT.GT.NBMIX) CALL XABORT('BIVSYS: INVALID LENGTH FOR '
+     1 //'NJJS00 INFORMATION.')
+      IF(LENGT.GT.0) THEN
+         CALL LCMGET(KPMACR,'NJJS00',NJJ)
+         CALL LCMGET(KPMACR,'IJJS00',IJJ)
+         JGRMIN=IGR
+         JGRMAX=IGR
+         DO 40 IBM=1,NBMIX
+         JGRMIN=MIN(JGRMIN,IJJ(IBM)-NJJ(IBM)+1)
+         JGRMAX=MAX(JGRMAX,IJJ(IBM))
+   40    CONTINUE
+         CALL LCMGET(KPMACR,'IPOS00',IPOS)
+         CALL LCMGET(KPMACR,'SCAT00',WORK)
+         DO 60 JGR=JGRMAX,JGRMIN,-1
+         IF(JGR.EQ.IGR) GO TO 60
+         DO 50 IBM=1,NBMIX
+         IF((JGR.GT.IJJ(IBM)-NJJ(IBM)).AND.(JGR.LE.IJJ(IBM))) THEN
+            SGD(IBM,1)=WORK(IPOS(IBM)+IJJ(IBM)-JGR)
+         ELSE
+            SGD(IBM,1)=0.0
+         ENDIF
+   50    CONTINUE
+         WRITE (TEXT12,'(1HA,2I3.3)') IGR,JGR
+         CALL BIVASM(TEXT12,1,IPTRK,IPSYS,IMPX,NBMIX,NEL,0,1,NALBP,MAT,
+     1   VOL,GAMMA(1,IGR),SGD)
+   60    CONTINUE
+      ENDIF
+   70 CONTINUE
+*----
+*  PROCESS FISSION SPECTRUM TERMS
+*----
+      KPMACR=LCMGIL(JPMACR,1)
+      CALL LCMLEN(KPMACR,'CHI',LENGT,ITYLCM)
+      IF(LENGT.GT.0) THEN
+         IF(LENGT.NE.NBMIX*NBFIS) CALL XABORT('BIVSYS: INVALID LENGTH '
+     1    //'FOR CHI INFORMATION.')
+         DO 80 IGR=1,NGRP
+         KPMACR=LCMGIL(JPMACR,IGR)
+         CALL LCMGET(KPMACR,'CHI',CHI(1,1,IGR))
+   80    CONTINUE
+      ELSE
+         DO 92 IBM=1,NBMIX
+         DO 91 IFISS=1,NBFIS
+         CHI(IBM,IFISS,1)=1.0
+         DO 90 IGR=2,NGRP
+         CHI(IBM,IFISS,IGR)=0.0
+   90    CONTINUE
+   91    CONTINUE
+   92    CONTINUE
+      ENDIF
+*----
+*  PROCESS FISSION NUSIGF TERMS
+*----
+      DO 130 IGR=1,NGRP
+*     PROCESS SECONDARY GROUP IGR.
+      LFIS=.FALSE.
+      DO 105 IBM=1,NBMIX
+      DO 100 IFISS=1,NBFIS
+      LFIS=LFIS.OR.(CHI(IBM,IFISS,IGR).NE.0.0)
+  100 CONTINUE
+  105 CONTINUE
+      IF(LFIS) THEN
+         DO 120 JGR=1,NGRP
+         KPMACR=LCMGIL(JPMACR,JGR)
+         CALL LCMLEN(KPMACR,'NUSIGF',LENGT,ITYLCM)
+         IF(LENGT.NE.NBMIX*NBFIS) CALL XABORT('BIVSYS: INVALID LENGTH '
+     1   //'FOR NUSIGF INFORMATION.')
+         IF(LENGT.GT.0) THEN
+            CALL LCMGET(KPMACR,'NUSIGF',ZUFIS)
+            CALL XDRSET(SGD(1,1),NBMIX,0.0)
+            DO 115 IBM=1,NBMIX
+            DO 110 IFISS=1,NBFIS
+            SGD(IBM,1)=SGD(IBM,1)+CHI(IBM,IFISS,IGR)*ZUFIS(IBM,IFISS)
+  110       CONTINUE
+  115       CONTINUE
+            WRITE(TEXT12,'(4HFISS,2I3.3)') IGR,JGR
+            CALL LCMPUT(IPSYS,TEXT12,NBMIX,2,SGD(1,1))
+            WRITE (TEXT12,'(1HB,2I3.3)') IGR,JGR
+            CALL BIVASM(TEXT12,1,IPTRK,IPSYS,IMPX,NBMIX,NEL,0,1,NALBP,
+     1      MAT,VOL,GAMMA(1,IGR),SGD)
+         ENDIF
+  120    CONTINUE
+      ENDIF
+  130 CONTINUE
+*----
+*  SCRATCH STORAGE DEALLOCATION
+*----
+      DEALLOCATE(IJJ,NJJ,IPOS)
+      DEALLOCATE(GAMMA,SGD,WORK,CHI,ZUFIS)
+      RETURN
+      END
