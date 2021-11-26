@@ -1,8 +1,0 @@
-* Regression tests for MATXS2 capabilities in Dragon.
-* A. Hebert
-*
-PROCEDURE TMATXS21 TMATXS22 TMATXS23 ;
-*TMATXS21 ;
-*TMATXS22 ;
-TMATXS23 ;
-QUIT "LIST" .

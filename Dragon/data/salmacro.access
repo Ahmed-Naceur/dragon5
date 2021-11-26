@@ -1,9 +1,0 @@
-#!/bin/sh
-if [ $# = 0 ]
-   then
-   echo "usage: salmacro.access directory" 1>&2
-   exit 1
-fi
-ln -s $1/data/salmacro_proc/AIC_SN_CCOND2.ref .
-ls -l
-echo "salmacro access script terminated"
