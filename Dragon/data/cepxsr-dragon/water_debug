@@ -34,7 +34,6 @@ echo "       1- Access ENDF-B.VIII data                 ";
 echo "--------------------------------------------------";
 
 ln -s /home/ahnac/Compiler/evaluations/ENDF-B-VIII.0/electrons/EEDL2017.ALL.txt tape30
-ln -s $HOME/evaluations/ENDFB6r8/125.OUT tape20
 
 echo "--------------------------------------------------";
 echo "       2- Access CEPXS-BFP data                   ";
