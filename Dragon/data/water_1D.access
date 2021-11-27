@@ -31,6 +31,7 @@ ln -s $1/data/cepxs-dragon/FMAC_e_water_3.00MeV_0g_180e_P8_NC.txt .
 ln -s $1/data/cepxs-dragon/FMAC_e_water_3.00MeV_100g_100e_P8_FC.txt .
 ln -s $1/data/cepxs-dragon/FMAC_e_water_3.00MeV_0g_300e_P8_NC.txt .
 ln -s $1/data/cepxs-dragon/FMAC_e_water_3.00MeV_2g_2e_P1_FC.txt .
+ln -s $1/data/cepxs-dragon/FMAC_e_water_3.00MeV_80g_80e_P8_FC.txt .
 ls -l
 
 echo "water access script terminated"
