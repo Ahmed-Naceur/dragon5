@@ -12,15 +12,15 @@ PROCEDURE    assertS ;
 LINKED_LIST   MACRO DEPOS MICRO OLDMACRO GEOM TRACK SYSTEM FLUX 
               EEDIT EDITION EEDITcopy ;
 
-SEQ_ASCII    edition.txt  :: FILE 'edition.txt' ;              
-SEQ_ASCII    edep.txt     :: FILE 'edep.txt' ;
-SEQ_ASCII    edit.txt     :: FILE 'edit.txt' ;
-SEQ_ASCII    micro.txt    :: FILE 'micro.txt' ;
-SEQ_ASCII    macro.txt    :: FILE 'macro.txt' ;
-SEQ_ASCII    flux.txt     :: FILE 'flux.txt' ;
-SEQ_ASCII    system.txt   :: FILE 'system.txt' ;
-SEQ_ASCII    geom.txt     :: FILE 'geom.txt' ;
-SEQ_ASCII    track.txt    :: FILE 'track.txt' ;
+          
+SEQ_ASCII    edep_xsr.txt   :: FILE 'edep_xsr.txt' ;
+SEQ_ASCII    edit_xsr.txt   :: FILE 'edit_xsr.txt' ;
+SEQ_ASCII    micr_xsr.txt   :: FILE 'micr_xsr.txt' ;
+SEQ_ASCII    macr_xsr.txt   :: FILE 'macr_xsr.txt' ;
+SEQ_ASCII    flux_xsr.txt   :: FILE 'flux_xsr.txt' ;
+SEQ_ASCII    syst_xsr.txt   :: FILE 'syst_xsr.txt' ;
+SEQ_ASCII    geom_xsr.txt   :: FILE 'geom_xsr.txt' ;
+SEQ_ASCII    trac_xsr.txt   :: FILE 'trac_xsr.txt' ;
 
 * --- Geometry 
 
@@ -35,7 +35,7 @@ GEOM := GEO: :: CAR1D 2
 
 TRACK := SNT: GEOM ::
              TITLE 'Water-Slab:Cepxsr-Dragon'
-             EDIT 2 MAXR 1000 DIAM 1 NLIVO SN 12 SCAT 8 EPSI 1.E-5
+             EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 12 SCAT 8 EPSI 1.E-5
              QUAD 1 MAXI 300 BFPL ;
 
 * --- Library access
@@ -106,7 +106,7 @@ MACRO := MAC: MACRO ::
      0.0 0.0 0.0 0.0 0.0
      ;
 
-macro.txt := MACRO ;
+
 
 * ---- Electron flux
 
@@ -124,12 +124,13 @@ EEDIT := OUT: FLUX TRACK MACRO GEOM  :: EDIT 2 COND INTG NONE ;
 EEDITcopy := EEDIT ;
 DEPOS := HEAT: EEDIT EEDITcopy :: EDIT 99 ;
 
-edit.txt  := EEDIT ;  
-track.txt := TRACK ;
-geom.txt := GEOM ; 
-system.txt := SYSTEM ;
-micro.txt := MICRO ;
-flux.txt  := FLUX  ;
+macr_xsr.txt   := MACRO ;
+edit_xsr.txt   := EEDIT ;  
+trac_xsr.txt   := TRACK ;
+geom_xsr.txt   := GEOM ; 
+syst_xsr.txt   := SYSTEM ;
+micr_xsr.txt   := MICRO ;
+flux_xsr.txt   := FLUX  ;
 
 *edep.txt := EEDIT ; 
 

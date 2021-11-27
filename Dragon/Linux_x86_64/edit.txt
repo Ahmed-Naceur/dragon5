@@ -930,7 +930,7 @@ ENERGY
 ->       1      12       3       3                                 <-   
 PARTICLE                                                                        
          4         4         4
-B       ÈWCU
+B       PÉÄ
 ->       1      12       1      40                                 <-   
 STATE-VECTOR                                                                    
          1       100         8         1         0         0         0         0

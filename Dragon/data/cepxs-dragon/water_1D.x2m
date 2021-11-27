@@ -17,9 +17,14 @@ SEQ_ASCII    FMAC_M :: FILE
 './FMAC_e_water_3.00MeV_80g_80e_P8_FC.txt' ;
 !'./FMAC_e_water_3.00MeV_0g_100e_P8_NC.txt' ;
 !'./FMAC_e_water_3.00MeV_0g_80e_P8_NC.txt' ;
-SEQ_ASCII    edep.txt :: FILE 'edep.txt' ;
-SEQ_ASCII    edit.txt :: FILE 'edit.txt' ;
-SEQ_ASCII    macro.txt :: FILE 'macro.txt' ;
+             
+SEQ_ASCII    edep_xs.txt     :: FILE 'edep_xs.txt' ;
+SEQ_ASCII    edit_xs.txt     :: FILE 'edit_xs.txt' ;
+SEQ_ASCII    macro_xs.txt    :: FILE 'macro_xs.txt' ;
+SEQ_ASCII    flux_xs.txt     :: FILE 'flux_xs.txt' ;
+SEQ_ASCII    syst_xs.txt     :: FILE 'syst_xs.txt' ;
+SEQ_ASCII    geom_xs.txt     :: FILE 'geom_xs.txt' ;
+SEQ_ASCII    track_xs.txt    :: FILE 'track_xs.txt' ;
 
 * --- Geometry 
 GEOM := GEO: :: CAR1D 2
@@ -38,8 +43,6 @@ TRACK := SNT: GEOM ::
 
 * --- Library access and structuring
 MACRO    := FMAC: FMAC_M :: EDIT 2 PARTICLE B ;
-
-macro.txt := MACRO ;
 
 OLDMACRO := MACRO ;
 
@@ -100,14 +103,18 @@ FLUX   := FLU: MACRO TRACK SYSTEM :: EDIT 2 TYPE S EXTE 100 ;
 
 EEDIT := OUT: FLUX TRACK MACRO GEOM :: EDIT 2 COND INTG NONE ;
 
-edit.txt := EEDIT ; 
  
 * --- Energy deposition from the e-source
 
 GEDIT := EEDIT ;
 DEPOS := HEAT: EEDIT GEDIT :: EDIT 2 ; 
 
-edep.txt := DEPOS ;
+macro_xs.txt  := MACRO ;
+edit_xs.txt   := EEDIT ;  
+track_xs.txt  := TRACK ;
+geom_xs.txt   := GEOM ; 
+syst_xs.txt   := SYSTEM ;
+flux_xs.txt   := FLUX  ;
 
 EEDIT FLUX SYSTEM MACRO TRACK GEOM := DELETE: 
   EEDIT FLUX SYSTEM MACRO TRACK GEOM ; 

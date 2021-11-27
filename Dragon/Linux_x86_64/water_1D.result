@@ -10,128 +10,126 @@ UTL: END: EDI: ;                                                           0008
 PROCEDURE    assertS ;                                                     0009
 LINKED_LIST   MACRO DEPOS MICRO OLDMACRO GEOM TRACK SYSTEM FLUX            0010
 EEDIT EDITION EEDITcopy ;                                                  0011
-SEQ_ASCII    edition.txt  :: FILE 'edition.txt' ;                          0012
-SEQ_ASCII    edep.txt     :: FILE 'edep.txt' ;                             0013
-SEQ_ASCII    edit.txt     :: FILE 'edit.txt' ;                             0014
-SEQ_ASCII    micro.txt    :: FILE 'micro.txt' ;                            0015
-SEQ_ASCII    macro.txt    :: FILE 'macro.txt' ;                            0016
-SEQ_ASCII    flux.txt     :: FILE 'flux.txt' ;                             0017
-SEQ_ASCII    system.txt   :: FILE 'system.txt' ;                           0018
-SEQ_ASCII    geom.txt     :: FILE 'geom.txt' ;                             0019
-SEQ_ASCII    track.txt    :: FILE 'track.txt' ;                            0020
-* --- Geometry                                                             0021
-GEOM := GEO: :: CAR1D 2                                                    0022
-X- VOID  X+ VOID                                                           0023
-MIX  1 2                                                                   0024
-MESHX 0.0 0.01 2.0                                                         0025
-SPLITX 30 70                                                               0026
-;                                                                          0027
-* --- Tracking                                                             0028
-TRACK := SNT: GEOM ::                                                      0029
-TITLE 'Water-Slab:Cepxsr-Dragon'                                           0030
-EDIT 2 MAXR 1000 DIAM 1 NLIVO SN 12 SCAT 8 EPSI 1.E-5                      0031
-QUAD 1 MAXI 300 BFPL ;                                                     0032
-* --- Library access                                                       0033
-MICRO := LIB: ::                                                           0034
-EDIT 99                                                                    0035
-NMIX 1                                                                     0036
-ANIS 8                                                                     0037
-MIXS LIB: MATXS2 FIL: _test                                                0038
-MIX  1  300.0  1.0 NOGAS                                                   0039
-Hnat = h 0.111894                                                          0040
-Onat = o 0.888106                                                          0041
-;                                                                          0042
-* --- Library structuring                                                  0043
-MACRO := MICRO :: STEP UP MACROLIB ;                                       0044
-* UTL: MACRO :: STEP UP GROUP STEP AT 1 DIR IMPR ESTOPW ;                  0045
-OLDMACRO := MACRO ;                                                        0046
-MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;                             0047
-OLDMACRO := DELETE: OLDMACRO ;                                             0048
-* --- Specify fixed particle source density                                0049
-REAL qsour :=  1.E10 2.0 / $Pi_R / ; ! [cm-3 s-1]                          0050
-MACRO := MAC: MACRO ::                                                     0051
-READ INPUT                                                                 0052
-MIX 1 FIXE                                                                 0053
-! -- 300 groups                                                            0054
-!     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0    0055
+SEQ_ASCII    edep_xsr.txt   :: FILE 'edep_xsr.txt' ;                       0012
+SEQ_ASCII    edit_xsr.txt   :: FILE 'edit_xsr.txt' ;                       0013
+SEQ_ASCII    micr_xsr.txt   :: FILE 'micr_xsr.txt' ;                       0014
+SEQ_ASCII    macr_xsr.txt   :: FILE 'macr_xsr.txt' ;                       0015
+SEQ_ASCII    flux_xsr.txt   :: FILE 'flux_xsr.txt' ;                       0016
+SEQ_ASCII    syst_xsr.txt   :: FILE 'syst_xsr.txt' ;                       0017
+SEQ_ASCII    geom_xsr.txt   :: FILE 'geom_xsr.txt' ;                       0018
+SEQ_ASCII    trac_xsr.txt   :: FILE 'trac_xsr.txt' ;                       0019
+* --- Geometry                                                             0020
+GEOM := GEO: :: CAR1D 2                                                    0021
+X- VOID  X+ VOID                                                           0022
+MIX  1 2                                                                   0023
+MESHX 0.0 0.01 2.0                                                         0024
+SPLITX 30 70                                                               0025
+;                                                                          0026
+* --- Tracking                                                             0027
+TRACK := SNT: GEOM ::                                                      0028
+TITLE 'Water-Slab:Cepxsr-Dragon'                                           0029
+EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 12 SCAT 8 EPSI 1.E-5                      0030
+QUAD 1 MAXI 300 BFPL ;                                                     0031
+* --- Library access                                                       0032
+MICRO := LIB: ::                                                           0033
+EDIT 99                                                                    0034
+NMIX 1                                                                     0035
+ANIS 8                                                                     0036
+MIXS LIB: MATXS2 FIL: _test                                                0037
+MIX  1  300.0  1.0 NOGAS                                                   0038
+Hnat = h 0.111894                                                          0039
+Onat = o 0.888106                                                          0040
+;                                                                          0041
+* --- Library structuring                                                  0042
+MACRO := MICRO :: STEP UP MACROLIB ;                                       0043
+* UTL: MACRO :: STEP UP GROUP STEP AT 1 DIR IMPR ESTOPW ;                  0044
+OLDMACRO := MACRO ;                                                        0045
+MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;                             0046
+OLDMACRO := DELETE: OLDMACRO ;                                             0047
+* --- Specify fixed particle source density                                0048
+REAL qsour :=  1.E10 2.0 / $Pi_R / ; ! [cm-3 s-1]                          0049
+MACRO := MAC: MACRO ::                                                     0050
+READ INPUT                                                                 0051
+MIX 1 FIXE                                                                 0052
+! -- 300 groups                                                            0053
+!     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0    0054
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0055
 !    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0056
 !    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0057
 !    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0058
 !    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0059
-!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0060
-!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                               0061
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                               0060
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0061
 !    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0062
 !    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0063
 !    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0064
 !    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0065
 !    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0066
-!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0067
-!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                               0068
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                               0067
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0068
 !    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0069
 !    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0070
 !    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0071
 !    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0072
 !    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0073
-!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0074
-!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                               0075
-! -- 100 groups                                                            0076
-!     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0    0077
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                               0074
+! -- 100 groups                                                            0075
+!     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0    0076
+!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0      0077
 !         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0      0078
 !         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0      0079
 !         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0      0080
 !         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0      0081
-!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0      0082
-!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                          0083
-! -- 80 groups                                                             0084
-<<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0          0085
+!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                          0082
+! -- 80 groups                                                             0083
+<<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0          0084
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                0085
 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                0086
 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                0087
 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                0088
-0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                0089
-0.0 0.0 0.0 0.0 0.0                                                        0090
-;                                                                          0091
-macro.txt := MACRO ;                                                       0092
-* ---- Electron flux                                                       0093
-SYSTEM := ASM: MACRO TRACK :: EDIT 2 ARM ;                                 0094
-FLUX  := FLU: MACRO TRACK SYSTEM :: EDIT 2 TYPE S EXTE 100 ;               0095
-* --- Recover flux and reaction rates                                      0096
-* add MICRO to access density,                                             0097
-EEDIT := OUT: FLUX TRACK MACRO GEOM  :: EDIT 2 COND INTG NONE ;            0098
-* ---- Energy deposition                                                   0099
-EEDITcopy := EEDIT ;                                                       0100
-DEPOS := HEAT: EEDIT EEDITcopy :: EDIT 99 ;                                0101
-edit.txt  := EEDIT ;                                                       0102
-track.txt := TRACK ;                                                       0103
-geom.txt := GEOM ;                                                         0104
-system.txt := SYSTEM ;                                                     0105
-micro.txt := MICRO ;                                                       0106
-flux.txt  := FLUX  ;                                                       0107
-*edep.txt := EEDIT ;                                                       0108
-EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM := DELETE:                        0109
-EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM ;                                 0110
-END: ;                                                                     0111
-QUIT "LIST" .                                                              0112
+0.0 0.0 0.0 0.0 0.0                                                        0089
+;                                                                          0090
+* ---- Electron flux                                                       0091
+SYSTEM := ASM: MACRO TRACK :: EDIT 2 ARM ;                                 0092
+FLUX  := FLU: MACRO TRACK SYSTEM :: EDIT 2 TYPE S EXTE 100 ;               0093
+* --- Recover flux and reaction rates                                      0094
+* add MICRO to access density,                                             0095
+EEDIT := OUT: FLUX TRACK MACRO GEOM  :: EDIT 2 COND INTG NONE ;            0096
+* ---- Energy deposition                                                   0097
+EEDITcopy := EEDIT ;                                                       0098
+DEPOS := HEAT: EEDIT EEDITcopy :: EDIT 99 ;                                0099
+macr_xsr.txt   := MACRO ;                                                  0100
+edit_xsr.txt   := EEDIT ;                                                  0101
+trac_xsr.txt   := TRACK ;                                                  0102
+geom_xsr.txt   := GEOM ;                                                   0103
+syst_xsr.txt   := SYSTEM ;                                                 0104
+micr_xsr.txt   := MICRO ;                                                  0105
+flux_xsr.txt   := FLUX  ;                                                  0106
+*edep.txt := EEDIT ;                                                       0107
+EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM := DELETE:                        0108
+EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM ;                                 0109
+END: ;                                                                     0110
+QUIT "LIST" .                                                              0111
  
 <|MODULE       GEO: LIB: MAC: SNT: ASM: FLU: HEAT: OUT: DELETE:           |<0007
 <|UTL: END: EDI: ;                                                        |<0008
 <|PROCEDURE    assertS ;                                                  |<0009
 <|LINKED_LIST   MACRO DEPOS MICRO OLDMACRO GEOM TRACK SYSTEM FLUX         |<0010
 <|EEDIT EDITION EEDITcopy ;                                               |<0011
-<|SEQ_ASCII    edition.txt  :: FILE 'edition.txt' ;                       |<0012
-<|SEQ_ASCII    edep.txt     :: FILE 'edep.txt' ;                          |<0013
-<|SEQ_ASCII    edit.txt     :: FILE 'edit.txt' ;                          |<0014
-<|SEQ_ASCII    micro.txt    :: FILE 'micro.txt' ;                         |<0015
-<|SEQ_ASCII    macro.txt    :: FILE 'macro.txt' ;                         |<0016
-<|SEQ_ASCII    flux.txt     :: FILE 'flux.txt' ;                          |<0017
-<|SEQ_ASCII    system.txt   :: FILE 'system.txt' ;                        |<0018
-<|SEQ_ASCII    geom.txt     :: FILE 'geom.txt' ;                          |<0019
-<|SEQ_ASCII    track.txt    :: FILE 'track.txt' ;                         |<0020
-<|GEOM := GEO: :: CAR1D 2                                                 |<0022
-<|X- VOID  X+ VOID                                                        |<0023
-<|MIX  1 2                                                                |<0024
-<|MESHX 0.0 0.01 2.0                                                      |<0025
-<|SPLITX 30 70                                                            |<0026
-<|;                                                                       |<0027
+<|SEQ_ASCII    edep_xsr.txt   :: FILE 'edep_xsr.txt' ;                    |<0012
+<|SEQ_ASCII    edit_xsr.txt   :: FILE 'edit_xsr.txt' ;                    |<0013
+<|SEQ_ASCII    micr_xsr.txt   :: FILE 'micr_xsr.txt' ;                    |<0014
+<|SEQ_ASCII    macr_xsr.txt   :: FILE 'macr_xsr.txt' ;                    |<0015
+<|SEQ_ASCII    flux_xsr.txt   :: FILE 'flux_xsr.txt' ;                    |<0016
+<|SEQ_ASCII    syst_xsr.txt   :: FILE 'syst_xsr.txt' ;                    |<0017
+<|SEQ_ASCII    geom_xsr.txt   :: FILE 'geom_xsr.txt' ;                    |<0018
+<|SEQ_ASCII    trac_xsr.txt   :: FILE 'trac_xsr.txt' ;                    |<0019
+<|GEOM := GEO: :: CAR1D 2                                                 |<0021
+<|X- VOID  X+ VOID                                                        |<0022
+<|MIX  1 2                                                                |<0023
+<|MESHX 0.0 0.01 2.0                                                      |<0024
+<|SPLITX 30 70                                                            |<0025
+<|;                                                                       |<0026
  DDDDDD   RRRRRR     AAA     GGGGG    OOOOO   NN     NN
  DDDDDDD  RRRRRRR   AAAAA   GGGGGGG  OOOOOOO  NNN    NN
  DD   DD  RR   RR  AA   AA  GG       OO   OO  NNNN   NN
@@ -168,100 +166,26 @@ QUIT "LIST" .                                                              0112
  CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE CARTESIAN 1-D   .
 ->@END MODULE   : GEO:        
 -->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
-<|TRACK := SNT: GEOM ::                                                   |<0029
-<|TITLE 'Water-Slab:Cepxsr-Dragon'                                        |<0030
-<|EDIT 2 MAXR 1000 DIAM 1 NLIVO SN 12 SCAT 8 EPSI 1.E-5                   |<0031
-<|QUAD 1 MAXI 300 BFPL ;                                                  |<0032
+<|TRACK := SNT: GEOM ::                                                   |<0028
+<|TITLE 'Water-Slab:Cepxsr-Dragon'                                        |<0029
+<|EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 12 SCAT 8 EPSI 1.E-5                   |<0030
+<|QUAD 1 MAXI 300 BFPL ;                                                  |<0031
 ->@BEGIN MODULE : SNT:        
 ->@DESCRIPTION  : Discrete ordinates tracking                                             
 ->@CREDITS      : A. Hebert                                                               
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
-1 SSSSS  NN      NN ***********************************************************************************************
- SSSSSSS NNN     NN ********************************************************* MULTIGROUP VERSION.  A. HEBERT (2005)
- SS   SS NNNN    NN
-  SS     NN NN   NN
-    SS   NN  NN  NN
- SS   SS NN   NN NN
- SSSSSSS NN    NNNN
-  SSSSS  NN     NNN
-
- Water-Slab:Cepxsr-Dragon                                                
-
-
-
- 1-D SLAB GEOMETRY.
-+                          BASED ON GEOMETRY GEOM        .
-
-
- NUMBER OF MESH INTERVALS ALONG THE X AXIS =  100     AVAILABLE STORAGE MAXX =   1000
-                          ALONG THE Y AXIS =    1     AVAILABLE STORAGE MAXY =   1000
-                          ALONG THE Z AXIS =    1     AVAILABLE STORAGE MAXZ =   1000
- NUMBER OF DISTINCT MIXTURES =      2
-
-
-
- THE QUADRATURE COSINES FOLLOW
-
-  -0.981561E+00 -0.904117E+00 -0.769903E+00 -0.587318E+00 -0.367831E+00
-  -0.125233E+00  0.125233E+00  0.367831E+00  0.587318E+00  0.769903E+00
-   0.904117E+00  0.981561E+00
-
-
- THE CORRESPONDING QUADRATURE WEIGHTS FOLLOW
-
-   0.471753E-01  0.106939E+00  0.160078E+00  0.203167E+00  0.233493E+00
-   0.249147E+00  0.249147E+00  0.233493E+00  0.203167E+00  0.160078E+00
-   0.106939E+00  0.471753E-01
-
- SNTRK: ORDER OF LINEAR SYSTEMS =   1600
-        NUMBER OF UNKNOWNS PER ENERGY GROUP =   4000
-
- STATE VECTOR:
- NREG       100   (NUMBER OF REGIONS)
- NUN       4000   (NUMBER OF UNKNOWNS)
- ILK          0   (0=LEAKAGE PRESENT/1=LEAKAGE ABSENT)
- NBMIX        2   (MAXIMUM NUMBER OF MIXTURES USED)
- NSURF        1   (NUMBER OF OUTER SURFACES)
- ITYPE        2   (TYPE OF GEOMETRY)
- NFUNL        8   (NUMBER OF SPHERICAL HARMONICS COMPONENTS)
- IELEM        2   (ORDER OF POLYNOMIAL USED IN SPATIAL APPROX./1=DIAMOND SCHEME/2=LINEAR/3=PARABOLIC/3=CUBIC)
- NDIM         1   (NUMBER OF GEOMETRIC DIMENSIONS)
- ISCHM        1   (METHOD OF SPATIAL DISCRETISATION/1=HODD/2=DG)
- LL4       1600   (ORDER OF THE MATRICES PER GROUP)
- LX         100   (NUMBER OF MESHES ALONG THE X AXIS)
- LY           1   (NUMBER OF MESHES ALONG THE Y AXIS)
- LZ           1   (NUMBER OF MESHES ALONG THE Z AXIS)
- NLF         12   (SN ORDER)
- ISCAT        8   (1=ISOTROPIC SOURCE/2=LINEARLY ANISOTROPIC SOURCE)
- IQUAD        1   (<4=LEVEL-SYMMETRIC OF TYPE IQUAD/4=LEGENDRE-CHEBYSHEV/5=SYMMETRIC LEGENDRE-CHEBYSHEV/6=QR/>9=PRODUCT)
- IFIX         0   (0/1: NEGATIVE FLUX FIXUP)
- IDSA         0   (0/1: SYNTHETIC ACCELERATION)
- NSTART       0   (NUMBER OF RESTARTS IN GMRES)
- NSDSA       10   (NUMBER OF ITERATIONS BEFORE ENABLING DSA)
- MAXIT      300   (MAXIMUM NUMBER OF INNER ITERATIONS)
- LIVO         0   (0/1: LIVOLANT ACCELERATION OFF/ON)
- ICL1         3   (NUMBER OF FREE ITERATIONS IN LIVO.)
- ICL2         3   (NUMBER OF ACCELERATED ITERATIONS IN LIVO.)
- ISPLH        0   (DEGREE OF LOZENGE SPLITTING FOR HEXAGONAL GEOMETRY)
- INSB         0   (0/1: GROUP VECTORIZATION OFF/ON)
- IOMP         0   (0/1: DOMINO MULTITHREADING OFF/ON)
- IGAV         0   (CONDITION AT AXIAL AXIS FOR CYL./SPH. 1D)
- LSHOOT       1   (0/1: SHOOTING METHOD IN 1D OFF/ON)
- IBFP         2   (0/1/2: BFP SOLUTION OFF/GALERKIN/LIGOU)
- IBIHET       0   (0/1: DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
- EPSI      0.1E-04  (CONVERGENCE CRITERION ON INNER ITERATIONS)
 ->@END MODULE   : SNT:        
 -->>MODULE SNT:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
-<|MICRO := LIB: ::                                                        |<0034
-<|EDIT 99                                                                 |<0035
-<|NMIX 1                                                                  |<0036
-<|ANIS 8                                                                  |<0037
-<|MIXS LIB: MATXS2 FIL: _test                                             |<0038
-<|MIX  1  300.0  1.0 NOGAS                                                |<0039
-<|Hnat = h 0.111894                                                       |<0040
-<|Onat = o 0.888106                                                       |<0041
-<|;                                                                       |<0042
+<|MICRO := LIB: ::                                                        |<0033
+<|EDIT 99                                                                 |<0034
+<|NMIX 1                                                                  |<0035
+<|ANIS 8                                                                  |<0036
+<|MIXS LIB: MATXS2 FIL: _test                                             |<0037
+<|MIX  1  300.0  1.0 NOGAS                                                |<0038
+<|Hnat = h 0.111894                                                       |<0039
+<|Onat = o 0.888106                                                       |<0040
+<|;                                                                       |<0041
 ->@BEGIN MODULE : LIB:        
 ->@DESCRIPTION  : Microscopic xs-library processing                                       
 ->@CREDITS      : A. Hebert, G. Marleau                                                   
@@ -455,8 +379,8 @@ QUIT "LIST" .                                                              0112
  TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =       796
 
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.071 MEMORY USAGE= 2.348E+03
-<|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0044
+-->>MODULE LIB:        : TIME SPENT=        0.076 MEMORY USAGE= 2.340E+03
+<|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0043
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -466,7 +390,7 @@ QUIT "LIST" .                                                              0112
  DRVEQU: STEP UP TO LEVEL 'MACROLIB    '.
 -->>module EQU:        : time spent=        0.001 memory usage= 1.056E+03
 ->@END MODULE   : EQU:        
-<|OLDMACRO := MACRO ;                                                     |<0046
+<|OLDMACRO := MACRO ;                                                     |<0045
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -474,7 +398,7 @@ QUIT "LIST" .                                                              0112
                   GNU LESSER GENERAL PUBLIC LICENSE
 -->>module EQU:        : time spent=        0.001 memory usage= 1.320E+03
 ->@END MODULE   : EQU:        
-<|MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;                          |<0047
+<|MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;                          |<0046
 ->@BEGIN MODULE : MAC:        
 ->@DESCRIPTION  : Macroscopic xs processor                                                
 ->@CREDITS      : G. Marleau                                                              
@@ -540,18 +464,18 @@ QUIT "LIST" .                                                              0112
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.004 MEMORY USAGE= 2.640E+02
-<|OLDMACRO := DELETE: OLDMACRO ;                                          |<0048
-<|MACRO := MAC: MACRO ::                                                  |<0051
-<|READ INPUT                                                              |<0052
-<|MIX 1 FIXE                                                              |<0053
-<|<<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0       |<0085
+-->>MODULE MAC:        : TIME SPENT=        0.003 MEMORY USAGE= 2.640E+02
+<|OLDMACRO := DELETE: OLDMACRO ;                                          |<0047
+<|MACRO := MAC: MACRO ::                                                  |<0050
+<|READ INPUT                                                              |<0051
+<|MIX 1 FIXE                                                              |<0052
+<|<<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0       |<0084
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0085
 <|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0086
 <|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0087
 <|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0088
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0089
-<|0.0 0.0 0.0 0.0 0.0                                                     |<0090
-<|;                                                                       |<0091
+<|0.0 0.0 0.0 0.0 0.0                                                     |<0089
+<|;                                                                       |<0090
 ->@BEGIN MODULE : MAC:        
 ->@DESCRIPTION  : Macroscopic xs processor                                                
 ->@CREDITS      : G. Marleau                                                              
@@ -577,17 +501,7 @@ QUIT "LIST" .                                                              0112
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
 -->>MODULE MAC:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
-<|macro.txt := MACRO ;                                                    |<0092
-->@BEGIN MODULE : EQU:        
-->@DESCRIPTION  : No description available for this module                                
-->@CREDITS      : No author provided for this module                                      
-->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
-                  GNU LESSER GENERAL PUBLIC LICENSE
-
- DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macro.txt   '.
--->>module EQU:        : time spent=        0.033 memory usage= 1.560E+02
-->@END MODULE   : EQU:        
-<|SYSTEM := ASM: MACRO TRACK :: EDIT 2 ARM ;                              |<0094
+<|SYSTEM := ASM: MACRO TRACK :: EDIT 2 ARM ;                              |<0092
 ->@BEGIN MODULE : ASM:        
 ->@DESCRIPTION  : To built system matrices (CP and IC)                                    
 ->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
@@ -654,8 +568,8 @@ QUIT "LIST" .                                                              0112
  IBFP         2   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (SN          )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
-<|FLUX  := FLU: MACRO TRACK SYSTEM :: EDIT 2 TYPE S EXTE 100 ;            |<0095
+-->>MODULE ASM:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+<|FLUX  := FLU: MACRO TRACK SYSTEM :: EDIT 2 TYPE S EXTE 100 ;            |<0093
 ->@BEGIN MODULE : FLU:        
 ->@DESCRIPTION  : Solve the flux equations                                                
 ->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
@@ -5121,8 +5035,8 @@ QUIT "LIST" .                                                              0112
  ++ TRACKING CALLED=   3 TIMES PRECISION= 0.00E+00
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=       240
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        1.026 MEMORY USAGE= 1.320E+04
-<|EEDIT := OUT: FLUX TRACK MACRO GEOM  :: EDIT 2 COND INTG NONE ;         |<0098
+-->>MODULE FLU:        : TIME SPENT=        1.028 MEMORY USAGE= 1.347E+04
+<|EEDIT := OUT: FLUX TRACK MACRO GEOM  :: EDIT 2 COND INTG NONE ;         |<0096
 ->@BEGIN MODULE : OUT:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -5268,10 +5182,10 @@ QUIT "LIST" .                                                              0112
 
   SUM   2.00000E+00   1.14519E+07   2.07062E+10   2.19386E+10   0.00000E+00   0.00000E+00   2.07927E+07   9.37952E-03
 
- OUTDRV: CPU TIME FOR REACTION RATE CALCULATION =  0.016
--->>MODULE OUT:        : TIME SPENT=        0.016 MEMORY USAGE= 0.000E+00
+ OUTDRV: CPU TIME FOR REACTION RATE CALCULATION =  0.015
+-->>MODULE OUT:        : TIME SPENT=        0.015 MEMORY USAGE= 0.000E+00
 ->@END MODULE   : OUT:        
-<|EEDITcopy := EEDIT ;                                                    |<0100
+<|EEDITcopy := EEDIT ;                                                    |<0098
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -5279,7 +5193,7 @@ QUIT "LIST" .                                                              0112
                   GNU LESSER GENERAL PUBLIC LICENSE
 -->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
-<|DEPOS := HEAT: EEDIT EEDITcopy :: EDIT 99 ;                             |<0101
+<|DEPOS := HEAT: EEDIT EEDITcopy :: EDIT 99 ;                             |<0099
 ->@BEGIN MODULE : HEAT:       
 ->@DESCRIPTION  : Compute the energy and charge deposition values                         
 ->@CREDITS      : A. Hebert                                                               
@@ -5393,70 +5307,80 @@ QUIT "LIST" .                                                              0112
  TOTAL CHARGE DEPOSITION:    -1.2327E+09
  TOTAL DOSE ACCUMULATED:      1.7633E+00
 ->@END MODULE   : HEAT:       
--->>MODULE HEAT:       : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
-<|edit.txt  := EEDIT ;                                                    |<0102
+-->>MODULE HEAT:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+<|macr_xsr.txt   := MACRO ;                                               |<0100
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 
- DRVEQU: A LCM OBJECT NAMED 'EEDIT       ' WAS EXPORTED TO FILE 'edit.txt    '.
+ DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macr_xsr.txt'.
+-->>module EQU:        : time spent=        0.033 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|edit_xsr.txt   := EEDIT ;                                               |<0101
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'EEDIT       ' WAS EXPORTED TO FILE 'edit_xsr.txt'.
 -->>module EQU:        : time spent=        0.002 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
-<|track.txt := TRACK ;                                                    |<0103
+<|trac_xsr.txt   := TRACK ;                                               |<0102
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 
- DRVEQU: A LCM OBJECT NAMED 'TRACK       ' WAS EXPORTED TO FILE 'track.txt   '.
+ DRVEQU: A LCM OBJECT NAMED 'TRACK       ' WAS EXPORTED TO FILE 'trac_xsr.txt'.
 -->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
-<|geom.txt := GEOM ;                                                      |<0104
+<|geom_xsr.txt   := GEOM ;                                                |<0103
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 
- DRVEQU: A LCM OBJECT NAMED 'GEOM        ' WAS EXPORTED TO FILE 'geom.txt    '.
+ DRVEQU: A LCM OBJECT NAMED 'GEOM        ' WAS EXPORTED TO FILE 'geom_xsr.txt'.
 -->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
-<|system.txt := SYSTEM ;                                                  |<0105
+<|syst_xsr.txt   := SYSTEM ;                                              |<0104
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 
- DRVEQU: A LCM OBJECT NAMED 'SYSTEM      ' WAS EXPORTED TO FILE 'system.txt  '.
+ DRVEQU: A LCM OBJECT NAMED 'SYSTEM      ' WAS EXPORTED TO FILE 'syst_xsr.txt'.
 -->>module EQU:        : time spent=        0.002 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
-<|micro.txt := MICRO ;                                                    |<0106
+<|micr_xsr.txt   := MICRO ;                                               |<0105
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 
- DRVEQU: A LCM OBJECT NAMED 'MICRO       ' WAS EXPORTED TO FILE 'micro.txt   '.
+ DRVEQU: A LCM OBJECT NAMED 'MICRO       ' WAS EXPORTED TO FILE 'micr_xsr.txt'.
 -->>module EQU:        : time spent=        0.060 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
-<|flux.txt  := FLUX  ;                                                    |<0107
+<|flux_xsr.txt   := FLUX  ;                                               |<0106
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 
- DRVEQU: A LCM OBJECT NAMED 'FLUX        ' WAS EXPORTED TO FILE 'flux.txt    '.
--->>module EQU:        : time spent=        0.154 memory usage= 0.000E+00
+ DRVEQU: A LCM OBJECT NAMED 'FLUX        ' WAS EXPORTED TO FILE 'flux_xsr.txt'.
+-->>module EQU:        : time spent=        0.153 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
-<|EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM := DELETE:                     |<0109
-<|EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM ;                              |<0110
-<|END: ;                                                                  |<0111
+<|EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM := DELETE:                     |<0108
+<|EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM ;                              |<0109
+<|END: ;                                                                  |<0110
 
  normal end of execution for dragon 5  Version 5.0.7 ($Revision: 2060 $)               
  check for warning in listing
