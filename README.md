@@ -1,5 +1,5 @@
-# dragon5
-Three-Dimensional Discrete Ordinates Neutron, Photon, Electron and Positron Transport Code
+# DRAGON-5
+# A Three-Dimensional Discrete Ordinates Neutron, Photon, Electron and Positron Transport Code
 
 The computer code DRAGON contains a collection of models which can simulate a nuclear reactor 
 fuel assembly neutronic behaviour. It includes all of the functions that characterize a 
