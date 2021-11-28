@@ -1,0 +1,143 @@
+*----
+* TEST CASE B01
+* FMAC-M generated homogeneous macrolib
+* 1D slab sn electron-photon coupled transport in tissues
+*----
+*----
+* Define STRUCTURES and MODULES used
+*----
+MODULE GEO: FMAC: MAC: SNT: ASM: FLU: PSOUR: OUT: DELETE: END: UTL:
+       HEAT: ABORT: ;
+LINKED_LIST EMACRO EMACRO2 GMACRO GMACRO2 GEOM ETRACK GTRACK SYSTEM
+       EFLUX GFLUX ESOUR GSOUR EEDITS GEDITS DEPOS EEDITS2 GEDITS2 ;
+REAL esum DELTA ;
+SEQ_ASCII FMAC_M :: FILE './water.txt' ;
+*----
+* Set and track the geometry
+*----
+GEOM := GEO: :: CAR1D 2
+     X- VOID X+ VOID
+     MIX 1 2
+     MESHX 0.0 3.0 30.0
+     SPLITX 30 270
+     ;
+GTRACK := SNT: GEOM ::
+     TITLE '1D slab sn electron-photon BFP in tissues'
+     EDIT 2 MAXR 1000 DIAM 0 NLIVO SN 32 SCAT 16 EPSI 1.E-4
+     MAXI 300 BTE
+     ;
+ETRACK := GTRACK ;
+ETRACK := SNT: ETRACK GEOM :: EDIT 2 BFPG ;
+*----
+* Set the photon source 
+*----
+GMACRO := FMAC: FMAC_M ::
+     EDIT 2
+     PARTICLE GAMA
+     ;
+GMACRO2 := GMACRO ;
+GMACRO := MAC: GMACRO GMACRO2 ::
+     MIX 2 1 OLDL
+     ;
+GMACRO2 := DELETE: GMACRO2 ;
+REAL qsour := 1.E10 ;
+GMACRO := MAC: GMACRO ::
+    READ INPUT
+    MIX 1 FIXE
+    <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    ;
+*----
+* Compute the photon flux
+*----
+SYSTEM := ASM: GMACRO GTRACK :: EDIT 2 ARM ;
+GFLUX := FLU: SYSTEM GMACRO GTRACK ::
+     EDIT 2 TYPE S EXTE 100
+     ;
+GEDITS := OUT: GFLUX GTRACK GMACRO GEOM ::
+     EDIT 2 INTG NONE
+     ;
+SYSTEM := DELETE: SYSTEM ;
+*----
+* Set the electron source
+*----
+EMACRO := FMAC: FMAC_M ::
+    EDIT 2
+    PARTICLE BETA
+    ;
+EMACRO2 := EMACRO ;
+EMACRO := MAC: EMACRO EMACRO2 ::
+     MIX 2 1 OLDL
+    ;
+EMACRO2 := DELETE: EMACRO2 ;
+ESOUR := PSOUR: EMACRO ETRACK GFLUX ::
+    EDIT 1
+    PARTICLE GAMA
+    ;
+*----
+* Compute the electron flux
+*----
+SYSTEM := ASM: EMACRO ETRACK :: EDIT 2 ARM ;
+EFLUX := FLU: SYSTEM EMACRO ETRACK ESOUR ::
+    EDIT 2 TYPE S EXTE 100
+    ;
+EEDITS := OUT: EFLUX ETRACK EMACRO GEOM ::
+    EDIT 2 INTG NONE
+    ;
+SYSTEM := DELETE: SYSTEM ;
+*----
+* Compute the primary energy deposition
+*----
+DEPOS := HEAT: EEDITS GEDITS ::
+    EDIT 1
+    ;
+GFLUX := DELETE: GFLUX ;
+
+
+
+
+*----
+* Compute the secondary photon source
+*----
+GSOUR := PSOUR: GMACRO GTRACK EFLUX ::
+    EDIT 1
+    PARTICLE BETA
+    ;
+*----
+* Compute the secondary photon flux
+*----
+SYSTEM := ASM: GMACRO GTRACK :: EDIT 1 ARM ;
+GFLUX := FLU: SYSTEM GMACRO GTRACK GSOUR ::
+    EDIT 2 TYPE S EXTE 100
+    ;
+GEDITS2 := OUT: GFLUX GTRACK GMACRO GEOM ::
+    EDIT 2 INTG NONE
+    ;
+SYSTEM ESOUR EFLUX := DELETE: SYSTEM ESOUR EFLUX ;
+*----
+* Compute the secondary electron source
+*----
+ESOUR := PSOUR: EMACRO ETRACK GFLUX ::
+    EDIT 1
+    PARTICLE GAMA
+    ;
+*----
+* Compute the secondary electron flux
+*----
+SYSTEM := ASM: EMACRO ETRACK :: EDIT 1 ARM ;
+EFLUX := FLU: SYSTEM EMACRO ETRACK ESOUR ::
+    EDIT 2 TYPE S EXTE 100
+    ;
+EEDITS2 := OUT: EFLUX ETRACK EMACRO GEOM ::
+    EDIT 2 INTG NONE
+    ;
+SYSTEM GSOUR := DELETE: SYSTEM GSOUR ;
+*----
+* Compute the secondary total energy deposition
+*----
+DEPOS := HEAT: DEPOS EEDITS2 GEDITS2 ::
+     EDIT 1 PICKE >>esum<<
+     ;
+END: ;

@@ -1,0 +1,112 @@
+*----
+*  TEST CASE TCM67
+*  FMAC-M generated homogeneous macrolib
+*  1D slab sn electron-photon coupled testcase from ROZ6
+*----
+*----
+*  Define STRUCTURES and MODULES used
+*----
+MODULE GEO: FMAC: MAC: SNT: ASM: FLU: PSOUR: OUT: DELETE: END: UTL:
+       HEAT: ABORT: ;
+LINKED_LIST  EMACRO EMACRO2 GMACRO GMACRO2 GEOM ETRACK GTRACK SYSTEM
+       EFLUX GFLUX ESOUR GSOUR EEDITS GEDITS DEPOS ;
+REAL esum DELTA ;
+SEQ_ASCII FMAC_M :: FILE './W_6MeV_e_ph_CSD.txt' ;
+*----
+*  Set and track the geometry
+*----
+GEOM := GEO: :: CAR1D 2
+           X- VOID  X+ VOID
+           MIX  1 2
+           MESHX 0.0 0.3 4.0
+           SPLITX 30 70
+           ;
+ETRACK := SNT: GEOM ::
+      TITLE 'HOMOGENIZED W_6Mev_e_ph_CSD BENCHMARK WITH FMAC-M'
+      EDIT 2 MAXR 1000 DIAM 2 NLIVO SN 16 SCAT 16 EPSI 1.E-5
+      MAXI 300 BFPG ;
+GTRACK := ETRACK ;
+GTRACK := SNT: GTRACK GEOM :: EDIT 2 BTE ;
+*----
+*  Compute the electron flux
+*----
+EMACRO := FMAC: FMAC_M ::
+  EDIT 2
+  PARTICLE BETA
+;
+UTL: EMACRO :: STEP UP GROUP STEP AT 1 DIR IMPR ESTOPW * ;
+EMACRO2 := EMACRO ;
+EMACRO := MAC: EMACRO EMACRO2 ::
+     MIX 2 1 OLDL
+     ;
+EMACRO2 := DELETE: EMACRO2 ;
+REAL qsour := 1.E10 2.0 / $Pi_R / ;
+ECHO "qsour=" qsour ;
+EMACRO := MAC: EMACRO ::
+     READ INPUT
+     MIX 1 FIXE
+     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     0.0 0.0 0.0 0.0 0.0
+     ;
+SYSTEM := ASM: EMACRO ETRACK :: EDIT 2 ARM ;
+EFLUX := FLU: EMACRO ETRACK SYSTEM ::
+    EDIT 1 TYPE S EXTE 100
+    ;
+EEDITS := OUT: EFLUX ETRACK EMACRO GEOM ::
+    EDIT 2 COND INTG NONE
+    ;
+SYSTEM := DELETE: SYSTEM ;
+*----
+*  Set the photon source
+*----
+GMACRO := FMAC: FMAC_M ::
+  EDIT 2
+  PARTICLE GAMA
+;
+
+GMACRO2 := GMACRO ;
+GMACRO := MAC: GMACRO GMACRO2 ::
+     MIX 2 1 OLDL
+     ;
+GSOUR := PSOUR: GMACRO GTRACK EFLUX ::
+   EDIT 1
+   PARTICLE BETA
+   ;
+*----
+*  Compute the photon flux
+*----
+SYSTEM := ASM: GMACRO GTRACK :: EDIT 1 ARM ;
+GFLUX := FLU: GMACRO GTRACK SYSTEM GSOUR ::
+    EDIT 2 TYPE S EXTE 100
+    ;
+GEDITS := OUT: GFLUX GTRACK GMACRO GEOM ::
+    EDIT 2 COND INTG NONE
+    ;
+SYSTEM := DELETE: SYSTEM ;
+*----
+*  Compute the primary energy deposition
+*----
+DEPOS := HEAT: EEDITS GEDITS ::
+    EDIT 1 SOUR 0.0518134 ! 1/(\ro_{W} g/cm^{3}) PICKE >>esum<
+    ;
+EEDITS GEDITS EFLUX := DELETE: EEDITS GEDITS EFLUX ;
+ECHO "total energy deposition=" esum "MeV/cc" ;
+*----
+*  Assess result
+*----
+REAL REFVALUE := 5.884968E-2 ;
+EVALUATE DELTA := esum REFVALUE - REFVALUE / ABS ;
+IF DELTA 1.0E-4 < THEN
+  ECHO "TEST SUCCESSFUL; DELTA=" DELTA ;
+ELSE
+  ECHO "------------" ;
+  ECHO "TEST FAILURE" ;
+  ECHO "------------" ;
+  ECHO "REFERENCE=" REFVALUE " CALCULATED=" esum ;
+  ABORT: ;
+ENDIF ;
+*
+ECHO "test TCM67 completed" ;
+END: ;

@@ -1,0 +1,14 @@
+#!/bin/sh
+if [ $# = 0 ]
+   then
+   echo "usage: tmacro.access directory" 1>&2
+   exit 1
+fi
+ln -s $1/data/benchmark_proc/fmac_file.txt .
+ln -s $1/data/benchmark_proc/fmac_file_plus.txt .
+ln -s $1/data/benchmark_proc/W_6MeV_e_CSD.txt .
+ln -s $1/data/benchmark_proc/water.txt .
+ln -s $1/data/benchmark_proc/al_au.txt .
+ln -s $1/data/benchmark_proc/W_6MeV_e_ph_CSD.txt .
+ls -l
+echo "tmacro access script terminated"

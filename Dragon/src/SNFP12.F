@@ -1,7 +1,7 @@
 *DECK SNFP12
       SUBROUTINE SNFP12(NUN,NGRP,NGEFF,IMPX,INCONV,INGIND,LX,LY,IELEM,
      1 IBFP,NMAT,NPQ,NSCT,MAT,VOL,TOTAL,ESTOPW,NCODE,ZCODE,DELTAE,QEXT,
-     1 LFIXUP,DU,DE,W,MRM,MRMY,DB,DA,PL,FUNKNO)
+     1 LFIXUP,DU,DE,W,MRM,MRMY,DB,DA,PL,FUNKNO,DCUTOFF)
 *
 *-----------------------------------------------------------------------
 *
@@ -60,6 +60,7 @@
 *
 *Parameters: input/output
 * FUNKNO  Legendre components of the flux and boundary fluxes.
+* DCUTOFF energy deposition under the energy cutoff.
 *
 *-----------------------------------------------------------------------
 *
@@ -74,7 +75,7 @@
       LOGICAL INCONV(NGEFF)
       REAL VOL(LX,LY),TOTAL(0:NMAT,NGRP),ESTOPW(0:NMAT,2,NGRP),ZCODE(4),
      1 DELTAE(NGRP),QEXT(NUN,NGRP),DU(NPQ),DE(NPQ),W(NPQ),DB(LX,NPQ),
-     2 DA(LX,LY,NPQ),PL(NSCT,NPQ),FUNKNO(NUN,NGRP)
+     2 DA(LX,LY,NPQ),PL(NSCT,NPQ),FUNKNO(NUN,NGRP),DCUTOFF(LX,LY)
       LOGICAL LFIXUP
 *----
 *  LOCAL VARIABLES
@@ -374,6 +375,9 @@
       ENDIF
       FEP(:IELEM**2)=G2*Q2(:IELEM**2,IELEM**2+1)-G1*FEP(:IELEM**2)
       FLUX0(:IELEM**2,M,I,J)=FEP(:IELEM**2)/DELTAE(IG)
+      IF(IG.EQ.NGRP) THEN
+      DCUTOFF(I,J)=DCUTOFF(I,J)+2.0*W(M)*REAL(FLUX0(1,M,I,J))*PL(1,M)
+      ENDIF
       DO 135 K=1,NSCT
       DO 130 IEL=1,IELEM**2
       FLUX(IEL,K,I,J)=FLUX(IEL,K,I,J)+2.0D0*W(M)*Q2(IEL,IELEM**2+1)*

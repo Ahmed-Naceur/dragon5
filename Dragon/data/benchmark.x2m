@@ -1,0 +1,8 @@
+* Regression tests for macrolib capabilities in Dragon.
+* Running time = ~ 18m
+* G. Marleau and A. Hebert
+*
+PROCEDURE BFP_1D ;
+
+BFP_1D ;
+QUIT "LIST" .
