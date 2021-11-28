@@ -1,0 +1,366 @@
+%!PS-Adobe-3.0
+%%Title: psplot.ps
+%%CreationDate: 20211128 064302.686
+%%Creator: PSPLOT PostScript Plotting Package
+%%Pages: (atend)
+%%EndComments
+%Library Creator: Kevin E. Kohler <kevin@ocean.nova.edu>
+%%BeginProlog
+/inch {72 mul} bind def
+/Ah {moveto lineto lineto stroke} def
+/Ar {moveto 2 copy lineto 4 -2 roll
+ moveto lineto lineto stroke } def
+/arcit {S /A2 exch def /A1 exch def /Rad exch def
+ /Yc exch def /Xc exch def
+ Xc Rad A1 cos mul add Yc Rad A1 sin mul add
+ moveto newpath
+ Xc Yc Rad A1 A2 arc stroke} def
+/C {/Rad exch def /Yc exch def /Xc exch def
+ Xc Yc Rad 0 360 arc closepath
+ } def
+/c0sf {closepath 0 setgray fill} def
+/cf {closepath fill} def
+/Cs {closepath stroke} def
+/Cln {newpath 3 1 roll
+ moveto {lineto} repeat clip newpath
+ } def
+/Cs {closepath stroke} def
+/Fb {newpath moveto
+ Dx 0 rlineto 0 Dy rlineto Dx neg 0 rlineto closepath
+ fill } def
+/Fbn { newpath 3 1 roll moveto {lineto} repeat
+ closepath fill } def
+/Fbnc { newpath 3 1 roll moveto
+ {lineto} repeat closepath fill } def
+/L /lineto load def
+/Lend {/Strlen exch stringwidth pop def} def
+/Lendi {/Strlen exch stringwidth pop 1.5 mul def} def
+/Lends {/Strlen exch stringwidth pop 1.1 mul def} def
+/Lenssd {/Strlenss exch stringwidth pop 3 mul 4 div def} def
+/LSM {2 copy lineto stroke moveto} def
+/lsm {Xp Yp lineto stroke mover} def
+/M /moveto load def
+/mover {Xp Yp moveto} def
+/Np {newpath} def
+/S /stroke load def
+/Sc {setrgbcolor} def
+/Sg {setgray} def
+/Setf {Curfnt exch scalefont setfont} def
+/SM {stroke moveto} def
+/sm {stroke mover} def
+/Slw {72.0000 mul setlinewidth} def
+/Slw0 {.24 setlinewidth} bind def
+%Line Breaking Procedure
+/TurnLineFL
+ { /T exch def /spacewidth space stringwidth pop def
+ /currentw 0 def /wordspace_count 0 def
+ /restart 0 def /remainder T def
+ {remainder space search
+ {/nextword exch def pop
+ /remainder exch def
+ /nextwordwidth nextword stringwidth pop def
+ currentw nextwordwidth add lw gt
+ {T restart wordspace_count restart sub
+ getinterval showline
+ /restart wordspace_count def
+ /currentw nextwordwidth spacewidth add def
+ }
+ {/currentw currentw nextwordwidth add
+ spacewidth add def
+ }
+ ifelse
+ /wordspace_count wordspace_count
+ nextword length add 1 add def
+ }
+ {pop exit}
+ ifelse
+ } loop
+ /lrem remainder stringwidth pop def
+ currentw lrem add lw gt
+ {T restart wordspace_count restart sub
+ getinterval showline remainder showline}
+ {/lastchar T length def
+ T restart lastchar restart sub getinterval
+ lm y moveto show}
+ ifelse
+ } def
+ /parms {/y exch def /lm exch def /rm exch def
+ /leading exch def /pointsize exch def
+ /lw rm lm sub def
+ findfont pointsize scalefont setfont
+ /showline {lm y moveto show
+ /y y leading sub def} def
+ lm y moveto } def
+/Xposd {/Xpos exch def} def
+/Xposjd {/Xpos exch Xpos exch Strlen mul sub def} def
+/xydef {/Xp Xpos def /Yp Ypos def} def
+%/Xypd {/Yp exch def /Xp exch def} def
+/Xypos0d {/Xpos0 Xpres def /Ypos0 Ypres def} def
+/Xyprset {dup /Xpres exch cos Strlen mul Xpos add def
+ /Ypres exch sin Strlen mul Ypos add def} def
+/Xyprset0 {dup /Xpres exch cos Strlen mul Xpos0 add def
+ /Ypres exch sin Strlen mul Ypos0 add def} def
+/Yposd {/Ypos exch def} def
+/Yposjd {/Ypos exch Ypos exch Strlen mul sub def} def
+/space ( ) def
+%%EndProlog
+%%Page: 1 1
+/Curfnt /Helvetica findfont def
+ 12 Setf
+ 1.000 1.000 scale
+ 1.000 1.000 scale
+ 0.468 0.468 scale
+ 106.01 100.76 translate
+Slw0
+ 0.000 Sg
+ 0.000 0.000 0.000 Sc
+ 0.00 0.00 SM
+ 0.00 0.00 translate
+ 353.38 58.90 SM
+ 471.17 58.90 LSM
+ 353.38 0.00 SM
+ 353.38 58.90 LSM
+ 471.17 0.00 SM
+ 471.17 58.90 LSM
+ 412.27 0.00 37.08 0.00 180.00 arcit
+ 412.27 0.00 43.42 -0.00 180.00 arcit
+ 471.17 58.90 SM
+ 588.96 58.90 LSM
+ 588.96 0.00 SM
+ 588.96 58.90 LSM
+ 530.06 0.00 37.08 0.00 180.00 arcit
+ 530.06 0.00 43.42 -0.00 180.00 arcit
+ 588.96 58.90 SM
+ 706.75 58.90 LSM
+ 706.75 0.00 SM
+ 706.75 58.90 LSM
+ 647.86 0.00 37.08 0.00 180.00 arcit
+ 647.86 0.00 43.42 -0.00 180.00 arcit
+ 353.38 176.69 SM
+ 471.17 176.69 LSM
+ 353.38 58.90 SM
+ 353.38 176.69 LSM
+ 471.17 58.90 SM
+ 471.17 176.69 LSM
+Np 412.27 117.79 37.08 C stroke
+Np 412.27 117.79 43.42 C stroke
+ 471.17 176.69 SM
+ 588.96 176.69 LSM
+ 588.96 58.90 SM
+ 588.96 176.69 LSM
+Np 530.06 117.79 37.08 C stroke
+Np 530.06 117.79 43.42 C stroke
+ 588.96 176.69 SM
+ 706.75 176.69 LSM
+ 706.75 58.90 SM
+ 706.75 176.69 LSM
+Np 647.86 117.79 37.08 C stroke
+Np 647.86 117.79 43.42 C stroke
+ 0.00 58.90 SM
+ 117.79 58.90 LSM
+ 0.00 0.00 SM
+ 0.00 58.90 LSM
+ 117.79 0.00 SM
+ 117.79 58.90 LSM
+ 117.79 58.90 SM
+ 235.58 58.90 LSM
+ 235.58 0.00 SM
+ 235.58 58.90 LSM
+ 235.58 58.90 SM
+ 353.38 58.90 LSM
+ 706.75 58.90 SM
+ 824.54 58.90 LSM
+ 824.54 0.00 SM
+ 824.54 58.90 LSM
+ 824.54 58.90 SM
+ 942.34 58.90 LSM
+ 942.34 0.00 SM
+ 942.34 58.90 LSM
+ 942.34 58.90 SM
+ 1060.13 58.90 LSM
+ 1060.13 0.00 SM
+ 1060.13 58.90 LSM
+ 117.79 176.69 SM
+ 235.58 176.69 LSM
+ 117.79 58.90 SM
+ 117.79 176.69 LSM
+ 235.58 58.90 SM
+ 235.58 176.69 LSM
+ 235.58 176.69 SM
+ 353.38 176.69 LSM
+ 706.75 176.69 SM
+ 824.54 176.69 LSM
+ 824.54 58.90 SM
+ 824.54 176.69 LSM
+ 824.54 176.69 SM
+ 942.34 176.69 LSM
+ 942.34 58.90 SM
+ 942.34 176.69 LSM
+ 235.58 294.48 SM
+ 353.38 294.48 LSM
+ 235.58 176.69 SM
+ 235.58 294.48 LSM
+ 353.38 176.69 SM
+ 353.38 294.48 LSM
+ 353.38 294.48 SM
+ 471.17 294.48 LSM
+ 471.17 176.69 SM
+ 471.17 294.48 LSM
+ 471.17 294.48 SM
+ 588.96 294.48 LSM
+ 588.96 176.69 SM
+ 588.96 294.48 LSM
+ 588.96 294.48 SM
+ 706.75 294.48 LSM
+ 706.75 176.69 SM
+ 706.75 294.48 LSM
+ 706.75 294.48 SM
+ 824.54 294.48 LSM
+ 824.54 176.69 SM
+ 824.54 294.48 LSM
+ 235.58 412.27 SM
+ 353.38 412.27 LSM
+ 235.58 294.48 SM
+ 235.58 412.27 LSM
+ 353.38 294.48 SM
+ 353.38 412.27 LSM
+ 353.38 412.27 SM
+ 471.17 412.27 LSM
+ 471.17 294.48 SM
+ 471.17 412.27 LSM
+ 471.17 412.27 SM
+ 588.96 412.27 LSM
+ 588.96 294.48 SM
+ 588.96 412.27 LSM
+ 588.96 412.27 SM
+ 706.75 412.27 LSM
+ 706.75 294.48 SM
+ 706.75 412.27 LSM
+ 706.75 412.27 SM
+ 824.54 412.27 LSM
+ 824.54 294.48 SM
+ 824.54 412.27 LSM
+ 353.38 530.06 SM
+ 471.17 530.06 LSM
+ 353.38 412.27 SM
+ 353.38 530.06 LSM
+ 471.17 412.27 SM
+ 471.17 530.06 LSM
+ 471.17 530.06 SM
+ 588.96 530.06 LSM
+ 588.96 412.27 SM
+ 588.96 530.06 LSM
+ 588.96 530.06 SM
+ 706.75 530.06 LSM
+ 706.75 412.27 SM
+ 706.75 530.06 LSM
+ 0.00 176.69 SM
+ 117.79 176.69 LSM
+ 0.00 58.90 SM
+ 0.00 176.69 LSM
+ 942.34 176.69 SM
+ 1060.13 176.69 LSM
+ 1060.13 58.90 SM
+ 1060.13 176.69 LSM
+ 0.00 294.48 SM
+ 117.79 294.48 LSM
+ 0.00 176.69 SM
+ 0.00 294.48 LSM
+ 117.79 176.69 SM
+ 117.79 294.48 LSM
+ 117.79 294.48 SM
+ 235.58 294.48 LSM
+ 824.54 294.48 SM
+ 942.34 294.48 LSM
+ 942.34 176.69 SM
+ 942.34 294.48 LSM
+ 942.34 294.48 SM
+ 1060.13 294.48 LSM
+ 1060.13 176.69 SM
+ 1060.13 294.48 LSM
+ 0.00 412.27 SM
+ 117.79 412.27 LSM
+ 0.00 294.48 SM
+ 0.00 412.27 LSM
+ 117.79 294.48 SM
+ 117.79 412.27 LSM
+ 117.79 412.27 SM
+ 235.58 412.27 LSM
+ 824.54 412.27 SM
+ 942.34 412.27 LSM
+ 942.34 294.48 SM
+ 942.34 412.27 LSM
+ 942.34 412.27 SM
+ 1060.13 412.27 LSM
+ 1060.13 294.48 SM
+ 1060.13 412.27 LSM
+ 0.00 530.06 SM
+ 117.79 530.06 LSM
+ 0.00 412.27 SM
+ 0.00 530.06 LSM
+ 117.79 412.27 SM
+ 117.79 530.06 LSM
+ 117.79 530.06 SM
+ 235.58 530.06 LSM
+ 235.58 412.27 SM
+ 235.58 530.06 LSM
+ 235.58 530.06 SM
+ 353.38 530.06 LSM
+ 706.75 530.06 SM
+ 824.54 530.06 LSM
+ 824.54 412.27 SM
+ 824.54 530.06 LSM
+ 824.54 530.06 SM
+ 942.34 530.06 LSM
+ 942.34 412.27 SM
+ 942.34 530.06 LSM
+ 942.34 530.06 SM
+ 1060.13 530.06 LSM
+ 1060.13 412.27 SM
+ 1060.13 530.06 LSM
+ 0.00 0.00 SM
+ 117.79 0.00 LSM
+ 353.38 0.00 SM
+ 368.86 -0.00 LSM
+ 117.79 0.00 SM
+ 235.58 0.00 LSM
+ 471.17 0.00 SM
+ 486.65 0.00 LSM
+ 375.19 -0.00 SM
+ 449.35 -0.00 LSM
+ 449.35 -0.00 SM
+ 455.69 0.00 LSM
+ 368.86 -0.00 SM
+ 375.19 -0.00 LSM
+ 235.58 0.00 SM
+ 353.38 0.00 LSM
+ 588.96 0.00 SM
+ 604.44 0.00 LSM
+ 492.98 -0.00 SM
+ 567.14 -0.00 LSM
+ 567.14 -0.00 SM
+ 573.48 0.00 LSM
+ 486.65 0.00 SM
+ 492.98 -0.00 LSM
+ 455.69 0.00 SM
+ 471.17 0.00 LSM
+ 706.75 0.00 SM
+ 824.54 0.00 LSM
+ 610.78 -0.00 SM
+ 684.94 -0.00 LSM
+ 684.94 -0.00 SM
+ 691.27 -0.00 LSM
+ 604.44 0.00 SM
+ 610.78 -0.00 LSM
+ 573.48 0.00 SM
+ 588.96 0.00 LSM
+ 824.54 0.00 SM
+ 942.34 0.00 LSM
+ 691.27 -0.00 SM
+ 706.75 0.00 LSM
+ 942.34 0.00 SM
+ 1060.13 0.00 LSM
+stroke showpage
+%%Trailer
+%%Pages: 1
+%%EOF

@@ -1,0 +1,54 @@
+./rdragon iaea2d.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon g2s_prestation.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon salmacro.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon tmacro.x2m  -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon tdraglib.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon twimsE.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon twlup.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon tmatxs2.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon trowland_shem295_jeff3.1.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon sens.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon testDuo.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon testDuo_B1.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon uo2_evo_xsm.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon C2D20.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon CFC-CELL.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon ErmBeavrsPwrRefl.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon RegtestCNG_mccg.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
+./rdragon RegtestLZC_mccg.x2m -quiet
+/tmp/rundir13
+[0;32m[OK][0m
