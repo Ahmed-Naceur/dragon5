@@ -145,8 +145,8 @@
   130 CONTINUE
       CALL LCMSIX(KPCPO,' ',2)
   170 CONTINUE
-* END OF LOOP ON MIXTURES. ***********************************
-      IF (IMPX.GT.1) GOTO 190
+* END OF LOOP ON CALCULATIONS. *******************************
+      IF (IMPX.EQ.0) GOTO 190
       WRITE(6,*) 'Summary of the parameter included in the COMPO'
          CALL LCMSIX(IPCPO,'GLOBAL',1)
          CALL LCMGTC(IPCPO,'PARKEY',12,NPAR,PARCPO)
@@ -174,6 +174,7 @@
      1                   (VCHAR(JM),JM=1,NVALUE(IPAR))
             ENDIF
   180    CONTINUE
+         CALL LCMSIX(IPCPO,' ',2)
       CALL LCMSIX(KPCPO,'TREE',1)
       DO 185 ILOC=1,NLOC
          CALL LCMGTC(IPCPO,'PARKEL',12,NLOC,PARCPO)
@@ -189,9 +190,8 @@
       CALL LCMSIX(KPCPO,' ',2)
       
   190 CONTINUE
+* END OF LOOP ON MIXTURES. ***********************************
 *
-*      ENDIF
-* END OF LOOP ON ELEMENTARY CALCULATIONS. ********************
 *----
 *  SCRATCH STORAGE DEALLOCATION
 *----

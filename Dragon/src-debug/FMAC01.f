@@ -60,7 +60,7 @@
 *----
 *  ALLOCATABLE ARRAYS
 *----
-      REAL, ALLOCATABLE, DIMENSION(:) :: H1,ENERG,H2_TEMP
+      REAL, ALLOCATABLE, DIMENSION(:) :: H1,ENERG
       REAL, ALLOCATABLE, DIMENSION(:,:) :: H2
       REAL, ALLOCATABLE, DIMENSION(:,:,:) :: H3
       CHARACTER(LEN=6), ALLOCATABLE, DIMENSION(:) :: HNGAR
@@ -95,11 +95,9 @@
             ELSE IF(HNGAR(I).EQ.'BETA') THEN
               HNPRT(I)='B'
             ELSE IF(HNGAR(I).EQ.'POSITR') THEN
-              HNPRT(I)='P'
-*              HNPRT(I)='C'
-            ELSE IF(HNGAR(I).EQ.'PROT') THEN
               HNPRT(I)='C'
-*              HNPRT(I)='P'
+            ELSE IF(HNGAR(I).EQ.'PROT') THEN
+              HNPRT(I)='P'
             ELSE
               WRITE(HSMG,'(8HFMAC01: ,A6,26H IS AN INVALID PARTICLE NA,
      1        3HME.)') HNGAR(I)
@@ -134,29 +132,19 @@
           READ(LIN,'(6E12.0)') (H1(I),I=1,LTOT)
           IF(IPART.EQ.0) CALL XABORT('FMAC01: PARTICLE TYPE UNDEFINED.')
           DO I=1,LTOT
-*            PRINT *, H1(I), 'PAPAPA'
             H1(I)=H1(I)*1.0E6
           ENDDO
-*          IG1=1
-*          DO I=1,IPART-1
-*            IG1=IG1+NGPRT(I)+1
-*          ENDDO
-*          IG2=IG1+NGPRT(IPART)
+          IG1=1
+          DO I=1,IPART-1
+            IG1=IG1+NGPRT(I)+1
+          ENDDO
+          IG2=IG1+NGPRT(IPART)
           NGROUP=NGPRT(IPART)
           JPMACR=LCMLID(IPMACR,'GROUP',NGROUP)
           ALLOCATE(ENERG(NGROUP+1))
-*          ENERG(:NGROUP)=H1(IG1:IG2-1)
-*         CALL FMAC04(NGPRT,NPART,NGP,NGROUP,IEMIN)
-*          ENERG(NGROUP+1)=H1(IEMIN)
-
-* Correction (C.Bienvenue)
-          ENERG(1:NGROUP)=H1(1:NGROUP)
-          ENERG(NGROUP+1)=H1(LTOT)
-
-*          DO I=1,SIZE(ENERG)
-*          PRINT *, ENERG(I), IG1, IG2, 'PAPAPI'
-*          ENDDO
-
+          ENERG(:NGROUP)=H1(IG1:IG2-1)
+          CALL FMAC04(NGPRT,NPART,NGP,NGROUP,IEMIN)
+          ENERG(NGROUP+1)=H1(IEMIN)
           CALL LCMPUT(IPMACR,'ENERGY',NGROUP+1,2,ENERG)
           DEALLOCATE(ENERG,H1)
         CASE(6)
@@ -340,25 +328,10 @@
             DEALLOCATE(H2)
             CYCLE
           ENDIF
-          
-* Correction (C. Bienvenue)
-          IG3=0
+          CALL FMAC04(NGPRT,NPART,NGP,NGPRT(IPART),IEMIN)
           DO I=1,NK
-          ALLOCATE(H2_TEMP(NGP+NPART))
-          DO J=1,NPART          
-          H2_TEMP(IG3+J:IG3+NGPRT(J)+J-1)=H2(I,IG3+1:IG3+NGPRT(J))
-          H2_TEMP(IG3+NGPRT(J)+J)=H2(I,NGP+NPART+1-J)
-          IG3=IG3+NGPRT(J)
+            H2(I,IG2)=H2(I,IEMIN)
           ENDDO
-          H2(I,:NGP+NPART)=H2_TEMP(:NGP+NPART)
-          DEALLOCATE(H2_TEMP)
-          ENDDO
-
-*          CALL FMAC04(NGPRT,NPART,NGP,NGPRT(IPART),IEMIN)
-*          DO I=1,NK
-*            H2(I,IG2)=H2(I,IEMIN)
-*          ENDDO
-
           CALL FMAC02(IPMACR,NK,IG2-IG1+1,H2(1,IG1),'ESTOPW')
           DEALLOCATE(H2)
         CASE(36)

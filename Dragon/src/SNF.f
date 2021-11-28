@@ -1,6 +1,6 @@
 *DECK SNF
       SUBROUTINE SNF (IPSYS,NPSYS,IPTRK,IFTRAK,IMPX,NGRP,IDIR,NREG,
-     1 NBMIX,NUN,MAT,VOL,KEYFLX,FUNKNO,SUNKNO,TITR)
+     1 NBMIX,NUN,MAT,VOL,KEYFLX,FUNKNO,SUNKNO,TITR,DCUTOFF)
 *
 *-----------------------------------------------------------------------
 *
@@ -40,6 +40,7 @@
 *
 *Parameters: input/output
 * FUNKNO  unknown vector.
+* DCUTOFF energy deposition under the energy cutoff
 *
 *-----------------------------------------------------------------------
 *
@@ -51,7 +52,8 @@
       TYPE(C_PTR) IPSYS,IPTRK
       INTEGER     NGRP,NPSYS(NGRP),IFTRAK,IMPX,IDIR,NREG,NBMIX,NUN,
      1            MAT(NREG),KEYFLX(NREG)
-      REAL        VOL(NREG),FUNKNO(NUN,NGRP),SUNKNO(NUN,NGRP)
+      REAL        VOL(NREG),FUNKNO(NUN,NGRP),SUNKNO(NUN,NGRP),
+     1            DCUTOFF(NREG)
 *----
 *  LOCAL VARIABLES
 *----
@@ -198,7 +200,7 @@
 *  UPDATE THE FIXED SOURCE AND COMPUTE THE FLUX
 *----
          CALL SNFLUX(KPSYS,INCONV,INGIND,IPTRK,IMPX,NGRP,NGEFF,NREG,
-     1   NBMIX,NUN,MAT,VOL,KEYFLX,FUNKNO,SUNKNO,ITER)
+     1   NBMIX,NUN,MAT,VOL,KEYFLX,FUNKNO,SUNKNO,ITER,DCUTOFF)
 *----
 *  LOOP OVER ENERGY GROUPS
 *----

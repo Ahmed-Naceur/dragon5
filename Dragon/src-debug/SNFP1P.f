@@ -1,7 +1,6 @@
 *DECK SNFP1P
-      SUBROUTINE SNFP1P(NREG,NMAT,ISCHM,IELEM,IBFP,NLF,NSCT,U,W,
-     1 PL,MAT,VOL,TOTAL,ESTOPW,NCODE,ZCODE,DELTAE,QEXT,QEXT0,LFIXUP,
-     2 FLUX,FLUX0,ALP,IG)
+      SUBROUTINE SNFP1P(NREG,NMAT,ISCHM,IELEM,IBFP,NLF,NSCT,U,W,PL,MAT,
+     1 VOL,TOTAL,ESTOPW,NCODE,ZCODE,DELTAE,QEXT,QEXT0,LFIXUP,FLUX,FLUX0)
 *
 *-----------------------------------------------------------------------
 *
@@ -62,25 +61,22 @@
 *----
 *  SUBROUTINE ARGUMENTS
 *----
-      INTEGER NREG,NMAT,ISCHM,IELEM,IBFP,NLF,NSCT,MAT(NREG),NCODE(2),IG
+      INTEGER NREG,NMAT,ISCHM,IELEM,IBFP,NLF,NSCT,MAT(NREG),NCODE(2)
       REAL U(NLF),W(NLF),PL(NSCT,NLF),VOL(NREG),TOTAL(0:NMAT),
      1 ESTOPW(0:NMAT,2),ZCODE(2),DELTAE,QEXT(IELEM,NSCT,NREG),
-     2 QEXT0(IELEM,NLF,NREG),FLUX(IELEM,NSCT,NREG),
-     3 FLUX0(IELEM,NLF,NREG),ALP
+     2 QEXT0(IELEM,NLF,NREG),FLUX(IELEM,NSCT,NREG),FLUX0(IELEM,NLF,NREG)
       LOGICAL LFIXUP
 *----
 *  LOCAL VARIABLES
 *----
-      DOUBLE PRECISION AFB,FEP(3),CURR(2),FN,FD,G1,G2,
-     1 CNP(NLF),CNM(NLF),AN(NLF+1),L0
+      DOUBLE PRECISION AFB,AFB1,AFB2,FEP(3),CURR(2),FN,FD,G1,G2
       DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:) :: Q
-      DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:) :: FLUXN,Q2
+      DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:) :: Q2
       PARAMETER(RLOG=1.0E-8)
-      INTEGER REGI, REGF, REGSTEP,NLFI,NLFF
 *----
 *  ALLOCATABLE ARRAYS
 *----
-      ALLOCATE(Q(IELEM),Q2(IELEM,IELEM+1),FLUXN(NLF,NREG))
+      ALLOCATE(Q(IELEM),Q2(IELEM,IELEM+1))
 *----
 *  PARAMETER VALIDATION.
 *----
@@ -101,85 +97,326 @@
       DENOM=DENOM+W(I)*U(I)
    10 CONTINUE
 *----
-*  Compute the angular FP coefficients
-*----
-      AN(1)=0.0
-      DO 11 I=2,NLF+1
-      AN(I)=AN(I-1)-2*U(I-1)*W(I-1)
-  11  CONTINUE
-
-      FLUXN(:NLF,:NREG)=0.0
-      L0=0.0
-
-      DO 12 IP=1,NLF
-      DO 13 I=1,NREG
-      DO 14 IL=0,NSCT-1
-      FLUXN(IP,I)=FLUXN(IP,I)+0.5*(2.0*IL+1)*FLUX(1,IL+1,I)*PL(IL+1,IP)
-   14 CONTINUE
-   13 CONTINUE
-
-         IF(IP.EQ.1) THEN
-         CNM(IP)=0.0
-         CNP(IP)=AN(IP+1)/(W(IP)*(U(IP+1)-U(IP)))
-         L0=CNM(IP)+CNP(IP)
-         ELSE IF(IP.EQ.NLF) THEN
-         CNM(IP)=AN(IP)/(W(IP)*(U(IP)-U(IP-1)))
-         CNP(IP)=0.0
-         IF(CNM(IP)+CNP(IP).GT.L0) L0=CNM(IP)+CNP(IP)
-         ELSE
-         CNP(IP)=AN(IP+1)/(W(IP)*(U(IP+1)-U(IP)))
-         CNM(IP)=AN(IP)/(W(IP)*(U(IP)-U(IP-1)))
-         IF(CNM(IP)+CNP(IP).GT.L0) L0=CNM(IP)+CNP(IP)
-         ENDIF
-
-   12 CONTINUE
-
-*----
 *  OUTER LOOP OVER MU LEVELS.
 *----
-
       CALL XDRSET(FLUX,IELEM*NSCT*NREG,0.0)
       NSCT0=NSCT
       CURR(1)=0.0D0
       CURR(2)=0.0D0
+      DO 200 IP=1,NLF/2
+      AFB=0.0D0
+      AFB1=0.0D0
+      AFB2=0.0D0
 *----
 *  HIGH-ORDER DIAMOND DIFFERENCING METHOD
 *----
-      DO 400 M=1,2
-      IF(M.EQ.2) THEN
-      REGI=1
-      REGF=NREG
-      REGSTEP=1
-      NLFI=NLF/2+1
-      NLFF=NLF
-      ELSE
-      REGI=NREG
-      REGF=1
-      REGSTEP=-1
-      NLFI=1
-      NLFF=NLF/2
+      IF(ISCHM.EQ.1) THEN 
+*----
+*  SHOOTING METHOD FOR NON-VACUUM RIGHT BOUNDARY CONDITION.
+*----
+      IF(ZCODE(2).NE.0.0) THEN
+*----
+*  BACKWARD SWEEP (FROM RIGHT TO LEFT).
+*----
+         DO 30 I=NREG,1,-1
+            IBM=MAT(I)
+            DO 25 IEL=1,IELEM
+            Q(IEL)=0.0
+            DO 20 IL=0,NSCT-1
+            Q(IEL)=Q(IEL)+QEXT(IEL,IL+1,I)*PL(IL+1,IP)/2.0
+   20       CONTINUE
+   25       CONTINUE
+            IF(IBFP.EQ.1) THEN
+*             Galerkin type
+              FN=2.0D0*ESTOPW(IBM,1)/DELTAE
+              FD=(ESTOPW(IBM,1)+ESTOPW(IBM,2))/DELTAE
+              G1=ESTOPW(IBM,1)/ESTOPW(IBM,2)
+              G2=(ESTOPW(IBM,1)+ESTOPW(IBM,2))/ESTOPW(IBM,2)
+            ELSE
+*             Przybylski and Ligou type
+              FN=(ESTOPW(IBM,1)+ESTOPW(IBM,2))/DELTAE
+              FD=2.0D0*ESTOPW(IBM,2)/DELTAE
+              G1=1.0D0
+              G2=2.0D0
+            ENDIF
+            FEP(:IELEM)=QEXT0(:IELEM,NLF/2+IP,I)
+            IF(IELEM.EQ.1) THEN
+              Q2(1,2)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)-2.0D0*U(IP)*AFB
+              Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)-2.0D0*U(IP)
+            ELSE IF(IELEM.EQ.2) THEN
+              Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)
+              Q2(1,2)=2.0D0*SQRT(3.0D0)*U(IP)
+              Q2(1,3)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)
+              Q2(2,1)=Q2(1,2)
+              Q2(2,2)=-(FD+TOTAL(IBM))*VOL(I)+6.0D0*U(IP)
+              Q2(2,3)=-FN*FEP(2)*VOL(I)-Q(2)*VOL(I)+2.0D0*SQRT(3.0D0)*
+     1        U(IP)*AFB
+            ELSE IF(IELEM.EQ.3) THEN
+              Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)-2.0D0*U(IP)
+              Q2(1,2)=0.0
+              Q2(1,3)=-2.0D0*SQRT(5.0D0)*U(IP)
+              Q2(1,4)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)-2.0D0*U(IP)*AFB
+              Q2(2,1)=Q2(1,2)
+              Q2(2,2)=-(FD+TOTAL(IBM))*VOL(I)
+              Q2(2,3)=-2.0D0*SQRT(15.0D0)*U(IP)
+              Q2(2,4)=-FN*FEP(2)*VOL(I)-Q(2)*VOL(I)
+              Q2(3,1)=Q2(1,3)
+              Q2(3,2)=Q2(2,3)
+              Q2(3,3)=(FD+TOTAL(IBM))*VOL(I)-10.0D0*U(IP)
+              Q2(3,4)=FN*FEP(3)*VOL(I)+Q(3)*VOL(I)-2.0D0*SQRT(5.0D0)*
+     1        U(IP)*AFB
+            ENDIF
+            CALL ALSBD(IELEM,1,Q2,IER,IELEM)
+            IF(IER.NE.0) CALL XABORT('SNFP1P: SINGULAR MATRIX(1).')
+            IF(IELEM.EQ.1) THEN
+              IF(LFIXUP.AND.(Q2(1,2).LE.RLOG)) Q2(1,2)=0.0
+              AFB=2.0D0*Q2(1,2)-AFB
+              IF(LFIXUP.AND.(AFB.LE.RLOG)) AFB=0.0
+            ELSE IF(IELEM.EQ.2) THEN
+              AFB=AFB-2.0D0*SQRT(3.0D0)*Q2(2,3)
+            ELSE IF(IELEM.EQ.3) THEN
+              AFB=2.0D0*Q2(1,4)+2.0D0*SQRT(5.0D0)*Q2(3,4)-AFB
+            ENDIF
+            FEP(:IELEM)=G2*Q2(:IELEM,IELEM+1)-G1*FEP(:IELEM)
+            FLUX0(:IELEM,IP,I)=REAL(FEP(:IELEM))/DELTAE
+   30    CONTINUE
+*----
+*  FORWARD SWEEP (FROM LEFT TO RIGHT).
+*----
+         AFBA1=0.0
+         IF(NCODE(1).EQ.4) THEN
+            AFBA1=REAL(AFB)
+            AFB=0.0
+         ELSE
+            AFB=ZCODE(1)*REAL(AFB)
+         ENDIF
+         DO 50 I=1,NREG
+            IBM=MAT(I)
+            DO 45 IEL=1,IELEM
+            Q(IEL)=0.0
+            DO 40 IL=0,NSCT-1
+            Q(IEL)=Q(IEL)+QEXT(IEL,IL+1,I)*PL(IL+1,NLF-IP+1)/2.0
+   40       CONTINUE
+   45       CONTINUE
+            IF(IBFP.EQ.1) THEN
+*             Galerkin type
+              FN=2.0D0*ESTOPW(IBM,1)/DELTAE
+              FD=(ESTOPW(IBM,1)+ESTOPW(IBM,2))/DELTAE
+              G1=ESTOPW(IBM,1)/ESTOPW(IBM,2)
+              G2=(ESTOPW(IBM,1)+ESTOPW(IBM,2))/ESTOPW(IBM,2)
+            ELSE
+*             Przybylski and Ligou type
+              FN=(ESTOPW(IBM,1)+ESTOPW(IBM,2))/DELTAE
+              FD=2.0D0*ESTOPW(IBM,2)/DELTAE
+              G1=1.0D0
+              G2=2.0D0
+            ENDIF
+            FEP(:IELEM)=QEXT0(:IELEM,NLF/2+IP,I)
+            IF(IELEM.EQ.1) THEN
+              Q2(1,2)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)+2.0D0*U(NLF-IP+1)*AFB
+              Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)+2.0D0*U(NLF-IP+1)
+            ELSE IF(IELEM.EQ.2) THEN
+              Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)
+              Q2(1,2)=2.0D0*SQRT(3.0D0)*U(NLF-IP+1)
+              Q2(1,3)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)
+              Q2(2,1)=Q2(1,2)
+              Q2(2,2)=-(FD+TOTAL(IBM))*VOL(I)-6.0D0*U(NLF-IP+1)
+              Q2(2,3)=-FN*FEP(2)*VOL(I)-Q(2)*VOL(I)+2.0D0*SQRT(3.0D0)*
+     1        U(NLF-IP+1)*AFB
+            ELSE IF(IELEM.EQ.3) THEN
+              Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)+2.0D0*U(NLF-IP+1)
+              Q2(1,2)=0.0
+              Q2(1,3)=2.0D0*SQRT(5.0D0)*U(NLF-IP+1)
+              Q2(1,4)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)+2.0D0*U(NLF-IP+1)*AFB
+              Q2(2,1)=Q2(1,2)
+              Q2(2,2)=-(FD+TOTAL(IBM))*VOL(I)
+              Q2(2,3)=-2.0D0*SQRT(15.0D0)*U(NLF-IP+1)
+              Q2(2,4)=-FN*FEP(2)*VOL(I)-Q(2)*VOL(I)
+              Q2(3,1)=Q2(1,3)
+              Q2(3,2)=Q2(2,3)
+              Q2(3,3)=(FD+TOTAL(IBM))*VOL(I)+10.0D0*U(NLF-IP+1)
+              Q2(3,4)=FN*FEP(3)*VOL(I)+Q(3)*VOL(I)+2.0D0*SQRT(5.0D0)*
+     1        U(NLF-IP+1)*AFB
+            ENDIF
+            CALL ALSBD(IELEM,1,Q2,IER,IELEM)
+            IF(IER.NE.0) CALL XABORT('SNFP1P: SINGULAR MATRIX(2).')
+            IF(IELEM.EQ.1) THEN
+              IF(LFIXUP.AND.(Q2(1,2).LE.RLOG)) Q2(1,2)=0.0
+              AFB=2.0D0*Q2(1,2)-AFB
+              IF(LFIXUP.AND.(AFB.LE.RLOG)) AFB=0.0
+            ELSE IF(IELEM.EQ.2) THEN
+              AFB=AFB+2.0D0*SQRT(3.0D0)*Q2(2,3)
+            ELSE IF(IELEM.EQ.3) THEN
+              AFB=2.0D0*Q2(1,4)+2.0D0*SQRT(5.0D0)*Q2(3,4)-AFB
+            ENDIF
+            FEP(:IELEM)=G2*Q2(:IELEM,IELEM+1)-G1*FEP(:IELEM)
+            FLUX0(:IELEM,NLF/2+IP,I)=REAL(FEP(:IELEM))/DELTAE
+   50    CONTINUE
+*----
+*  BACKWARD SWEEP (FROM RIGHT TO LEFT).
+*----
+         AFBA2=0.0
+         AFBA=0.0
+         IF(NCODE(1).EQ.4) THEN
+            AFBA2=REAL(AFB)
+         ELSE
+            AFBA=REAL(AFB)
+         ENDIF
+         AFB=1.0
+         DO 70 I=NREG,1,-1
+            IBM=MAT(I)
+            DO 65 IEL=1,IELEM
+            Q(IEL)=0.0
+            DO 60 IL=0,NSCT-1
+            Q(IEL)=Q(IEL)+QEXT(IEL,IL+1,I)*PL(IL+1,IP)/2.0
+   60       CONTINUE
+   65       CONTINUE
+            IF(IBFP.EQ.1) THEN
+*             Galerkin type
+              FN=2.0D0*ESTOPW(IBM,1)/DELTAE
+              FD=(ESTOPW(IBM,1)+ESTOPW(IBM,2))/DELTAE
+              G1=ESTOPW(IBM,1)/ESTOPW(IBM,2)
+              G2=(ESTOPW(IBM,1)+ESTOPW(IBM,2))/ESTOPW(IBM,2)
+            ELSE
+*             Przybylski and Ligou type
+              FN=(ESTOPW(IBM,1)+ESTOPW(IBM,2))/DELTAE
+              FD=2.0D0*ESTOPW(IBM,2)/DELTAE
+              G1=1.0D0
+              G2=2.0D0
+            ENDIF
+            FEP(:IELEM)=QEXT0(:IELEM,NLF/2+IP,I)
+            IF(IELEM.EQ.1) THEN
+              Q2(1,2)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)-2.0D0*U(IP)*AFB
+              Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)-2.0D0*U(IP)
+            ELSE IF(IELEM.EQ.2) THEN
+              Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)
+              Q2(1,2)=2.0D0*SQRT(3.0D0)*U(IP)
+              Q2(1,3)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)
+              Q2(2,1)=Q2(1,2)
+              Q2(2,2)=-(FD+TOTAL(IBM))*VOL(I)+6.0D0*U(IP)
+              Q2(2,3)=-FN*FEP(2)*VOL(I)-Q(2)*VOL(I)+2.0D0*SQRT(3.0D0)*
+     1        U(IP)*AFB
+            ELSE IF(IELEM.EQ.3) THEN
+              Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)-2.0D0*U(IP)
+              Q2(1,2)=0.0
+              Q2(1,3)=-2.0D0*SQRT(5.0D0)*U(IP)
+              Q2(1,4)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)-2.0D0*U(IP)*AFB
+              Q2(2,1)=Q2(1,2)
+              Q2(2,2)=-(FD+TOTAL(IBM))*VOL(I)
+              Q2(2,3)=-2.0D0*SQRT(15.0D0)*U(IP)
+              Q2(2,4)=-FN*FEP(2)*VOL(I)-Q(2)*VOL(I)
+              Q2(3,1)=Q2(1,3)
+              Q2(3,2)=Q2(2,3)
+              Q2(3,3)=(FD+TOTAL(IBM))*VOL(I)-10.0D0*U(IP)
+              Q2(3,4)=FN*FEP(3)*VOL(I)+Q(3)*VOL(I)-2.0D0*SQRT(5.0D0)*
+     1        U(IP)*AFB
+            ENDIF
+            CALL ALSBD(IELEM,1,Q2,IER,IELEM)
+            IF(IER.NE.0) CALL XABORT('SNFP1P: SINGULAR MATRIX(3).')
+            IF(IELEM.EQ.1) THEN
+              IF(LFIXUP.AND.(Q2(1,2).LE.RLOG)) Q2(1,2)=0.0
+              AFB=2.0D0*Q2(1,2)-AFB
+              IF(LFIXUP.AND.(AFB.LE.RLOG)) AFB=0.0
+            ELSE IF(IELEM.EQ.2) THEN
+              AFB=AFB-2.0D0*SQRT(3.0D0)*Q2(2,3)
+            ELSE IF(IELEM.EQ.3) THEN
+              AFB=2.0D0*Q2(1,4)+2.0D0*SQRT(5.0D0)*Q2(3,4)-AFB
+            ENDIF
+            FEP(:IELEM)=G2*Q2(:IELEM,IELEM+1)-G1*FEP(:IELEM)
+            FLUX0(:IELEM,IP,I)=REAL(FEP(:IELEM))/DELTAE
+   70    CONTINUE
+*----
+*  FORWARD SWEEP (FROM LEFT TO RIGHT).
+*----
+         IF(NCODE(1).EQ.4) THEN
+            AFBB1=REAL(AFB)
+            AFB1=AFBA1/(1.0+AFBA1-AFBB1)
+            AFB=1.0
+         ELSE
+            AFB=ZCODE(1)*AFB
+         ENDIF
+         DO 90 I=1,NREG
+            IBM=MAT(I)
+            DO 85 IEL=1,IELEM
+            Q(IEL)=0.0
+            DO 80 IL=0,NSCT-1
+            Q(IEL)=Q(IEL)+QEXT(IEL,IL+1,I)*PL(IL+1,NLF-IP+1)/2.0
+   80       CONTINUE
+   85       CONTINUE
+            IF(IBFP.EQ.1) THEN
+*             Galerkin type
+              FN=2.0D0*ESTOPW(IBM,1)/DELTAE
+              FD=(ESTOPW(IBM,1)+ESTOPW(IBM,2))/DELTAE
+              G1=ESTOPW(IBM,1)/ESTOPW(IBM,2)
+              G2=(ESTOPW(IBM,1)+ESTOPW(IBM,2))/ESTOPW(IBM,2)
+            ELSE
+*             Przybylski and Ligou type
+              FN=(ESTOPW(IBM,1)+ESTOPW(IBM,2))/DELTAE
+              FD=2.0D0*ESTOPW(IBM,2)/DELTAE
+              G1=1.0D0
+              G2=2.0D0
+            ENDIF
+            FEP(:IELEM)=QEXT0(:IELEM,NLF/2+IP,I)
+            IF(IELEM.EQ.1) THEN
+              Q2(1,2)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)+2.0D0*U(NLF-IP+1)*AFB
+              Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)+2.0D0*U(NLF-IP+1)
+            ELSE IF(IELEM.EQ.2) THEN
+              Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)
+              Q2(1,2)=2.0D0*SQRT(3.0D0)*U(NLF-IP+1)
+              Q2(1,3)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)
+              Q2(2,1)=Q2(1,2)
+              Q2(2,2)=-(FD+TOTAL(IBM))*VOL(I)-6.0D0*U(NLF-IP+1)
+              Q2(2,3)=-FN*FEP(2)*VOL(I)-Q(2)*VOL(I)+2.0D0*SQRT(3.0D0)*
+     1        U(NLF-IP+1)*AFB
+            ELSE IF(IELEM.EQ.3) THEN
+              Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)+2.0D0*U(NLF-IP+1)
+              Q2(1,2)=0.0
+              Q2(1,3)=2.0D0*SQRT(5.0D0)*U(NLF-IP+1)
+              Q2(1,4)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)+2.0D0*U(NLF-IP+1)*AFB
+              Q2(2,1)=Q2(1,2)
+              Q2(2,2)=-(FD+TOTAL(IBM))*VOL(I)
+              Q2(2,3)=-2.0D0*SQRT(15.0D0)*U(NLF-IP+1)
+              Q2(2,4)=-FN*FEP(2)*VOL(I)-Q(2)*VOL(I)
+              Q2(3,1)=Q2(1,3)
+              Q2(3,2)=Q2(2,3)
+              Q2(3,3)=(FD+TOTAL(IBM))*VOL(I)+10.0D0*U(NLF-IP+1)
+              Q2(3,4)=FN*FEP(3)*VOL(I)+Q(3)*VOL(I)+2.0D0*SQRT(5.0D0)*
+     1        U(NLF-IP+1)*AFB
+            ENDIF
+            CALL ALSBD(IELEM,1,Q2,IER,IELEM)
+            IF(IER.NE.0) CALL XABORT('SNFP1P: SINGULAR MATRIX(4).')
+            IF(IELEM.EQ.1) THEN
+              IF(LFIXUP.AND.(Q2(1,2).LE.RLOG)) Q2(1,2)=0.0
+              AFB=2.0D0*Q2(1,2)-AFB
+              IF(LFIXUP.AND.(AFB.LE.RLOG)) AFB=0.0
+            ELSE IF(IELEM.EQ.2) THEN
+              AFB=AFB+2.0D0*SQRT(3.0D0)*Q2(2,3)
+            ELSE IF(IELEM.EQ.3) THEN
+              AFB=2.0D0*Q2(1,4)+2.0D0*SQRT(5.0D0)*Q2(3,4)-AFB
+            ENDIF
+            FEP(:IELEM)=G2*Q2(:IELEM,IELEM+1)-G1*FEP(:IELEM)
+            FLUX0(:IELEM,NLF/2+IP,I)=REAL(FEP(:IELEM))/DELTAE
+   90    CONTINUE
+         IF(NCODE(1).EQ.4) THEN
+            AFBB2=REAL(AFB)
+            AFB2=AFBA2/(1.0+AFBA2-AFBB2)
+         ELSE
+            AFBB=REAL(AFB)
+            AFB=ZCODE(2)*AFBA/(1.0+ZCODE(2)*(AFBA-AFBB))
+         ENDIF
       ENDIF
-      DO 200 IP=NLFI,NLFF
-
-* SOURCE MONODIRECTIONNELLE  
-      IF(M.EQ.2.AND.IP.EQ.NLF.AND.IG.EQ.1) THEN
-      N_GENERATIONS=2
-      AFB=1.5915494D9/(N_GENERATIONS*W(IP))
-      ELSE
-      AFB=0.0
-      ENDIF
-
-      DO 120 I=REGI,REGF,REGSTEP
-
+*----
+*  BACKWARD SWEEP (FROM RIGHT TO LEFT).
+*----
+      IF(NCODE(1).EQ.4) AFB=AFB1
+      DO 120 I=NREG,1,-1
          IBM=MAT(I)
-
          DO 105 IEL=1,IELEM
          Q(IEL)=0.0
          DO 100 IL=0,NSCT-1
          Q(IEL)=Q(IEL)+QEXT(IEL,IL+1,I)*PL(IL+1,IP)/2.0
   100    CONTINUE
   105    CONTINUE
-
          IF(IBFP.EQ.1) THEN
 *          Galerkin type
            FN=2.0D0*ESTOPW(IBM,1)/DELTAE
@@ -193,41 +430,35 @@
            G1=1.0D0
            G2=2.0D0
          ENDIF
-
          FEP(:IELEM)=QEXT0(:IELEM,IP,I)
-
          IF(IELEM.EQ.1) THEN
-           Q2(1,2)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)+2.0D0*ABS(U(IP))*AFB
-     1      +0.5*ALP*(CNP(IP)*FLUXN(IP+1,I)+CNM(IP)*FLUXN(IP-1,I)
-     2      +(L0-CNP(IP)-CNM(IP))*FLUXN(IP,I))*VOL(I)
-           Q2(1,1)=(FD+TOTAL(IBM)+0.5*ALP*L0)*VOL(I)+2.0D0*ABS(U(IP))
+           Q2(1,2)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)-2.0D0*U(IP)*AFB
+           Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)-2.0D0*U(IP)
          ELSE IF(IELEM.EQ.2) THEN
            Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)
            Q2(1,2)=2.0D0*SQRT(3.0D0)*U(IP)
            Q2(1,3)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)
            Q2(2,1)=Q2(1,2)
-           Q2(2,2)=-(FD+TOTAL(IBM))*VOL(I)-6.0D0*ABS(U(IP))
+           Q2(2,2)=-(FD+TOTAL(IBM))*VOL(I)+6.0D0*U(IP)
            Q2(2,3)=-FN*FEP(2)*VOL(I)-Q(2)*VOL(I)+2.0D0*SQRT(3.0D0)*
      1     U(IP)*AFB
          ELSE IF(IELEM.EQ.3) THEN
-           Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)+2.0D0*ABS(U(IP))
+           Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)-2.0D0*U(IP)
            Q2(1,2)=0.0
-           Q2(1,3)=2.0D0*SQRT(5.0D0)*ABS(U(IP))
-           Q2(1,4)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)+2.0D0*ABS(U(IP))*AFB
+           Q2(1,3)=-2.0D0*SQRT(5.0D0)*U(IP)
+           Q2(1,4)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)-2.0D0*U(IP)*AFB
            Q2(2,1)=Q2(1,2)
            Q2(2,2)=-(FD+TOTAL(IBM))*VOL(I)
            Q2(2,3)=-2.0D0*SQRT(15.0D0)*U(IP)
            Q2(2,4)=-FN*FEP(2)*VOL(I)-Q(2)*VOL(I)
            Q2(3,1)=Q2(1,3)
            Q2(3,2)=Q2(2,3)
-           Q2(3,3)=(FD+TOTAL(IBM))*VOL(I)+10.0D0*ABS(U(IP))
-           Q2(3,4)=FN*FEP(3)*VOL(I)+Q(3)*VOL(I)+2.0D0*SQRT(5.0D0)*
-     1     ABS(U(IP))*AFB
+           Q2(3,3)=(FD+TOTAL(IBM))*VOL(I)-10.0D0*U(IP)
+           Q2(3,4)=FN*FEP(3)*VOL(I)+Q(3)*VOL(I)-2.0D0*SQRT(5.0D0)*
+     1     U(IP)*AFB
          ENDIF
-
          CALL ALSBD(IELEM,1,Q2,IER,IELEM)
          IF(IER.NE.0) CALL XABORT('SNFP1P: SINGULAR MATRIX(5).')
-
          IF(IELEM.EQ.1) THEN
            IF(LFIXUP.AND.(Q2(1,2).LE.RLOG)) Q2(1,2)=0.0
            AFB=2.0D0*Q2(1,2)-AFB
@@ -237,22 +468,100 @@
          ELSE IF(IELEM.EQ.3) THEN
            AFB=2.0D0*Q2(1,4)+2.0D0*SQRT(5.0D0)*Q2(3,4)-AFB
          ENDIF
-
          FEP(:IELEM)=G2*Q2(:IELEM,IELEM+1)-G1*FEP(:IELEM)
          FLUX0(:IELEM,IP,I)=REAL(FEP(:IELEM))/DELTAE
          DO 115 K=1,NSCT
          DO 110 IEL=1,IELEM
          FLUX(IEL,K,I)=FLUX(IEL,K,I)+W(IP)*REAL(Q2(IEL,IELEM+1))*
-     1    PL(K,IP)
+     1   PL(K,IP)
   110    CONTINUE
   115    CONTINUE
   120 CONTINUE
-  200 CONTINUE
-  400 CONTINUE
-
+      CURR(1)=CURR(1)+W(IP)*U(IP)*AFB
+*----
+*  FORWARD SWEEP (FROM LEFT TO RIGHT).
+*----
+      AFB=ZCODE(1)*AFB
+      IF(NCODE(1).EQ.4) AFB=AFB2
+      DO 150 I=1,NREG
+         IBM=MAT(I)
+         DO 135 IEL=1,IELEM
+         Q(IEL)=0.0
+         DO 130 IL=0,NSCT-1
+         Q(IEL)=Q(IEL)+QEXT(IEL,IL+1,I)*PL(IL+1,NLF-IP+1)/2.0
+  130    CONTINUE
+  135    CONTINUE
+         IF(IBFP.EQ.1) THEN
+*          Galerkin type
+           FN=2.0D0*ESTOPW(IBM,1)/DELTAE
+           FD=(ESTOPW(IBM,1)+ESTOPW(IBM,2))/DELTAE
+           G1=ESTOPW(IBM,1)/ESTOPW(IBM,2)
+           G2=(ESTOPW(IBM,1)+ESTOPW(IBM,2))/ESTOPW(IBM,2)
+         ELSE
+*          Przybylski and Ligou type
+           FN=(ESTOPW(IBM,1)+ESTOPW(IBM,2))/DELTAE
+           FD=2.0D0*ESTOPW(IBM,2)/DELTAE
+           G1=1.0D0
+           G2=2.0D0
+         ENDIF
+         FEP(:IELEM)=QEXT0(:IELEM,NLF/2+IP,I)
+         IF(IELEM.EQ.1) THEN
+           Q2(1,2)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)+2.0D0*U(NLF-IP+1)*AFB
+           Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)+2.0D0*U(NLF-IP+1)
+         ELSE IF(IELEM.EQ.2) THEN
+           Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)
+           Q2(1,2)=2.0D0*SQRT(3.0D0)*U(NLF-IP+1)
+           Q2(1,3)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)
+           Q2(2,1)=Q2(1,2)
+           Q2(2,2)=-(FD+TOTAL(IBM))*VOL(I)-6.0D0*U(NLF-IP+1)
+           Q2(2,3)=-FN*FEP(2)*VOL(I)-Q(2)*VOL(I)+2.0D0*SQRT(3.0D0)*
+     1     U(NLF-IP+1)*AFB
+         ELSE IF(IELEM.EQ.3) THEN
+           Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)+2.0D0*U(NLF-IP+1)
+           Q2(1,2)=0.0
+           Q2(1,3)=2.0D0*SQRT(5.0D0)*U(NLF-IP+1)
+           Q2(1,4)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)+2.0D0*U(NLF-IP+1)*AFB
+           Q2(2,1)=Q2(1,2)
+           Q2(2,2)=-(FD+TOTAL(IBM))*VOL(I)
+           Q2(2,3)=-2.0D0*SQRT(15.0D0)*U(NLF-IP+1)
+           Q2(2,4)=-FN*FEP(2)*VOL(I)-Q(2)*VOL(I)
+           Q2(3,1)=Q2(1,3)
+           Q2(3,2)=Q2(2,3)
+           Q2(3,3)=(FD+TOTAL(IBM))*VOL(I)+10.0D0*U(NLF-IP+1)
+           Q2(3,4)=FN*FEP(3)*VOL(I)+Q(3)*VOL(I)+2.0D0*SQRT(5.0D0)*
+     1     U(NLF-IP+1)*AFB
+         ENDIF
+         CALL ALSBD(IELEM,1,Q2,IER,IELEM)
+         IF(IER.NE.0) CALL XABORT('SNFP1P: SINGULAR MATRIX(6).')
+         IF(IELEM.EQ.1) THEN
+           IF(LFIXUP.AND.(Q2(1,2).LE.RLOG)) Q2(1,2)=0.0
+           AFB=2.0D0*Q2(1,2)-AFB
+           IF(LFIXUP.AND.(AFB.LE.RLOG)) AFB=0.0
+         ELSE IF(IELEM.EQ.2) THEN
+           AFB=AFB+2.0D0*SQRT(3.0D0)*Q2(2,3)
+         ELSE IF(IELEM.EQ.3) THEN
+           AFB=2.0D0*Q2(1,4)+2.0D0*SQRT(5.0D0)*Q2(3,4)-AFB
+         ENDIF
+         FEP(:IELEM)=G2*Q2(:IELEM,IELEM+1)-G1*FEP(:IELEM)
+         FLUX0(:IELEM,NLF/2+IP,I)=REAL(FEP(:IELEM))/DELTAE
+         DO 145 K=1,NSCT
+         DO 140 IEL=1,IELEM
+         FLUX(IEL,K,I)=FLUX(IEL,K,I)+W(NLF-IP+1)*REAL(Q2(IEL,IELEM+1))*
+     1   PL(K,NLF-IP+1)
+  140    CONTINUE
+  145    CONTINUE
+  150 CONTINUE
+      CURR(2)=CURR(2)+W(NLF-IP+1)*U(NLF-IP+1)*AFB
+*----
+*  DISCONTINUOUS GALERKIN FINITE ELEMENT METHOD
+*----
+      ELSEIF(ISCHM.EQ.2) THEN
+         CALL XABORT('SNFP1P: DISCONTINUOUS GALERKIN NOT IMPLEMENTED.')
+      ENDIF
 *----
 *  END OF OUTER LOOP OVER MU LEVELS
-*---- 
-      DEALLOCATE(Q,Q2,FLUXN)
+*----
+  200 CONTINUE
+      DEALLOCATE(Q,Q2)
       RETURN
       END

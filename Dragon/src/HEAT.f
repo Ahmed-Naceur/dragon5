@@ -13,7 +13,7 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert and A. Naceur
+*Author(s): A. Hebert
 *
 *Parameters: input/output
 * NENTRY  number of LCM objects or files used by the operator.
@@ -45,7 +45,7 @@
       PARAMETER(NSTATE=40)
       CHARACTER TEXT12*12,HSIGN*12,HSMG*131
       INTEGER ISTATE(NSTATE)
-      DOUBLE PRECISION DFLOTT,ZNORM,ESUM,CSUM,DSUM
+      DOUBLE PRECISION DFLOTT,ZNORM,ESUM,CSUM
 *----
 *  ALLOCATABLE ARRAYS
 *----
@@ -191,12 +191,11 @@
          CALL XABORT('HEAT: '//TEXT12//' IS AN INVALID KEY WORD.')
       ENDIF
       GO TO 10
-      
 *----
 *  COMPUTE THE ENERGY AND CHARGE DEPOSITION
 *----
    60 CALL HEADRV(IPDEP,NENTRY-1,KENTRY(2),NBMIX,NGRP,ZNORM,IMPX,ESUM,
-     1 CSUM,DSUM)
+     1 CSUM)
 *----
 *  RECOVER THE TOTAL ENERGY OR CHARGE DEPOSITION AND SAVE IT IN A
 *  CLE-2000 VARIABLE

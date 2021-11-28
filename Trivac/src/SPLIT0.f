@@ -203,7 +203,7 @@
             ELSE IF(ITYPE.EQ.4) THEN
                XXX(K)=REAL((GAR**3+DEL*DBLE(I))**(1.0D0/3.0D0))
             ELSE
-            CALL XABORT('SPLIT0: INVALID MESH-SPLITTING INDEX.')
+               CALL XABORT('SPLIT0: INVALID MESH-SPLITTING INDEX.')
             ENDIF
             K=K-1
    60       CONTINUE

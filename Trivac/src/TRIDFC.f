@@ -63,7 +63,7 @@
 *----
 *  LOCAL VARIABLES
 *----
-      LOGICAL LL1
+      LOGICAL LL1,LALB
 *
       ALB(X)=0.5*(1.0-X)/(1.0+X)
 *----
@@ -108,10 +108,11 @@
          LL1=(MAT(KK1).EQ.0)
       ENDIF
       IF(LL1) THEN
-         IF((NCODE(1).EQ.1).AND.(ICODE(1).EQ.0)) THEN
+         LALB=(NCODE(1).EQ.1).OR.(NCODE(1).EQ.6)
+         IF(LALB.AND.(ICODE(1).EQ.0)) THEN
             KK1=-1
             QFR(NUM1+1)=ALB(ZCODE(1))
-         ELSE IF(NCODE(1).EQ.1) THEN
+         ELSE IF(LALB) THEN
             KK1=-1
             QFR(NUM1+1)=1.0
             IQFR(NUM1+1)=ICODE(1)
@@ -130,10 +131,11 @@
          LL1=(MAT(KK2).EQ.0)
       ENDIF
       IF(LL1) THEN
-         IF((NCODE(2).EQ.1).AND.(ICODE(2).EQ.0)) THEN
+         LALB=(NCODE(2).EQ.1).OR.(NCODE(2).EQ.6)
+         IF(LALB.AND.(ICODE(2).EQ.0)) THEN
             KK2=-1
             QFR(NUM1+2)=ALB(ZCODE(2))
-         ELSE IF(NCODE(2).EQ.1) THEN
+         ELSE IF(LALB) THEN
             KK2=-1
             QFR(NUM1+2)=1.0
             IQFR(NUM1+2)=ICODE(2)
@@ -152,10 +154,11 @@
          LL1=(MAT(KK3).EQ.0)
       ENDIF
       IF(LL1) THEN
-         IF((NCODE(3).EQ.1).AND.(ICODE(3).EQ.0)) THEN
+         LALB=(NCODE(3).EQ.1).OR.(NCODE(3).EQ.6)
+         IF(LALB.AND.(ICODE(3).EQ.0)) THEN
             KK3=-1
             QFR(NUM1+3)=ALB(ZCODE(3))
-         ELSE IF(NCODE(3).EQ.1) THEN
+         ELSE IF(LALB) THEN
             KK3=-1
             QFR(NUM1+3)=1.0
             IQFR(NUM1+3)=ICODE(3)
@@ -174,10 +177,11 @@
          LL1=(MAT(KK4).EQ.0)
       ENDIF
       IF(LL1) THEN
-         IF((NCODE(4).EQ.1).AND.(ICODE(4).EQ.0)) THEN
+         LALB=(NCODE(4).EQ.1).OR.(NCODE(4).EQ.6)
+         IF(LALB.AND.(ICODE(4).EQ.0)) THEN
             KK4=-1
             QFR(NUM1+4)=ALB(ZCODE(4))
-         ELSE IF(NCODE(4).EQ.1) THEN
+         ELSE IF(LALB) THEN
             KK4=-1
             QFR(NUM1+4)=1.0
             IQFR(NUM1+4)=ICODE(4)
@@ -196,10 +200,11 @@
          LL1=(MAT(KK5).EQ.0)
       ENDIF
       IF(LL1) THEN
-         IF((NCODE(5).EQ.1).AND.(ICODE(5).EQ.0)) THEN
+         LALB=(NCODE(5).EQ.1).OR.(NCODE(5).EQ.6)
+         IF(LALB.AND.(ICODE(5).EQ.0)) THEN
             KK5=-1
             QFR(NUM1+5)=ALB(ZCODE(5))
-         ELSE IF(NCODE(5).EQ.1) THEN
+         ELSE IF(LALB) THEN
             KK5=-1
             QFR(NUM1+5)=1.0
             IQFR(NUM1+5)=ICODE(5)
@@ -218,10 +223,11 @@
          LL1=(MAT(KK6).EQ.0)
       ENDIF
       IF(LL1) THEN
-         IF((NCODE(6).EQ.1).AND.(ICODE(6).EQ.0)) THEN
+         LALB=(NCODE(6).EQ.1).OR.(NCODE(6).EQ.6)
+         IF(LALB.AND.(ICODE(6).EQ.0)) THEN
             KK6=-1
             QFR(NUM1+6)=ALB(ZCODE(6))
-         ELSE IF(NCODE(6).EQ.1) THEN
+         ELSE IF(LALB) THEN
             KK6=-1
             QFR(NUM1+6)=1.0
             IQFR(NUM1+6)=ICODE(6)

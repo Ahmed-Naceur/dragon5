@@ -20,10 +20,7 @@
 * NENTRY  number of LCM objects or files used by the operator.
 * HENTRY  name of each LCM object or file:
 *         HENTRY(1): read-only type(L_LIBRARY) first system;
-*         HENTRY(2): read-only type(L_FLUX) direct flux;
-*         HENTRY(3): read-only type(L_FLUX) adjoint flux;
-*         HENTRY(4): read-only type(L_LIBRARY) second system;
-*         HENTRY(5): read-only type(L_FLUX) direct flux.
+*         HENTRY(2): read-only type(L_LIBRARY) second system.
 * IENTRY  type of each LCM object or file:
 *         =1 LCM memory object; =2 XSM file; =3 sequential binary file;
 *         =4 sequential ascii file.

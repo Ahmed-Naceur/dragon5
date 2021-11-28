@@ -1,1 +1,0 @@
-/home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_3.00MeV_2g_2e_P1_FC.txt

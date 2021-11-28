@@ -271,8 +271,8 @@
 *        propagation factors
          IBFP=1
       ELSE IF(TEXT4.EQ.'BFPL') THEN
-*        Boltzmann Fokker-Planck equation with Przybylski and Ligou
-*        energy propagation factors
+*        Boltzmann Fokker-Planck equation with Galarlin energy
+*        propagation factors
          IBFP=2
       ELSE IF(TEXT4.EQ.';') THEN
          GO TO 30

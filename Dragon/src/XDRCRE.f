@@ -161,6 +161,9 @@
         ELSE IF(NAMMOD .EQ.  'DUO:        ') THEN      
           USE='Perturbative analysis using the Clio formula'
           AUT='A. Hebert'          
+        ELSE IF(NAMMOD .EQ.  'BREF:       ') THEN      
+          USE='Discontinuity factors calculation in a 1D reflector'
+          AUT='A. Hebert'          
         ELSE IF(NAMMOD .EQ.  'SALT:       ') THEN      
           USE='Track calculations from a SALOME surfacic file'
           AUT='A. Hebert, X. Warin'          

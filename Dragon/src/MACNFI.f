@@ -1,8 +1,8 @@
 *DECK MACNFI
       SUBROUTINE MACNFI(IPMACR,IPRINT,IEN   ,NTOTMX,NGROUP,NIFISS,
      >                  NEDMAC,NBMIXF,NGROF ,NIFISF,NEDF  ,NDELF ,
-     >                  NBMIXO,NGROO ,NIFISO,NEDO  ,NDELO ,IMLOC ,
-     >                  ENERGN,NAMEDN,NUMFN ,NUMPX )
+     >                  NBMIXO,NIFISO,NEDO  ,NDELO ,IMLOC ,ENERGN,
+     >                  NAMEDN,NUMFN ,NUMPX )
 *
 *-----------------------------------------------------------------------
 *
@@ -28,7 +28,6 @@
 * NIFISS  maximum number fissile isotopes per mixture.
 * NEDMAC  number of aditional edition x-s.
 * NBMIXO  number of mixtures in IPMACR.
-* NGROO   number of groups in IPMACR.
 * NIFISO  number of fissile isotopes in IPMACR.
 * NEDO    number of aditional x-s in IPMACR.
 * NDELO   number of precursor groups in IPMACR.
@@ -54,7 +53,7 @@
 *----
       TYPE(C_PTR)  IPMACR
       INTEGER      IPRINT,IEN ,NTOTMX,NGROUP,NIFISS,NEDMAC,
-     >             NBMIXF,NGROF,NIFISF,NEDF,NDELF,NBMIXO,NGROO,
+     >             NBMIXF,NGROF,NIFISF,NEDF,NDELF,NBMIXO,
      >             NIFISO,NEDO,NDELO,IMLOC(2,NTOTMX),
      >             NAMEDN(2,NEDMAC),NUMFN(NBMIXF,NIFISS),
      >             NUMPX(NBMIXF,NIFISS)
@@ -64,7 +63,8 @@
 *----
       INTEGER      IOUT
       PARAMETER   (IOUT=6)
-      INTEGER      IGR,ILO,ILN,JLN,IMXN,IMAC,IMIX,ITC,ISOT,ILCMLN,ILCMTY
+      INTEGER      IGR,ILO,ILN,JLN,IMXN,IMAC,IMIX,ITC,ISOT,ILCMLN,
+     >             ILCMTY,NGROO
 *----
 * ALLOCATABLE ARRAYS
 *----
@@ -77,7 +77,6 @@
 *   NUMFO   'FISSIONINDEX' record in IPMACR
 *----
       ALLOCATE(NAMEDO(2,NEDO),NUMFO(NBMIXO,NIFISO))
-      ALLOCATE(ENERGO(2*NGROO+1))
 *----
 *  PRINT HEADER IF REQUIRED
 *----
@@ -85,27 +84,34 @@
 *----
 *  TEST FOR ENERGY
 *----
-      IF(NGROO.GT.0) THEN
+      NGROO=0
+      CALL LCMLEN(IPMACR,'ENERGY',ILCMLN,ILCMTY)
+      IF(ILCMLN.GT.0) THEN
+        NGROO=ILCMLN-1
+        ALLOCATE(ENERGO(2*NGROO+1))
         IF(NGROF.GT.0) THEN
           CALL LCMGET(IPMACR,'ENERGY',ENERGO(1))
-          CALL LCMGET(IPMACR,'DELTAU',ENERGO(NGROO+2))
-          DO 100 IGR=1,2*NGROO+1
+          DO IGR=1,NGROO
+            ENERGO(NGROO+1+IGR)=LOG(ENERGO(IGR)/ENERGO(IGR+1))
+          ENDDO
+          DO IGR=1,2*NGROO+1
             IF(ENERGN(IGR).NE.ENERGO(IGR)) THEN
               WRITE(IOUT,9000) IEN
               GO TO 110
             ENDIF
- 100      CONTINUE
+          ENDDO
         ELSE
           CALL LCMGET(IPMACR,'ENERGY',ENERGN(1))
-          CALL LCMGET(IPMACR,'DELTAU',ENERGN(NGROO+2))
+          DO IGR=1,NGROO
+            ENERGN(NGROO+1+IGR)=LOG(ENERGN(IGR)/ENERGN(IGR+1))
+          ENDDO
           NGROF=NGROO
         ENDIF
       ENDIF
- 110  CONTINUE
 *----
 *  TEST FOR ADDITIONAL EDIT XS
 *----
-      IF(NEDO.GT.0) THEN
+ 110  IF(NEDO.GT.0) THEN
         CALL LCMGET(IPMACR,'ADDXSNAME-P0',NAMEDO)
         IF(IPRINT.GE.10) THEN
           WRITE(IOUT,6010) 'ADDXSNAME-P0'
@@ -191,7 +197,7 @@
 *----
 *  SCRATCH STORAGE DEALLOCATION
 *----
-      DEALLOCATE(ENERGO)
+      IF(NGROO.GT.0) DEALLOCATE(ENERGO)
       DEALLOCATE(NUMFO,NAMEDO)
       RETURN
 *----
