@@ -48,7 +48,7 @@ file_cepxs_name="e_water_lobatto_${energy_string_title}_${ngs}g_${nes}e_P${ls}";
 if [[ $coupling_type == 'no-coupling' ]] ; then
     
   electron_keyword="electrons" ; 
-	electron_card_in_cepxs="log $nb_groups_electron" ;
+	electron_card_in_cepxs="linear $nb_groups_electron" ;
 
 	photon_keyword="*" ;  
 	photon_card_in_cepxs="*" ; 
@@ -61,9 +61,9 @@ if [[ $coupling_type == 'no-coupling' ]] ; then
 	nps=$( printf $nb_groups_gamma ); #POSITRONS GROUP NUMBER
 else 
   photon_keyword="photons" ;  
-	photon_card_in_cepxs="log $nb_groups_gamma" ; 
+	photon_card_in_cepxs="linear $nb_groups_gamma" ; 
 	electron_keyword="electrons" ; 
-	electron_card_in_cepxs="log $nb_groups_electron" ;
+	electron_card_in_cepxs="linear $nb_groups_electron" ;
 	positron_card_in_cepxs="*"; #"positrons" ; 
 
 	file_cepxs_name="${file_cepxs_name}_FC" ;

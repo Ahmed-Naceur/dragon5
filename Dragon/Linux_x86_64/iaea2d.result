@@ -1,0 +1,628 @@
+* CLE-2000 VERS 3.0 * R.ROY, EPM COPYRIGHT 1999 *                          LINE
+*----                                                                      0001
+*  IAEA 2D BENCHMARK IN DIFFUSION THEORY (DRAGON SOLUTION)                 0002
+*  MACROLIB-DEFINED CROSS SECTIONS                                         0003
+*----                                                                      0004
+*  Define STRUCTURES and MODULES used                                      0005
+*----                                                                      0006
+LINKED_LIST MACRO IAEA TRACK SYS FLUX ;                                    0007
+MODULE GEO: SYBILT: MAC: BIVACT: ASM: FLU: UTL: END: ;                     0008
+PROCEDURE assertS ;                                                        0009
+*                                                                          0010
+IAEA := GEO: :: CAR2D 9 9                                                  0011
+EDIT 2                                                                     0012
+X- DIAG X+ VOID                                                            0013
+Y- SYME Y+ DIAG                                                            0014
+MIX  3 2 2 2 3 2 2 1 4                                                     0015
+2 2 2 2 2 2 1 4                                                            0016
+2 2 2 2 1 1 4                                                              0017
+2 2 2 1 4 4                                                                0018
+3 1 1 4 0                                                                  0019
+1 4 4 0                                                                    0020
+4 0 0                                                                      0021
+0 0                                                                        0022
+0                                                                          0023
+MESHX 0.0 20.0 40.0 60.0 80.0 100.0 120.0 140.0 160.0 180.0                0024
+(*SPLITX 2 2 2 2 2 2 2 2 2*)                                               0025
+;                                                                          0026
+MACRO := MAC: ::                                                           0027
+EDIT 2 NGRO 2 NMIX 4 NIFI 1                                                0028
+READ INPUT                                                                 0029
+MIX     1                                                                  0030
+DIFF  1.500E+00  4.0000E-01                                                0031
+TOTAL  3.012E-02  8.0032E-02                                               0032
+NUSIGF  0.000E+00  1.3500E-01                                              0033
+CHI  1.000E+00  0.0000E+00                                                 0034
+H-FACTOR  0.000E+00  1.3500E-01                                            0035
+SCAT  1 1 0.0 2 2 0.0   0.2E-01                                            0036
+MIX     2                                                                  0037
+DIFF  1.500E+00  4.0000E-01                                                0038
+TOTAL  3.012E-02  8.5032E-02                                               0039
+NUSIGF  0.000E+00  1.3500E-01                                              0040
+CHI  1.000E+00  0.0000E+00                                                 0041
+H-FACTOR  0.000E+00  1.3500E-01                                            0042
+SCAT  1 1 0.0 2 2 0.0   0.2E-01                                            0043
+MIX     3                                                                  0044
+DIFF  1.500E+00  4.00000E-01                                               0045
+TOTAL  3.012E-02  1.30032E-01                                              0046
+NUSIGF  0.000E+00  1.35000E-01                                             0047
+CHI  1.000E+00  0.00000E+00                                                0048
+H-FACTOR  0.000E+00  1.35000E-01                                           0049
+SCAT  1 1 0.0 2 2 0.0   0.2E-01                                            0050
+MIX     4                                                                  0051
+DIFF  2.000E+00  3.0000E-01                                                0052
+TOTAL  4.016E-02  1.0024E-02                                               0053
+SCAT  1 1 0.0 2 2 0.0   0.4E-01                                            0054
+;                                                                          0055
+TRACK := BIVACT: IAEA ::                                                   0056
+TITLE 'IAEA-2D BENCHMARK'                                                  0057
+EDIT 2 MAXR 81 DUAL (*IELEM=*) 1 (*ICOL=*) 2 ;                             0058
+SYS := ASM: MACRO TRACK :: ARM ;                                           0059
+FLUX := FLU: MACRO TRACK SYS :: TYPE K EXTE 100 5.0E-8 ;                   0060
+assertS FLUX :: K-EFFECTIVE 1 1.032712 ;                                   0061
+END: ;                                                                     0062
+QUIT "LIST" .                                                              0063
+ 
+<|LINKED_LIST MACRO IAEA TRACK SYS FLUX ;                                 |<0007
+<|MODULE GEO: SYBILT: MAC: BIVACT: ASM: FLU: UTL: END: ;                  |<0008
+<|PROCEDURE assertS ;                                                     |<0009
+<|IAEA := GEO: :: CAR2D 9 9                                               |<0011
+<|EDIT 2                                                                  |<0012
+<|X- DIAG X+ VOID                                                         |<0013
+<|Y- SYME Y+ DIAG                                                         |<0014
+<|MIX  3 2 2 2 3 2 2 1 4                                                  |<0015
+<|2 2 2 2 2 2 1 4                                                         |<0016
+<|2 2 2 2 1 1 4                                                           |<0017
+<|2 2 2 1 4 4                                                             |<0018
+<|3 1 1 4 0                                                               |<0019
+<|1 4 4 0                                                                 |<0020
+<|4 0 0                                                                   |<0021
+<|0 0                                                                     |<0022
+<|0                                                                       |<0023
+<|MESHX 0.0 20.0 40.0 60.0 80.0 100.0 120.0 140.0 160.0 180.0             |<0024
+<|;                                                                       |<0026
+ DDDDDD   RRRRRR     AAA     GGGGG    OOOOO   NN     NN
+ DDDDDDD  RRRRRRR   AAAAA   GGGGGGG  OOOOOOO  NNN    NN
+ DD   DD  RR   RR  AA   AA  GG       OO   OO  NNNN   NN
+ DD   DD  RRRRRR   AA   AA  GG  GGG  OO   OO  NN NN  NN
+ DD   DD  RRRR     AAAAAAA  GG  GGG  OO   OO  NN  NN NN
+ DD   DD  RR RR    AAAAAAA  GG   GG  OO   OO  NN   NNNN
+ DDDDDDD  RR  RR   AA   AA  GGGGGGG  OOOOOOO  NN    NNN
+ DDDDDD   RR   RR  AA   AA   GGGGG    OOOOO   NN     NN
+
+ VERSION dragon 5  Version 5.0.7 ($Revision: 2060 $)                   $Date: 2021-02-02 16:03:29 -0500 (Tue, 02 Feb 2021) $           
+ GROUPE D'ANALYSE NUCLEAIRE
+ ECOLE POLYTECHNIQUE DE MONTREAL
+
+
+
+ COPYRIGHT NOTICE FOR THIS VERSION OF dragon:
+ --------------------------------------------
+ Copyright (C) 2002 Ecole Polytechnique de Montreal 
+ This library is free software; you can redistribute it
+ and/or modify it under the terms of the GNU Lesser General
+ Public License as published by the Free Software Foundation;
+ either version 2.1 of the License, or (at your option) any
+ later version 
+
+
+
+
+->@BEGIN MODULE : GEO:        
+->@DESCRIPTION  : Geometry definition                                                     
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'IAEA        ' WITH TYPE CARTESIAN 2-D   .
+
+ STATE VECTOR:
+ ITYPE      5   (CARTESIAN 2-D   )
+ LR         0   (NUMBER OF TUBES)
+ LX         9   (X-DIMENSION INDEX)
+ LY         9   (Y-DIMENSION INDEX)
+ LZ         0   (Z-DIMENSION INDEX)
+ LREG      45   (NUMBER OF REGIONS)
+ MAXMIX     4   (MAX. NB. OF MIXTURES/0=TRANSPARENT GEOMETRY)
+ ISUB1      0   (1=COMMAND CELL IS USED/0=ELSE)
+ ISUB2      0   (NUMBER OF SUB GEOMETRIES)
+ IMERGE     0   (1=CELL-MERGING/0=ELSE)
+ ISPLIT     0   (1=MESH-SPLITTING/0=ELSE)
+ IBIHET     0   (1=DOUBLE HETEROGENEITY/0=ELSE)
+ ICLUST     0   (NUMBER OF CLUSTER RINGS)
+ ISECT      0   (TYPE OF SECTORIZATION)
+ JSECT      0   (NUMBER OF NON-SECTORIZED ANNULII)
+ IPIN       0   (PIN LOCATION OPTION)
+->@END MODULE   : GEO:        
+-->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+<|MACRO := MAC: ::                                                        |<0027
+<|EDIT 2 NGRO 2 NMIX 4 NIFI 1                                             |<0028
+<|READ INPUT                                                              |<0029
+<|MIX     1                                                               |<0030
+<|DIFF  1.500E+00  4.0000E-01                                             |<0031
+<|TOTAL  3.012E-02  8.0032E-02                                            |<0032
+<|NUSIGF  0.000E+00  1.3500E-01                                           |<0033
+<|CHI  1.000E+00  0.0000E+00                                              |<0034
+<|H-FACTOR  0.000E+00  1.3500E-01                                         |<0035
+<|SCAT  1 1 0.0 2 2 0.0   0.2E-01                                         |<0036
+<|MIX     2                                                               |<0037
+<|DIFF  1.500E+00  4.0000E-01                                             |<0038
+<|TOTAL  3.012E-02  8.5032E-02                                            |<0039
+<|NUSIGF  0.000E+00  1.3500E-01                                           |<0040
+<|CHI  1.000E+00  0.0000E+00                                              |<0041
+<|H-FACTOR  0.000E+00  1.3500E-01                                         |<0042
+<|SCAT  1 1 0.0 2 2 0.0   0.2E-01                                         |<0043
+<|MIX     3                                                               |<0044
+<|DIFF  1.500E+00  4.00000E-01                                            |<0045
+<|TOTAL  3.012E-02  1.30032E-01                                           |<0046
+<|NUSIGF  0.000E+00  1.35000E-01                                          |<0047
+<|CHI  1.000E+00  0.00000E+00                                             |<0048
+<|H-FACTOR  0.000E+00  1.35000E-01                                        |<0049
+<|SCAT  1 1 0.0 2 2 0.0   0.2E-01                                         |<0050
+<|MIX     4                                                               |<0051
+<|DIFF  2.000E+00  3.0000E-01                                             |<0052
+<|TOTAL  4.016E-02  1.0024E-02                                            |<0053
+<|SCAT  1 1 0.0 2 2 0.0   0.4E-01                                         |<0054
+<|;                                                                       |<0055
+->@BEGIN MODULE : MAC:        
+->@DESCRIPTION  : Macroscopic xs processor                                                
+->@CREDITS      : G. Marleau                                                              
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ CROSS SECTION TYPE     NTOT0      NUSIGF     FIXE       CHI        SCAT (NL=  1,  1)        TRANC      DIFF       H-FACTOR   NFTOT      FLUX-INTG  FLUX-INTG-P1
+ MATERIAL     1         READ       READ                  READ       READ                                READ                                              
+ MATERIAL     2         READ       READ                  READ       READ                                READ                                              
+ MATERIAL     3         READ       READ                  READ       READ                                READ                                              
+ MATERIAL     4         READ                                        READ                                READ                                              
+
+
+ EDITION OF X-S STORED ON LCM.
+ -----------------------------
+
+ G R O U P :     1
+ MIXTURE       1               2               3               4
+ NTOT0         3.01200002E-02  3.01200002E-02  3.01200002E-02  4.01600003E-02
+ DIFF          1.50000000E+00  1.50000000E+00  1.50000000E+00  2.00000000E+00
+ H-FACTOR      0.00000000E+00  0.00000000E+00  0.00000000E+00  0.00000000E+00
+
+              FISSIONABLE ISOTOPE POSITION:    1
+       NUSIGF  0.00000000E+00  0.00000000E+00  0.00000000E+00  0.00000000E+00
+
+              FISSIONABLE ISOTOPE POSITION:    1
+          CHI  1.00000000E+00  1.00000000E+00  1.00000000E+00  0.00000000E+00
+ SIGW00        0.00000000E+00  0.00000000E+00  0.00000000E+00  0.00000000E+00
+ SIGS00        1.99999996E-02  1.99999996E-02  1.99999996E-02  3.99999991E-02
+
+ G R O U P :     2
+ MIXTURE       1               2               3               4
+ NTOT0         8.00319985E-02  8.50320011E-02  1.30032003E-01  1.00240000E-02
+ DIFF          4.00000006E-01  4.00000006E-01  4.00000006E-01  3.00000012E-01
+ H-FACTOR      1.35000005E-01  1.35000005E-01  1.35000005E-01  0.00000000E+00
+
+              FISSIONABLE ISOTOPE POSITION:    1
+       NUSIGF  1.35000005E-01  1.35000005E-01  1.35000005E-01  0.00000000E+00
+
+              FISSIONABLE ISOTOPE POSITION:    1
+          CHI  0.00000000E+00  0.00000000E+00  0.00000000E+00  0.00000000E+00
+ SIGW00        0.00000000E+00  0.00000000E+00  0.00000000E+00  0.00000000E+00
+ SIGS00        0.00000000E+00  0.00000000E+00  0.00000000E+00  0.00000000E+00
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'MACRO       ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'GROUP       '         2    LIST            
+        2  'ADDXSNAME-P0'         2    CHARACTER       
+        3  'SIGNATURE   '         3    CHARACTER       ='L_MACROLIB  '
+        4  'STATE-VECTOR'        40    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =        45
+
+
+ OPTIONS
+ -------
+ IPRINT     2   (0=NO PRINT/1=SHORT/2=MORE)
+ NGROUP     2   (NUMBER OF ENERGY GROUPS)
+ NBMIX      4   (NUMBER OF MIXTURES IN THE MACROLIB)
+ NANISO     1   (MAXIMUM SCATTERING ANISOTROPY)
+ NIFISS     1   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
+ NEDMAC     1   (NUMBER OF CROSS SECTION EDITS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
+ NLG        0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ NALB       0   (NUMBER OF PHYSICAL ALBEDOS)
+ ILEAK      1   (1=DIFF AVAILABLE; 2=DIFFX AVAILABLE)
+ NSTEP      0   (NUMBER OF PERTURBATION DIRECTORIES)
+ IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
+ NPART0     0   (NUMBER OF COMPANION PARTICLES)
+->@END MODULE   : MAC:        
+-->>MODULE MAC:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+<|TRACK := BIVACT: IAEA ::                                                |<0056
+<|TITLE 'IAEA-2D BENCHMARK'                                               |<0057
+<|EDIT 2 MAXR 81 DUAL            1           2 ;                          |<0058
+->@BEGIN MODULE : BIVACT:     
+->@DESCRIPTION  : 2-D diffusion or SPN finite element tracking                            
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ EXEC: BIVACT:      BY A. HEBERT
+1BBBBBB  IIIIII VV  VV   AA    CCCCC ***********************************************************************************************
+ BBBBBBB IIIIII VV  VV  AAAA  CCCCCCC ******************************************************** MULTIGROUP VERSION.  A. HEBERT (1993)
+ BB   BB   II   VV  VV  AAAA  CC   CC
+ BBBBB     II   VV  VV AA  AA CC     
+ BBBBB     II   VV  VV AAAAAA CC     
+ BB   BB   II   VV  VV AAAAAA CC   CC
+ BBBBBBB IIIIII  VVVV  AA  AA CCCCCCC
+ BBBBBB  IIIIII   VV   AA  AA  CCCCC 
+
+ IAEA-2D BENCHMARK                                                       
+
+
+
+ 2-D CARTESIAN GEOMETRY.
++                          BASED ON GEOMETRY IAEA        .
+
+
+ NUMBER OF MESH INTERVALS ALONG THE X AXIS =    9     AVAILABLE STORAGE MAXX =     81
+                          ALONG THE Y AXIS =    9     AVAILABLE STORAGE MAXY =     81
+                          ALONG THE Z AXIS =    1     AVAILABLE STORAGE MAXZ =     81
+ NUMBER OF DISTINCT MIXTURES =      4
+
+
+ BIVTRK: TYPE OF FINITE ELEMENT IELEM =  1  ICOL =  2
+
+
+ BIVCOL: FINITE DIFFERENCES                      
+
+ BIVDKN: MIXED-DUAL FINITE ELEMENT METHOD.
+
+ NUMBER OF ELEMENTS ALONG X AXIS =  9
+ NUMBER OF ELEMENTS ALONG Y AXIS =  9
+
+ BIVTRK: ORDER OF LINEAR SYSTEMS =    207
+         NUMBER OF UNKNOWNS PER ENERGY GROUP =    208
+
+ STATE VECTOR:
+ NREG      81   (NUMBER OF REGIONS)
+ NUN      208   (NUMBER OF UNKNOWNS)
+ ILK        0   (0=LEAKAGE PRESENT/1=LEAKAGE ABSENT)
+ NBMIX      4   (MAXIMUM NUMBER OF MIXTURES USED)
+ NSURF      1   (NUMBER OF OUTER SURFACES)
+ ITYPE      5   (TYPE OF GEOMETRY)
+ IHEX       0   (TYPE OF HEXAGONAL SYMMETRY)
+ IELEM      1   (TYPE OF FINITE ELEMENTS)
+ ICOL       2   (TYPE OF QUADRATURE USED TO INTEGRATE THE MASS MATRIX)
+ ISPLH      0   (TYPE OF HEXAGONAL MESH-SPLITTING)
+ LL4      207   (ORDER OF THE MATRICES PER GROUP IN BIVAC)
+ LX         9   (NUMBER OF ELEMENTS ALONG THE X AXIS)
+ LY         9   (NUMBER OF ELEMENTS ALONG THE Y AXIS)
+ NLF        0   (0=DIFFUSION/NB OF PN ORDERS FOR THE FLUX)
+ ISPN       0   (0=COMPLETE PN/1=SIMPLIFIED PN)
+ ISCAT      0   (1=ISOTROPIC SOURCE/2=LINEARLY ANISOTROPIC SOURCE)
+ NVD        0   (0=PN-TYPE VOID/1=SN-TYPE VOID/2=DIFFUSION-TYPE VOID)
+-->>MODULE BIVACT:     : TIME SPENT=        0.000 MEMORY USAGE= 2.640E+02
+->@END MODULE   : BIVACT:     
+<|SYS := ASM: MACRO TRACK :: ARM ;                                        |<0059
+->@BEGIN MODULE : ASM:        
+->@DESCRIPTION  : To built system matrices (CP and IC)                                    
+->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ COMPUTATION OF DRAGON RESPONSE MATRICES BY DOOR =   BIVAC       
+
+ BIVASM: ASSEMBLY OF SYMMETRIC MATRIX 'A001001    ' IN COMPRESSED DIAGONAL STORAGE MODE.
+
+ BIVASM: CPU TIME FOR SYSTEM MATRIX ASSEMBLY =     0.00 S.
+
+ BIVASM: ASSEMBLY OF SYMMETRIC MATRIX 'A001001    ' IN COMPRESSED DIAGONAL STORAGE MODE.
+
+ BIVASM: CPU TIME FOR SYSTEM MATRIX ASSEMBLY =     0.00 S.
+
+ OPTIONS
+ -------
+ IMPX         1   (0=NO PRINT/1=SHORT/2=MORE)
+ ITPIJ        1   (1=WIJ/2=PIJ/3=WIJK/4=PIJK)
+ LNORM        1   (0=NORMALIZE PIJ TO 1/1=DO NOT)
+ LALBS        1   (0=RECOVER AND SAVE WIS/1=DO NOT)
+ IPHASE       1   (1=GENERAL FLUX SOLUTION/2=PIJ APPROACH)
+ ISTRM        1   (1=HOMO BN OR NO LEAKAGE/2=ECCO/3=TIBERE)
+ KNORM        4   (0=NO/1=GELBARD/2=DIAGONAL/3=NON-LINEAR/4=HELIOS)
+ NGRP         2   (NUMBER OF GROUPS)
+ NUN        208   (NUMBER OF UNKNOWNS)
+ NBMIX        4   (NUMBER OF MIXTURES)
+ NANI         1   (NUMBER OF LEGENDRE ORDERS SCATTERING XS)
+ IDIFF        1   (0/1: DIFFUSION COEFFICIENTS ABSENT/PRESENT)
+ IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
+ DOOR             (BIVAC       )
+->@END MODULE   : ASM:        
+-->>MODULE ASM:        : TIME SPENT=        0.001 MEMORY USAGE= 2.600E+02
+<|FLUX := FLU: MACRO TRACK SYS :: TYPE K EXTE 100 5.0E-8 ;                |<0060
+->@BEGIN MODULE : FLU:        
+->@DESCRIPTION  : Solve the flux equations                                                
+->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+
+
+ P. I. M.    SOLUTION TO TRANSPORT EQUATION
+
+ CALCULATION TYPE            =     K-INF
+ FORWARD/BACKWARD OPTION     =    DIRECT
+ (AN)ISOTROPY OPTION         = ISOTROPIC
+ FLUX SOLUTION DOOR          =    BIVAC 
+ NB. OF GROUPS               =         2
+ NB. OF REGIONS              =        81
+ NB. OF UNKNOWNS PER GROUP   =       208
+ MAX. OUTER ITERATIONS       =       100
+ MAX. THERMAL ITERATIONS     =         4
+ ACCELERATION SCHEME         =( 3 FREE, 3 ACCELERATED)
+ REBALANCING OPTION          = ON 
+ SELF-SCATTERING REDUCTION   = ON 
+ FUNDAMENTAL MODE            = OFF
+ EIGENVALUE TOLERANCE        =  5.000E-08
+ UNKNOWN OUTER TOLERANCE     =  5.000E-05
+ UNKNOWN INNER TOLERANCE     =  5.000E-05
+
+ OUT(  0) EIG: PRC= 1.00E+00 TAR= 5.00E-08 KEFF= 2.389500E+03 BUCK= 0.00000E+00
+          IN(  1) FLX: PRC= 1.19E+03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  1) EIG: PRC= 2.35E+03 TAR= 5.00E-08 KEFF= 1.018065E+00 BUCK= 0.00000E+00
+ OUT(  1) FLX:                             FNOR= 9.822558E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 1.99E-01 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  2) EIG: PRC= 4.85E-03 TAR= 5.00E-08 KEFF= 1.023026E+00 BUCK= 0.00000E+00
+ OUT(  2) FLX:                             FNOR= 9.774927E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 8.74E-02 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  3) EIG: PRC= 2.53E-03 TAR= 5.00E-08 KEFF= 1.025625E+00 BUCK= 0.00000E+00
+ OUT(  3) FLX:                             FNOR= 9.750149E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 4.08E-02 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  4) EIG: PRC= 1.44E-03 TAR= 5.00E-08 KEFF= 1.027109E+00 BUCK= 0.00000E+00
+ OUT(  4) FLX:                             FNOR= 9.736067E-01 ACCE=     2.02604
+          IN(  1) FLX: PRC= 2.58E-02 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  5) EIG: PRC= 1.83E-03 TAR= 5.00E-08 KEFF= 1.028988E+00 BUCK= 0.00000E+00
+ OUT(  5) FLX:                             FNOR= 9.718285E-01 ACCE=     3.28187
+          IN(  1) FLX: PRC= 1.58E-02 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  6) EIG: PRC= 1.05E-03 TAR= 5.00E-08 KEFF= 1.030074E+00 BUCK= 0.00000E+00
+ OUT(  6) FLX:                             FNOR= 9.708037E-01 ACCE=     2.37876
+          IN(  1) FLX: PRC= 1.23E-02 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  7) EIG: PRC= 4.53E-04 TAR= 5.00E-08 KEFF= 1.030541E+00 BUCK= 0.00000E+00
+ OUT(  7) FLX:                             FNOR= 9.703638E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 1.13E-02 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  8) EIG: PRC= 1.03E-04 TAR= 5.00E-08 KEFF= 1.030647E+00 BUCK= 0.00000E+00
+ OUT(  8) FLX:                             FNOR= 9.702642E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 1.04E-02 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  9) EIG: PRC= 1.02E-04 TAR= 5.00E-08 KEFF= 1.030752E+00 BUCK= 0.00000E+00
+ OUT(  9) FLX:                             FNOR= 9.701652E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 9.55E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 10) EIG: PRC= 9.70E-05 TAR= 5.00E-08 KEFF= 1.030852E+00 BUCK= 0.00000E+00
+ OUT( 10) FLX:                             FNOR= 9.700711E-01 ACCE=    14.66099
+          IN(  1) FLX: PRC= 5.81E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 11) EIG: PRC= 1.33E-03 TAR= 5.00E-08 KEFF= 1.032222E+00 BUCK= 0.00000E+00
+ OUT( 11) FLX:                             FNOR= 9.687835E-01 ACCE=     4.40300
+          IN(  1) FLX: PRC= 4.46E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 12) EIG: PRC= 9.71E-06 TAR= 5.00E-08 KEFF= 1.032212E+00 BUCK= 0.00000E+00
+ OUT( 12) FLX:                             FNOR= 9.687929E-01 ACCE=     0.85948
+          IN(  1) FLX: PRC= 4.27E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 13) EIG: PRC= 2.79E-06 TAR= 5.00E-08 KEFF= 1.032209E+00 BUCK= 0.00000E+00
+ OUT( 13) FLX:                             FNOR= 9.687956E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 4.06E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 14) EIG: PRC= 4.28E-06 TAR= 5.00E-08 KEFF= 1.032214E+00 BUCK= 0.00000E+00
+ OUT( 14) FLX:                             FNOR= 9.687915E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 3.87E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 15) EIG: PRC= 8.69E-06 TAR= 5.00E-08 KEFF= 1.032223E+00 BUCK= 0.00000E+00
+ OUT( 15) FLX:                             FNOR= 9.687831E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 3.69E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 16) EIG: PRC= 1.07E-05 TAR= 5.00E-08 KEFF= 1.032234E+00 BUCK= 0.00000E+00
+ OUT( 16) FLX:                             FNOR= 9.687728E-01 ACCE=    19.89526
+          IN(  1) FLX: PRC= 1.83E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 17) EIG: PRC= 2.30E-04 TAR= 5.00E-08 KEFF= 1.032471E+00 BUCK= 0.00000E+00
+ OUT( 17) FLX:                             FNOR= 9.685503E-01 ACCE=     2.37289
+          IN(  1) FLX: PRC= 1.32E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 18) EIG: PRC= 4.77E-05 TAR= 5.00E-08 KEFF= 1.032520E+00 BUCK= 0.00000E+00
+ OUT( 18) FLX:                             FNOR= 9.685041E-01 ACCE=     3.29784
+          IN(  1) FLX: PRC= 8.66E-04 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 19) EIG: PRC= 3.22E-05 TAR= 5.00E-08 KEFF= 1.032553E+00 BUCK= 0.00000E+00
+ OUT( 19) FLX:                             FNOR= 9.684729E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 7.85E-04 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 20) EIG: PRC= 1.05E-05 TAR= 5.00E-08 KEFF= 1.032564E+00 BUCK= 0.00000E+00
+ OUT( 20) FLX:                             FNOR= 9.684627E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 7.12E-04 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 21) EIG: PRC= 8.47E-06 TAR= 5.00E-08 KEFF= 1.032573E+00 BUCK= 0.00000E+00
+ OUT( 21) FLX:                             FNOR= 9.684545E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 6.49E-04 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 22) EIG: PRC= 7.36E-06 TAR= 5.00E-08 KEFF= 1.032581E+00 BUCK= 0.00000E+00
+ OUT( 22) FLX:                             FNOR= 9.684474E-01 ACCE=    13.75218
+          IN(  1) FLX: PRC= 4.00E-04 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 23) EIG: PRC= 9.21E-05 TAR= 5.00E-08 KEFF= 1.032676E+00 BUCK= 0.00000E+00
+ OUT( 23) FLX:                             FNOR= 9.683582E-01 ACCE=     2.78621
+          IN(  1) FLX: PRC= 3.53E-04 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 24) EIG: PRC= 2.57E-06 TAR= 5.00E-08 KEFF= 1.032673E+00 BUCK= 0.00000E+00
+ OUT( 24) FLX:                             FNOR= 9.683607E-01 ACCE=     2.85697
+          IN(  1) FLX: PRC= 2.98E-04 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 25) EIG: PRC= 3.51E-06 TAR= 5.00E-08 KEFF= 1.032677E+00 BUCK= 0.00000E+00
+ OUT( 25) FLX:                             FNOR= 9.683573E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 2.80E-04 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 26) EIG: PRC= 1.18E-07 TAR= 5.00E-08 KEFF= 1.032677E+00 BUCK= 0.00000E+00
+ OUT( 26) FLX:                             FNOR= 9.683572E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 2.67E-04 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 27) EIG: PRC= 6.81E-07 TAR= 5.00E-08 KEFF= 1.032678E+00 BUCK= 0.00000E+00
+ OUT( 27) FLX:                             FNOR= 9.683565E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 2.54E-04 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 28) EIG: PRC= 7.91E-07 TAR= 5.00E-08 KEFF= 1.032678E+00 BUCK= 0.00000E+00
+ OUT( 28) FLX:                             FNOR= 9.683558E-01 ACCE=    19.68686
+          IN(  1) FLX: PRC= 1.22E-04 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 29) EIG: PRC= 1.65E-05 TAR= 5.00E-08 KEFF= 1.032695E+00 BUCK= 0.00000E+00
+ OUT( 29) FLX:                             FNOR= 9.683397E-01 ACCE=     2.34164
+          IN(  1) FLX: PRC= 9.03E-05 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 0.00E+00 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT( 30) EIG: PRC= 3.28E-06 TAR= 5.00E-08 KEFF= 1.032699E+00 BUCK= 0.00000E+00
+ OUT( 30) FLX:                             FNOR= 9.683366E-01 ACCE=     2.61089
+          IN(  1) FLX: PRC= 6.71E-05 TAR= 5.00E-05 IGDEB=            2 ACCE=     1.00000
+                  FIRST UNCONVERGED GROUP PRC= 0.51E-04
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE *NOT* REACHED AFTER     1 ITERATIONS.
+ OUT( 31) EIG: PRC= 1.92E-06 TAR= 5.00E-08 KEFF= 1.032701E+00 BUCK= 0.00000E+00
+ OUT( 31) FLX:                             FNOR= 9.683347E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 5.81E-05 TAR= 5.00E-05 IGDEB=            2 ACCE=     1.00000
+                  FIRST UNCONVERGED GROUP PRC= 0.51E-04
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE *NOT* REACHED AFTER     1 ITERATIONS.
+ OUT( 32) EIG: PRC= 6.89E-07 TAR= 5.00E-08 KEFF= 1.032701E+00 BUCK= 0.00000E+00
+ OUT( 32) FLX:                             FNOR= 9.683340E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 5.25E-05 TAR= 5.00E-05 IGDEB=            2 ACCE=     1.00000
+                  FIRST UNCONVERGED GROUP PRC= 0.51E-04
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE *NOT* REACHED AFTER     1 ITERATIONS.
+ OUT( 33) EIG: PRC= 6.10E-07 TAR= 5.00E-08 KEFF= 1.032702E+00 BUCK= 0.00000E+00
+ OUT( 33) FLX:                             FNOR= 9.683334E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 4.78E-05 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+ OUT( 34) EIG: PRC= 5.93E-07 TAR= 5.00E-08 KEFF= 1.032703E+00 BUCK= 0.00000E+00
+ OUT( 34) FLX:                             FNOR= 9.683329E-01 ACCE=    13.59538
+          IN(  1) FLX: PRC= 2.96E-05 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+ OUT( 35) EIG: PRC= 6.90E-06 TAR= 5.00E-08 KEFF= 1.032710E+00 BUCK= 0.00000E+00
+ OUT( 35) FLX:                             FNOR= 9.683262E-01 ACCE=     3.67908
+          IN(  1) FLX: PRC= 2.85E-05 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+ OUT( 36) EIG: PRC= 2.07E-07 TAR= 5.00E-08 KEFF= 1.032710E+00 BUCK= 0.00000E+00
+ OUT( 36) FLX:                             FNOR= 9.683264E-01 ACCE=     0.42599
+          IN(  1) FLX: PRC= 2.64E-05 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+ OUT( 37) EIG: PRC= 7.61E-08 TAR= 5.00E-08 KEFF= 1.032710E+00 BUCK= 0.00000E+00
+ OUT( 37) FLX:                             FNOR= 9.683263E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 2.29E-05 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+ OUT( 38) EIG: PRC= 9.86E-08 TAR= 5.00E-08 KEFF= 1.032710E+00 BUCK= 0.00000E+00
+ OUT( 38) FLX:                             FNOR= 9.683262E-01 ACCE=     1.00000
+          IN(  1) FLX: PRC= 2.16E-05 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+ OUT( 39) EIG: PRC= 4.76E-08 TAR= 5.00E-08 KEFF= 1.032710E+00 BUCK= 0.00000E+00
+ OUT( 39) FLX: PRC= 2.16E-05 TAR= 5.00E-05 FNOR= 9.683262E-01 ACCE=     1.00000
+ FLU2DR: CPU TIME=        0. EXTERNAL CONVERGENCE       REACHED AFTER    39 ITERATIONS.
+
+ ++ TRACKING CALLED=  69 TIMES FINAL KINF= 1.036643E+00 FINAL KEFF= 1.032710E+00 B2= 0.00000E+00 PRECISION= 4.76E-08
+ ++ TOTAL NUMBER OF FLUX CALCULATIONS=       138
+->@END MODULE   : FLU:        
+-->>MODULE FLU:        : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
+<|assertS FLUX :: K-EFFECTIVE 1 1.032712 ;                                |<0061
+->@BEGIN MODULE : GREP:       
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module GREP:       : time spent=        0.001 memory usage= 0.000E+00
+->@END MODULE   : GREP:       
+->@BEGIN MODULE : GREP:       
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : GREP:       
+>|TEST SUCCESSFUL; DELTA=  2.077798e-06                                   |>0028
+<|END: ;                                                                  |<0062
+
+ normal end of execution for dragon 5  Version 5.0.7 ($Revision: 2060 $)               
+ check for warning in listing
+ before assuming your run was successful

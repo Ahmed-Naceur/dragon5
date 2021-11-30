@@ -2,7 +2,7 @@
 #
 # author : A. Hebert
 # use    : rdragon <file.x2m> [<compiler>] [-w]
-# note   : <file.x2m> must be located on directory ././
+# note   : <file.x2m> must be located on directory ./data/
 #          If <file.access> exists, it is executed; otherwise,
 #          draglib.access and wimslib.access are executed.
 #          <compiler> is the compiler used to generate the executable
@@ -81,48 +81,47 @@ if [ $quiet = 0 ]; then
   echo "RunDirectory:" $Rundir
 fi
 cd $Rundir
+pwd
 
 if [ $typ = 'custom' ]; then
-  #cp "$CodeDir"/bin/"$MACH"/$Code ./code
-  cp /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/bin/Linux_x86_64/Dragon ./dragon
+  cp "$CodeDir"/bin/"$MACH"/$Code ./code
 else
-  #cp "$CodeDir"/bin/"$MACH"'_'$typ/$Code ./code
-  cp /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/bin/Linux_x86_64/Dragon ./dragon
+  cp "$CodeDir"/bin/"$MACH"'_'$typ/$Code ./code
 fi
-cp "$CodeDir"/./$data ./mydata
+cp "$CodeDir"/data/$data ./mydata
 
-if [ -d "$CodeDir"/./`echo $xxx`_proc ]; then
-  cp "$CodeDir"/./`echo $xxx`_proc/*.c2m .
+if [ -d "$CodeDir"/data/`echo $xxx`_proc ]; then
+  cp "$CodeDir"/data/`echo $xxx`_proc/*.c2m .
 fi
-if [ -f "$CodeDir"/./$xxx.access ]; then
+if [ -f "$CodeDir"/data/$xxx.access ]; then
   if [ $quiet = 0 ]; then
-    "$CodeDir"/./$xxx.access "$CodeDir"
+    "$CodeDir"/data/$xxx.access "$CodeDir"
   else
-    "$CodeDir"/./$xxx.access "$CodeDir" > /dev/null
+    "$CodeDir"/data/$xxx.access "$CodeDir" > /dev/null
   fi
 fi
-if [ -f "$CodeDir"/./assertS.c2m ]; then
-  cp "$CodeDir"/./assertS.c2m .
+if [ -f "$CodeDir"/data/assertS.c2m ]; then
+  cp "$CodeDir"/data/assertS.c2m .
 fi
-if [ -f "$CodeDir"/./assertV.c2m ]; then
-  cp "$CodeDir"/./assertV.c2m .
+if [ -f "$CodeDir"/data/assertV.c2m ]; then
+  cp "$CodeDir"/data/assertV.c2m .
 fi
 before=$(date +%s)
 if [ $term = 0 ]; then
-  ./dragon <mydata >$xxx.result
+  ./code <mydata >$xxx.result
 else
-  ./dragon <mydata
+  ./code <mydata
 fi
 if [ $quiet = 0 ]; then
   time=$(( $(date +%s) - before))
   printf 'End of execution. Total execution time: %dh %dmin %ds\n' \
     $(($time/3600)) $(($time%3600/60)) $(($time%60))
 fi
-if [ -f "$CodeDir"/./$xxx.save ]; then
+if [ -f "$CodeDir"/data/$xxx.save ]; then
   if [ $quiet = 0 ]; then
-    "$CodeDir"/./$xxx.save "$CodeDir"
+    "$CodeDir"/data/$xxx.save "$CodeDir"
   else
-    "$CodeDir"/./$xxx.save "$CodeDir" > /dev/null
+    "$CodeDir"/data/$xxx.save "$CodeDir" > /dev/null
   fi
 fi
 mv $xxx.result "$CodeDir"/"$MACH"
