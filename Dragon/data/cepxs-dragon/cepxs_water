@@ -46,24 +46,24 @@ file_cepxs_name="e_water_${energy_string_title}_${ngs}g_${nes}e_P${ls}";
 
 if [[ $coupling_type == 'no-coupling' ]] ; then
     
-    electron_keyword="electrons" ; 
+  electron_keyword="electrons" ; 
 	electron_card_in_cepxs="log $nb_groups_electron" ;
 
 	photon_keyword="*" ;  
 	photon_card_in_cepxs="*" ; 
 
-    positron_card_in_cepxs="*" ; #"PEQE" ; 
+  positron_card_in_cepxs="*" ; #"PEQE" ; 
 
 
 	file_cepxs_name="${file_cepxs_name}_NC" ;
 	groups_total_number=`expr $nb_groups_electron` ;
-	nps=$( printf $nb_groups_electron ); #POSITRONS GROUP NUMBER
+	nps=$( printf $nb_groups_gamma ); #POSITRONS GROUP NUMBER
 else 
-    photon_keyword="photons" ;  
+  photon_keyword="photons" ;  
 	photon_card_in_cepxs="log $nb_groups_gamma" ; 
 	electron_keyword="electrons" ; 
 	electron_card_in_cepxs="log $nb_groups_electron" ;
-	positron_card_in_cepxs="positrons" ; 
+	positron_card_in_cepxs="*"; #"positrons" ; 
 
 	file_cepxs_name="${file_cepxs_name}_FC" ;
 	groups_total_number=`expr $nb_groups_gamma + $nb_groups_electron + $nb_groups_electron` ;
@@ -128,7 +128,7 @@ $energy_string_title monoenergetic electron-source on Water Slab
 * Electrons: Define the number of energy group N for electrons (linear N or log N)
 * Photons:   Define the number of energy group N for photons (linear N or log N)
 *-----------------------------------------------------------------------------------
-cutoff 0.001
+cutoff 0.00100000001
 energy $energy 
 $electron_keyword
 $electron_card_in_cepxs
@@ -359,11 +359,13 @@ cp $fmac_file_name_ascii $Your_Path_To_Dragon_Cepxs
 
 
 echo "**********************************************************"
-echo "           Dragon .access file construction               "
+echo "           Dragon .access file updating                   "
 echo "**********************************************************"
 
 
 file_access_dragon='/home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/water_1D.access' 
 where="${1}";
-sed  -i "/ls -l/i ln -s \$1/data/cepxs-dragon/$fmac_file_name_ascii ." $file_access_dragon 
+
+sed  -i "/#--- FMAC: CEPXS-BFP/a  ln -s \$1/data/cepxs-dragon/$fmac_file_name_ascii ." $file_access_dragon 
+#sed  -i "/ls -l/i ln -s \$1/data/cepxs-dragon/$fmac_file_name_ascii ." $file_access_dragon 
 

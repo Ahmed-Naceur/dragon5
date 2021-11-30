@@ -1,5 +1,5 @@
 *--------------------------------------------------------------------- 
-*  Electron Source on 1D Slab Geometry
+*  Electron Source on 1D Slab Geometry (Water)
 *  CEPXS-BFP library
 *  Author: Ahmed Naceur.
 *---------------------------------------------------------------------
@@ -14,7 +14,8 @@ LINKED_LIST  MACRO OLDMACRO GEOM TRACK SYSTEM FLUX DEPOS EEDIT GWT0
              GEDIT ;
 
 SEQ_ASCII    FMAC_M :: FILE 
-'./FMAC_e_water_3.00MeV_80g_80e_P8_FC.txt' ;
+'./FMAC_e_water_lobatto_3.00MeV_80g_80e_P8_FC.txt' ;
+!'./FMAC_e_water_3.00MeV_80g_80e_P8_FC.txt' ;
 !'./FMAC_e_water_3.00MeV_0g_100e_P8_NC.txt' ;
 !'./FMAC_e_water_3.00MeV_0g_80e_P8_NC.txt' ;
              
