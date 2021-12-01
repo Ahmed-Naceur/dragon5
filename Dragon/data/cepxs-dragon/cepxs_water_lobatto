@@ -132,10 +132,10 @@ $energy_string_title monoenergetic electron-source on Water Slab
 cutoff 0.00100000001
 energy $energy 
 $electron_keyword
-$electron_card_in_cepxs
+ $electron_card_in_cepxs
 $photon_keyword 
 $photon_card_in_cepxs
-
+*
 *-----------------------------------------------------------------------------------
 *                          Legendre order of cross section
 *-----------------------------------------------------------------------------------

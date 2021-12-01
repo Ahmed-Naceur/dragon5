@@ -43,7 +43,7 @@ TRACK := SNT: GEOM ::
 MICRO := LIB: :: 
       EDIT 99
       NMIX 1 
-      ANIS 2
+      ANIS 3
       MIXS LIB: MATXS2 FIL: _test 
       MIX  1  300.0  1.0 NOGAS
       Hnat = h 0.111894 
@@ -53,7 +53,11 @@ MICRO := LIB: ::
 
 * --- Library structuring 
 
+
 MACRO := MICRO :: STEP UP MACROLIB ;
+
+micr_xsr.txt   := MICRO ;
+macr_xsr.txt   := MACRO ;
 
 * UTL: MACRO :: STEP UP GROUP STEP AT 1 DIR IMPR ESTOPW ;
 OLDMACRO := MACRO ;
@@ -126,12 +130,11 @@ EEDIT := OUT: FLUX TRACK MACRO GEOM  :: EDIT 2 COND INTG NONE ;
 EEDITcopy := EEDIT ;
 DEPOS := HEAT: EEDIT EEDITcopy :: EDIT 99 ;
 
-macr_xsr.txt   := MACRO ;
+
 edit_xsr.txt   := EEDIT ;  
 trac_xsr.txt   := TRACK ;
 geom_xsr.txt   := GEOM ; 
 syst_xsr.txt   := SYSTEM ;
-micr_xsr.txt   := MICRO ;
 flux_xsr.txt   := FLUX  ;
 
 *edep.txt := EEDIT ; 

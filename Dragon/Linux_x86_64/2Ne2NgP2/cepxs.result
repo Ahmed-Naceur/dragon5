@@ -1,0 +1,879 @@
+* CLE-2000 VERS 3.0 * R.ROY, EPM COPYRIGHT 1999 *                          LINE
+*---------------------------------------------------------------------     0001
+*  Electron Source on 1D Slab Geometry (Water)                             0002
+*  CEPXS-BFP library                                                       0003
+*  Author: Ahmed Naceur.                                                   0004
+*---------------------------------------------------------------------     0005
+* --- Define STRUCTURES and MODULES used                                   0006
+MODULE       GEO: FMAC: MAC: SNT: ASM: FLU: OUT: HEAT: DELETE: UTL:        0007
+END: ;                                                                     0008
+PROCEDURE    assertS ;                                                     0009
+LINKED_LIST  MACRO OLDMACRO GEOM TRACK SYSTEM FLUX DEPOS EEDIT GWT0        0010
+GEDIT ;                                                                    0011
+SEQ_ASCII    FMAC_M :: FILE                                                0012
+'./FMAC_e_water_lobatto_3.00MeV_2g_2e_P2_FC.txt' ;                         0013
+!'./FMAC_e_water_3.00MeV_80g_80e_P8_FC.txt' ;                              0014
+!'./FMAC_e_water_3.00MeV_0g_100e_P8_NC.txt' ;                              0015
+!'./FMAC_e_water_3.00MeV_0g_80e_P8_NC.txt' ;                               0016
+SEQ_ASCII    edep_xs.txt     :: FILE 'edep_xs.txt' ;                       0017
+SEQ_ASCII    edit_xs.txt     :: FILE 'edit_xs.txt' ;                       0018
+SEQ_ASCII    macro_xs.txt    :: FILE 'macro_xs.txt' ;                      0019
+SEQ_ASCII    flux_xs.txt     :: FILE 'flux_xs.txt' ;                       0020
+SEQ_ASCII    syst_xs.txt     :: FILE 'syst_xs.txt' ;                       0021
+SEQ_ASCII    geom_xs.txt     :: FILE 'geom_xs.txt' ;                       0022
+SEQ_ASCII    track_xs.txt    :: FILE 'track_xs.txt' ;                      0023
+* --- Geometry                                                             0024
+GEOM := GEO: :: CAR1D 2                                                    0025
+X- VOID  X+ VOID                                                           0026
+MIX  1 2                                                                   0027
+MESHX 0.0 0.01 2.0                                                         0028
+SPLITX 30 70                                                               0029
+;                                                                          0030
+* --- Tracking                                                             0031
+TRACK := SNT: GEOM ::                                                      0032
+TITLE 'Water-Slab: CEPXS-BFP-DRAGON'                                       0033
+EDIT 2 MAXR 1000 DIAM 1 NLIVO SN 12 SCAT 2 EPSI 1.E-5                      0034
+QUAD 1 MAXI 300 BFPL ;                                                     0035
+* --- Library access and structuring                                       0036
+MACRO    := FMAC: FMAC_M :: EDIT 2 PARTICLE B ;                            0037
+OLDMACRO := MACRO ;                                                        0038
+MACRO    := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;                          0039
+OLDMACRO := DELETE: OLDMACRO ;                                             0040
+REAL qsour := 1.E10 2.0 / $Pi_R / ; ! [cm-3 s-1]                           0041
+MACRO := MAC: MACRO ::                                                     0042
+READ INPUT                                                                 0043
+MIX 1 FIXE                                                                 0044
+<<qsour>> 0.0                                                              0045
+;                                                                          0046
+! -- 300 groups                                                            0047
+!     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0    0048
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0049
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0050
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0051
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0052
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0053
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                               0054
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0055
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0056
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0057
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0058
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0059
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0060
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                               0061
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0062
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0063
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0064
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0065
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0066
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0067
+!    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                               0068
+! -- 100 groups                                                            0069
+!     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0    0070
+!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0      0071
+!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0      0072
+!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0      0073
+!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0      0074
+!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0      0075
+!         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                          0076
+! -- 80 groups                                                             0077
+!     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0    0078
+!     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0          0079
+!     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0          0080
+!     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0          0081
+!     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0          0082
+!     0.0 0.0 0.0 0.0 0.0                                                  0083
+!     ;                                                                    0084
+* ---- Electron flux                                                       0085
+SYSTEM := ASM: MACRO TRACK :: EDIT 2 ARM ;                                 0086
+FLUX   := FLU: MACRO TRACK SYSTEM :: EDIT 2 TYPE S EXTE 100 ;              0087
+* --- Recover flux and reaction rates                                      0088
+EEDIT := OUT: FLUX TRACK MACRO GEOM :: EDIT 2 COND INTG NONE ;             0089
+* --- Energy deposition from the e-source                                  0090
+GEDIT := EEDIT ;                                                           0091
+DEPOS := HEAT: EEDIT GEDIT :: EDIT 2 ;                                     0092
+macro_xs.txt  := MACRO ;                                                   0093
+edit_xs.txt   := EEDIT ;                                                   0094
+track_xs.txt  := TRACK ;                                                   0095
+geom_xs.txt   := GEOM ;                                                    0096
+syst_xs.txt   := SYSTEM ;                                                  0097
+flux_xs.txt   := FLUX  ;                                                   0098
+EEDIT FLUX SYSTEM MACRO TRACK GEOM := DELETE:                              0099
+EEDIT FLUX SYSTEM MACRO TRACK GEOM ;                                       0100
+END: ; QUIT "LIST" .                                                       0101
+ 
+<|MODULE       GEO: FMAC: MAC: SNT: ASM: FLU: OUT: HEAT: DELETE: UTL:     |<0007
+<|END: ;                                                                  |<0008
+<|PROCEDURE    assertS ;                                                  |<0009
+<|LINKED_LIST  MACRO OLDMACRO GEOM TRACK SYSTEM FLUX DEPOS EEDIT GWT0     |<0010
+<|GEDIT ;                                                                 |<0011
+<|SEQ_ASCII    FMAC_M :: FILE                                             |<0012
+<|'./FMAC_e_water_lobatto_3.00MeV_2g_2e_P2_FC.txt' ;                      |<0013
+<|SEQ_ASCII    edep_xs.txt     :: FILE 'edep_xs.txt' ;                    |<0017
+<|SEQ_ASCII    edit_xs.txt     :: FILE 'edit_xs.txt' ;                    |<0018
+<|SEQ_ASCII    macro_xs.txt    :: FILE 'macro_xs.txt' ;                   |<0019
+<|SEQ_ASCII    flux_xs.txt     :: FILE 'flux_xs.txt' ;                    |<0020
+<|SEQ_ASCII    syst_xs.txt     :: FILE 'syst_xs.txt' ;                    |<0021
+<|SEQ_ASCII    geom_xs.txt     :: FILE 'geom_xs.txt' ;                    |<0022
+<|SEQ_ASCII    track_xs.txt    :: FILE 'track_xs.txt' ;                   |<0023
+<|GEOM := GEO: :: CAR1D 2                                                 |<0025
+<|X- VOID  X+ VOID                                                        |<0026
+<|MIX  1 2                                                                |<0027
+<|MESHX 0.0 0.01 2.0                                                      |<0028
+<|SPLITX 30 70                                                            |<0029
+<|;                                                                       |<0030
+ DDDDDD   RRRRRR     AAA     GGGGG    OOOOO   NN     NN
+ DDDDDDD  RRRRRRR   AAAAA   GGGGGGG  OOOOOOO  NNN    NN
+ DD   DD  RR   RR  AA   AA  GG       OO   OO  NNNN   NN
+ DD   DD  RRRRRR   AA   AA  GG  GGG  OO   OO  NN NN  NN
+ DD   DD  RRRR     AAAAAAA  GG  GGG  OO   OO  NN  NN NN
+ DD   DD  RR RR    AAAAAAA  GG   GG  OO   OO  NN   NNNN
+ DDDDDDD  RR  RR   AA   AA  GGGGGGG  OOOOOOO  NN    NNN
+ DDDDDD   RR   RR  AA   AA   GGGGG    OOOOO   NN     NN
+
+ VERSION dragon 5  Version 5.0.7 ($Revision: 2060 $)                   $Date: 2021-02-02 16:03:29 -0500 (Tue, 02 Feb 2021) $           
+ GROUPE D'ANALYSE NUCLEAIRE
+ ECOLE POLYTECHNIQUE DE MONTREAL
+
+
+
+ COPYRIGHT NOTICE FOR THIS VERSION OF dragon:
+ --------------------------------------------
+ Copyright (C) 2002 Ecole Polytechnique de Montreal 
+ This library is free software; you can redistribute it
+ and/or modify it under the terms of the GNU Lesser General
+ Public License as published by the Free Software Foundation;
+ either version 2.1 of the License, or (at your option) any
+ later version 
+
+
+
+
+->@BEGIN MODULE : GEO:        
+->@DESCRIPTION  : Geometry definition                                                     
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE CARTESIAN 1-D   .
+->@END MODULE   : GEO:        
+-->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+<|TRACK := SNT: GEOM ::                                                   |<0032
+<|TITLE 'Water-Slab: CEPXS-BFP-DRAGON'                                    |<0033
+<|EDIT 2 MAXR 1000 DIAM 1 NLIVO SN 12 SCAT 2 EPSI 1.E-5                   |<0034
+<|QUAD 1 MAXI 300 BFPL ;                                                  |<0035
+->@BEGIN MODULE : SNT:        
+->@DESCRIPTION  : Discrete ordinates tracking                                             
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+1 SSSSS  NN      NN ***********************************************************************************************
+ SSSSSSS NNN     NN ********************************************************* MULTIGROUP VERSION.  A. HEBERT (2005)
+ SS   SS NNNN    NN
+  SS     NN NN   NN
+    SS   NN  NN  NN
+ SS   SS NN   NN NN
+ SSSSSSS NN    NNNN
+  SSSSS  NN     NNN
+
+ Water-Slab: CEPXS-BFP-DRAGON                                            
+
+
+
+ 1-D SLAB GEOMETRY.
++                          BASED ON GEOMETRY GEOM        .
+
+
+ NUMBER OF MESH INTERVALS ALONG THE X AXIS =  100     AVAILABLE STORAGE MAXX =   1000
+                          ALONG THE Y AXIS =    1     AVAILABLE STORAGE MAXY =   1000
+                          ALONG THE Z AXIS =    1     AVAILABLE STORAGE MAXZ =   1000
+ NUMBER OF DISTINCT MIXTURES =      2
+
+
+
+ THE QUADRATURE COSINES FOLLOW
+
+  -0.981561E+00 -0.904117E+00 -0.769903E+00 -0.587318E+00 -0.367831E+00
+  -0.125233E+00  0.125233E+00  0.367831E+00  0.587318E+00  0.769903E+00
+   0.904117E+00  0.981561E+00
+
+
+ THE CORRESPONDING QUADRATURE WEIGHTS FOLLOW
+
+   0.471753E-01  0.106939E+00  0.160078E+00  0.203167E+00  0.233493E+00
+   0.249147E+00  0.249147E+00  0.233493E+00  0.203167E+00  0.160078E+00
+   0.106939E+00  0.471753E-01
+
+ SNTRK: ORDER OF LINEAR SYSTEMS =    400
+        NUMBER OF UNKNOWNS PER ENERGY GROUP =   2800
+
+ STATE VECTOR:
+ NREG       100   (NUMBER OF REGIONS)
+ NUN       2800   (NUMBER OF UNKNOWNS)
+ ILK          0   (0=LEAKAGE PRESENT/1=LEAKAGE ABSENT)
+ NBMIX        2   (MAXIMUM NUMBER OF MIXTURES USED)
+ NSURF        1   (NUMBER OF OUTER SURFACES)
+ ITYPE        2   (TYPE OF GEOMETRY)
+ NFUNL        2   (NUMBER OF SPHERICAL HARMONICS COMPONENTS)
+ IELEM        2   (ORDER OF POLYNOMIAL USED IN SPATIAL APPROX./1=DIAMOND SCHEME/2=LINEAR/3=PARABOLIC/3=CUBIC)
+ NDIM         1   (NUMBER OF GEOMETRIC DIMENSIONS)
+ ISCHM        1   (METHOD OF SPATIAL DISCRETISATION/1=HODD/2=DG)
+ LL4        400   (ORDER OF THE MATRICES PER GROUP)
+ LX         100   (NUMBER OF MESHES ALONG THE X AXIS)
+ LY           1   (NUMBER OF MESHES ALONG THE Y AXIS)
+ LZ           1   (NUMBER OF MESHES ALONG THE Z AXIS)
+ NLF         12   (SN ORDER)
+ ISCAT        2   (1=ISOTROPIC SOURCE/2=LINEARLY ANISOTROPIC SOURCE)
+ IQUAD        1   (<4=LEVEL-SYMMETRIC OF TYPE IQUAD/4=LEGENDRE-CHEBYSHEV/5=SYMMETRIC LEGENDRE-CHEBYSHEV/6=QR/>9=PRODUCT)
+ IFIX         0   (0/1: NEGATIVE FLUX FIXUP)
+ IDSA         0   (0/1: SYNTHETIC ACCELERATION)
+ NSTART       0   (NUMBER OF RESTARTS IN GMRES)
+ NSDSA       10   (NUMBER OF ITERATIONS BEFORE ENABLING DSA)
+ MAXIT      300   (MAXIMUM NUMBER OF INNER ITERATIONS)
+ LIVO         0   (0/1: LIVOLANT ACCELERATION OFF/ON)
+ ICL1         3   (NUMBER OF FREE ITERATIONS IN LIVO.)
+ ICL2         3   (NUMBER OF ACCELERATED ITERATIONS IN LIVO.)
+ ISPLH        0   (DEGREE OF LOZENGE SPLITTING FOR HEXAGONAL GEOMETRY)
+ INSB         0   (0/1: GROUP VECTORIZATION OFF/ON)
+ IOMP         0   (0/1: DOMINO MULTITHREADING OFF/ON)
+ IGAV         0   (CONDITION AT AXIAL AXIS FOR CYL./SPH. 1D)
+ LSHOOT       1   (0/1: SHOOTING METHOD IN 1D OFF/ON)
+ IBFP         2   (0/1/2: BFP SOLUTION OFF/GALERKIN/LIGOU)
+ IBIHET       0   (0/1: DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
+ EPSI      0.1E-04  (CONVERGENCE CRITERION ON INNER ITERATIONS)
+->@END MODULE   : SNT:        
+-->>MODULE SNT:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+<|MACRO    := FMAC: FMAC_M :: EDIT 2 PARTICLE B ;                         |<0037
+->@BEGIN MODULE : FMAC:       
+->@DESCRIPTION  : Recover information from a FMAC-M interface file                        
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ FMAC-M            
+ FMAC:  Format FMAC-M version = 5
+ NG    =  4   number of energy groups;
+ NPART =  2   number of particle types;
+ NGXI  =  0   number of groups with non-zero fission spectrum;
+ NGXIF =  0   number of the first group with non-zero fission spectrum;
+ NGRET =  0   number of delayed neutron groups;
+ NGXIR =  0   number of groups with non-zero fission spectrum for delayed neutrons;
+ NGXIFR=  0   number of the first group with non-zero fission spectrum for delayed neutrons;
+ NEDIT =  0   number of additional edit cross-sections;
+ MAXGS =  0   not used;
+ KLEIN =  0   not used;
+ NGHIGH=  0   total number of groups of cascade region;
+ IADJ  =  0   0/1 - regular/adjoint cross-section file;
+ NUCL  =  0   number of nuclides;
+ NUCLF =  0   number of fission nuclides;
+ MIX   =  1   number of materials (compositions);
+ NUFIS =  0   number of fission materials;
+ MAS   = 38   length of integer control array LL(MAS);
+ KIN=    14   total number of scattering transitions (not used);
+ MX    =  3   maximal length of transition array (not used);
+ MNW   =  3   order of PL approximation used +1;
+ MPOINT=  0   order of discrete approximation of scattering indicatrix (number of angular scattering cosine points used);
+ NUMD(I)=  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 not used
+
+ FMAC01: 3.00MeV monoenergetic electron-source on Water Slab                     
+
+ FMAC01:                         
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'MACRO       ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'SIGNATURE   '         3    CHARACTER       ='L_MACROLIB  '
+        2  'PARTICLE    '         1    CHARACTER       
+        3  'PARTICLE-NGR'         2    INTEGER         
+        4  'PARTICLE-NAM'         2    CHARACTER       
+        5  'PARTICLE-MC2'         2    REAL            
+        6  'GROUP       '         2    LIST            
+        7  'ENERGY      '         3    REAL            
+        8  'GROUP-G     '         2    LIST            
+        9  'STATE-VECTOR'        40    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =        53
+
+
+ OPTIONS
+ -------
+ IMPX       2   (0=NO PRINT/1=SHORT/2=MORE)
+ NGROUP     2   (NUMBER OF ENERGY GROUPS)
+ NBMIX      1   (NUMBER OF MIXTURES IN THE MACROLIB)
+ NANISO     3   (MAXIMUM SCATTERING ANISOTROPY)
+ NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
+ NEDMAC     0   (NUMBER OF CROSS SECTION EDITS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
+ NLG        0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ ILEAK      0   (1=DIFF AVAILABLE; 2=DIFFX AVAILABLE)
+ NSTEP      0   (NUMBER OF PERTURBATION DIRECTORIES)
+ IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
+ IADJ       0   (=0/1 DIRECT/ADJOINT MACROLIB)
+ NPART0     1   (NUMBER OF COMPANION PARTICLES)
+ HPART      B   (MACROLIB PARTICLE)
+
+       PARTICLE NAMES:       B       G
+ NB. OF ENERGY GROUPS:       2       2
+->@END MODULE   : FMAC:       
+-->>MODULE FMAC:       : TIME SPENT=        0.006 MEMORY USAGE= 2.640E+02
+<|OLDMACRO := MACRO ;                                                     |<0038
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|MACRO    := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;                       |<0039
+->@BEGIN MODULE : MAC:        
+->@DESCRIPTION  : Macroscopic xs processor                                                
+->@CREDITS      : G. Marleau                                                              
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ HPART=BG      p
+
+ OPTIONS
+ -------
+ IPRINT     1   (0=NO PRINT/1=SHORT/2=MORE)
+ NGROUP     2   (NUMBER OF ENERGY GROUPS)
+ NBMIX      2   (NUMBER OF MIXTURES IN THE MACROLIB)
+ NANISO     3   (MAXIMUM SCATTERING ANISOTROPY)
+ NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
+ NEDMAC     0   (NUMBER OF CROSS SECTION EDITS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
+ NLG        0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ NALB       0   (NUMBER OF PHYSICAL ALBEDOS)
+ ILEAK      0   (1=DIFF AVAILABLE; 2=DIFFX AVAILABLE)
+ NSTEP      0   (NUMBER OF PERTURBATION DIRECTORIES)
+ IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
+ NPART0     1   (NUMBER OF COMPANION PARTICLES)
+->@END MODULE   : MAC:        
+-->>MODULE MAC:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+<|OLDMACRO := DELETE: OLDMACRO ;                                          |<0040
+<|MACRO := MAC: MACRO ::                                                  |<0042
+<|READ INPUT                                                              |<0043
+<|MIX 1 FIXE                                                              |<0044
+<|<<qsour>> 0.0                                                           |<0045
+<|;                                                                       |<0046
+->@BEGIN MODULE : MAC:        
+->@DESCRIPTION  : Macroscopic xs processor                                                
+->@CREDITS      : G. Marleau                                                              
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ CROSS SECTION TYPE     NTOT0      NUSIGF     FIXE       CHI        SCAT (NL=  1,  3)        TRANC      DIFF       H-FACTOR   NFTOT      FLUX-INTG  FLUX-INTG-P1
+ MATERIAL     1                               READ                                                                                                        
+ MATERIAL     2                                                                                                                                           
+
+ OPTIONS
+ -------
+ IPRINT     1   (0=NO PRINT/1=SHORT/2=MORE)
+ NGROUP     2   (NUMBER OF ENERGY GROUPS)
+ NBMIX      2   (NUMBER OF MIXTURES IN THE MACROLIB)
+ NANISO     3   (MAXIMUM SCATTERING ANISOTROPY)
+ NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
+ NEDMAC     0   (NUMBER OF CROSS SECTION EDITS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
+ NLG        0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ NALB       0   (NUMBER OF PHYSICAL ALBEDOS)
+ ILEAK      0   (1=DIFF AVAILABLE; 2=DIFFX AVAILABLE)
+ NSTEP      0   (NUMBER OF PERTURBATION DIRECTORIES)
+ IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
+ NPART0     1   (NUMBER OF COMPANION PARTICLES)
+->@END MODULE   : MAC:        
+-->>MODULE MAC:        : TIME SPENT=        0.000 MEMORY USAGE= 2.640E+02
+<|SYSTEM := ASM: MACRO TRACK :: EDIT 2 ARM ;                              |<0086
+->@BEGIN MODULE : ASM:        
+->@DESCRIPTION  : To built system matrices (CP and IC)                                    
+->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ COMPUTATION OF DRAGON RESPONSE MATRICES BY DOOR =   SN          
+
+
+                               EDITION REGION/VOLUME/MIXTURE 
+
+     REGION     VOLUME       MIXTURE     REGION     VOLUME       MIXTURE     REGION     VOLUME       MIXTURE
+
+        1     3.33333E-04       1            2     3.33333E-04       1            3     3.33333E-04       1
+        4     3.33333E-04       1            5     3.33333E-04       1            6     3.33333E-04       1
+        7     3.33333E-04       1            8     3.33333E-04       1            9     3.33333E-04       1
+       10     3.33333E-04       1           11     3.33333E-04       1           12     3.33333E-04       1
+       13     3.33333E-04       1           14     3.33333E-04       1           15     3.33333E-04       1
+       16     3.33333E-04       1           17     3.33333E-04       1           18     3.33333E-04       1
+       19     3.33333E-04       1           20     3.33333E-04       1           21     3.33333E-04       1
+       22     3.33333E-04       1           23     3.33333E-04       1           24     3.33333E-04       1
+       25     3.33333E-04       1           26     3.33333E-04       1           27     3.33333E-04       1
+       28     3.33333E-04       1           29     3.33333E-04       1           30     3.33333E-04       1
+       31     2.84286E-02       2           32     2.84286E-02       2           33     2.84286E-02       2
+       34     2.84286E-02       2           35     2.84286E-02       2           36     2.84286E-02       2
+       37     2.84286E-02       2           38     2.84286E-02       2           39     2.84286E-02       2
+       40     2.84286E-02       2           41     2.84286E-02       2           42     2.84286E-02       2
+       43     2.84286E-02       2           44     2.84286E-02       2           45     2.84286E-02       2
+       46     2.84286E-02       2           47     2.84286E-02       2           48     2.84286E-02       2
+       49     2.84286E-02       2           50     2.84286E-02       2           51     2.84286E-02       2
+       52     2.84286E-02       2           53     2.84286E-02       2           54     2.84286E-02       2
+       55     2.84286E-02       2           56     2.84286E-02       2           57     2.84286E-02       2
+       58     2.84286E-02       2           59     2.84286E-02       2           60     2.84286E-02       2
+       61     2.84286E-02       2           62     2.84286E-02       2           63     2.84286E-02       2
+       64     2.84286E-02       2           65     2.84286E-02       2           66     2.84286E-02       2
+       67     2.84286E-02       2           68     2.84286E-02       2           69     2.84287E-02       2
+       70     2.84286E-02       2           71     2.84286E-02       2           72     2.84286E-02       2
+       73     2.84286E-02       2           74     2.84286E-02       2           75     2.84286E-02       2
+       76     2.84287E-02       2           77     2.84286E-02       2           78     2.84286E-02       2
+       79     2.84286E-02       2           80     2.84286E-02       2           81     2.84286E-02       2
+       82     2.84286E-02       2           83     2.84287E-02       2           84     2.84286E-02       2
+       85     2.84286E-02       2           86     2.84286E-02       2           87     2.84286E-02       2
+       88     2.84286E-02       2           89     2.84286E-02       2           90     2.84287E-02       2
+       91     2.84286E-02       2           92     2.84286E-02       2           93     2.84286E-02       2
+       94     2.84286E-02       2           95     2.84286E-02       2           96     2.84286E-02       2
+       97     2.84287E-02       2           98     2.84286E-02       2           99     2.84286E-02       2
+      100     2.84286E-02       2
+
+ OPTIONS
+ -------
+ IMPX         2   (0=NO PRINT/1=SHORT/2=MORE)
+ ITPIJ        1   (1=WIJ/2=PIJ/3=WIJK/4=PIJK)
+ LNORM        1   (0=NORMALIZE PIJ TO 1/1=DO NOT)
+ LALBS        1   (0=RECOVER AND SAVE WIS/1=DO NOT)
+ IPHASE       1   (1=GENERAL FLUX SOLUTION/2=PIJ APPROACH)
+ ISTRM        1   (1=HOMO BN OR NO LEAKAGE/2=ECCO/3=TIBERE)
+ KNORM        4   (0=NO/1=GELBARD/2=DIAGONAL/3=NON-LINEAR/4=HELIOS)
+ NGRP         2   (NUMBER OF GROUPS)
+ NUN       2800   (NUMBER OF UNKNOWNS)
+ NBMIX        2   (NUMBER OF MIXTURES)
+ NANI         2   (NUMBER OF LEGENDRE ORDERS SCATTERING XS)
+ IDIFF        0   (0/1: DIFFUSION COEFFICIENTS ABSENT/PRESENT)
+ IBFP         2   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
+ DOOR             (SN          )
+->@END MODULE   : ASM:        
+-->>MODULE ASM:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+<|FLUX   := FLU: MACRO TRACK SYSTEM :: EDIT 2 TYPE S EXTE 100 ;           |<0087
+->@BEGIN MODULE : FLU:        
+->@DESCRIPTION  : Solve the flux equations                                                
+->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+
+
+ P. I. M.    SOLUTION TO TRANSPORT EQUATION
+
+ CALCULATION TYPE            =    SOURCE
+ FORWARD/BACKWARD OPTION     =    DIRECT
+ (AN)ISOTROPY OPTION         =ANISOTROPI
+ FLUX SOLUTION DOOR          =    SN    
+ NB. OF GROUPS               =         2
+ NB. OF REGIONS              =       100
+ NB. OF UNKNOWNS PER GROUP   =      2800
+ MAX. OUTER ITERATIONS       =       100
+ MAX. THERMAL ITERATIONS     =         4
+ ACCELERATION SCHEME         =( 3 FREE, 3 ACCELERATED)
+ REBALANCING OPTION          = ON 
+ SELF-SCATTERING REDUCTION   = ON 
+ FUNDAMENTAL MODE            = OFF
+ EIGENVALUE TOLERANCE        =  1.000E-05
+ UNKNOWN OUTER TOLERANCE     =  5.000E-05
+ UNKNOWN INNER TOLERANCE     =  5.000E-05
+
+ OUT(  0) EIG: PRC= 1.00E+00 TAR= 1.00E-05 KEFF= 1.000000E+00 BUCK= 0.00000E+00
+
+ SNFLUX: PROCESSING GROUP    1 WITH SN-BFP/1D-slab.
+
+ SNFLUX: PROCESSING GROUP    1 WITH SN-BFP/1D-slab.
+
+ SNFLUX: PROCESSING GROUP    1 WITH SN-BFP/1D-slab.
+
+ SNFLUX: PROCESSING GROUP    1 WITH SN-BFP/1D-slab.
+
+ SNFLUX: PROCESSING GROUP    1 WITH SN-BFP/1D-slab.
+
+ SNFLUX: PROCESSING GROUP    1 WITH SN-BFP/1D-slab.
+
+ SNFLUX: PROCESSING GROUP    1 WITH SN-BFP/1D-slab.
+
+ SNFLUX: PROCESSING GROUP    1 WITH SN-BFP/1D-slab.
+
+ SNFLUX: PROCESSING GROUP    1 WITH SN-BFP/1D-slab.
+
+ SNFLUX: PROCESSING GROUP    1 WITH SN-BFP/1D-slab.
+ SNF: NUMBER OF ONE-SPEED ITERATIONS=   10.
+
+ SNFLUX: PROCESSING GROUP    2 WITH SN-BFP/1D-slab.
+
+ SNFLUX: PROCESSING GROUP    2 WITH SN-BFP/1D-slab.
+
+ SNFLUX: PROCESSING GROUP    2 WITH SN-BFP/1D-slab.
+
+ SNFLUX: PROCESSING GROUP    2 WITH SN-BFP/1D-slab.
+
+ SNFLUX: PROCESSING GROUP    2 WITH SN-BFP/1D-slab.
+ SNF: NUMBER OF ONE-SPEED ITERATIONS=    5.
+          IN(  1) FLX: PRC= 1.00E+00 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+
+ SNFLUX: PROCESSING GROUP    1 WITH SN-BFP/1D-slab.
+ SNF: NUMBER OF ONE-SPEED ITERATIONS=    1.
+
+ SNFLUX: PROCESSING GROUP    2 WITH SN-BFP/1D-slab.
+ SNF: NUMBER OF ONE-SPEED ITERATIONS=    1.
+          IN(  2) FLX: PRC= 2.31E-07 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  1) EIG: PRC= 0.00E+00 TAR= 1.00E-05 KEFF= 1.000000E+00 BUCK= 0.00000E+00
+ OUT(  1) FLX: PRC= 1.00E+00 TAR= 5.00E-05 FNOR= 1.000000E+00 ACCE=     1.00000
+
+ SNFLUX: PROCESSING GROUP    1 WITH SN-BFP/1D-slab.
+ SNF: NUMBER OF ONE-SPEED ITERATIONS=    1.
+
+ SNFLUX: PROCESSING GROUP    2 WITH SN-BFP/1D-slab.
+ SNF: NUMBER OF ONE-SPEED ITERATIONS=    1.
+          IN(  1) FLX: PRC= 1.48E-07 TAR= 5.00E-05 IGDEB=            3 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+ OUT(  2) EIG: PRC= 0.00E+00 TAR= 1.00E-05 KEFF= 1.000000E+00 BUCK= 0.00000E+00
+ OUT(  2) FLX: PRC= 1.48E-07 TAR= 5.00E-05 FNOR= 1.000000E+00 ACCE=     1.00000
+ FLU2DR: CPU TIME=        0. EXTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+
+ ++ TRACKING CALLED=   3 TIMES PRECISION= 0.00E+00
+ ++ TOTAL NUMBER OF FLUX CALCULATIONS=         6
+->@END MODULE   : FLU:        
+-->>MODULE FLU:        : TIME SPENT=        0.004 MEMORY USAGE= 5.720E+02
+<|EEDIT := OUT: FLUX TRACK MACRO GEOM :: EDIT 2 COND INTG NONE ;          |<0089
+->@BEGIN MODULE : OUT:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ EXEC: OUT:         BY A. HEBERT
+
+ OUTFLX: RECOVER THE DIRECT FLUX.
+
+ CONDENSATION INDEX:
+     2
+
+ 1-D SLAB GEOMETRY.
++                          BASED ON GEOMETRY GEOM        .
+
+
+ NUMBER OF MESH INTERVALS ALONG THE X AXIS =  100     AVAILABLE STORAGE MAXX =    100
+                          ALONG THE Y AXIS =    1     AVAILABLE STORAGE MAXY =    100
+                          ALONG THE Z AXIS =    1     AVAILABLE STORAGE MAXZ =    100
+ NUMBER OF DISTINCT MIXTURES =      2
+
+
+ MERGING INDEX:
+     1    2    3    4    5    6    7    8    9   10   11   12   13   14
+    15   16   17   18   19   20   21   22   23   24   25   26   27   28
+    29   30   31   32   33   34   35   36   37   38   39   40   41   42
+    43   44   45   46   47   48   49   50   51   52   53   54   55   56
+    57   58   59   60   61   62   63   64   65   66   67   68   69   70
+    71   72   73   74   75   76   77   78   79   80   81   82   83   84
+    85   86   87   88   89   90   91   92   93   94   95   96   97   98
+    99  100
+
+ OUTDRV: ***Water-Slab: CEPXS-BFP-DRAGON                                            ***
+
+ OUTAUX: REACTION RATE CALCULATION.
+
+ G R O U P   :   1
+ IHOM  VOLUME        FLUX-INTG     NTOT0         SIGW00        NUSIGF        NFTOT         H-FACTOR      OVERV         CHI         
+    1   3.33333E-04   6.46806E+04   2.56438E+05   1.29398E+07   0.00000E+00   0.00000E+00  -1.26124E+07   0.00000E+00   0.00000E+00
+    2   3.33333E-04   7.01274E+04   2.80572E+05   1.30196E+07   0.00000E+00   0.00000E+00  -1.26612E+07   0.00000E+00   0.00000E+00
+    3   3.33333E-04   7.44643E+04   2.99770E+05   1.30907E+07   0.00000E+00   0.00000E+00  -1.27076E+07   0.00000E+00   0.00000E+00
+    4   3.33333E-04   7.79914E+04   3.15368E+05   1.31543E+07   0.00000E+00   0.00000E+00  -1.27512E+07   0.00000E+00   0.00000E+00
+    5   3.33333E-04   8.09176E+04   3.28298E+05   1.32114E+07   0.00000E+00   0.00000E+00  -1.27917E+07   0.00000E+00   0.00000E+00
+    6   3.33333E-04   8.33893E+04   3.39212E+05   1.32627E+07   0.00000E+00   0.00000E+00  -1.28290E+07   0.00000E+00   0.00000E+00
+    7   3.33333E-04   8.55099E+04   3.48571E+05   1.33087E+07   0.00000E+00   0.00000E+00  -1.28629E+07   0.00000E+00   0.00000E+00
+    8   3.33333E-04   8.73530E+04   3.56703E+05   1.33496E+07   0.00000E+00   0.00000E+00  -1.28933E+07   0.00000E+00   0.00000E+00
+    9   3.33333E-04   8.89717E+04   3.63844E+05   1.33857E+07   0.00000E+00   0.00000E+00  -1.29202E+07   0.00000E+00   0.00000E+00
+   10   3.33333E-04   9.04049E+04   3.70168E+05   1.34171E+07   0.00000E+00   0.00000E+00  -1.29435E+07   0.00000E+00   0.00000E+00
+   11   3.33333E-04   9.16815E+04   3.75804E+05   1.34441E+07   0.00000E+00   0.00000E+00  -1.29633E+07   0.00000E+00   0.00000E+00
+   12   3.33333E-04   9.28230E+04   3.80848E+05   1.34666E+07   0.00000E+00   0.00000E+00  -1.29793E+07   0.00000E+00   0.00000E+00
+   13   3.33333E-04   9.38467E+04   3.85375E+05   1.34848E+07   0.00000E+00   0.00000E+00  -1.29917E+07   0.00000E+00   0.00000E+00
+   14   3.33333E-04   9.47655E+04   3.89445E+05   1.34988E+07   0.00000E+00   0.00000E+00  -1.30004E+07   0.00000E+00   0.00000E+00
+   15   3.33333E-04   9.55902E+04   3.93106E+05   1.35085E+07   0.00000E+00   0.00000E+00  -1.30055E+07   0.00000E+00   0.00000E+00
+   16   3.33333E-04   9.63297E+04   3.96396E+05   1.35141E+07   0.00000E+00   0.00000E+00  -1.30068E+07   0.00000E+00   0.00000E+00
+   17   3.33333E-04   9.69915E+04   3.99349E+05   1.35155E+07   0.00000E+00   0.00000E+00  -1.30044E+07   0.00000E+00   0.00000E+00
+   18   3.33333E-04   9.75821E+04   4.01994E+05   1.35127E+07   0.00000E+00   0.00000E+00  -1.29983E+07   0.00000E+00   0.00000E+00
+   19   3.33333E-04   9.81070E+04   4.04357E+05   1.35059E+07   0.00000E+00   0.00000E+00  -1.29884E+07   0.00000E+00   0.00000E+00
+   20   3.33333E-04   9.85720E+04   4.06462E+05   1.34950E+07   0.00000E+00   0.00000E+00  -1.29748E+07   0.00000E+00   0.00000E+00
+   21   3.33333E-04   9.89815E+04   4.08329E+05   1.34801E+07   0.00000E+00   0.00000E+00  -1.29575E+07   0.00000E+00   0.00000E+00
+   22   3.33333E-04   9.93403E+04   4.09980E+05   1.34612E+07   0.00000E+00   0.00000E+00  -1.29364E+07   0.00000E+00   0.00000E+00
+   23   3.33333E-04   9.96534E+04   4.11436E+05   1.34382E+07   0.00000E+00   0.00000E+00  -1.29116E+07   0.00000E+00   0.00000E+00
+   24   3.33333E-04   9.99253E+04   4.12719E+05   1.34112E+07   0.00000E+00   0.00000E+00  -1.28829E+07   0.00000E+00   0.00000E+00
+   25   3.33333E-04   1.00162E+05   4.13854E+05   1.33803E+07   0.00000E+00   0.00000E+00  -1.28506E+07   0.00000E+00   0.00000E+00
+   26   3.33333E-04   1.00369E+05   4.14868E+05   1.33455E+07   0.00000E+00   0.00000E+00  -1.28144E+07   0.00000E+00   0.00000E+00
+   27   3.33333E-04   1.00555E+05   4.15795E+05   1.33067E+07   0.00000E+00   0.00000E+00  -1.27744E+07   0.00000E+00   0.00000E+00
+   28   3.33333E-04   1.00728E+05   4.16677E+05   1.32641E+07   0.00000E+00   0.00000E+00  -1.27307E+07   0.00000E+00   0.00000E+00
+   29   3.33333E-04   1.00902E+05   4.17569E+05   1.32176E+07   0.00000E+00   0.00000E+00  -1.26831E+07   0.00000E+00   0.00000E+00
+   30   3.33333E-04   1.01092E+05   4.18544E+05   1.31675E+07   0.00000E+00   0.00000E+00  -1.26316E+07   0.00000E+00   0.00000E+00
+   31   2.84286E-02   7.73070E+06   3.21576E+07   9.47037E+08   0.00000E+00   0.00000E+00  -9.05855E+08   0.00000E+00   0.00000E+00
+   32   2.84286E-02   5.68711E+06   2.36732E+07   6.90150E+08   0.00000E+00   0.00000E+00  -6.59832E+08   0.00000E+00   0.00000E+00
+   33   2.84286E-02   4.36112E+06   1.81551E+07   5.28670E+08   0.00000E+00   0.00000E+00  -5.05419E+08   0.00000E+00   0.00000E+00
+   34   2.84286E-02   3.48769E+06   1.45189E+07   4.22851E+08   0.00000E+00   0.00000E+00  -4.04257E+08   0.00000E+00   0.00000E+00
+   35   2.84286E-02   2.88667E+06   1.20167E+07   3.50076E+08   0.00000E+00   0.00000E+00  -3.34686E+08   0.00000E+00   0.00000E+00
+   36   2.84286E-02   2.45209E+06   1.02074E+07   2.97439E+08   0.00000E+00   0.00000E+00  -2.84366E+08   0.00000E+00   0.00000E+00
+   37   2.84286E-02   2.12253E+06   8.83545E+06   2.57504E+08   0.00000E+00   0.00000E+00  -2.46189E+08   0.00000E+00   0.00000E+00
+   38   2.84286E-02   1.86200E+06   7.75086E+06   2.25921E+08   0.00000E+00   0.00000E+00  -2.15994E+08   0.00000E+00   0.00000E+00
+   39   2.84286E-02   1.64898E+06   6.86413E+06   2.00090E+08   0.00000E+00   0.00000E+00  -1.91299E+08   0.00000E+00   0.00000E+00
+   40   2.84286E-02   1.47028E+06   6.12024E+06   1.78415E+08   0.00000E+00   0.00000E+00  -1.70577E+08   0.00000E+00   0.00000E+00
+   41   2.84286E-02   1.31749E+06   5.48419E+06   1.59879E+08   0.00000E+00   0.00000E+00  -1.52856E+08   0.00000E+00   0.00000E+00
+   42   2.84286E-02   1.18503E+06   4.93280E+06   1.43808E+08   0.00000E+00   0.00000E+00  -1.37491E+08   0.00000E+00   0.00000E+00
+   43   2.84286E-02   1.06904E+06   4.45001E+06   1.29736E+08   0.00000E+00   0.00000E+00  -1.24037E+08   0.00000E+00   0.00000E+00
+   44   2.84286E-02   9.66740E+05   4.02415E+06   1.17322E+08   0.00000E+00   0.00000E+00  -1.12168E+08   0.00000E+00   0.00000E+00
+   45   2.84286E-02   8.76003E+05   3.64645E+06   1.06311E+08   0.00000E+00   0.00000E+00  -1.01641E+08   0.00000E+00   0.00000E+00
+   46   2.84286E-02   7.95174E+05   3.30999E+06   9.65025E+07   0.00000E+00   0.00000E+00  -9.22635E+07   0.00000E+00   0.00000E+00
+   47   2.84286E-02   7.22924E+05   3.00924E+06   8.77348E+07   0.00000E+00   0.00000E+00  -8.38810E+07   0.00000E+00   0.00000E+00
+   48   2.84286E-02   6.58151E+05   2.73961E+06   7.98744E+07   0.00000E+00   0.00000E+00  -7.63658E+07   0.00000E+00   0.00000E+00
+   49   2.84286E-02   5.99939E+05   2.49730E+06   7.28101E+07   0.00000E+00   0.00000E+00  -6.96119E+07   0.00000E+00   0.00000E+00
+   50   2.84286E-02   5.47505E+05   2.27904E+06   6.64469E+07   0.00000E+00   0.00000E+00  -6.35282E+07   0.00000E+00   0.00000E+00
+   51   2.84286E-02   5.00184E+05   2.08206E+06   6.07041E+07   0.00000E+00   0.00000E+00  -5.80377E+07   0.00000E+00   0.00000E+00
+   52   2.84286E-02   4.57400E+05   1.90397E+06   5.55119E+07   0.00000E+00   0.00000E+00  -5.30736E+07   0.00000E+00   0.00000E+00
+   53   2.84286E-02   4.18654E+05   1.74268E+06   5.08098E+07   0.00000E+00   0.00000E+00  -4.85780E+07   0.00000E+00   0.00000E+00
+   54   2.84286E-02   3.83510E+05   1.59639E+06   4.65446E+07   0.00000E+00   0.00000E+00  -4.45002E+07   0.00000E+00   0.00000E+00
+   55   2.84286E-02   3.51589E+05   1.46352E+06   4.26707E+07   0.00000E+00   0.00000E+00  -4.07964E+07   0.00000E+00   0.00000E+00
+   56   2.84286E-02   3.22558E+05   1.34267E+06   3.91474E+07   0.00000E+00   0.00000E+00  -3.74279E+07   0.00000E+00   0.00000E+00
+   57   2.84286E-02   2.96120E+05   1.23262E+06   3.59389E+07   0.00000E+00   0.00000E+00  -3.43603E+07   0.00000E+00   0.00000E+00
+   58   2.84286E-02   2.72020E+05   1.13230E+06   3.30140E+07   0.00000E+00   0.00000E+00  -3.15639E+07   0.00000E+00   0.00000E+00
+   59   2.84286E-02   2.50025E+05   1.04075E+06   3.03447E+07   0.00000E+00   0.00000E+00  -2.90118E+07   0.00000E+00   0.00000E+00
+   60   2.84286E-02   2.29933E+05   9.57116E+05   2.79063E+07   0.00000E+00   0.00000E+00  -2.66805E+07   0.00000E+00   0.00000E+00
+   61   2.84286E-02   2.11562E+05   8.80642E+05   2.56766E+07   0.00000E+00   0.00000E+00  -2.45488E+07   0.00000E+00   0.00000E+00
+   62   2.84286E-02   1.94750E+05   8.10661E+05   2.36362E+07   0.00000E+00   0.00000E+00  -2.25980E+07   0.00000E+00   0.00000E+00
+   63   2.84286E-02   1.79353E+05   7.46570E+05   2.17676E+07   0.00000E+00   0.00000E+00  -2.08115E+07   0.00000E+00   0.00000E+00
+   64   2.84286E-02   1.65240E+05   6.87825E+05   2.00548E+07   0.00000E+00   0.00000E+00  -1.91739E+07   0.00000E+00   0.00000E+00
+   65   2.84286E-02   1.52297E+05   6.33947E+05   1.84839E+07   0.00000E+00   0.00000E+00  -1.76720E+07   0.00000E+00   0.00000E+00
+   66   2.84286E-02   1.40418E+05   5.84500E+05   1.70422E+07   0.00000E+00   0.00000E+00  -1.62937E+07   0.00000E+00   0.00000E+00
+   67   2.84286E-02   1.29509E+05   5.39092E+05   1.57183E+07   0.00000E+00   0.00000E+00  -1.50279E+07   0.00000E+00   0.00000E+00
+   68   2.84286E-02   1.19486E+05   4.97370E+05   1.45018E+07   0.00000E+00   0.00000E+00  -1.38649E+07   0.00000E+00   0.00000E+00
+   69   2.84287E-02   1.10272E+05   4.59016E+05   1.33835E+07   0.00000E+00   0.00000E+00  -1.27957E+07   0.00000E+00   0.00000E+00
+   70   2.84286E-02   1.01796E+05   4.23735E+05   1.23549E+07   0.00000E+00   0.00000E+00  -1.18122E+07   0.00000E+00   0.00000E+00
+   71   2.84286E-02   9.39977E+04   3.91272E+05   1.14084E+07   0.00000E+00   0.00000E+00  -1.09073E+07   0.00000E+00   0.00000E+00
+   72   2.84286E-02   8.68182E+04   3.61387E+05   1.05370E+07   0.00000E+00   0.00000E+00  -1.00742E+07   0.00000E+00   0.00000E+00
+   73   2.84286E-02   8.02061E+04   3.33864E+05   9.73452E+06   0.00000E+00   0.00000E+00  -9.30695E+06   0.00000E+00   0.00000E+00
+   74   2.84286E-02   7.41143E+04   3.08506E+05   8.99517E+06   0.00000E+00   0.00000E+00  -8.60008E+06   0.00000E+00   0.00000E+00
+   75   2.84286E-02   6.84997E+04   2.85135E+05   8.31374E+06   0.00000E+00   0.00000E+00  -7.94858E+06   0.00000E+00   0.00000E+00
+   76   2.84287E-02   6.33236E+04   2.63589E+05   7.68552E+06   0.00000E+00   0.00000E+00  -7.34795E+06   0.00000E+00   0.00000E+00
+   77   2.84286E-02   5.85493E+04   2.43716E+05   7.10607E+06   0.00000E+00   0.00000E+00  -6.79396E+06   0.00000E+00   0.00000E+00
+   78   2.84286E-02   5.41450E+04   2.25383E+05   6.57154E+06   0.00000E+00   0.00000E+00  -6.28290E+06   0.00000E+00   0.00000E+00
+   79   2.84286E-02   5.00807E+04   2.08465E+05   6.07826E+06   0.00000E+00   0.00000E+00  -5.81129E+06   0.00000E+00   0.00000E+00
+   80   2.84286E-02   4.63291E+04   1.92848E+05   5.62294E+06   0.00000E+00   0.00000E+00  -5.37596E+06   0.00000E+00   0.00000E+00
+   81   2.84286E-02   4.28652E+04   1.78430E+05   5.20253E+06   0.00000E+00   0.00000E+00  -4.97402E+06   0.00000E+00   0.00000E+00
+   82   2.84286E-02   3.96661E+04   1.65113E+05   4.81426E+06   0.00000E+00   0.00000E+00  -4.60281E+06   0.00000E+00   0.00000E+00
+   83   2.84287E-02   3.67111E+04   1.52812E+05   4.45561E+06   0.00000E+00   0.00000E+00  -4.25991E+06   0.00000E+00   0.00000E+00
+   84   2.84286E-02   3.39803E+04   1.41445E+05   4.12418E+06   0.00000E+00   0.00000E+00  -3.94303E+06   0.00000E+00   0.00000E+00
+   85   2.84286E-02   3.14566E+04   1.30940E+05   3.81788E+06   0.00000E+00   0.00000E+00  -3.65019E+06   0.00000E+00   0.00000E+00
+   86   2.84286E-02   2.91235E+04   1.21229E+05   3.53472E+06   0.00000E+00   0.00000E+00  -3.37947E+06   0.00000E+00   0.00000E+00
+   87   2.84286E-02   2.69663E+04   1.12249E+05   3.27290E+06   0.00000E+00   0.00000E+00  -3.12915E+06   0.00000E+00   0.00000E+00
+   88   2.84286E-02   2.49710E+04   1.03943E+05   3.03074E+06   0.00000E+00   0.00000E+00  -2.89762E+06   0.00000E+00   0.00000E+00
+   89   2.84286E-02   2.31250E+04   9.62595E+04   2.80670E+06   0.00000E+00   0.00000E+00  -2.68342E+06   0.00000E+00   0.00000E+00
+   90   2.84287E-02   2.14168E+04   8.91487E+04   2.59938E+06   0.00000E+00   0.00000E+00  -2.48521E+06   0.00000E+00   0.00000E+00
+   91   2.84286E-02   1.98351E+04   8.25647E+04   2.40742E+06   0.00000E+00   0.00000E+00  -2.30168E+06   0.00000E+00   0.00000E+00
+   92   2.84286E-02   1.83701E+04   7.64666E+04   2.22964E+06   0.00000E+00   0.00000E+00  -2.13171E+06   0.00000E+00   0.00000E+00
+   93   2.84286E-02   1.70122E+04   7.08144E+04   2.06486E+06   0.00000E+00   0.00000E+00  -1.97417E+06   0.00000E+00   0.00000E+00
+   94   2.84286E-02   1.57524E+04   6.55702E+04   1.91200E+06   0.00000E+00   0.00000E+00  -1.82803E+06   0.00000E+00   0.00000E+00
+   95   2.84286E-02   1.45817E+04   6.06968E+04   1.76999E+06   0.00000E+00   0.00000E+00  -1.69225E+06   0.00000E+00   0.00000E+00
+   96   2.84286E-02   1.34907E+04   5.61553E+04   1.63772E+06   0.00000E+00   0.00000E+00  -1.56580E+06   0.00000E+00   0.00000E+00
+   97   2.84287E-02   1.24687E+04   5.18999E+04   1.51401E+06   0.00000E+00   0.00000E+00  -1.44755E+06   0.00000E+00   0.00000E+00
+   98   2.84286E-02   1.14987E+04   4.78594E+04   1.39741E+06   0.00000E+00   0.00000E+00  -1.33611E+06   0.00000E+00   0.00000E+00
+   99   2.84286E-02   1.05359E+04   4.38385E+04   1.28590E+06   0.00000E+00   0.00000E+00  -1.22976E+06   0.00000E+00   0.00000E+00
+  100   2.84286E-02   9.33544E+03   3.87520E+04   1.17576E+06   0.00000E+00   0.00000E+00  -1.12614E+06   0.00000E+00   0.00000E+00
+
+  SUM   2.00000E+00   5.13249E+07   2.13462E+08   6.30145E+09   0.00000E+00   0.00000E+00  -6.02809E+09   0.00000E+00
+
+ OUTDRV: CPU TIME FOR REACTION RATE CALCULATION =  0.001
+-->>MODULE OUT:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+->@END MODULE   : OUT:        
+<|GEDIT := EEDIT ;                                                        |<0091
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|DEPOS := HEAT: EEDIT GEDIT :: EDIT 2 ;                                  |<0092
+->@BEGIN MODULE : HEAT:       
+->@DESCRIPTION  : Compute the energy and charge deposition values                         
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+    VOLUME   ENERGDEP_B      ENERGDEP_B      TOTENDEP_EDEPO  CHARGDEP_B      CHARGDEP_B      TOTCHDEP_CDEPO 
+  3.3333E-04     -3.7818E+10     -3.7818E+10     -7.5636E+10     -3.8050E+10     -3.8050E+10     -7.6100E+10
+  3.3333E-04     -3.7963E+10     -3.7963E+10     -7.5926E+10     -3.8217E+10     -3.8217E+10     -7.6434E+10
+  3.3333E-04     -3.8101E+10     -3.8101E+10     -7.6202E+10     -3.8373E+10     -3.8373E+10     -7.6745E+10
+  3.3333E-04     -3.8231E+10     -3.8231E+10     -7.6462E+10     -3.8517E+10     -3.8517E+10     -7.7034E+10
+  3.3333E-04     -3.8351E+10     -3.8351E+10     -7.6703E+10     -3.8649E+10     -3.8649E+10     -7.7299E+10
+  3.3333E-04     -3.8462E+10     -3.8462E+10     -7.6925E+10     -3.8771E+10     -3.8771E+10     -7.7541E+10
+  3.3333E-04     -3.8563E+10     -3.8563E+10     -7.7127E+10     -3.8880E+10     -3.8880E+10     -7.7761E+10
+  3.3333E-04     -3.8654E+10     -3.8654E+10     -7.7308E+10     -3.8979E+10     -3.8979E+10     -7.7957E+10
+  3.3333E-04     -3.8734E+10     -3.8734E+10     -7.7468E+10     -3.9065E+10     -3.9065E+10     -7.8131E+10
+  3.3333E-04     -3.8803E+10     -3.8803E+10     -7.7607E+10     -3.9141E+10     -3.9141E+10     -7.8282E+10
+  3.3333E-04     -3.8862E+10     -3.8862E+10     -7.7724E+10     -3.9205E+10     -3.9205E+10     -7.8410E+10
+  3.3333E-04     -3.8910E+10     -3.8910E+10     -7.7819E+10     -3.9257E+10     -3.9257E+10     -7.8515E+10
+  3.3333E-04     -3.8946E+10     -3.8946E+10     -7.7892E+10     -3.9298E+10     -3.9298E+10     -7.8597E+10
+  3.3333E-04     -3.8972E+10     -3.8972E+10     -7.7944E+10     -3.9328E+10     -3.9328E+10     -7.8656E+10
+  3.3333E-04     -3.8987E+10     -3.8987E+10     -7.7973E+10     -3.9346E+10     -3.9346E+10     -7.8692E+10
+  3.3333E-04     -3.8990E+10     -3.8990E+10     -7.7980E+10     -3.9353E+10     -3.9353E+10     -7.8706E+10
+  3.3333E-04     -3.8983E+10     -3.8983E+10     -7.7965E+10     -3.9348E+10     -3.9348E+10     -7.8697E+10
+  3.3333E-04     -3.8964E+10     -3.8964E+10     -7.7928E+10     -3.9332E+10     -3.9332E+10     -7.8664E+10
+  3.3333E-04     -3.8934E+10     -3.8934E+10     -7.7868E+10     -3.9305E+10     -3.9305E+10     -7.8609E+10
+  3.3333E-04     -3.8893E+10     -3.8893E+10     -7.7786E+10     -3.9266E+10     -3.9266E+10     -7.8532E+10
+  3.3333E-04     -3.8841E+10     -3.8841E+10     -7.7681E+10     -3.9215E+10     -3.9215E+10     -7.8431E+10
+  3.3333E-04     -3.8777E+10     -3.8777E+10     -7.7554E+10     -3.9154E+10     -3.9154E+10     -7.8307E+10
+  3.3333E-04     -3.8702E+10     -3.8702E+10     -7.7405E+10     -3.9080E+10     -3.9080E+10     -7.8161E+10
+  3.3333E-04     -3.8616E+10     -3.8616E+10     -7.7232E+10     -3.8996E+10     -3.8996E+10     -7.7991E+10
+  3.3333E-04     -3.8519E+10     -3.8519E+10     -7.7038E+10     -3.8899E+10     -3.8899E+10     -7.7799E+10
+  3.3333E-04     -3.8410E+10     -3.8410E+10     -7.6820E+10     -3.8792E+10     -3.8792E+10     -7.7584E+10
+  3.3333E-04     -3.8290E+10     -3.8290E+10     -7.6580E+10     -3.8673E+10     -3.8673E+10     -7.7345E+10
+  3.3333E-04     -3.8159E+10     -3.8159E+10     -7.6317E+10     -3.8542E+10     -3.8542E+10     -7.7084E+10
+  3.3333E-04     -3.8016E+10     -3.8016E+10     -7.6031E+10     -3.8400E+10     -3.8400E+10     -7.6800E+10
+  3.3333E-04     -3.7861E+10     -3.7861E+10     -7.5722E+10     -3.8247E+10     -3.8247E+10     -7.6493E+10
+  2.8429E-02     -3.1832E+10     -3.1832E+10     -6.3665E+10     -3.2182E+10     -3.2182E+10     -6.4363E+10
+  2.8429E-02     -2.3186E+10     -2.3186E+10     -4.6373E+10     -2.3444E+10     -2.3444E+10     -4.6888E+10
+  2.8429E-02     -1.7760E+10     -1.7760E+10     -3.5521E+10     -1.7958E+10     -1.7958E+10     -3.5916E+10
+  2.8429E-02     -1.4205E+10     -1.4205E+10     -2.8411E+10     -1.4363E+10     -1.4363E+10     -2.8727E+10
+  2.8429E-02     -1.1761E+10     -1.1761E+10     -2.3522E+10     -1.1892E+10     -1.1892E+10     -2.3783E+10
+  2.8429E-02     -9.9926E+09     -9.9926E+09     -1.9985E+10     -1.0104E+10     -1.0104E+10     -2.0207E+10
+  2.8429E-02     -8.6510E+09     -8.6510E+09     -1.7302E+10     -8.7471E+09     -8.7471E+09     -1.7494E+10
+  2.8429E-02     -7.5900E+09     -7.5900E+09     -1.5180E+10     -7.6743E+09     -7.6743E+09     -1.5349E+10
+  2.8429E-02     -6.7222E+09     -6.7222E+09     -1.3444E+10     -6.7969E+09     -6.7969E+09     -1.3594E+10
+  2.8429E-02     -5.9940E+09     -5.9940E+09     -1.1988E+10     -6.0606E+09     -6.0606E+09     -1.2121E+10
+  2.8429E-02     -5.3713E+09     -5.3713E+09     -1.0743E+10     -5.4310E+09     -5.4310E+09     -1.0862E+10
+  2.8429E-02     -4.8314E+09     -4.8314E+09     -9.6628E+09     -4.8851E+09     -4.8851E+09     -9.7701E+09
+  2.8429E-02     -4.3586E+09     -4.3586E+09     -8.7172E+09     -4.4070E+09     -4.4070E+09     -8.8141E+09
+  2.8429E-02     -3.9416E+09     -3.9416E+09     -7.8831E+09     -3.9853E+09     -3.9853E+09     -7.9707E+09
+  2.8429E-02     -3.5717E+09     -3.5717E+09     -7.1433E+09     -3.6113E+09     -3.6113E+09     -7.2226E+09
+  2.8429E-02     -3.2421E+09     -3.2421E+09     -6.4842E+09     -3.2781E+09     -3.2781E+09     -6.5563E+09
+  2.8429E-02     -2.9476E+09     -2.9476E+09     -5.8951E+09     -2.9803E+09     -2.9803E+09     -5.9606E+09
+  2.8429E-02     -2.6835E+09     -2.6835E+09     -5.3670E+09     -2.7133E+09     -2.7133E+09     -5.4266E+09
+  2.8429E-02     -2.4461E+09     -2.4461E+09     -4.8923E+09     -2.4733E+09     -2.4733E+09     -4.9466E+09
+  2.8429E-02     -2.2324E+09     -2.2324E+09     -4.4647E+09     -2.2572E+09     -2.2572E+09     -4.5143E+09
+  2.8429E-02     -2.0394E+09     -2.0394E+09     -4.0789E+09     -2.0621E+09     -2.0621E+09     -4.1242E+09
+  2.8429E-02     -1.8650E+09     -1.8650E+09     -3.7300E+09     -1.8857E+09     -1.8857E+09     -3.7714E+09
+  2.8429E-02     -1.7070E+09     -1.7070E+09     -3.4140E+09     -1.7260E+09     -1.7260E+09     -3.4520E+09
+  2.8429E-02     -1.5637E+09     -1.5637E+09     -3.1275E+09     -1.5811E+09     -1.5811E+09     -3.1622E+09
+  2.8429E-02     -1.4336E+09     -1.4336E+09     -2.8672E+09     -1.4495E+09     -1.4495E+09     -2.8990E+09
+  2.8429E-02     -1.3152E+09     -1.3152E+09     -2.6304E+09     -1.3298E+09     -1.3298E+09     -2.6596E+09
+  2.8429E-02     -1.2074E+09     -1.2074E+09     -2.4148E+09     -1.2208E+09     -1.2208E+09     -2.4417E+09
+  2.8429E-02     -1.1091E+09     -1.1091E+09     -2.2183E+09     -1.1215E+09     -1.1215E+09     -2.2429E+09
+  2.8429E-02     -1.0195E+09     -1.0195E+09     -2.0389E+09     -1.0308E+09     -1.0308E+09     -2.0616E+09
+  2.8429E-02     -9.3755E+08     -9.3755E+08     -1.8751E+09     -9.4796E+08     -9.4796E+08     -1.8959E+09
+  2.8429E-02     -8.6264E+08     -8.6264E+08     -1.7253E+09     -8.7222E+08     -8.7222E+08     -1.7444E+09
+  2.8429E-02     -7.9409E+08     -7.9409E+08     -1.5882E+09     -8.0291E+08     -8.0291E+08     -1.6058E+09
+  2.8429E-02     -7.3131E+08     -7.3131E+08     -1.4626E+09     -7.3943E+08     -7.3943E+08     -1.4789E+09
+  2.8429E-02     -6.7377E+08     -6.7377E+08     -1.3475E+09     -6.8125E+08     -6.8125E+08     -1.3625E+09
+  2.8429E-02     -6.2099E+08     -6.2099E+08     -1.2420E+09     -6.2789E+08     -6.2789E+08     -1.2558E+09
+  2.8429E-02     -5.7256E+08     -5.7256E+08     -1.1451E+09     -5.7892E+08     -5.7892E+08     -1.1578E+09
+  2.8429E-02     -5.2808E+08     -5.2808E+08     -1.0562E+09     -5.3394E+08     -5.3394E+08     -1.0679E+09
+  2.8429E-02     -4.8721E+08     -4.8721E+08     -9.7442E+08     -4.9262E+08     -4.9262E+08     -9.8524E+08
+  2.8429E-02     -4.4964E+08     -4.4964E+08     -8.9927E+08     -4.5463E+08     -4.5463E+08     -9.0926E+08
+  2.8429E-02     -4.1508E+08     -4.1508E+08     -8.3016E+08     -4.1969E+08     -4.1969E+08     -8.3938E+08
+  2.8429E-02     -3.8328E+08     -3.8328E+08     -7.6656E+08     -3.8754E+08     -3.8754E+08     -7.7507E+08
+  2.8429E-02     -3.5401E+08     -3.5401E+08     -7.0801E+08     -3.5794E+08     -3.5794E+08     -7.1587E+08
+  2.8429E-02     -3.2704E+08     -3.2704E+08     -6.5409E+08     -3.3068E+08     -3.3068E+08     -6.6135E+08
+  2.8429E-02     -3.0220E+08     -3.0220E+08     -6.0441E+08     -3.0556E+08     -3.0556E+08     -6.1112E+08
+  2.8429E-02     -2.7931E+08     -2.7931E+08     -5.5862E+08     -2.8241E+08     -2.8241E+08     -5.6483E+08
+  2.8429E-02     -2.5820E+08     -2.5820E+08     -5.1641E+08     -2.6107E+08     -2.6107E+08     -5.2214E+08
+  2.8429E-02     -2.3874E+08     -2.3874E+08     -4.7748E+08     -2.4139E+08     -2.4139E+08     -4.8278E+08
+  2.8429E-02     -2.2078E+08     -2.2078E+08     -4.4156E+08     -2.2323E+08     -2.2323E+08     -4.4646E+08
+  2.8429E-02     -2.0421E+08     -2.0421E+08     -4.0842E+08     -2.0648E+08     -2.0648E+08     -4.1295E+08
+  2.8429E-02     -1.8891E+08     -1.8891E+08     -3.7782E+08     -1.9101E+08     -1.9101E+08     -3.8202E+08
+  2.8429E-02     -1.7479E+08     -1.7479E+08     -3.4957E+08     -1.7673E+08     -1.7673E+08     -3.5345E+08
+  2.8429E-02     -1.6174E+08     -1.6174E+08     -3.2348E+08     -1.6354E+08     -1.6354E+08     -3.2708E+08
+  2.8429E-02     -1.4969E+08     -1.4969E+08     -2.9938E+08     -1.5135E+08     -1.5135E+08     -3.0271E+08
+  2.8429E-02     -1.3856E+08     -1.3856E+08     -2.7711E+08     -1.4010E+08     -1.4010E+08     -2.8019E+08
+  2.8429E-02     -1.2827E+08     -1.2827E+08     -2.5653E+08     -1.2969E+08     -1.2969E+08     -2.5938E+08
+  2.8429E-02     -1.1875E+08     -1.1875E+08     -2.3751E+08     -1.2007E+08     -1.2007E+08     -2.4015E+08
+  2.8429E-02     -1.0996E+08     -1.0996E+08     -2.1992E+08     -1.1118E+08     -1.1118E+08     -2.2236E+08
+  2.8429E-02     -1.0182E+08     -1.0182E+08     -2.0364E+08     -1.0295E+08     -1.0295E+08     -2.0591E+08
+  2.8429E-02     -9.4295E+07     -9.4295E+07     -1.8859E+08     -9.5342E+07     -9.5342E+07     -1.9068E+08
+  2.8429E-02     -8.7329E+07     -8.7329E+07     -1.7466E+08     -8.8299E+07     -8.8299E+07     -1.7660E+08
+  2.8429E-02     -8.0881E+07     -8.0881E+07     -1.6176E+08     -8.1779E+07     -8.1779E+07     -1.6356E+08
+  2.8429E-02     -7.4908E+07     -7.4908E+07     -1.4982E+08     -7.5740E+07     -7.5740E+07     -1.5148E+08
+  2.8429E-02     -6.9372E+07     -6.9372E+07     -1.3874E+08     -7.0142E+07     -7.0142E+07     -1.4028E+08
+  2.8429E-02     -6.4237E+07     -6.4237E+07     -1.2847E+08     -6.4950E+07     -6.4950E+07     -1.2990E+08
+  2.8429E-02     -5.9465E+07     -5.9465E+07     -1.1893E+08     -6.0126E+07     -6.0126E+07     -1.2025E+08
+  2.8429E-02     -5.5022E+07     -5.5022E+07     -1.1004E+08     -5.5633E+07     -5.5633E+07     -1.1127E+08
+  2.8429E-02     -5.0866E+07     -5.0866E+07     -1.0173E+08     -5.1431E+07     -5.1431E+07     -1.0286E+08
+  2.8429E-02     -4.6951E+07     -4.6951E+07     -9.3902E+07     -4.7472E+07     -4.7472E+07     -9.4943E+07
+  2.8429E-02     -4.3214E+07     -4.3214E+07     -8.6428E+07     -4.3691E+07     -4.3691E+07     -8.7382E+07
+  2.8429E-02     -3.9574E+07     -3.9574E+07     -7.9148E+07     -3.9995E+07     -3.9995E+07     -7.9990E+07
+
+ TOTAL VOLUME:                2.0000E+00
+ TOTAL ENERGY DEPOSITION:    -6.0220E+09
+ TOTAL CHARGE DEPOSITION:    -6.0880E+09
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+<|macro_xs.txt  := MACRO ;                                                |<0093
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macro_xs.txt'.
+-->>module EQU:        : time spent=        0.001 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|edit_xs.txt   := EEDIT ;                                                |<0094
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'EEDIT       ' WAS EXPORTED TO FILE 'edit_xs.txt '.
+-->>module EQU:        : time spent=        0.001 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|track_xs.txt  := TRACK ;                                                |<0095
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'TRACK       ' WAS EXPORTED TO FILE 'track_xs.txt'.
+-->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|geom_xs.txt   := GEOM ;                                                 |<0096
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'GEOM        ' WAS EXPORTED TO FILE 'geom_xs.txt '.
+-->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|syst_xs.txt   := SYSTEM ;                                               |<0097
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'SYSTEM      ' WAS EXPORTED TO FILE 'syst_xs.txt '.
+-->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|flux_xs.txt   := FLUX  ;                                                |<0098
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'FLUX        ' WAS EXPORTED TO FILE 'flux_xs.txt '.
+-->>module EQU:        : time spent=        0.005 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|EEDIT FLUX SYSTEM MACRO TRACK GEOM := DELETE:                           |<0099
+<|EEDIT FLUX SYSTEM MACRO TRACK GEOM ;                                    |<0100
+<|END: ;                                                                  |<0101
+
+ normal end of execution for dragon 5  Version 5.0.7 ($Revision: 2060 $)               
+ check for warning in listing
+ before assuming your run was successful

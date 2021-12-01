@@ -14,7 +14,7 @@ LINKED_LIST  MACRO OLDMACRO GEOM TRACK SYSTEM FLUX DEPOS EEDIT GWT0
              GEDIT ;
 
 SEQ_ASCII    FMAC_M :: FILE 
-'./FMAC_e_water_lobatto_3.00MeV_2g_2e_P2_FC.txt' ;
+'./FMAC_e_water_lobatto_3.00MeV_0g_2e_P2_NC.txt' ;
 !'./FMAC_e_water_3.00MeV_80g_80e_P8_FC.txt' ;
 !'./FMAC_e_water_3.00MeV_0g_100e_P8_NC.txt' ;
 !'./FMAC_e_water_3.00MeV_0g_80e_P8_NC.txt' ;
@@ -43,7 +43,9 @@ TRACK := SNT: GEOM ::
 
 
 * --- Library access and structuring
-MACRO    := FMAC: FMAC_M :: EDIT 2 PARTICLE B ;
+MACRO    := FMAC: FMAC_M :: EDIT 99 PARTICLE B ;
+
+macro_xs.txt  := MACRO ;
 
 OLDMACRO := MACRO ;
 
@@ -112,7 +114,7 @@ EEDIT := OUT: FLUX TRACK MACRO GEOM :: EDIT 2 COND INTG NONE ;
 GEDIT := EEDIT ;
 DEPOS := HEAT: EEDIT GEDIT :: EDIT 2 ; 
 
-macro_xs.txt  := MACRO ;
+
 edit_xs.txt   := EEDIT ;  
 track_xs.txt  := TRACK ;
 geom_xs.txt   := GEOM ; 
