@@ -237,7 +237,7 @@ QUIT "LIST" .                                                              0063
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE MAC:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 <|TRACK := BIVACT: IAEA ::                                                |<0056
 <|TITLE 'IAEA-2D BENCHMARK'                                               |<0057
 <|EDIT 2 MAXR 81 DUAL            1           2 ;                          |<0058
@@ -340,7 +340,7 @@ QUIT "LIST" .                                                              0063
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (BIVAC       )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.001 MEMORY USAGE= 2.600E+02
+-->>MODULE ASM:        : TIME SPENT=        0.000 MEMORY USAGE= 2.640E+02
 <|FLUX := FLU: MACRO TRACK SYS :: TYPE K EXTE 100 5.0E-8 ;                |<0060
 ->@BEGIN MODULE : FLU:        
 ->@DESCRIPTION  : Solve the flux equations                                                
@@ -611,7 +611,7 @@ QUIT "LIST" .                                                              0063
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module GREP:       : time spent=        0.001 memory usage= 0.000E+00
+-->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
 ->@END MODULE   : GREP:       
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
