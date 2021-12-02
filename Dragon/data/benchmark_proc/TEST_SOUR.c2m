@@ -21,6 +21,18 @@ GEOM := GEO: :: CAR1D 2
            MESHX 0.0 0.3 4.0
            SPLITX 30 70
            ;
+*GEOM := GEO: :: CAR3D 3 1 1
+*            X- VOID X+ VOID
+*            Y- VOID Y+ VOID
+*            Z- VOID Z+ VOID
+*            MIX 2 1 2
+*            MESHX 0.0 0.35 0.65 1.0
+*            MESHY 0.0 0.5
+*            MESHZ 0.0 0.5
+*            SPLITX 7 30 7
+*            SPLITY 10
+*            SPLITZ 10
+*            ;
 ETRACK := SNT: GEOM ::
       TITLE 'Water slab - isotropic - test module SOUR'
       EDIT 2 MAXR 1000000 DIAM 1 NLIVO SN 16 SCAT 16 EPSI 1.E-5
@@ -42,7 +54,11 @@ EMACRO := MAC: EMACRO EMACRO2 ::
 EMACRO2 := DELETE: EMACRO2 ;
 REAL qsour := 1.E10 2.0 / $Pi_R / ;
 *
-ESOUR := SOUR: EMACRO ETRACK GEOM :: ;
+ESOUR := SOUR: EMACRO ETRACK GEOM ::
+     ISO 1
+     XLIM 0.0 0.3
+     INTG 1 1.0E10
+     ;
 *
 *
 *
