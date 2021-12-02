@@ -237,7 +237,7 @@ QUIT "LIST" .                                                              0063
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+-->>MODULE MAC:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
 <|TRACK := BIVACT: IAEA ::                                                |<0056
 <|TITLE 'IAEA-2D BENCHMARK'                                               |<0057
 <|EDIT 2 MAXR 81 DUAL            1           2 ;                          |<0058
