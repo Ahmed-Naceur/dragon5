@@ -346,7 +346,7 @@ QUIT "LIST" .                                                              0113
  TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =       163
 
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.004 MEMORY USAGE= 6.040E+02
+-->>MODULE LIB:        : TIME SPENT=        0.006 MEMORY USAGE= 5.240E+02
 <|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0043
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
@@ -365,7 +365,7 @@ QUIT "LIST" .                                                              0113
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MICRO       ' WAS EXPORTED TO FILE 'micr_xsr.txt'.
--->>module EQU:        : time spent=        0.001 memory usage= 1.000E+02
+-->>module EQU:        : time spent=        0.001 memory usage= 1.800E+02
 ->@END MODULE   : EQU:        
 <|macr_xsr.txt   := MACRO ;                                               |<0045
 ->@BEGIN MODULE : EQU:        
@@ -408,7 +408,7 @@ QUIT "LIST" .                                                              0113
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE MAC:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 <|OLDMACRO := DELETE: OLDMACRO ;                                          |<0049
 <|MACRO := MAC: MACRO ::                                                  |<0052
 <|READ INPUT                                                              |<0053

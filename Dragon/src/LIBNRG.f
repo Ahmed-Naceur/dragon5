@@ -232,6 +232,8 @@
 *---
 *  MATXS2 LIBRARY
 *----
+        !PRINT *,NAMFIL 
+        !CALL XABORT('AHMED,LIBNRG.f')
         IF(NAMFIL(:1).EQ.'_') ILIBIN=3
         IUNIT=KDROPN(NAMFIL,IACTO,ILIBIN,LRIND)
         IF(IUNIT.LE.0) THEN
@@ -251,6 +253,11 @@
         NMAT=IA(4)
         IREC=4
         NWDS=(NPART+NTYPE+NMAT)*MULT+2*NTYPE+NPART+2*NMAT
+
+        !PRINT *,NPART
+        !PRINT *,NTYPE
+        !CALL XABORT('AHMED,LIBNRG.f')
+
         IF(NWDS.GT.MAXA)
      >    CALL XABORT('LIBNRG: INSUFFICIENT VALUE OF MAXA(2).')
         NEX1=(NPART+NTYPE+NMAT)*MULT
@@ -261,6 +268,10 @@
         ENDIF
         NGX=IA(NEX1+1) ! use the energy mesh of the first particle
         WRITE(HPRT,'(A6)') DA(1) ! name of the first particle
+        
+        !PRINT *,HPRT
+        !CALL XABORT('AHMED,LIBNRG.f')
+
         IREC=IREC+1
         DO 195 IMTYP=1,NMTYP
           IF(HPRT.EQ.HMTYP(IMTYP)) THEN
@@ -301,6 +312,10 @@
           CALL XABORT(HSMG)
         ENDIF
       ELSE IF(NAMLBT.EQ.'NDAS') THEN
+
+      !PRINT *,HPRT
+      !CALL XABORT('AHMED,LIBNRG.f')
+
 *---
 *  WIMS-NDAS LIBRARY
 *----

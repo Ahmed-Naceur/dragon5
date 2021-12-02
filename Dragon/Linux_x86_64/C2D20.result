@@ -158,14 +158,14 @@ QUIT "LIST" .                                                              0117
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.017 MEMORY USAGE= 2.520E+02
+-->>MODULE INFO:       : TIME SPENT=        0.063 MEMORY USAGE= 2.520E+02
 ->@BEGIN MODULE : INFO:       
 ->@DESCRIPTION  : Information on water, UO2 and ThO2                                      
 ->@CREDITS      : R. Roy                                                                  
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE INFO:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : LIB:        
 ->@DESCRIPTION  : Microscopic xs-library processing                                       
 ->@CREDITS      : A. Hebert, G. Marleau                                                   
@@ -681,7 +681,7 @@ QUIT "LIST" .                                                              0117
    455  NP238   0008  NP238         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
    456  PU238   0008  PU238         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.874 MEMORY USAGE= 2.136E+03
+-->>MODULE LIB:        : TIME SPENT=        0.955 MEMORY USAGE= 2.128E+03
 . ------------------------------------------------------------------------ .
 <|MicLib := MicACRE6UH MicLib ;                                           |<0018
 ->@BEGIN MODULE : LIB:        
@@ -690,7 +690,7 @@ QUIT "LIST" .                                                              0117
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.099 MEMORY USAGE= 5.080E+02
+-->>MODULE LIB:        : TIME SPENT=        0.137 MEMORY USAGE= 5.160E+02
 . ------------------------------------------------------------------------ .
 <|MicLib := MicACRE6UW MicLib ;                                           |<0019
 ->@BEGIN MODULE : LIB:        
@@ -2800,7 +2800,7 @@ QUIT "LIST" .                                                              0117
   2057  NP238   0008  NP238         WIMSAECL   1    48  0.0000E+00  9.602E+02  0.000E+00   0             0                         
   2058  PU238   0008  PU238         WIMSAECL   1    48  0.0000E+00  9.602E+02  0.000E+00   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.256 MEMORY USAGE= 1.608E+03
+-->>MODULE LIB:        : TIME SPENT=        0.324 MEMORY USAGE= 1.608E+03
 . ------------------------------------------------------------------------ .
 <|CFLXS.tds CFLXS.trk := GeoACRC2DN ::                                    |<0034
 <|<<Modele>> <<Option>> <<Etat>> <<BCtrk>>                                |<0035
@@ -2874,7 +2874,7 @@ QUIT "LIST" .                                                              0117
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
 <|Tracking Intline := NXT: LocalGeo ::                                    |<1284
 <|EDIT 1 TITLE <<Title>> ANIS 2                                           |<1285
 <|<<LocTrk>> <<NbAngles>> <<TrkDens>> ;                                   |<1286
@@ -2918,7 +2918,7 @@ QUIT "LIST" .                                                              0117
  Tracking of geometry completed
 
 ->@END MODULE   : NXT:        
--->>MODULE NXT:        : TIME SPENT=        0.489 MEMORY USAGE= 2.520E+02
+-->>MODULE NXT:        : TIME SPENT=        0.637 MEMORY USAGE= 2.520E+02
 <|LocalGeo := DELETE:  LocalGeo                               ;           |<1290
 . ------------------------------------------------------------------------ .
 <|CFLXF.tds CFLXF.trk := GeoACRC2DN ::                                    |<0045
@@ -3042,7 +3042,7 @@ QUIT "LIST" .                                                              0117
  Tracking of geometry completed
 
 ->@END MODULE   : NXT:        
--->>MODULE NXT:        : TIME SPENT=        1.164 MEMORY USAGE= 0.000E+00
+-->>MODULE NXT:        : TIME SPENT=        1.515 MEMORY USAGE= 0.000E+00
 <|LocalGeo := DELETE:  LocalGeo                               ;           |<1290
 . ------------------------------------------------------------------------ .
 <|MicLib := SHI: MicLib CFLXS.tds CFLXS.trk   ::                          |<0053
@@ -3053,7 +3053,7 @@ QUIT "LIST" .                                                              0117
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : SHI:        
--->>MODULE SHI:        : TIME SPENT=       26.741 MEMORY USAGE= 5.100E+03
+-->>MODULE SHI:        : TIME SPENT=       34.739 MEMORY USAGE= 5.108E+03
 <|Pij    := ASM: MicLib CFLXF.tds CFLXF.trk   ::                          |<0058
 <|EDIT 0 PIJK SKIP PNOR HELI ;                                            |<0059
 ->@BEGIN MODULE : ASM:        
@@ -3062,7 +3062,7 @@ QUIT "LIST" .                                                              0117
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=       87.820 MEMORY USAGE= 3.398E+04
+-->>MODULE ASM:        : TIME SPENT=      108.939 MEMORY USAGE= 3.407E+04
 <|Flux   := FLU: Pij MicLib CFLXF.tds         ::                          |<0060
 <|EDIT 1 TYPE B B1 SIGS ;                                                 |<0061
 ->@BEGIN MODULE : FLU:        
@@ -3252,7 +3252,7 @@ QUIT "LIST" .                                                              0117
  ++ TRACKING CALLED=  36 TIMES FINAL KINF= 1.165183E+00 FINAL KEFF= 9.999998E-01 B2= 7.22461E-04 PRECISION= 8.86E-09
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      2676
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.476 MEMORY USAGE= 7.377E+04
+-->>MODULE FLU:        : TIME SPENT=        0.483 MEMORY USAGE= 7.369E+04
 <|assertS Flux :: 'K-INFINITY' 1 1.165185 ;                               |<0062
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -3442,12 +3442,12 @@ QUIT "LIST" .                                                              0117
 
  OUT(  6) EIG: PRC= 7.26E-08 TAR= 1.00E-05 KEFF= 9.999999E-01 BUCK= 7.21685E-04
  OUT(  6) FLX: PRC= 1.31E-05 TAR= 5.00E-05 FNOR= 1.000000E+00 ACCE=     0.81986
- FLU2DR: CPU TIME=        0. EXTERNAL CONVERGENCE       REACHED AFTER     6 ITERATIONS.
+ FLU2DR: CPU TIME=        1. EXTERNAL CONVERGENCE       REACHED AFTER     6 ITERATIONS.
 
  ++ TRACKING CALLED=  36 TIMES FINAL KINF= 1.165598E+00 FINAL KEFF= 9.999999E-01 B2= 7.21685E-04 PRECISION= 7.26E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      2667
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.470 MEMORY USAGE= 1.085E+05
+-->>MODULE FLU:        : TIME SPENT=        0.731 MEMORY USAGE= 1.085E+05
 <|assertS Flux :: 'K-INFINITY' 1 1.165601 ;                               |<0066
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -3637,12 +3637,12 @@ QUIT "LIST" .                                                              0117
 
  OUT(  6) EIG: PRC= 7.26E-08 TAR= 1.00E-05 KEFF= 9.999999E-01 BUCK= 7.21685E-04
  OUT(  6) FLX: PRC= 1.31E-05 TAR= 5.00E-05 FNOR= 1.000000E+00 ACCE=     0.81986
- FLU2DR: CPU TIME=        0. EXTERNAL CONVERGENCE       REACHED AFTER     6 ITERATIONS.
+ FLU2DR: CPU TIME=        1. EXTERNAL CONVERGENCE       REACHED AFTER     6 ITERATIONS.
 
  ++ TRACKING CALLED=  36 TIMES FINAL KINF= 1.165598E+00 FINAL KEFF= 9.999999E-01 B2= 7.21685E-04 PRECISION= 7.26E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      2667
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.471 MEMORY USAGE= 1.082E+05
+-->>MODULE FLU:        : TIME SPENT=        0.604 MEMORY USAGE= 1.082E+05
 <|assertS Flux :: 'K-INFINITY' 1 1.165601 ;                               |<0070
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -3758,7 +3758,7 @@ QUIT "LIST" .                                                              0117
           IN(  9) FLX: PRC= 2.73E-04 TAR= 5.00E-05 IGDEB=           14 ACCE=     1.00000
                   FIRST UNCONVERGED GROUP PRC= 0.73E-04
  FLU2DR: NO LEAKAGE-> REBALANCING ON
- FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE *NOT* REACHED AFTER     9 ITERATIONS.
+ FLU2DR: CPU TIME=        1. INTERNAL CONVERGENCE *NOT* REACHED AFTER     9 ITERATIONS.
 
  B1DIF: SOLUTION OF B1   EQUATIONS WITH TYPE B   
         NUMBER OF ITERATIONS =  4
@@ -3820,7 +3820,7 @@ QUIT "LIST" .                                                              0117
  ++ TRACKING CALLED=  36 TIMES FINAL KINF= 1.164394E+00 FINAL KEFF= 1.000000E+00 B2= 6.29228E-04 PRECISION= 1.06E-06
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      2911
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        1.529 MEMORY USAGE= 4.821E+05
+-->>MODULE FLU:        : TIME SPENT=        1.829 MEMORY USAGE= 4.819E+05
 <|assertS Flux :: 'K-INFINITY' 1 1.164401 ;                               |<0074
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -3846,7 +3846,7 @@ QUIT "LIST" .                                                              0117
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=       83.421 MEMORY USAGE= 7.648E+03
+-->>MODULE ASM:        : TIME SPENT=      105.506 MEMORY USAGE= 7.456E+03
 <|Flux   := FLU: Pij MicLib CFLXF.tds         ::                          |<0078
 <|EDIT 1 TYPE B B1 ECCO ;                                                 |<0079
 ->@BEGIN MODULE : FLU:        
@@ -4029,12 +4029,12 @@ QUIT "LIST" .                                                              0117
 
  OUT(  7) EIG: PRC= 4.52E-08 TAR= 1.00E-05 KEFF= 1.000000E+00 BUCK= 6.24894E-04
  OUT(  7) FLX: PRC= 2.33E-05 TAR= 5.00E-05 FNOR= 9.999999E-01 ACCE=     1.00000
- FLU2DR: CPU TIME=        1. EXTERNAL CONVERGENCE       REACHED AFTER     7 ITERATIONS.
+ FLU2DR: CPU TIME=        2. EXTERNAL CONVERGENCE       REACHED AFTER     7 ITERATIONS.
 
  ++ TRACKING CALLED=  35 TIMES FINAL KINF= 1.164369E+00 FINAL KEFF= 1.000000E+00 B2= 6.24894E-04 PRECISION= 4.52E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      2660
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        1.132 MEMORY USAGE= 2.331E+05
+-->>MODULE FLU:        : TIME SPENT=        1.564 MEMORY USAGE= 2.331E+05
 <|assertS Flux :: 'K-INFINITY' 1 1.164370 ;                               |<0080
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -4060,7 +4060,7 @@ QUIT "LIST" .                                                              0117
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=       90.046 MEMORY USAGE= 3.391E+04
+-->>MODULE ASM:        : TIME SPENT=      112.292 MEMORY USAGE= 3.396E+04
 <|Flux   := FLU: Pij MicLib CFLXF.tds         ::                          |<0087
 <|EDIT 1 TYPE B B1 SIGS ;                                                 |<0088
 ->@BEGIN MODULE : FLU:        
@@ -4185,7 +4185,7 @@ QUIT "LIST" .                                                              0117
  ++ TRACKING CALLED=  19 TIMES FINAL KINF= 1.165181E+00 FINAL KEFF= 9.999999E-01 B2= 7.22471E-04 PRECISION= 8.86E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1102
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.222 MEMORY USAGE= 8.888E+03
+-->>MODULE FLU:        : TIME SPENT=        0.222 MEMORY USAGE= 8.848E+03
 <|assertS Flux :: 'K-INFINITY' 1 1.165184 ;                               |<0089
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -4328,7 +4328,7 @@ QUIT "LIST" .                                                              0117
  ++ TRACKING CALLED=  20 TIMES FINAL KINF= 1.165597E+00 FINAL KEFF= 1.000000E+00 B2= 7.21697E-04 PRECISION= 1.63E-07
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1185
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.242 MEMORY USAGE= 4.804E+04
+-->>MODULE FLU:        : TIME SPENT=        0.240 MEMORY USAGE= 4.804E+04
 <|assertS Flux :: 'K-INFINITY' 1 1.165599 ;                               |<0093
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -4472,7 +4472,7 @@ QUIT "LIST" .                                                              0117
  ++ TRACKING CALLED=  20 TIMES FINAL KINF= 1.165521E+00 FINAL KEFF= 9.999998E-01 B2= 7.20827E-04 PRECISION= 2.94E-07
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1116
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.237 MEMORY USAGE= 4.514E+04
+-->>MODULE FLU:        : TIME SPENT=        0.230 MEMORY USAGE= 4.514E+04
 <|assertS Flux :: 'K-INFINITY' 1 1.165524 ;                               |<0097
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -4619,7 +4619,7 @@ QUIT "LIST" .                                                              0117
  ++ TRACKING CALLED=  22 TIMES FINAL KINF= 1.164394E+00 FINAL KEFF= 9.999991E-01 B2= 6.29227E-04 PRECISION= 5.74E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1369
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.787 MEMORY USAGE= 2.284E+05
+-->>MODULE FLU:        : TIME SPENT=        0.799 MEMORY USAGE= 2.283E+05
 <|assertS Flux :: 'K-INFINITY' 1 1.164400 ;                               |<0101
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -4645,7 +4645,7 @@ QUIT "LIST" .                                                              0117
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=       83.011 MEMORY USAGE= 7.316E+03
+-->>MODULE ASM:        : TIME SPENT=      102.554 MEMORY USAGE= 7.248E+03
 <|Flux   := FLU: Pij MicLib CFLXF.tds         ::                          |<0105
 <|EDIT 1 TYPE B B1 ECCO ;                                                 |<0106
 ->@BEGIN MODULE : FLU:        
@@ -4765,12 +4765,12 @@ QUIT "LIST" .                                                              0117
 
  OUT(  4) EIG: PRC= 7.96E-08 TAR= 1.00E-05 KEFF= 1.000000E+00 BUCK= 6.24890E-04
  OUT(  4) FLX: PRC= 2.15E-05 TAR= 5.00E-05 FNOR= 9.999998E-01 ACCE=     1.01921
- FLU2DR: CPU TIME=        0. EXTERNAL CONVERGENCE       REACHED AFTER     4 ITERATIONS.
+ FLU2DR: CPU TIME=        1. EXTERNAL CONVERGENCE       REACHED AFTER     4 ITERATIONS.
 
  ++ TRACKING CALLED=  19 TIMES FINAL KINF= 1.164368E+00 FINAL KEFF= 1.000000E+00 B2= 6.24890E-04 PRECISION= 7.96E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1102
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.499 MEMORY USAGE= 9.028E+04
+-->>MODULE FLU:        : TIME SPENT=        0.625 MEMORY USAGE= 9.028E+04
 <|assertS Flux :: 'K-INFINITY' 1 1.164370 ;                               |<0107
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                

@@ -263,8 +263,8 @@ QUIT .                                                                  IMPLICIT
 
  LIBSUB: PROCESSING ISOTOPE/MATERIAL 'Am241   0001'.
 
- LIBSUB: CPU TIME IN LIBLIB=      5.14 SECONDS.
-         CPU TIME IN LIBPTW=      0.19 SECONDS.
+ LIBSUB: CPU TIME IN LIBLIB=      1.07 SECONDS.
+         CPU TIME IN LIBPTW=      0.12 SECONDS.
 
  OPTIONS
  -------
@@ -367,7 +367,7 @@ QUIT .                                                                  IMPLICIT
     57  O16     0001  O16           DRAGON     1     8  3.3368E-02  2.930E+02  1.000E+10   0             0                         
     58  H1_H2O  0007  H1_H2O        DRAGON     1     8  6.6733E-02  2.930E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        7.255 MEMORY USAGE= 2.410E+04
+-->>MODULE LIB:        : TIME SPENT=        1.217 MEMORY USAGE= 2.412E+04
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -411,7 +411,7 @@ QUIT .                                                                  IMPLICIT
  IBIHET     0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
  EPSJ  5.00E-06 (FLUX-CURRENT ITERATION EPSILON)
 ->@END MODULE   : SYBILT:     
--->>MODULE SYBILT:     : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE SYBILT:     : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : USS:        
 ->@DESCRIPTION  : Self-shielding by subgroup method                                       
 ->@CREDITS      : A. Hebert                                                               
@@ -1432,7 +1432,7 @@ QUIT .                                                                  IMPLICIT
 
  USSIN1: PROCESSING ISOTOPE 'Pu238   0004'.
 ->@END MODULE   : USS:        
--->>MODULE USS:        : TIME SPENT=        0.604 MEMORY USAGE= 4.680E+03
+-->>MODULE USS:        : TIME SPENT=        0.320 MEMORY USAGE= 4.680E+03
 ->@BEGIN MODULE : ASM:        
 ->@DESCRIPTION  : To built system matrices (CP and IC)                                    
 ->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
@@ -1462,7 +1462,7 @@ QUIT .                                                                  IMPLICIT
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (SYBIL       )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.021 MEMORY USAGE= 0.000E+00
+-->>MODULE ASM:        : TIME SPENT=        0.010 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : FLU:        
 ->@DESCRIPTION  : Solve the flux equations                                                
 ->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
@@ -1527,7 +1527,7 @@ QUIT .                                                                  IMPLICIT
  ++ TRACKING CALLED=   9 TIMES FINAL KINF= 1.455480E+00 FINAL KEFF= 1.455480E+00 B2= 0.00000E+00 PRECISION= 1.36E-07
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1357
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.038 MEMORY USAGE= 2.640E+02
+-->>MODULE FLU:        : TIME SPENT=        0.021 MEMORY USAGE= 2.640E+02
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -1623,7 +1623,7 @@ QUIT .                                                                  IMPLICIT
  ++ TRACKING CALLED=   7 TIMES FINAL KINF= 1.456203E+00 FINAL KEFF= 1.000000E+00 B2= 1.42639E-02 PRECISION= 7.25E-07
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1013
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.039 MEMORY USAGE= 5.280E+02
+-->>MODULE FLU:        : TIME SPENT=        0.022 MEMORY USAGE= 5.280E+02
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -1637,7 +1637,7 @@ QUIT .                                                                  IMPLICIT
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : T:          
--->>MODULE T:          : TIME SPENT=        0.015 MEMORY USAGE= 2.904E+03
+-->>MODULE T:          : TIME SPENT=        0.008 MEMORY USAGE= 2.904E+03
 ->@BEGIN MODULE : ASM:        
 ->@DESCRIPTION  : To built system matrices (CP and IC)                                    
 ->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
@@ -1667,7 +1667,7 @@ QUIT .                                                                  IMPLICIT
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (SYBIL       )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.020 MEMORY USAGE= 0.000E+00
+-->>MODULE ASM:        : TIME SPENT=        0.011 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : FLU:        
 ->@DESCRIPTION  : Solve the flux equations                                                
 ->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
@@ -1756,7 +1756,7 @@ QUIT .                                                                  IMPLICIT
  ++ TRACKING CALLED=   9 TIMES FINAL KINF= 1.018223E+00 FINAL KEFF= 9.994871E-01 B2= 1.42639E-02 PRECISION= 3.07E-06
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1548
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.055 MEMORY USAGE= 5.280E+02
+-->>MODULE FLU:        : TIME SPENT=        0.031 MEMORY USAGE= 5.280E+02
 ->@BEGIN MODULE : SENS:       
 ->@DESCRIPTION  : Sensitivity analysis to cross-section on the reactivity                 
 ->@CREDITS      : C. Laville, G. Marleau                                                  
@@ -20952,7 +20952,7 @@ Sensitivity profiles
  -2.499604E-04 -2.160215E-04 -1.282184E-04  2.364592E-07  4.360903E-05
   8.924157E-05  1.893803E-04
 ->@END MODULE   : SENS:       
--->>MODULE SENS:       : TIME SPENT=        0.214 MEMORY USAGE= 1.056E+03
+-->>MODULE SENS:       : TIME SPENT=        0.107 MEMORY USAGE= 1.056E+03
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      

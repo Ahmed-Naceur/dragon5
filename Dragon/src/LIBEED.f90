@@ -53,6 +53,8 @@ contains
       endif
       !
       if (iucccc.ne.iucccc_old) iucccc_old=0
+      !print *,iucccc_old
+      !call XABORT('AHMED,LIBEED.f90')
       if (iucccc_old.eq.0) then
         iucccc_old=iucccc
         ipunit=0
@@ -96,6 +98,11 @@ contains
       call c_f_pointer(ra_ptr,ia,(/ nwds /))
       call c_f_pointer(ra_ptr,da,(/ nwds /))
       ipunit=atoc(numrec)
+
+      !print *,btoc(numrec)
+      !call XABORT('AHMED,LIBEED.f90')
+
+
       if(btoc(numrec).eq.' 0v') then
         read(iucccc,'(4x,a8,1x,2a8,1x,i6)') (da(jj),jj=1,3),ia(7)                                       
       else if(btoc(numrec).eq.' 1d') then
@@ -104,6 +111,12 @@ contains
         ntype=ia(2)
         nmat=ia(4)
         allocate(hmatn(nmat),nsubm(nmat))
+
+        !print *,ia(1)
+        !print *,npart
+        !print *,btoc(numrec)
+        !call XABORT('AHMED,LIBEED.f90')
+
       else if(btoc(numrec).eq.' 2d') then
         read(iucccc,'(4x/(9a8))') (da(jj),jj=1,nwds/2)
         ipunit=ipunit+1+(nwds/2-1)/9
