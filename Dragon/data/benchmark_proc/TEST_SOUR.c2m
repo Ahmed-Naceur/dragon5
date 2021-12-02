@@ -54,11 +54,121 @@ EMACRO := MAC: EMACRO EMACRO2 ::
 EMACRO2 := DELETE: EMACRO2 ;
 REAL qsour := 1.E10 2.0 / $Pi_R / ;
 *
+*
+*
+*
 ESOUR := SOUR: EMACRO ETRACK GEOM ::
      ISO 1
      XLIM 0.0 0.3
      INTG 1 1.0E10
      ;
+*
+*
+*
+*
+SYSTEM := ASM: EMACRO ETRACK :: EDIT 2 ARM ;
+EFLUX := FLU: EMACRO ETRACK SYSTEM ESOUR ::
+     EDIT 2 TYPE S EXTE 100
+     ;
+EEDITS := OUT: EFLUX ETRACK EMACRO GEOM ::
+     EDIT 2 COND INTG NONE
+     ;
+SYSTEM := DELETE: SYSTEM ;
+
+*----
+*  Set the photon source
+*----
+GMACRO := FMAC: FMAC_M ::
+  EDIT 2
+  PARTICLE GAMA
+;
+
+GMACRO2 := GMACRO ;
+GMACRO := MAC: GMACRO GMACRO2 ::
+     MIX 2 1 OLDL
+     ;
+GSOUR := PSOUR: GMACRO GTRACK EFLUX ::
+   EDIT 1
+   PARTICLE BETA
+   ;
+*----
+*  Compute the photon flux
+*----
+SYSTEM := ASM: GMACRO GTRACK :: EDIT 1 ARM ;
+GFLUX := FLU: GMACRO GTRACK SYSTEM GSOUR ::
+    EDIT 2 TYPE S EXTE 100
+    ;
+GEDITS := OUT: GFLUX GTRACK GMACRO GEOM ::
+    EDIT 2 COND INTG NONE
+    ;
+SYSTEM := DELETE: SYSTEM ;
+*----
+*  Compute the primary energy deposition
+*----
+DEPOS := HEAT: EEDITS GEDITS ::
+    EDIT 1 ! SOUR 0.0518134 ! 1/(\ro_{W} g/cm^{3})
+    ;
+EEDITS GEDITS EFLUX ESOUR := DELETE: EEDITS GEDITS EFLUX ESOUR ;
+*----
+*  Compute the secondary electron source
+*----
+ESOUR := PSOUR: EMACRO ETRACK GFLUX ::
+   EDIT 1
+   PARTICLE GAMA
+   ;
+
+*----
+*Compute the secondary electron flux
+*----
+SYSTEM := ASM: EMACRO ETRACK :: EDIT 1 ARM ;
+EFLUX := FLU: EMACRO ETRACK SYSTEM ESOUR ::
+    EDIT 2 TYPE S EXTE 100
+    ;
+EEDITS := OUT: EFLUX ETRACK EMACRO GEOM ::
+    EDIT 2 COND INTG NONE
+    ;
+SYSTEM GSOUR GFLUX := DELETE: SYSTEM GSOUR GFLUX ;
+*----
+*  Compute the secondary photon source
+*----
+GSOUR := PSOUR: GMACRO GTRACK EFLUX ::
+   EDIT 1
+   PARTICLE BETA
+   ;
+*----
+*  Compute the secondary photon flux
+*----
+SYSTEM := ASM: GMACRO GTRACK :: EDIT 1 ARM ;
+GFLUX := FLU: GMACRO GTRACK SYSTEM GSOUR ::
+    EDIT 2 TYPE S EXTE 100
+    ;
+GEDITS := OUT: GFLUX GTRACK GMACRO GEOM ::
+    EDIT 2 COND INTG NONE
+    ;
+SYSTEM ESOUR := DELETE: SYSTEM ESOUR ;
+*----
+*  Compute the secondary total energy deposition
+*----
+DEPOS := HEAT: DEPOS EEDITS GEDITS ::
+    EDIT 1 PICKE >>esum<<
+    ;
+ECHO "total energy deposition=" esum "MeV/cc" ;
+*----
+*  Assess result
+*----
+REAL REFVALUE := 5.884968E-2 ;
+EVALUATE DELTA := esum REFVALUE - REFVALUE / ABS ;
+IF DELTA 1.0E-4 < THEN
+  ECHO "TEST SUCCESSFUL; DELTA=" DELTA ;
+ELSE
+  ECHO "------------" ;
+  ECHO "TEST FAILURE" ;
+  ECHO "------------" ;
+  ECHO "REFERENCE=" REFVALUE " CALCULATED=" esum ;
+  ABORT: ;
+ENDIF ;
+
+
 *
 *
 *
