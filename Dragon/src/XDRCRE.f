@@ -122,7 +122,7 @@
         ELSE IF(NAMMOD .EQ.  'PSOUR:      ') THEN      
           USE='Compute a fixed source from companion particles'
           AUT='A. Hebert'
-        ELSE IF(NAMMOD .EQ.  'PSOUR:      ') THEN      
+        ELSE IF(NAMMOD .EQ.  'SOUR:      ') THEN      
           USE='Compute a external fixed source'
           AUT='C. Bienvenue'
         ELSE IF(NAMMOD .EQ.  'HEAT:       ') THEN      
