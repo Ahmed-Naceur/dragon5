@@ -313,8 +313,8 @@ QUIT .                                                                  IMPLICIT
  LIBSUB: PROCESSING ISOTOPE/MATERIAL 'Zr0     0002'.
  LIBDRB: INVALID VALUE OF ZNPHI (  1.209E+00) IN GROUP  52. DILUTION=  2.518E+00 (  2.518E+00). KPHIR=  95.                         
 
- LIBSUB: CPU TIME IN LIBLIB=      0.31 SECONDS.
-         CPU TIME IN LIBPTW=      0.03 SECONDS.
+ LIBSUB: CPU TIME IN LIBLIB=      0.11 SECONDS.
+         CPU TIME IN LIBPTW=      0.06 SECONDS.
 
  OPTIONS
  -------
@@ -365,7 +365,7 @@ QUIT .                                                                  IMPLICIT
      5  H1      0003  H1_H2O        DRAGON     1     3  6.6988E-02  2.930E+02  1.000E+10   0             0                         
      6  O16     0001  O16           DRAGON     1     3  3.3494E-02  2.930E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.349 MEMORY USAGE= 1.052E+04
+-->>MODULE LIB:        : TIME SPENT=        0.172 MEMORY USAGE= 9.460E+03
 ->@BEGIN MODULE : USS:        
 ->@DESCRIPTION  : Self-shielding by subgroup method                                       
 ->@CREDITS      : A. Hebert                                                               
@@ -658,7 +658,7 @@ QUIT .                                                                  IMPLICIT
 
  USSIN1: PROCESSING ISOTOPE 'Zr0     0002'.
 ->@END MODULE   : USS:        
--->>MODULE USS:        : TIME SPENT=        0.014 MEMORY USAGE= 0.000E+00
+-->>MODULE USS:        : TIME SPENT=        0.029 MEMORY USAGE= 2.600E+02
 ->@BEGIN MODULE : ASM:        
 ->@DESCRIPTION  : To built system matrices (CP and IC)                                    
 ->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
@@ -688,7 +688,7 @@ QUIT .                                                                  IMPLICIT
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (SYBIL       )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+-->>MODULE ASM:        : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : FLU:        
 ->@DESCRIPTION  : Solve the flux equations                                                
 ->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
@@ -746,7 +746,7 @@ QUIT .                                                                  IMPLICIT
  ++ TRACKING CALLED=   7 TIMES FINAL KINF= 1.386394E+00 FINAL KEFF= 1.386393E+00 B2= 0.00000E+00 PRECISION= 1.21E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1020
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.012 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.023 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -777,7 +777,7 @@ QUIT .                                                                  IMPLICIT
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : T:          
--->>MODULE T:          : TIME SPENT=        0.003 MEMORY USAGE= 8.800E+01
+-->>MODULE T:          : TIME SPENT=        0.006 MEMORY USAGE= 5.240E+02
 ->@BEGIN MODULE : ASM:        
 ->@DESCRIPTION  : To built system matrices (CP and IC)                                    
 ->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
@@ -807,7 +807,7 @@ QUIT .                                                                  IMPLICIT
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (SYBIL       )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.001 MEMORY USAGE= 5.280E+02
+-->>MODULE ASM:        : TIME SPENT=        0.003 MEMORY USAGE= 5.280E+02
 ->@BEGIN MODULE : FLU:        
 ->@DESCRIPTION  : Solve the flux equations                                                
 ->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
@@ -864,7 +864,7 @@ QUIT .                                                                  IMPLICIT
  ++ TRACKING CALLED=   8 TIMES FINAL KINF= 1.386394E+00 FINAL KEFF= 1.386394E+00 B2= 0.00000E+00 PRECISION= 3.81E-07
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1376
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.016 MEMORY USAGE= 2.640E+02
+-->>MODULE FLU:        : TIME SPENT=        0.031 MEMORY USAGE= 2.640E+02
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -877,7 +877,7 @@ QUIT .                                                                  IMPLICIT
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
+-->>module GREP:       : time spent=        0.001 memory usage= 0.000E+00
 ->@END MODULE   : GREP:       
 >|TEST SUCCESSFUL; DELTA=  3.628442e-05                                   |>0028
 ->@BEGIN MODULE : EDI:        
@@ -2194,7 +2194,7 @@ QUIT .                                                                  IMPLICIT
 
  NUMBER DENSITY =  3.3494E-02
 ->@END MODULE   : EDI:        
--->>MODULE EDI:        : TIME SPENT=        0.018 MEMORY USAGE= 1.312E+03
+-->>MODULE EDI:        : TIME SPENT=        0.034 MEMORY USAGE= 1.312E+03
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -2202,7 +2202,7 @@ QUIT .                                                                  IMPLICIT
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: STEP UP TO LEVEL 'REF-CASE0001'.
--->>module EQU:        : time spent=        0.001 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.002 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
 ->@BEGIN MODULE : LIB:        
 ->@DESCRIPTION  : Microscopic xs-library processing                                       
@@ -2289,7 +2289,7 @@ QUIT .                                                                  IMPLICIT
      5  H1      0003  H1_H2O        DRAGON     1     3  6.6988E-02  2.930E+02  1.000E+10   0             0                         
      6  O16     0001  O16           DRAGON     1     3  3.3494E-02  2.930E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.029 MEMORY USAGE= 1.056E+03
+-->>MODULE LIB:        : TIME SPENT=        0.015 MEMORY USAGE= 1.520E+02
 ->@BEGIN MODULE : SHI:        
 ->@DESCRIPTION  : Self-shielding by improved Stammler method                              
 ->@CREDITS      : A. Hebert                                                               
@@ -2318,7 +2318,7 @@ QUIT .                                                                  IMPLICIT
  CONVERGENCE REACHED AT SHIBA ITERATION =   5  ERROR =  6.687E-06
 
 ->@END MODULE   : SHI:        
--->>MODULE SHI:        : TIME SPENT=        0.113 MEMORY USAGE= 1.520E+02
+-->>MODULE SHI:        : TIME SPENT=        0.053 MEMORY USAGE= 1.000E+02
 ->@BEGIN MODULE : ASM:        
 ->@DESCRIPTION  : To built system matrices (CP and IC)                                    
 ->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
@@ -2406,7 +2406,7 @@ QUIT .                                                                  IMPLICIT
  ++ TRACKING CALLED=   7 TIMES FINAL KINF= 1.383546E+00 FINAL KEFF= 1.383546E+00 B2= 0.00000E+00 PRECISION= 1.62E-07
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1020
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.012 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.023 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -2429,7 +2429,7 @@ QUIT .                                                                  IMPLICIT
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: STEP UP TO LEVEL 'MACROLIB    '.
--->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.001 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
 ->@BEGIN MODULE : T:          
 ->@DESCRIPTION  : Transpose a macrolib                                                    
@@ -2437,7 +2437,7 @@ QUIT .                                                                  IMPLICIT
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : T:          
--->>MODULE T:          : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
+-->>MODULE T:          : TIME SPENT=        0.006 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : ASM:        
 ->@DESCRIPTION  : To built system matrices (CP and IC)                                    
 ->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
@@ -2467,7 +2467,7 @@ QUIT .                                                                  IMPLICIT
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (SYBIL       )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+-->>MODULE ASM:        : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : FLU:        
 ->@DESCRIPTION  : Solve the flux equations                                                
 ->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
@@ -2524,7 +2524,7 @@ QUIT .                                                                  IMPLICIT
  ++ TRACKING CALLED=   8 TIMES FINAL KINF= 1.383546E+00 FINAL KEFF= 1.383546E+00 B2= 0.00000E+00 PRECISION= 8.67E-07
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1376
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.017 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.031 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -3854,7 +3854,7 @@ QUIT .                                                                  IMPLICIT
 
  NUMBER DENSITY =  3.3494E-02
 ->@END MODULE   : EDI:        
--->>MODULE EDI:        : TIME SPENT=        0.017 MEMORY USAGE= 0.000E+00
+-->>MODULE EDI:        : TIME SPENT=        0.034 MEMORY USAGE= 2.560E+02
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -3862,7 +3862,7 @@ QUIT .                                                                  IMPLICIT
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: STEP UP TO LEVEL 'REF-CASE0001'.
--->>module EQU:        : time spent=        0.001 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.002 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
 ->@BEGIN MODULE : DUO:        
 ->@DESCRIPTION  : Perturbative analysis using the Clio formula                            
@@ -4954,7 +4954,7 @@ QUIT .                                                                  IMPLICIT
 
   *** SUM ***         2.87
 ->@END MODULE   : DUO:        
--->>MODULE DUO:        : TIME SPENT=        1.198 MEMORY USAGE= 5.388E+03
+-->>MODULE DUO:        : TIME SPENT=        2.021 MEMORY USAGE= 6.288E+03
 >|rhoNtot0= -7.883997e+02                                                 |>0144
 >|rhoScat= -8.925629e+02                                                  |>0145
 >|rhoNuSigf= -5.742137e+01                                                |>0146

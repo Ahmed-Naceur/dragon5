@@ -14,11 +14,11 @@ LINKED_LIST  MACRO OLDMACRO GEOM TRACK SYSTEM FLUX DEPOS EEDIT GWT0
              GEDIT ;
 
 SEQ_ASCII    FMAC_M :: FILE 
-'./FMAC_e_water_lobatto_3.00MeV_0g_2e_P2_NC.txt' ;
-!'./FMAC_e_water_3.00MeV_80g_80e_P8_FC.txt' ;
-!'./FMAC_e_water_3.00MeV_0g_100e_P8_NC.txt' ;
-!'./FMAC_e_water_3.00MeV_0g_80e_P8_NC.txt' ;
-             
+*'./FMAC_e_water_3.00MeV_0g_80e_P8_NC.txt' ;
+*'./FMAC_e_water_lobatto_3.00MeV_0g_80e_P8_NC.txt' ;
+*'./FMAC_e_water_3.00MeV_2g_2e_P2_FC.txt' ;
+'./FMAC_e_water_lobatto_3.00MeV_2g_2e_P2_FC.txt' ;
+
 SEQ_ASCII    edep_xs.txt     :: FILE 'edep_xs.txt' ;
 SEQ_ASCII    edit_xs.txt     :: FILE 'edit_xs.txt' ;
 SEQ_ASCII    macro_xs.txt    :: FILE 'macro_xs.txt' ;
@@ -38,7 +38,7 @@ GEOM := GEO: :: CAR1D 2
 * --- Tracking           
 TRACK := SNT: GEOM ::
       TITLE 'Water-Slab: CEPXS-BFP-DRAGON'
-      EDIT 2 MAXR 1000 DIAM 1 NLIVO SN 12 SCAT 2 EPSI 1.E-5
+      EDIT 2 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2 EPSI 1.E-5
       QUAD 1 MAXI 300 BFPL ;
 
 
@@ -58,6 +58,7 @@ REAL qsour := 1.E10 2.0 / $Pi_R / ; ! [cm-3 s-1]
 MACRO := MAC: MACRO ::
      READ INPUT
      MIX 1 FIXE
+! --  2 groups     
      <<qsour>> 0.0 
      ;
 ! -- 300 groups

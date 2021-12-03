@@ -2,7 +2,7 @@
 #shopt -s expand_aliases
 #source ~/.profile
 
-# Execution ./cepxs_water_lobatto 1.00 0 80 8 no-coupling no-csda
+# Execution ./cepxs_water_lobatto 3.00 0 80 8 no-coupling no-csda
 
 #Your_Path_To_Cepxs="/home/ahnac/cepxs-radiotherapy/CSD/";
 Your_Path_To_Cepxs="/home/ahnac/cepxs-radiotherapy/CEPXS-BFP-LOBATTO/data/";
@@ -48,7 +48,7 @@ file_cepxs_name="e_water_lobatto_${energy_string_title}_${ngs}g_${nes}e_P${ls}";
 if [[ $coupling_type == 'no-coupling' ]] ; then
     
   electron_keyword="electrons" ; 
-	electron_card_in_cepxs="linear $nb_groups_electron" ;
+	electron_card_in_cepxs="log $nb_groups_electron" ;
 
 	photon_keyword="*" ;  
 	photon_card_in_cepxs="*" ; 
@@ -61,9 +61,9 @@ if [[ $coupling_type == 'no-coupling' ]] ; then
 	nps=$( printf $nb_groups_gamma ); #POSITRONS GROUP NUMBER
 else 
   photon_keyword="photons" ;  
-	photon_card_in_cepxs="linear $nb_groups_gamma" ; 
+	photon_card_in_cepxs="log $nb_groups_gamma" ; 
 	electron_keyword="electrons" ; 
-	electron_card_in_cepxs="linear $nb_groups_electron" ;
+	electron_card_in_cepxs="log $nb_groups_electron" ;
 	positron_card_in_cepxs="*"; #"positrons" ; 
 
 	file_cepxs_name="${file_cepxs_name}_FC" ;
@@ -368,5 +368,4 @@ file_access_dragon='/home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/water_1D.a
 where="${1}";
 
 sed  -i "/#--- CEPXS-BFP/a  ln -s \$1/data/cepxs-dragon/$fmac_file_name_ascii ." $file_access_dragon 
-#sed  -i "/ls -l/i ln -s \$1/data/cepxs-dragon/$fmac_file_name_ascii ." $file_access_dragon 
-
+ 

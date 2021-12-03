@@ -366,6 +366,6 @@ echo "**********************************************************"
 file_access_dragon='/home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/water_1D.access' 
 where="${1}";
 
-sed  -i "/#--- FMAC: CEPXS-BFP/a  ln -s \$1/data/cepxs-dragon/$fmac_file_name_ascii ." $file_access_dragon 
-#sed  -i "/ls -l/i ln -s \$1/data/cepxs-dragon/$fmac_file_name_ascii ." $file_access_dragon 
+sed  -i "/#--- CEPXS-BFP/a  ln -s \$1/data/cepxs-dragon/$fmac_file_name_ascii ." $file_access_dragon 
+ 
 
