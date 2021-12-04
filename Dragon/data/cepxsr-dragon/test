@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# execute: ./water_cepxsr Ne Ng Pl  Emin_eV Emax_eV 
+# execute: ./water_cepxsr Ne Ng Pl Emin_eV Emax_eV 
 # e.g.: ./test 12 12 8 
 
 echo "**********************************************************"
