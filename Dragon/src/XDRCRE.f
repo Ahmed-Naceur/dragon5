@@ -123,7 +123,7 @@
           USE='Compute a fixed source from companion particles'
           AUT='A. Hebert'
         ELSE IF(NAMMOD .EQ.  'SOUR:      ') THEN      
-          USE='Compute a external fixed source'
+          USE='Definie external fixed sources'
           AUT='C. Bienvenue'
         ELSE IF(NAMMOD .EQ.  'HEAT:       ') THEN      
           USE='Compute the energy and charge deposition values'

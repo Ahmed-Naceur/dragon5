@@ -134,7 +134,7 @@
       DOUBLE PRECISION AKEEP(8),FISOUR,OLDBIL,AKEFF,AKEFFO,AFLNOR,
      1 BFLNOR,DDELN1,DDELD1
       LOGICAL LSCAL,LEXAC
-      REAL ALBEDO(6),DCUTOFF(NREG)
+      REAL ALBEDO(6),DCUTOFF(NREG),NORM
 *
 ************************************************************************
 *                                                                      *
@@ -302,6 +302,10 @@
             CALL LCMGDL(JPSOU,NGRP-IG+1,FLUX(1,IG,4))
          ENDIF
       ENDIF
+      DO IR=1,NREG
+        IND=(IR-1)*NLF*IELEM+1
+        NORM=FLUX(IND,IG,4)*VOL(IR)
+      ENDDO
    20 CONTINUE
       DEALLOCATE(FXSOR)
 *-------
@@ -1153,6 +1157,7 @@
          CALL LCMPDL(JPFLUX,NGRP-IG+1,NUNKNO,2,FLUX(1,IG,3))
       ENDIF
   510 CONTINUE
+      CALL LCMPUT(IPFLUX,'NORM',1,2,NORM)
       CALL LCMPUT(IPFLUX,'EDEP-CUTOFF',NREG,2,DCUTOFF)
       IF(ITYPEC.GE.2) THEN
          CALL LCMPUT(IPFLUX,'K-EFFECTIVE',1,2,RKEFF)

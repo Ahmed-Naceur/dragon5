@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* Set the fixed external sources.
+* Define and set fixed external sources.
 *
 *Copyright:
 * Copyright (C) 2021 Ecole Polytechnique de Montreal

@@ -1,6 +1,6 @@
 *DECK HEADRV
       SUBROUTINE HEADRV(IPDEP,NPART,IPMAC,NBMIX,NGRP,ZNORM,IMPX,ESUM,
-     1 CSUM)
+     1 CSUM,ISNORM)
 *
 *-----------------------------------------------------------------------
 *
@@ -25,6 +25,7 @@
 * NGRP    total number of energy groups.
 * ZNORM   flux normalization factor.
 * IMPX    print parameter.
+* ISNORM  source normalization yes/no
 *
 *Parameters: output
 * ESUM    total energy deposition (MeV/cc).
@@ -36,7 +37,7 @@
 *----
 *  SUBROUTINE ARGUMENTS
 *----
-      INTEGER NPART,NBMIX,NGRP,IMPX
+      INTEGER NPART,NBMIX,NGRP,IMPX,ISNORM
       TYPE(C_PTR) IPDEP,IPMAC(NPART)
       DOUBLE PRECISION ZNORM,ESUM,CSUM
 *----
@@ -90,6 +91,13 @@
         CALL LCMLEN(IPMAC(I),'EDEP-CUTOFF',ILEN,ITYLCM)
         CALL LCMGPD(IPMAC(I),'EDEP-CUTOFF',DCUTOFF_PTR)
         CALL C_F_POINTER(DCUTOFF_PTR, DCUTOFF,(/ ILEN /))
+        IF(ISNORM.EQ.1) THEN
+          CALL LCMGET(IPMAC(I),'NORM',NORM)
+          IF(NORM.EQ.0.0) NORM=1
+        ELSE
+           NORM=1
+        ENDIF
+        ZNORM=ZNORM/NORM
         CALL LCMGET(IPMAC(I),'VOLUME',VOL)
         CALL LCMGTC(IPMAC(I),'PARTICLE',1,1,TEXT1)
         SNAME(I)=TEXT1

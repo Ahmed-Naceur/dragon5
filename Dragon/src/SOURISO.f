@@ -6,7 +6,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* Compute the fixed isotropic sources.
+* Compute moments of fixed isotropic sources.
 *
 *Copyright:
 * Copyright (C) 2021 Ecole Polytechnique de Montreal
@@ -31,7 +31,7 @@
       INTEGER NREG,LX,LY,LZ,NG,NUNS,NDIM,NSOUR,MESH_LEN(3)
       REAL XMIN(NSOUR),XMAX(NSOUR),YMIN(NSOUR),YMAX(NSOUR),ZMIN(NSOUR),
      1 ZMAX(NSOUR),ISOUR(NG),SUNKNO(NUNS,NG),XXX(MESH_LEN(1)),
-     2 YYY(MESH_LEN(2)),ZZZ(MESH_LEN(3))        
+     2 YYY(MESH_LEN(2)),ZZZ(MESH_LEN(3)) 
 *----
 *  LOCAL VARIABLES
 *----
@@ -111,9 +111,8 @@
 *----
 
       ELSE IF(NDIM.EQ.2) THEN
-      
-      ! CALCULATE XY-COORDINATES OF EACH VOXELS
-     
+
+      ! CALCULATE XY-COORDINATES OF EACH VOXELS     
       K=1
       DO I=1,SPLIT_LEN(1)
       DO J=1,SPLITX(I)
@@ -169,7 +168,7 @@
 *----
 
       ELSE IF(NDIM.EQ.3) THEN
-      
+     
       ! CALCULATE XYZ-COORDINATES OF EACH VOXELS 
       K=1
       DO I=1,SPLIT_LEN(1)
