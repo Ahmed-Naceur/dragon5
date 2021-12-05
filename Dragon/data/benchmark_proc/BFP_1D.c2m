@@ -19,11 +19,11 @@ GEOM := GEO: :: CAR1D 2
            X- VOID  X+ VOID
            MIX 1 2
            MESHX 0.0 0.3 4.0
-           SPLITX 30 70
+           SPLITX 30 370
            ;
 ETRACK := SNT: GEOM ::
       TITLE 'HOMOGENIZED W_6Mev_e_ph_CSD BENCHMARK WITH FMAC-M'
-      EDIT 2 MAXR 1000000 DIAM 1 NLIVO SN 16 SCAT 16 EPSI 1.E-5
+      EDIT 2 MAXR 1000000 DIAM 0 NLIVO SN 8 SCAT 8 EPSI 1.E-5
       MAXI 300 BFPG ;
 GTRACK := ETRACK ;
 GTRACK := SNT: GTRACK GEOM :: EDIT 2 BTE ;
@@ -40,7 +40,8 @@ EMACRO := MAC: EMACRO EMACRO2 ::
      MIX 2 1 OLDL
      ;
 EMACRO2 := DELETE: EMACRO2 ;
-REAL qsour := 1.E10 2.0 / $Pi_R / ;
+REAL qsour := 1.E10 ;
+* 2.0 / $Pi_R / ;
 ECHO "qsour=" qsour ;
 EMACRO := MAC: EMACRO ::
      READ INPUT
@@ -101,7 +102,7 @@ SYSTEM := DELETE: SYSTEM ;
 *  Compute the primary energy deposition
 *----
 DEPOS := HEAT: EEDITS GEDITS ::
-    EDIT 1 SOUR 0.0518134 ! 1/(\ro_{W} g/cm^{3})
+    EDIT 1 SOUR 0.05181 ! 1/(\ro_{W} g/cm^{3})
     ;
 EEDITS GEDITS EFLUX := DELETE: EEDITS GEDITS EFLUX ;
 *----

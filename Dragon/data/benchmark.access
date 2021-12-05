@@ -8,6 +8,7 @@ ln -s $1/data/benchmark_proc/fmac_file.txt .
 ln -s $1/data/benchmark_proc/fmac_file_plus.txt .
 ln -s $1/data/benchmark_proc/W_6MeV_e_CSD.txt .
 ln -s $1/data/benchmark_proc/water.txt .
+ln -s $1/data/benchmark_proc/roger-mohan-fmac.txt .
 ln -s $1/data/benchmark_proc/al_au.txt .
 ln -s $1/data/benchmark_proc/W_6MeV_e_ph_CSD.txt .
 ls -l

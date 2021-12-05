@@ -1,6 +1,6 @@
 *DECK HEADRV
       SUBROUTINE HEADRV(IPDEP,NPART,IPMAC,NBMIX,NGRP,ZNORM,IMPX,ESUM,
-     1 CSUM,ISNORM)
+     1 CSUM,ISNORM,NORMMAT)
 *
 *-----------------------------------------------------------------------
 *
@@ -25,7 +25,6 @@
 * NGRP    total number of energy groups.
 * ZNORM   flux normalization factor.
 * IMPX    print parameter.
-* ISNORM  source normalization yes/no
 *
 *Parameters: output
 * ESUM    total energy deposition (MeV/cc).
@@ -40,7 +39,7 @@
       INTEGER NPART,NBMIX,NGRP,IMPX,ISNORM
       TYPE(C_PTR) IPDEP,IPMAC(NPART)
       DOUBLE PRECISION ZNORM,ESUM,CSUM
-*----
+      REAL NORMMAT(NBMIX)
 *  LOCAL VARIABLES
 *----
       TYPE(C_PTR) JPMAC,KPMAC,DCUTOFF_PTR
@@ -91,13 +90,6 @@
         CALL LCMLEN(IPMAC(I),'EDEP-CUTOFF',ILEN,ITYLCM)
         CALL LCMGPD(IPMAC(I),'EDEP-CUTOFF',DCUTOFF_PTR)
         CALL C_F_POINTER(DCUTOFF_PTR, DCUTOFF,(/ ILEN /))
-        IF(ISNORM.EQ.1) THEN
-          CALL LCMGET(IPMAC(I),'NORM',NORM)
-          IF(NORM.EQ.0.0) NORM=1
-        ELSE
-           NORM=1
-        ENDIF
-        ZNORM=ZNORM/NORM
         CALL LCMGET(IPMAC(I),'VOLUME',VOL)
         CALL LCMGTC(IPMAC(I),'PARTICLE',1,1,TEXT1)
         SNAME(I)=TEXT1
@@ -117,7 +109,7 @@
           CALL LCMGET(KPMAC,'H-FACTOR',SGD)
           DO IBM=1,NBMIX
             EDEPO(IBM,I)=EDEPO(IBM,I)+FLIN(IBM)*SGD(IBM)*ZNORM/
-     1      VOL(IBM)+DCUTOFF(IBM)*ZNORM
+     1      VOL(IBM)/NORMMAT(IBM)+DCUTOFF(IBM)*ZNORM/NORMMAT(IBM)
           ENDDO
           CALL LCMLEN(KPMAC,'C-FACTOR',LENGT,ITYLCM)
           IF(LENGT.GT.0) THEN

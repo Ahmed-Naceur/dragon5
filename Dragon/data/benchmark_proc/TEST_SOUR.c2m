@@ -15,27 +15,27 @@ SEQ_ASCII FMAC_M :: FILE './water.txt' ;
 *----
 *  Set and track the geometry
 *----
-GEOM := GEO: :: CAR1D 2
+GEOM := GEO: :: CAR1D 1
            X- VOID  X+ VOID
-           MIX 1 2
-           MESHX 0.0 0.3 4.0
-           SPLITX 30 70
+           MIX 1
+           MESHX 0.0 4.0
+           SPLITX 400
            ;
-*GEOM := GEO: :: CAR3D 3 1 1
+*GEOM := GEO: :: CAR3D 1 1 1
 *            X- VOID X+ VOID
 *            Y- VOID Y+ VOID
 *            Z- VOID Z+ VOID
-*            MIX 2 1 2
-*            MESHX 0.0 0.35 0.65 1.0
+*            MIX 1
+*            MESHX 0.0 1.0
 *            MESHY 0.0 0.5
 *            MESHZ 0.0 0.5
-*            SPLITX 7 30 7
-*            SPLITY 10
-*            SPLITZ 10
+*            SPLITX 100
+*            SPLITY 2
+*            SPLITZ 2
 *            ;
 ETRACK := SNT: GEOM ::
       TITLE 'Water slab - isotropic - test module SOUR'
-      EDIT 2 MAXR 1000000 DIAM 1 NLIVO SN 16 SCAT 16 EPSI 1.E-5
+      EDIT 2 MAXR 1000000 DIAM 0 NLIVO SN 8 SCAT 8 EPSI 1.E-5
       MAXI 300 BFPG ;
 GTRACK := ETRACK ;
 GTRACK := SNT: GTRACK GEOM :: EDIT 2 BTE ;
@@ -49,10 +49,8 @@ EMACRO := FMAC: FMAC_M ::
 EMACRO2 := EMACRO ;
 EMACRO := MAC: EMACRO EMACRO2 ::
      MIX 1 1 OLDL
-     MIX 2 1 OLDL
      ;
 EMACRO2 := DELETE: EMACRO2 ;
-REAL qsour := 1.E10 2.0 / $Pi_R / ;
 *
 *
 *
@@ -62,6 +60,7 @@ ESOUR := SOUR: EMACRO ETRACK GEOM ::
      XLIM 0.0 0.3
      INTG 1 1.0E10
      ;
+
 *
 *
 *
@@ -85,7 +84,7 @@ GMACRO := FMAC: FMAC_M ::
 
 GMACRO2 := GMACRO ;
 GMACRO := MAC: GMACRO GMACRO2 ::
-     MIX 2 1 OLDL
+     MIX 1 1 OLDL
      ;
 GSOUR := PSOUR: GMACRO GTRACK EFLUX ::
    EDIT 1
@@ -106,7 +105,7 @@ SYSTEM := DELETE: SYSTEM ;
 *  Compute the primary energy deposition
 *----
 DEPOS := HEAT: EEDITS GEDITS ::
-    EDIT 1 ! SOUR 0.0518134 ! 1/(\ro_{W} g/cm^{3})
+    EDIT 1 NORM 1.0 
     ;
 EEDITS GEDITS EFLUX ESOUR := DELETE: EEDITS GEDITS EFLUX ESOUR ;
 *----
@@ -150,7 +149,7 @@ SYSTEM ESOUR := DELETE: SYSTEM ESOUR ;
 *  Compute the secondary total energy deposition
 *----
 DEPOS := HEAT: DEPOS EEDITS GEDITS ::
-    EDIT 1 PICKE >>esum<<
+    EDIT 1 NORM 1.0 PICKE >>esum<<
     ;
 ECHO "total energy deposition=" esum "MeV/cc" ;
 *----
