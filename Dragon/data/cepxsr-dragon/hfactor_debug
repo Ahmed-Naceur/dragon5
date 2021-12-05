@@ -1,7 +1,6 @@
 #!/bin/sh
 # --- MANUAL ENERGY GROUP SELECTION 
-# execute: ./water_debug
-# e.g.: ./water_debug
+# execute: ./hfactor_debug
 
 echo "**********************************************************"
 echo "           Construt NJOY files                            "
