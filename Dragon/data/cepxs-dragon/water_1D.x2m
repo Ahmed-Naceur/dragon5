@@ -17,7 +17,8 @@ SEQ_ASCII    FMAC_M :: FILE
 *'./FMAC_e_water_lobatto_3.00MeV_80g_80e_P8_FC.txt' ;
 *'./FMAC_e_water_lobatto_3.00MeV_0g_80e_P8_NC.txt' ;
 *'./FMAC_e_water_3.00MeV_2g_2e_P2_FC.txt' ;
-'./FMAC_e_water_lobatto_3.00MeV_2g_2e_P2_FC.txt' ;
+*'./FMAC_e_water_lobatto_3.00MeV_2g_2e_P2_FC.txt' ;
+'./FMAC_e_water_lobatto_3.00MeV_0g_2e_P2_NC.txt' ;
 
 SEQ_ASCII    edep_xs.txt     :: FILE 'edep_xs.txt' ;
 SEQ_ASCII    edit_xs.txt     :: FILE 'edit_xs.txt' ;

@@ -44,7 +44,7 @@ MICRO := LIB: ::
       EDIT 99
       NMIX 1 
       ANIS 2
-      MIXS LIB: MATXS2 FIL: _test 
+      MIXS LIB: MATXS2 FIL: _test_nc 
       MIX  1  300.0  1.0 NOGAS
       Hnat = h 0.111894 
       Onat = o 0.888106
