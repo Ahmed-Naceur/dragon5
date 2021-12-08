@@ -42,19 +42,12 @@ GMACRO := MAC: GMACRO GMACRO2 ::
      MIX 4 4 OLDL
      ;
 GMACRO2 := DELETE: GMACRO2 ;
-*
-*
-*
-*
 GSOUR := SOUR: GMACRO GTRACK GEOM ::
-     ISO 1
-     XLIM 0.0 0.5
+     MONO 1
+     X-
      INTG 1 1.0
+     DIR 1.0 0.0 0.0
      ;
-*
-*
-*
-*
 SYSTEM := ASM: GMACRO GTRACK :: EDIT 2 ARM ;
 GFLUX := FLU: GMACRO GTRACK SYSTEM GSOUR ::
      EDIT 2 TYPE S EXTE 100
