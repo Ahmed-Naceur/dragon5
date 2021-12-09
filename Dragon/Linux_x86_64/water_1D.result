@@ -31,7 +31,7 @@ TITLE 'Water-Slab:Cepxsr-Dragon'                                           0029
 EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2 EPSI 1.E-5                      0030
 QUAD 1 MAXI 300 BFPL ;                                                     0031
 * --- Library access                                                       0032
-MICRO := LIB: ::                                                           0033
+MICRO  := LIB: ::                                                          0033
 EDIT 99                                                                    0034
 NMIX 1                                                                     0035
 ANIS 2                                                                     0036
@@ -54,8 +54,8 @@ MACRO := MAC: MACRO ::                                                     0052
 READ INPUT                                                                 0053
 MIX 1 FIXE                                                                 0054
 ! --  2 groups                                                             0055
-<<qsour>> 0.0                                                              0056
-;                                                                          0057
+!     <<qsour>> 0.0                                                        0056
+!     ;                                                                    0057
 ! -- 300 groups                                                            0058
 !     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0    0059
 !    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0           0060
@@ -87,13 +87,13 @@ MIX 1 FIXE                                                                 0054
 !         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0      0086
 !         0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                          0087
 ! -- 80 groups                                                             0088
-!     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0    0089
-!     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0          0090
-!     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0          0091
-!     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0          0092
-!     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0          0093
-!     0.0 0.0 0.0 0.0 0.0                                                  0094
-!     ;                                                                    0095
+<<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0          0089
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                0090
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                0091
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                0092
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                0093
+0.0 0.0 0.0 0.0 0.0                                                        0094
+;                                                                          0095
 * ---- Electron flux                                                       0096
 SYSTEM := ASM: MACRO TRACK :: EDIT 2 ARM ;                                 0097
 FLUX  := FLU: MACRO TRACK SYSTEM :: EDIT 2 TYPE S EXTE 100 ;               0098
@@ -168,7 +168,7 @@ QUIT "LIST" .                                                              0114
 
  CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE CARTESIAN 1-D   .
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 <|TRACK := SNT: GEOM ::                                                   |<0028
 <|TITLE 'Water-Slab:Cepxsr-Dragon'                                        |<0029
 <|EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2 EPSI 1.E-5                   |<0030
@@ -179,8 +179,8 @@ QUIT "LIST" .                                                              0114
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : SNT:        
--->>MODULE SNT:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
-<|MICRO := LIB: ::                                                        |<0033
+-->>MODULE SNT:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+<|MICRO  := LIB: ::                                                       |<0033
 <|EDIT 99                                                                 |<0034
 <|NMIX 1                                                                  |<0035
 <|ANIS 2                                                                  |<0036
@@ -228,21 +228,18 @@ QUIT "LIST" .                                                              0114
 
  PROCESS MATRIX REACTION BBREM 
 
- PROCESS MATRIX REACTION BSHK1 
-
- PROCESS MATRIX REACTION BSHL1 
-
- PROCESS MATRIX REACTION BSHL2 
-
- PROCESS MATRIX REACTION BSHL3 
-
- PROCESS MATRIX REACTION BSHM1 
-
  AVAILABLE IDENTIFIERS OF REACTION MATRICES FOR TYPE BSCAT  AND MATERIAL h     :
-  binch  belas  bbrem  bshk1  bshl1  bshl2  bshl3  bshm1 
+  binch  belas  bbrem 
 
- FLUX FOR MATERIAL Hnat    0001   SUM= 3.99867E+06
-   1.9993E+06  1.9993E+06
+ FLUX FOR MATERIAL Hnat    0001   SUM= 3.15393E+06
+   3.0225E+05  2.7330E+05  2.4712E+05  2.2344E+05  2.0203E+05  1.8268E+05  1.6517E+05  1.4936E+05  1.3504E+05  1.2211E+05
+   1.1040E+05  9.9834E+04  9.0266E+04  8.1618E+04  7.3799E+04  6.6729E+04  6.0335E+04  5.4556E+04  4.9329E+04  4.4602E+04
+   4.0330E+04  3.6466E+04  3.2973E+04  2.9813E+04  2.6957E+04  2.4375E+04  2.2040E+04  1.9928E+04  1.8018E+04  1.6293E+04
+   1.4732E+04  1.3320E+04  1.2044E+04  1.0890E+04  9.8475E+03  8.9035E+03  8.0506E+03  7.2793E+03  6.5820E+03  5.9513E+03
+   5.3812E+03  4.8657E+03  4.3995E+03  3.9780E+03  3.5969E+03  3.2523E+03  2.9407E+03  2.6590E+03  2.4042E+03  2.1740E+03
+   1.9656E+03  1.7773E+03  1.6071E+03  1.4531E+03  1.3138E+03  1.1880E+03  1.0742E+03  9.7131E+02  8.7822E+02  7.9409E+02
+   7.1801E+02  6.4922E+02  5.8702E+02  5.3079E+02  4.7993E+02  4.3396E+02  3.9238E+02  3.5478E+02  3.2080E+02  2.9007E+02
+   2.6227E+02  2.3715E+02  2.1443E+02  1.9388E+02  1.7531E+02  1.5852E+02  1.4333E+02  1.2959E+02  1.1719E+02  1.0595E+02
 
  LIBTR2: PROCESSING SUBMATERIAL    1     INCIDENT PARTICLE=B-->B     DATA TYPE=BSCAT      MATERIAL=o     
 
@@ -267,21 +264,18 @@ QUIT "LIST" .                                                              0114
 
  PROCESS MATRIX REACTION BBREM 
 
- PROCESS MATRIX REACTION BSHK1 
-
- PROCESS MATRIX REACTION BSHL1 
-
- PROCESS MATRIX REACTION BSHL2 
-
- PROCESS MATRIX REACTION BSHL3 
-
- PROCESS MATRIX REACTION BSHM1 
-
  AVAILABLE IDENTIFIERS OF REACTION MATRICES FOR TYPE BSCAT  AND MATERIAL o     :
-  binch  belas  bbrem  bshk1  bshl1  bshl2  bshl3  bshm1 
+  binch  belas  bbrem 
 
- FLUX FOR MATERIAL Onat    0001   SUM= 3.99867E+06
-   1.9993E+06  1.9993E+06
+ FLUX FOR MATERIAL Onat    0001   SUM= 3.15393E+06
+   3.0225E+05  2.7330E+05  2.4712E+05  2.2344E+05  2.0203E+05  1.8268E+05  1.6517E+05  1.4936E+05  1.3504E+05  1.2211E+05
+   1.1040E+05  9.9834E+04  9.0266E+04  8.1618E+04  7.3799E+04  6.6729E+04  6.0335E+04  5.4556E+04  4.9329E+04  4.4602E+04
+   4.0330E+04  3.6466E+04  3.2973E+04  2.9813E+04  2.6957E+04  2.4375E+04  2.2040E+04  1.9928E+04  1.8018E+04  1.6293E+04
+   1.4732E+04  1.3320E+04  1.2044E+04  1.0890E+04  9.8475E+03  8.9035E+03  8.0506E+03  7.2793E+03  6.5820E+03  5.9513E+03
+   5.3812E+03  4.8657E+03  4.3995E+03  3.9780E+03  3.5969E+03  3.2523E+03  2.9407E+03  2.6590E+03  2.4042E+03  2.1740E+03
+   1.9656E+03  1.7773E+03  1.6071E+03  1.4531E+03  1.3138E+03  1.1880E+03  1.0742E+03  9.7131E+02  8.7822E+02  7.9409E+02
+   7.1801E+02  6.4922E+02  5.8702E+02  5.3079E+02  4.7993E+02  4.3396E+02  3.9238E+02  3.5478E+02  3.2080E+02  2.9007E+02
+   2.6227E+02  2.3715E+02  2.1443E+02  1.9388E+02  1.7531E+02  1.5852E+02  1.4333E+02  1.2959E+02  1.1719E+02  1.0595E+02
  LIBLIB: VALIDATION OF MICROLIB DATA
 
  OPTIONS
@@ -290,14 +284,14 @@ QUIT "LIST" .                                                              0114
  IPROB      0   (0=DIRECT/1=ADJOINT)
  ITIME      1   (1=STEADY-STATE/2=PROMPT)
  NLIB       1   (NUMBER OF SETS OF LIBRARIES)
- NGF        3   (NUMBER OF FAST GROUP WITHOUT SELF-SHIELDING)
+ NGF       81   (NUMBER OF FAST GROUP WITHOUT SELF-SHIELDING)
  IGRMAX     0   (LAST GROUP INDEX WITH SELF-SHIELDING)
  NBISO      2   (NUMBER OF ISOTOPES OR MATERIALS)
  NBMIX      1   (NUMBER OF MIXTURES)
  NRES       0   (NUMBER OF SETS OF RESONANT MIXTURES)
  NCOMB      0   (NUMBER OF DEPLETING MIXTURES)
  NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
- NGRO       2   (NUMBER OF ENERGY GROUPS)
+ NGRO      80   (NUMBER OF ENERGY GROUPS)
  NL         2   (NUMBER OF LEGENDRE ORDERS)
  ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/3=WIMS-D TYPE/4=LEAKAGE CORRECTION)
  NBESP      0   (NUMBER OF ENERGY-DEPENDENT FISSION SPECTRA)
@@ -334,8 +328,8 @@ QUIT "LIST" .                                                              0114
 
      BLOCK NAME----------    LENGTH    TYPE
 
-        1  'ENERGY      '         3    REAL            
-        2  'DELTAU      '         2    REAL            
+        1  'ENERGY      '        81    REAL            
+        2  'DELTAU      '        80    REAL            
         3  'ILIBRARYNAME'        16    CHARACTER       
         4  'SIGNATURE   '         3    CHARACTER       ='L_LIBRARY   '
         5  'STATE-VECTOR'        40    INTEGER         
@@ -352,8 +346,8 @@ QUIT "LIST" .                                                              0114
        16  'ISOTOPESNTFG'         2    INTEGER         
        17  'ISOTOPESHIN '         6    CHARACTER       
        18  'ISOTOPESSHI '         2    INTEGER         
-       19  'ISOTOPESDSN '         4    REAL            
-       20  'ISOTOPESDSB '         4    REAL            
+       19  'ISOTOPESDSN '       160    REAL            
+       20  'ISOTOPESDSB '       160    REAL            
        21  'ISOTOPESGIR '         2    REAL            
        22  'ISOTOPESNIR '         2    INTEGER         
        23  'ISOTOPESTEMP'         2    REAL            
@@ -368,10 +362,10 @@ QUIT "LIST" .                                                              0114
        32  'MACROLIB    '        -1    DIRECTORY       
 
 
- TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =       163
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =       631
 
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.006 MEMORY USAGE= 6.120E+02
+-->>MODULE LIB:        : TIME SPENT=        0.074 MEMORY USAGE= 1.136E+03
 <|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0043
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
@@ -380,7 +374,7 @@ QUIT "LIST" .                                                              0114
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: STEP UP TO LEVEL 'MACROLIB    '.
--->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.000 memory usage= 2.640E+02
 ->@END MODULE   : EQU:        
 <|micr_xsr.txt   := MICRO ;                                               |<0044
 ->@BEGIN MODULE : EQU:        
@@ -390,7 +384,7 @@ QUIT "LIST" .                                                              0114
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MICRO       ' WAS EXPORTED TO FILE 'micr_xsr.txt'.
--->>module EQU:        : time spent=        0.001 memory usage= 8.800E+01
+-->>module EQU:        : time spent=        0.018 memory usage= 2.040E+02
 ->@END MODULE   : EQU:        
 <|macr_xsr.txt   := MACRO ;                                               |<0045
 ->@BEGIN MODULE : EQU:        
@@ -400,7 +394,7 @@ QUIT "LIST" .                                                              0114
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macr_xsr.txt'.
--->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.007 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
 <|OLDMACRO := MACRO ;                                                     |<0047
 ->@BEGIN MODULE : EQU:        
@@ -408,7 +402,7 @@ QUIT "LIST" .                                                              0114
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.001 memory usage= 2.600E+02
 ->@END MODULE   : EQU:        
 <|MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;                          |<0048
 ->@BEGIN MODULE : MAC:        
@@ -420,7 +414,7 @@ QUIT "LIST" .                                                              0114
  OPTIONS
  -------
  IPRINT     1   (0=NO PRINT/1=SHORT/2=MORE)
- NGROUP     2   (NUMBER OF ENERGY GROUPS)
+ NGROUP    80   (NUMBER OF ENERGY GROUPS)
  NBMIX      2   (NUMBER OF MIXTURES IN THE MACROLIB)
  NANISO     2   (MAXIMUM SCATTERING ANISOTROPY)
  NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
@@ -433,13 +427,18 @@ QUIT "LIST" .                                                              0114
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE MAC:        : TIME SPENT=        0.004 MEMORY USAGE= 2.760E+02
 <|OLDMACRO := DELETE: OLDMACRO ;                                          |<0049
 <|MACRO := MAC: MACRO ::                                                  |<0052
 <|READ INPUT                                                              |<0053
 <|MIX 1 FIXE                                                              |<0054
-<|<<qsour>> 0.0                                                           |<0056
-<|;                                                                       |<0057
+<|<<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0       |<0089
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0090
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0091
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0092
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0093
+<|0.0 0.0 0.0 0.0 0.0                                                     |<0094
+<|;                                                                       |<0095
 ->@BEGIN MODULE : MAC:        
 ->@DESCRIPTION  : Macroscopic xs processor                                                
 ->@CREDITS      : G. Marleau                                                              
@@ -452,7 +451,7 @@ QUIT "LIST" .                                                              0114
  OPTIONS
  -------
  IPRINT     1   (0=NO PRINT/1=SHORT/2=MORE)
- NGROUP     2   (NUMBER OF ENERGY GROUPS)
+ NGROUP    80   (NUMBER OF ENERGY GROUPS)
  NBMIX      2   (NUMBER OF MIXTURES IN THE MACROLIB)
  NANISO     2   (MAXIMUM SCATTERING ANISOTROPY)
  NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
@@ -465,7 +464,7 @@ QUIT "LIST" .                                                              0114
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE MAC:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 <|SYSTEM := ASM: MACRO TRACK :: EDIT 2 ARM ;                              |<0097
 ->@BEGIN MODULE : ASM:        
 ->@DESCRIPTION  : To built system matrices (CP and IC)                                    
