@@ -44,9 +44,9 @@
 *----
 *  ALLOCATABLE ARRAYS
 *----
-      TYPE(C_PTR) U_PTR,DU_PTR,DE_PTR,DZ_PTR
+      TYPE(C_PTR) U_PTR,DU_PTR,DE_PTR,DZ_PTR,W_PTR
       INTEGER,ALLOCATABLE,DIMENSION(:) :: SPLITX,SPLITY,SPLITZ
-      REAL, POINTER, DIMENSION(:) :: U,DU,DE,DZ
+      REAL, POINTER, DIMENSION(:) :: U,DU,DE,DZ,W
 *----
 *  RECOVER TRACKING INFORMATION
 *----
@@ -55,7 +55,9 @@
 
       IF(NDIM.EQ.1) THEN
       CALL LCMGPD(IPTRK,'U',U_PTR)
+      CALL LCMGPD(IPTRK,'W',W_PTR)
       CALL C_F_POINTER(U_PTR,U,(/ NLF /))
+      CALL C_F_POINTER(W_PTR,W,(/ NLF /))
       ELSE IF(NDIM.EQ.2) THEN
       CALL LCMLEN(IPTRK,'DU',NPQ,ITYLCM)
       CALL LCMGPD(IPTRK,'DU',DU_PTR)
@@ -116,6 +118,9 @@
         IPVAL=(U(IP)-DIR(1))**2
         ENDIF
       ENDDO
+
+      ! Normalization
+      NORM=SUM(ISOUR)
  
       ! Save source information in BS variables
       IND=1
@@ -124,14 +129,11 @@
         BSINFO(1,IND)=IG
         BSINFO(2,IND)=IPN
         BSINFO(3,IND)=MONOP
-        BS(1,IND)=ISOUR(IG)
+        BS(1,IND)=ISOUR(IG)/W(IPN)
         IND=IND+1
         ENDIF
       ENDDO 
       
-      ! Normalization
-      NORM=SUM(ISOUR)
-
 *----
 *  2D CARTESIAN CASE
 *----

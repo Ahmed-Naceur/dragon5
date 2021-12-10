@@ -1,0 +1,161 @@
+*----
+*  TEST CASE TCM67
+*  FMAC-M generated homogeneous macrolib
+*  1D slab sn electron-photon coupled testcase from ROZ6
+*----
+*----
+*  Define STRUCTURES and MODULES used
+*----
+MODULE GEO: FMAC: MAC: SNT: ASM: FLU: PSOUR: OUT: DELETE: END: UTL:
+       HEAT: ABORT: SOUR: ;
+LINKED_LIST  EMACRO EMACRO2 GMACRO GMACRO2 GEOM ETRACK GTRACK SYSTEM
+       EFLUX GFLUX ESOUR GSOUR EEDITS GEDITS DEPOS ;
+REAL esum DELTA ;
+SEQ_ASCII FMAC_M :: FILE './al_au_e_1MeV_csd_160g.txt' ;
+*----
+*  Set and track the geometry
+*----
+GEOM := GEO: :: CAR1D 3
+           X- VOID  X+ VOID
+           MIX 1 2 1
+           MESHX 0.0 0.0177 0.0199 0.2
+           SPLITX 100 100 100
+           ;
+ETRACK := SNT: GEOM ::
+      TITLE 'Water slab - isotropic - test module SOUR'
+      EDIT 2 MAXR 1000000 DIAM 2 NLIVO SN 16 SCAT 16 EPSI 1.E-5
+      MAXI 300 BFPG ;
+GTRACK := ETRACK ;
+GTRACK := SNT: GTRACK GEOM :: EDIT 2 BTE ;
+*----
+*  Compute the electron flux
+*----
+EMACRO := FMAC: FMAC_M ::
+  EDIT 2
+  PARTICLE BETA
+;
+EMACRO2 := EMACRO ;
+EMACRO := MAC: EMACRO EMACRO2 ::
+     MIX 1 1 OLDL
+     MIX 2 2 OLDL
+     ;
+EMACRO2 := DELETE: EMACRO2 ;
+*
+*
+*
+*
+ESOUR := SOUR: EMACRO ETRACK GEOM ::
+     MONO 1
+     X-
+     INTG 1 1.0
+     DIR 1.0 0.0 0.0
+     ;
+SYSTEM := ASM: EMACRO ETRACK :: EDIT 2 ARM ;
+EFLUX := FLU: EMACRO ETRACK SYSTEM ESOUR ::
+     EDIT 2 TYPE S EXTE 100
+     ;
+EEDITS := OUT: EFLUX ETRACK EMACRO GEOM ::
+     EDIT 2 COND INTG NONE
+     ;
+SYSTEM := DELETE: SYSTEM ;
+
+*----
+*  Set the photon source
+*----
+GMACRO := FMAC: FMAC_M ::
+  EDIT 2
+  PARTICLE GAMA
+;
+
+GMACRO2 := GMACRO ;
+GMACRO := MAC: GMACRO GMACRO2 ::
+     MIX 1 1 OLDL
+     MIX 2 2 OLDL
+     ;
+GSOUR := PSOUR: GMACRO GTRACK EFLUX ::
+   EDIT 1
+   PARTICLE BETA
+   ;
+*----
+*  Compute the photon flux
+*----
+SYSTEM := ASM: GMACRO GTRACK :: EDIT 1 ARM ;
+GFLUX := FLU: GMACRO GTRACK SYSTEM GSOUR ::
+    EDIT 2 TYPE S EXTE 100
+    ;
+GEDITS := OUT: GFLUX GTRACK GMACRO GEOM ::
+    EDIT 2 COND INTG NONE
+    ;
+SYSTEM := DELETE: SYSTEM ;
+*----
+*  Compute the primary energy deposition
+*----
+DEPOS := HEAT: EEDITS GEDITS ::
+    EDIT 1 NORM 2.6989 19.32
+    ;
+EEDITS GEDITS EFLUX ESOUR := DELETE: EEDITS GEDITS EFLUX ESOUR ;
+*----
+*  Compute the secondary electron source
+*----
+ESOUR := PSOUR: EMACRO ETRACK GFLUX ::
+   EDIT 1
+   PARTICLE GAMA
+   ;
+
+*----
+*Compute the secondary electron flux
+*----
+SYSTEM := ASM: EMACRO ETRACK :: EDIT 1 ARM ;
+EFLUX := FLU: EMACRO ETRACK SYSTEM ESOUR ::
+    EDIT 2 TYPE S EXTE 100
+    ;
+EEDITS := OUT: EFLUX ETRACK EMACRO GEOM ::
+    EDIT 2 COND INTG NONE
+    ;
+SYSTEM GSOUR GFLUX := DELETE: SYSTEM GSOUR GFLUX ;
+*----
+*  Compute the secondary photon source
+*----
+GSOUR := PSOUR: GMACRO GTRACK EFLUX ::
+   EDIT 1
+   PARTICLE BETA
+   ;
+*----
+*  Compute the secondary photon flux
+*----
+SYSTEM := ASM: GMACRO GTRACK :: EDIT 1 ARM ;
+GFLUX := FLU: GMACRO GTRACK SYSTEM GSOUR ::
+    EDIT 2 TYPE S EXTE 100
+    ;
+GEDITS := OUT: GFLUX GTRACK GMACRO GEOM ::
+    EDIT 2 COND INTG NONE
+    ;
+SYSTEM ESOUR := DELETE: SYSTEM ESOUR ;
+*----
+*  Compute the secondary total energy deposition
+*----
+DEPOS := HEAT: DEPOS EEDITS GEDITS ::
+    EDIT 1 NORM 2.6989 19.32 PICKE >>esum<<
+    ;
+ECHO "total energy deposition=" esum "MeV/cc" ;
+*----
+*  Assess result
+*----
+REAL REFVALUE := 5.884968E-2 ;
+EVALUATE DELTA := esum REFVALUE - REFVALUE / ABS ;
+IF DELTA 1.0E-4 < THEN
+  ECHO "TEST SUCCESSFUL; DELTA=" DELTA ;
+ELSE
+  ECHO "------------" ;
+  ECHO "TEST FAILURE" ;
+  ECHO "------------" ;
+  ECHO "REFERENCE=" REFVALUE " CALCULATED=" esum ;
+  ABORT: ;
+ENDIF ;
+
+
+*
+*
+*
+ECHO "TEST_SOUR completed" ;
+END: ;

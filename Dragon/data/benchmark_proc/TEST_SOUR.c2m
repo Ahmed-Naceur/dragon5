@@ -55,16 +55,17 @@ EMACRO2 := DELETE: EMACRO2 ;
 *
 *
 *
+*ESOUR := SOUR: EMACRO ETRACK GEOM ::
+*     MONO 1
+*     X-
+*     INTG 1 1.0E10
+*     DIR 1.0 0.0 0.0
+*     ;
 ESOUR := SOUR: EMACRO ETRACK GEOM ::
      ISO 1
      XLIM 0.0 0.3
-     INTG 1 1.0E10
+     INTG 1 1.0
      ;
-
-*
-*
-*
-*
 SYSTEM := ASM: EMACRO ETRACK :: EDIT 2 ARM ;
 EFLUX := FLU: EMACRO ETRACK SYSTEM ESOUR ::
      EDIT 2 TYPE S EXTE 100
@@ -105,7 +106,7 @@ SYSTEM := DELETE: SYSTEM ;
 *  Compute the primary energy deposition
 *----
 DEPOS := HEAT: EEDITS GEDITS ::
-    EDIT 1 NORM 1.0 
+    EDIT 1 NORM 19.3 
     ;
 EEDITS GEDITS EFLUX ESOUR := DELETE: EEDITS GEDITS EFLUX ESOUR ;
 *----
@@ -149,7 +150,7 @@ SYSTEM ESOUR := DELETE: SYSTEM ESOUR ;
 *  Compute the secondary total energy deposition
 *----
 DEPOS := HEAT: DEPOS EEDITS GEDITS ::
-    EDIT 1 NORM 1.0 PICKE >>esum<<
+    EDIT 1 NORM 19.3 PICKE >>esum<<
     ;
 ECHO "total energy deposition=" esum "MeV/cc" ;
 *----
