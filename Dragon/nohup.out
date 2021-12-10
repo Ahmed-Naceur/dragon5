@@ -1,0 +1,1245 @@
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir8
+/tmp/rundir8
+total 8868
+lrwxrwxrwx 1 chbie IGN      78 Dec  9 15:57 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 15:57 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec  9 15:57 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec  9 15:57 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec  9 15:57 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec  9 15:57 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec  9 15:57 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec  9 15:57 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec  9 15:57 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec  9 15:57 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec  9 15:57 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec  9 15:57 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec  9 15:57 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec  9 15:57 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec  9 15:57 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec  9 15:57 code
+lrwxrwxrwx 1 chbie IGN      71 Dec  9 15:57 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec  9 15:57 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 15:57 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec  9 15:57 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec  9 15:57 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec  9 15:57 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec  9 15:57 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec  9 15:57 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec  9 15:57 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec  9 15:57 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec  9 15:57 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      69 Dec  9 15:57 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec  9 15:57 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 15:57 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 6min 35s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.3185E+00
+ TOTAL CHARGE DEPOSITION:    -2.9459E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.318537e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.318537e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir8
+/tmp/rundir8
+total 8876
+lrwxrwxrwx 1 chbie IGN      78 Dec  9 16:34 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 16:34 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec  9 16:34 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec  9 16:34 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec  9 16:34 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec  9 16:34 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec  9 16:34 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec  9 16:34 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec  9 16:34 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec  9 16:34 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec  9 16:34 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec  9 16:34 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec  9 16:34 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec  9 16:34 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec  9 16:34 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec  9 16:34 code
+lrwxrwxrwx 1 chbie IGN      71 Dec  9 16:34 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec  9 16:34 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 16:34 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 16:34 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec  9 16:34 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     232 Dec  9 16:34 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec  9 16:34 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec  9 16:34 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec  9 16:34 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec  9 16:34 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec  9 16:34 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec  9 16:34 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec  9 16:34 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec  9 16:34 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec  9 16:34 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec  9 16:34 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 16:34 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 2min 24s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     7.2805E-01
+ TOTAL CHARGE DEPOSITION:    -8.8187E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  7.280523e-01 MeV/cc                           |>0135
+>|------------                                                            |>0144
+>|TEST FAILURE                                                            |>0145
+>|------------                                                            |>0146
+>|REFERENCE=  5.884968e-02  CALCULATED=  7.280523e-01                     |>0147
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir8
+/tmp/rundir8
+total 8880
+lrwxrwxrwx 1 chbie IGN      78 Dec  9 16:56 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 16:56 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec  9 16:56 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec  9 16:56 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec  9 16:56 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec  9 16:56 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec  9 16:56 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec  9 16:56 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec  9 16:56 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec  9 16:56 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec  9 16:56 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec  9 16:56 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec  9 16:56 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec  9 16:56 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec  9 16:56 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec  9 16:56 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec  9 16:56 code
+lrwxrwxrwx 1 chbie IGN      71 Dec  9 16:56 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec  9 16:56 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 16:56 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec  9 16:56 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 16:56 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec  9 16:56 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     234 Dec  9 16:56 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec  9 16:56 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec  9 16:56 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec  9 16:56 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec  9 16:56 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec  9 16:56 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec  9 16:56 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec  9 16:56 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec  9 16:56 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec  9 16:56 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec  9 16:56 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 16:56 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 1min 1s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.7506E+00
+ TOTAL CHARGE DEPOSITION:    -3.4705E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.750554e+00 MeV/cc                           |>0135
+>|------------                                                            |>0144
+>|TEST FAILURE                                                            |>0145
+>|------------                                                            |>0146
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.750554e+00                     |>0147
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir8
+/tmp/rundir8
+total 8880
+lrwxrwxrwx 1 chbie IGN      78 Dec  9 17:12 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 17:12 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      82 Dec  9 17:12 al_e_1MeV_csd_160g_linear.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g_linear.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec  9 17:12 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec  9 17:12 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec  9 17:12 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec  9 17:12 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec  9 17:12 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec  9 17:12 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec  9 17:12 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec  9 17:12 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec  9 17:12 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec  9 17:12 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec  9 17:12 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec  9 17:12 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec  9 17:12 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec  9 17:12 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec  9 17:12 code
+lrwxrwxrwx 1 chbie IGN      71 Dec  9 17:12 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec  9 17:12 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 17:12 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3482 Dec  9 17:12 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 17:12 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec  9 17:12 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     234 Dec  9 17:12 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec  9 17:12 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec  9 17:12 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec  9 17:12 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec  9 17:12 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec  9 17:12 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec  9 17:12 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec  9 17:12 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec  9 17:12 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec  9 17:12 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec  9 17:12 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 17:12 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 0min 56s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.4967E+00
+ TOTAL CHARGE DEPOSITION:    -4.4412E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.496711e+00 MeV/cc                           |>0135
+>|------------                                                            |>0144
+>|TEST FAILURE                                                            |>0145
+>|------------                                                            |>0146
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.496711e+00                     |>0147
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir8
+/tmp/rundir8
+total 8880
+lrwxrwxrwx 1 chbie IGN      78 Dec  9 17:24 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 17:24 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      82 Dec  9 17:24 al_e_1MeV_csd_160g_linear.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g_linear.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec  9 17:24 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec  9 17:24 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec  9 17:24 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec  9 17:24 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec  9 17:24 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec  9 17:24 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec  9 17:24 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec  9 17:24 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec  9 17:24 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec  9 17:24 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec  9 17:24 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec  9 17:24 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec  9 17:24 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec  9 17:24 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec  9 17:24 code
+lrwxrwxrwx 1 chbie IGN      71 Dec  9 17:24 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec  9 17:24 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 17:24 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec  9 17:24 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 17:24 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec  9 17:24 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     234 Dec  9 17:24 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec  9 17:24 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec  9 17:24 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec  9 17:24 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec  9 17:24 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec  9 17:24 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec  9 17:24 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec  9 17:24 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec  9 17:24 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec  9 17:24 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec  9 17:24 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 17:24 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 1min 33s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.7674E+00
+ TOTAL CHARGE DEPOSITION:    -3.5041E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.767401e+00 MeV/cc                           |>0135
+>|------------                                                            |>0144
+>|TEST FAILURE                                                            |>0145
+>|------------                                                            |>0146
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.767401e+00                     |>0147
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir8
+/tmp/rundir8
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec  9 18:03 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 18:03 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec  9 18:03 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec  9 18:03 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec  9 18:03 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec  9 18:03 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec  9 18:03 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec  9 18:03 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec  9 18:03 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec  9 18:03 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec  9 18:03 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec  9 18:03 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec  9 18:03 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec  9 18:03 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec  9 18:03 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec  9 18:03 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec  9 18:03 code
+lrwxrwxrwx 1 chbie IGN      76 Dec  9 18:03 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec  9 18:03 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec  9 18:03 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 18:03 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec  9 18:03 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 18:03 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec  9 18:03 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec  9 18:03 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     240 Dec  9 18:03 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec  9 18:03 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec  9 18:03 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec  9 18:03 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec  9 18:03 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec  9 18:03 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec  9 18:03 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec  9 18:03 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec  9 18:03 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec  9 18:03 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec  9 18:03 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 18:03 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 0min 0s
+the listing is located on ./Linux_x86_64
+* G. Marleau and A. Hebert                                                 0003
+*PROCEDURE ROGERMOHAN ;                                                    0004
+*PROCEDURE TEST_SOUR ;                                                     0005
+PROCEDURE LOCKWOOD_C_U_C ;                                                 0006
+*ROGERMOHAN ;                                                              0007
+*TEST_SOUR ;                                                               0008
+LOCKWOOD_C_U_C ;                                                           0009
+QUIT "LIST" .                                                              0010
+ 
+! objstk: INVALID OBJECT/MODULE NAME IN RECORD
+* GAN-2000 VERS 2.1 * ERROR FOUND FOR THIS LINE                            LINE
+PROCEDURE LOCKWOOD_C_U_C ;                                                 0006
+! objpil: ERROR CODE IN >>objstk<< ERROR NUMBER (5001)
+cle2000_c: BAD OBJECTS _MAIN.c2m FILE (ERROR CODE) IRC=5001
+DRAGON: kernel error (code=  666).
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir9
+/tmp/rundir9
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec  9 18:05 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 18:05 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec  9 18:05 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec  9 18:05 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec  9 18:05 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec  9 18:05 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec  9 18:05 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec  9 18:05 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec  9 18:05 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec  9 18:05 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec  9 18:05 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec  9 18:05 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec  9 18:05 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec  9 18:05 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec  9 18:05 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec  9 18:05 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec  9 18:05 code
+lrwxrwxrwx 1 chbie IGN      76 Dec  9 18:05 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec  9 18:05 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec  9 18:05 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 18:05 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec  9 18:05 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec  9 18:05 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec  9 18:05 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec  9 18:05 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec  9 18:05 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec  9 18:05 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec  9 18:05 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec  9 18:05 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec  9 18:05 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec  9 18:05 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec  9 18:05 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec  9 18:05 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec  9 18:05 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec  9 18:05 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec  9 18:05 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 18:05 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 2min 59s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.2627E+00
+ TOTAL CHARGE DEPOSITION:    -1.9867E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.262724e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.262724e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir9
+/tmp/rundir9
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec  9 18:24 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 18:24 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec  9 18:24 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec  9 18:24 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec  9 18:24 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec  9 18:24 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec  9 18:24 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec  9 18:24 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec  9 18:24 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec  9 18:24 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec  9 18:24 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec  9 18:24 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec  9 18:24 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec  9 18:24 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec  9 18:24 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec  9 18:24 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec  9 18:24 code
+lrwxrwxrwx 1 chbie IGN      76 Dec  9 18:24 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec  9 18:24 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec  9 18:24 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 18:24 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec  9 18:24 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 18:24 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec  9 18:24 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec  9 18:24 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec  9 18:24 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec  9 18:24 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec  9 18:24 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec  9 18:24 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec  9 18:24 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec  9 18:24 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec  9 18:24 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec  9 18:24 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec  9 18:24 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec  9 18:24 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec  9 18:24 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 18:24 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 0min 31s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.3186E+00
+ TOTAL CHARGE DEPOSITION:    -2.9459E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.318614e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.318614e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir9
+/tmp/rundir9
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec  9 18:28 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 18:28 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec  9 18:28 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec  9 18:28 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec  9 18:28 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec  9 18:28 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec  9 18:28 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec  9 18:28 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec  9 18:28 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec  9 18:28 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec  9 18:28 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec  9 18:28 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec  9 18:28 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec  9 18:28 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec  9 18:28 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec  9 18:28 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec  9 18:28 code
+lrwxrwxrwx 1 chbie IGN      76 Dec  9 18:28 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec  9 18:28 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec  9 18:28 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 18:28 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec  9 18:28 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 18:28 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec  9 18:28 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec  9 18:28 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec  9 18:28 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec  9 18:28 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec  9 18:28 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec  9 18:28 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec  9 18:28 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec  9 18:28 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec  9 18:28 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec  9 18:28 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec  9 18:28 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec  9 18:28 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec  9 18:28 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 18:28 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 2min 2s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.3185E+00
+ TOTAL CHARGE DEPOSITION:    -2.9459E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.318527e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.318527e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir9
+/tmp/rundir9
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec  9 18:33 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 18:33 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec  9 18:33 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec  9 18:33 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec  9 18:33 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec  9 18:33 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec  9 18:33 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec  9 18:33 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec  9 18:33 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec  9 18:33 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec  9 18:33 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec  9 18:33 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec  9 18:33 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec  9 18:33 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec  9 18:33 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec  9 18:33 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec  9 18:33 code
+lrwxrwxrwx 1 chbie IGN      76 Dec  9 18:33 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec  9 18:33 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec  9 18:33 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 18:33 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec  9 18:33 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3546 Dec  9 18:33 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec  9 18:33 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec  9 18:33 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec  9 18:33 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec  9 18:33 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec  9 18:33 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec  9 18:33 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec  9 18:33 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec  9 18:33 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec  9 18:33 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec  9 18:33 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec  9 18:33 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec  9 18:33 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec  9 18:33 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 18:33 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 0min 17s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.3190E+00
+ TOTAL CHARGE DEPOSITION:    -2.9463E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.319023e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.319023e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir9
+/tmp/rundir9
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec  9 18:37 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 18:37 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec  9 18:37 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec  9 18:37 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec  9 18:37 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec  9 18:37 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec  9 18:37 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec  9 18:37 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec  9 18:37 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec  9 18:37 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec  9 18:37 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec  9 18:37 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec  9 18:37 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec  9 18:37 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec  9 18:37 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec  9 18:37 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec  9 18:37 code
+lrwxrwxrwx 1 chbie IGN      76 Dec  9 18:37 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec  9 18:37 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec  9 18:37 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 18:37 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec  9 18:37 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3546 Dec  9 18:37 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec  9 18:37 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec  9 18:37 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec  9 18:37 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec  9 18:37 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec  9 18:37 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec  9 18:37 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec  9 18:37 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec  9 18:37 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec  9 18:37 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec  9 18:37 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec  9 18:37 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec  9 18:37 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec  9 18:37 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 18:37 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 0min 32s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.3185E+00
+ TOTAL CHARGE DEPOSITION:    -2.9458E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.318513e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.318513e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir9
+/tmp/rundir9
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec  9 19:00 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 19:00 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec  9 19:00 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec  9 19:00 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec  9 19:00 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec  9 19:00 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec  9 19:00 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec  9 19:00 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec  9 19:00 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec  9 19:00 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec  9 19:00 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec  9 19:00 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec  9 19:00 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec  9 19:00 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec  9 19:00 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec  9 19:00 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec  9 19:00 code
+lrwxrwxrwx 1 chbie IGN      76 Dec  9 19:00 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec  9 19:00 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec  9 19:00 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 19:00 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec  9 19:00 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3548 Dec  9 19:00 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec  9 19:00 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec  9 19:00 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec  9 19:00 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec  9 19:00 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec  9 19:00 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec  9 19:00 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec  9 19:00 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec  9 19:00 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec  9 19:00 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec  9 19:00 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec  9 19:00 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec  9 19:00 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec  9 19:00 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 19:00 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 2min 35s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.1984E+00
+ TOTAL CHARGE DEPOSITION:    -2.8290E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.198418e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.198418e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir9
+/tmp/rundir9
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec  9 19:08 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 19:08 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec  9 19:08 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec  9 19:08 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec  9 19:08 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec  9 19:08 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec  9 19:08 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec  9 19:08 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec  9 19:08 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec  9 19:08 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec  9 19:08 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec  9 19:08 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec  9 19:08 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec  9 19:08 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec  9 19:08 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec  9 19:08 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec  9 19:08 code
+lrwxrwxrwx 1 chbie IGN      76 Dec  9 19:08 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec  9 19:08 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec  9 19:08 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 19:08 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec  9 19:08 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 19:08 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec  9 19:08 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec  9 19:08 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec  9 19:08 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec  9 19:08 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec  9 19:08 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec  9 19:08 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec  9 19:08 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec  9 19:08 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec  9 19:08 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec  9 19:08 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec  9 19:08 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec  9 19:08 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec  9 19:08 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 19:08 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 2min 31s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.2829E+00
+ TOTAL CHARGE DEPOSITION:    -2.9095E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.282933e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.282933e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir9
+/tmp/rundir9
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec  9 23:32 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 23:32 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec  9 23:32 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec  9 23:32 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec  9 23:32 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec  9 23:32 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec  9 23:32 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec  9 23:32 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec  9 23:32 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec  9 23:32 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec  9 23:32 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec  9 23:32 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec  9 23:32 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec  9 23:32 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec  9 23:32 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec  9 23:32 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec  9 23:32 code
+lrwxrwxrwx 1 chbie IGN      76 Dec  9 23:32 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec  9 23:32 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec  9 23:32 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 23:32 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec  9 23:32 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3549 Dec  9 23:32 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec  9 23:32 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec  9 23:32 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec  9 23:32 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec  9 23:32 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec  9 23:32 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec  9 23:32 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec  9 23:32 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec  9 23:32 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec  9 23:32 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec  9 23:32 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec  9 23:32 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec  9 23:32 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec  9 23:32 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec  9 23:32 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 2min 30s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.3325E+00
+ TOTAL CHARGE DEPOSITION:    -2.9539E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.332550e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.332550e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir9
+/tmp/rundir9
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec 10 00:05 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec 10 00:05 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec 10 00:05 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec 10 00:05 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec 10 00:05 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec 10 00:05 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec 10 00:05 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec 10 00:05 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec 10 00:05 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec 10 00:05 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec 10 00:05 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec 10 00:05 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec 10 00:05 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec 10 00:05 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec 10 00:05 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec 10 00:05 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec 10 00:05 code
+lrwxrwxrwx 1 chbie IGN      76 Dec 10 00:05 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec 10 00:05 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec 10 00:05 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec 10 00:05 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec 10 00:05 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3551 Dec 10 00:05 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec 10 00:05 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec 10 00:05 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec 10 00:05 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec 10 00:05 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec 10 00:05 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec 10 00:05 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec 10 00:05 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec 10 00:05 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec 10 00:05 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec 10 00:05 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec 10 00:05 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec 10 00:05 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec 10 00:05 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec 10 00:05 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 11min 2s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.3326E+00
+ TOTAL CHARGE DEPOSITION:    -2.9539E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.010 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.332552e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.332552e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir9
+/tmp/rundir9
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec 10 11:00 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec 10 11:00 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec 10 11:00 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec 10 11:00 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec 10 11:00 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec 10 11:00 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec 10 11:00 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec 10 11:00 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec 10 11:00 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec 10 11:00 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec 10 11:00 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec 10 11:00 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec 10 11:00 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec 10 11:00 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec 10 11:00 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec 10 11:00 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec 10 11:00 code
+lrwxrwxrwx 1 chbie IGN      76 Dec 10 11:00 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec 10 11:00 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec 10 11:00 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec 10 11:00 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec 10 11:00 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3551 Dec 10 11:00 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec 10 11:00 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec 10 11:00 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec 10 11:00 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec 10 11:00 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec 10 11:00 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec 10 11:00 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec 10 11:00 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec 10 11:00 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec 10 11:00 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec 10 11:00 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec 10 11:00 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec 10 11:00 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec 10 11:00 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec 10 11:00 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 11min 12s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.3326E+00
+ TOTAL CHARGE DEPOSITION:    -2.9539E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.010 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.332552e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.332552e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir9
+/tmp/rundir9
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec 10 11:16 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec 10 11:16 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec 10 11:16 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec 10 11:16 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec 10 11:16 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec 10 11:16 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec 10 11:16 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec 10 11:16 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec 10 11:16 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec 10 11:16 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec 10 11:16 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec 10 11:16 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec 10 11:16 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec 10 11:16 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec 10 11:16 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec 10 11:16 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec 10 11:16 code
+lrwxrwxrwx 1 chbie IGN      76 Dec 10 11:16 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec 10 11:16 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec 10 11:16 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec 10 11:16 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec 10 11:16 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3551 Dec 10 11:16 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec 10 11:16 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec 10 11:16 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec 10 11:16 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec 10 11:16 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec 10 11:16 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec 10 11:16 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec 10 11:16 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec 10 11:16 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec 10 11:16 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec 10 11:16 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec 10 11:16 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec 10 11:16 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec 10 11:16 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec 10 11:16 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 11min 12s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.3185E+00
+ TOTAL CHARGE DEPOSITION:    -2.9459E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.010 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.318541e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.318541e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir9
+/tmp/rundir9
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec 10 11:40 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec 10 11:40 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec 10 11:40 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec 10 11:40 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec 10 11:40 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec 10 11:40 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec 10 11:40 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec 10 11:40 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec 10 11:40 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec 10 11:40 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec 10 11:40 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec 10 11:40 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec 10 11:40 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec 10 11:40 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec 10 11:40 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec 10 11:40 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec 10 11:40 code
+lrwxrwxrwx 1 chbie IGN      76 Dec 10 11:40 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec 10 11:40 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec 10 11:40 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec 10 11:40 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec 10 11:40 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3575 Dec 10 11:40 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec 10 11:40 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec 10 11:40 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec 10 11:40 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec 10 11:40 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec 10 11:40 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec 10 11:40 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec 10 11:40 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec 10 11:40 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec 10 11:40 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec 10 11:40 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec 10 11:40 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec 10 11:40 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec 10 11:40 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec 10 11:40 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 11min 28s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.3185E+00
+ TOTAL CHARGE DEPOSITION:    -2.9459E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.011 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.318549e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.318549e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir9
+/tmp/rundir9
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec 10 12:02 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec 10 12:02 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec 10 12:02 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec 10 12:02 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec 10 12:02 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec 10 12:02 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec 10 12:02 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec 10 12:02 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec 10 12:02 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec 10 12:02 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec 10 12:02 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec 10 12:02 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec 10 12:02 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec 10 12:02 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec 10 12:02 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec 10 12:02 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec 10 12:02 code
+lrwxrwxrwx 1 chbie IGN      76 Dec 10 12:02 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec 10 12:02 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec 10 12:02 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec 10 12:02 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec 10 12:02 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3551 Dec 10 12:02 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec 10 12:02 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec 10 12:02 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec 10 12:02 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec 10 12:02 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec 10 12:02 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec 10 12:02 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec 10 12:02 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec 10 12:02 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec 10 12:02 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec 10 12:02 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec 10 12:02 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec 10 12:02 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec 10 12:02 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec 10 12:02 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 2min 37s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.3185E+00
+ TOTAL CHARGE DEPOSITION:    -2.9459E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.318542e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.318542e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir9
+/tmp/rundir9
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec 10 12:12 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec 10 12:12 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec 10 12:12 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec 10 12:12 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec 10 12:12 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec 10 12:12 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec 10 12:12 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec 10 12:12 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec 10 12:12 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec 10 12:12 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec 10 12:12 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec 10 12:12 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec 10 12:12 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec 10 12:12 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec 10 12:12 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec 10 12:12 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec 10 12:12 code
+lrwxrwxrwx 1 chbie IGN      76 Dec 10 12:12 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec 10 12:12 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec 10 12:12 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec 10 12:12 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec 10 12:12 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3551 Dec 10 12:12 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec 10 12:12 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec 10 12:12 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec 10 12:12 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec 10 12:12 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec 10 12:12 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec 10 12:12 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec 10 12:12 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec 10 12:12 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec 10 12:12 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec 10 12:12 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec 10 12:12 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec 10 12:12 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec 10 12:12 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec 10 12:12 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 5min 30s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.3185E+00
+ TOTAL CHARGE DEPOSITION:    -2.9459E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.318537e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.318537e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
+execute benchmark with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir9
+/tmp/rundir9
+total 8884
+lrwxrwxrwx 1 chbie IGN      78 Dec 10 12:27 al_au_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec 10 12:27 al_au.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_au.txt
+lrwxrwxrwx 1 chbie IGN      75 Dec 10 12:27 al_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/al_e_1MeV_csd_160g.txt
+-rw-r--r-- 1 chbie IGN    4500 Dec 10 12:27 archive_BFP_2D_3rd_generation.c2m
+-rw-r--r-- 1 chbie IGN    3581 Dec 10 12:27 archive_BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    2817 Dec 10 12:27 archive_TCM67_1tours.c2m
+-rw-r--r-- 1 chbie IGN    4733 Dec 10 12:27 archive_TCM67_3tours.c2m
+-rw-r--r-- 1 chbie IGN    5624 Dec 10 12:27 archive_TCM67_4tours.c2m
+-rw-r--r-- 1 chbie IGN    3763 Dec 10 12:27 archive_TCM67.c2m
+-rw-r--r-- 1 chbie IGN    4331 Dec 10 12:27 BFP_1D_al_au.c2m
+-rw-r--r-- 1 chbie IGN    4268 Dec 10 12:27 BFP_1D.c2m
+-rw-r--r-- 1 chbie IGN    3574 Dec 10 12:27 BFP_2D.c2m
+-rw-r--r-- 1 chbie IGN    3597 Dec 10 12:27 BFP_3D.c2m
+-rw-r--r-- 1 chbie IGN    4280 Dec 10 12:27 BFPph_1D.c2m
+-rw-r--r-- 1 chbie IGN    4522 Dec 10 12:27 BFPpositrons_1D.c2m
+-rw-r--r-- 1 chbie IGN    5273 Dec 10 12:27 BFP_THREE_1D.c2m
+-rwxr-xr-x 1 chbie IGN 8959040 Dec 10 12:27 code
+lrwxrwxrwx 1 chbie IGN      76 Dec 10 12:27 c_u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/c_u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      71 Dec 10 12:27 fmac_file_plus.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file_plus.txt
+lrwxrwxrwx 1 chbie IGN      66 Dec 10 12:27 fmac_file.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/fmac_file.txt
+-rw-r--r-- 1 chbie IGN    3549 Dec 10 12:27 LOCKWOOD_AL_AU_AL.c2m
+-rw-r--r-- 1 chbie IGN    3475 Dec 10 12:27 LOCKWOOD_AL.c2m
+-rw-r--r-- 1 chbie IGN    3551 Dec 10 12:27 LOCKWOOD.c2m
+-rw-r--r-- 1 chbie IGN    3541 Dec 10 12:27 LOCKWOOD_C_U_C.c2m
+-rw-r--r-- 1 chbie IGN    3474 Dec 10 12:27 LOCKWOOD_U.c2m
+-rw-r--r-- 1 chbie IGN     228 Dec 10 12:27 mydata
+-rw-r--r-- 1 chbie IGN    3649 Dec 10 12:27 ROGERMOHAN.c2m
+lrwxrwxrwx 1 chbie IGN      73 Dec 10 12:27 roger-mohan-fmac.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/roger-mohan-fmac.txt
+-rw-r--r-- 1 chbie IGN    3197 Dec 10 12:27 TB01.c2m
+-rw-r--r-- 1 chbie IGN    3749 Dec 10 12:27 TCM67.c2m
+-rw-r--r-- 1 chbie IGN    3047 Dec 10 12:27 testsour1d.c2m
+-rw-r--r-- 1 chbie IGN    3236 Dec 10 12:27 testsour3d.c2m
+-rw-r--r-- 1 chbie IGN    3853 Dec 10 12:27 TEST_SOUR.c2m
+lrwxrwxrwx 1 chbie IGN      74 Dec 10 12:27 u_e_1MeV_csd_160g.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/u_e_1MeV_csd_160g.txt
+lrwxrwxrwx 1 chbie IGN      69 Dec 10 12:27 W_6MeV_e_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_CSD.txt
+lrwxrwxrwx 1 chbie IGN      72 Dec 10 12:27 W_6MeV_e_ph_CSD.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/W_6MeV_e_ph_CSD.txt
+lrwxrwxrwx 1 chbie IGN      62 Dec 10 12:27 water.txt -> /home/chbie/codes/dragon5/Dragon/data/benchmark_proc/water.txt
+tmacro access script terminated
+End of execution. Total execution time: 0h 7min 43s
+the listing is located on ./Linux_x86_64
+ TOTAL ENERGY DEPOSITION:     1.3185E+00
+ TOTAL CHARGE DEPOSITION:    -2.9459E+02
+->@END MODULE   : HEAT:       
+-->>MODULE HEAT:       : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+>|total energy deposition=  1.318537e+00 MeV/cc                           |>0137
+>|------------                                                            |>0146
+>|TEST FAILURE                                                            |>0147
+>|------------                                                            |>0148
+>|REFERENCE=  5.884968e-02  CALCULATED=  1.318537e+00                     |>0149
+->@BEGIN MODULE : ABORT:      
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+GANDRV: requested abort.
