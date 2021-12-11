@@ -1,0 +1,12 @@
+* Regression tests for electron beam on medical benchmarks
+* A. Naceur
+*
+PROCEDURE wat_xs_80G wat_xsr_80G watxs3OOG watxsr3OOG
+          W_xs_80G W_xsr_80G ;
+*water_xs_80G ;
+*water_xsr_80G ;
+*watxs3OOG ;
+watxsr3OOG ;
+*W_xs_80G ;
+*W_xsr_80G ;
+QUIT "LIST" .

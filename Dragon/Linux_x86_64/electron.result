@@ -1,0 +1,477 @@
+* CLE-2000 VERS 3.0 * R.ROY, EPM COPYRIGHT 1999 *                          LINE
+* Regression tests for electron beam on medical benchmarks                 0001
+* A. Naceur                                                                0002
+*                                                                          0003
+PROCEDURE wat_xs_80G wat_xsr_80G watxs3OOG watxsr3OOG                      0004
+W_xs_80G W_xsr_80G ;                                                       0005
+*water_xs_80G ;                                                            0006
+*water_xsr_80G ;                                                           0007
+*watxs3OOG ;                                                               0008
+watxsr3OOG ;                                                               0009
+*W_xs_80G ;                                                                0010
+*W_xsr_80G ;                                                               0011
+QUIT "LIST" .                                                              0012
+ 
+<|PROCEDURE wat_xs_80G wat_xsr_80G watxs3OOG watxsr3OOG                   |<0004
+<|W_xs_80G W_xsr_80G ;                                                    |<0005
+<|watxsr3OOG ;                                                            |<0009
+<|MODULE       GEO: LIB: MAC: SNT: ASM: FLU: HEAT: OUT: DELETE:           |<0007
+<|UTL: END: EDI: ;                                                        |<0008
+<|PROCEDURE    assertS ;                                                  |<0009
+<|LINKED_LIST   MACRO DEPOS MICRO OLDMACRO GEOM TRACK SYSTEM FLUX         |<0010
+<|EEDIT EDITION EEDITcopy ;                                               |<0011
+<|SEQ_ASCII    edep_xsr.txt   :: FILE 'edep_xsr.txt' ;                    |<0012
+<|SEQ_ASCII    edit_xsr.txt   :: FILE 'edit_xsr.txt' ;                    |<0013
+<|SEQ_ASCII    micr_xsr.txt   :: FILE 'micr_xsr.txt' ;                    |<0014
+<|SEQ_ASCII    macr_xsr.txt   :: FILE 'macr_xsr.txt' ;                    |<0015
+<|SEQ_ASCII    flux_xsr.txt   :: FILE 'flux_xsr.txt' ;                    |<0016
+<|SEQ_ASCII    syst_xsr.txt   :: FILE 'syst_xsr.txt' ;                    |<0017
+<|SEQ_ASCII    geom_xsr.txt   :: FILE 'geom_xsr.txt' ;                    |<0018
+<|SEQ_ASCII    trac_xsr.txt   :: FILE 'trac_xsr.txt' ;                    |<0019
+<|GEOM := GEO: :: CAR1D 2                                                 |<0021
+<|X- VOID  X+ VOID                                                        |<0022
+<|MIX  1 2                                                                |<0023
+<|MESHX 0.0 0.01 2.0                                                      |<0024
+<|SPLITX 30 70                                                            |<0025
+<|;                                                                       |<0026
+ DDDDDD   RRRRRR     AAA     GGGGG    OOOOO   NN     NN
+ DDDDDDD  RRRRRRR   AAAAA   GGGGGGG  OOOOOOO  NNN    NN
+ DD   DD  RR   RR  AA   AA  GG       OO   OO  NNNN   NN
+ DD   DD  RRRRRR   AA   AA  GG  GGG  OO   OO  NN NN  NN
+ DD   DD  RRRR     AAAAAAA  GG  GGG  OO   OO  NN  NN NN
+ DD   DD  RR RR    AAAAAAA  GG   GG  OO   OO  NN   NNNN
+ DDDDDDD  RR  RR   AA   AA  GGGGGGG  OOOOOOO  NN    NNN
+ DDDDDD   RR   RR  AA   AA   GGGGG    OOOOO   NN     NN
+
+ VERSION dragon 5  Version 5.0.7 ($Revision: 2060 $)                   $Date: 2021-02-02 16:03:29 -0500 (Tue, 02 Feb 2021) $           
+ GROUPE D'ANALYSE NUCLEAIRE
+ ECOLE POLYTECHNIQUE DE MONTREAL
+
+
+
+ COPYRIGHT NOTICE FOR THIS VERSION OF dragon:
+ --------------------------------------------
+ Copyright (C) 2002 Ecole Polytechnique de Montreal 
+ This library is free software; you can redistribute it
+ and/or modify it under the terms of the GNU Lesser General
+ Public License as published by the Free Software Foundation;
+ either version 2.1 of the License, or (at your option) any
+ later version 
+
+
+
+
+->@BEGIN MODULE : GEO:        
+->@DESCRIPTION  : Geometry definition                                                     
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE CARTESIAN 1-D   .
+->@END MODULE   : GEO:        
+-->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+<|TRACK := SNT: GEOM ::                                                   |<0028
+<|TITLE 'Water-Slab:Cepxsr-Dragon'                                        |<0029
+<|EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2 EPSI 1.E-5                   |<0030
+<|QUAD 1 MAXI 300 BFPL ;                                                  |<0031
+->@BEGIN MODULE : SNT:        
+->@DESCRIPTION  : Discrete ordinates tracking                                             
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+->@END MODULE   : SNT:        
+-->>MODULE SNT:        : TIME SPENT=        0.000 MEMORY USAGE= 2.520E+02
+<|MICRO  := LIB: ::                                                       |<0033
+<|EDIT 99                                                                 |<0034
+<|NMIX 1                                                                  |<0035
+<|ANIS 2                                                                  |<0036
+<|MIXS LIB: MATXS2 FIL: _test_nc                                          |<0037
+<|MIX  1  300.0  1.0 NOGAS                                                |<0038
+<|Hnat = h 0.111894                                                       |<0039
+<|Onat = o 0.888106                                                       |<0040
+<|;                                                                       |<0041
+->@BEGIN MODULE : LIB:        
+->@DESCRIPTION  : Microscopic xs-library processing                                       
+->@CREDITS      : A. Hebert, G. Marleau                                                   
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ SPEC   LOCAL NAME    ISOTOPE       FROM LIBRARY  MIX   DENSITY     WEIGHT%     TEMP(K)    SIGZERO   SELF-SHIEL  THERMAL CORRECTION
+ -----  ------------  ------------  ------------  ----  ----------  ----------  ---------  --------  ----------  ------------------
+     1  Hnat    0001  h             MATXS2     1     1  1.0000E+00  1.1189E-01  3.000E+02  1.00E+10   0             0                         
+     2  Onat    0001  o             MATXS2     1     1  1.0000E+00  8.8811E-01  3.000E+02  1.00E+10   0             0                         
+
+ PROCESSING MATXS2 LIBRARY NAMED _test_nc.
+
+ MATXS2 FILE ID:   matxs test             VERS  1
+ test                                                                    
+
+ LIBTR2: PROCESSING SUBMATERIAL    1     INCIDENT PARTICLE=B-->B     DATA TYPE=BSCAT      MATERIAL=h     
+
+ AVAILABLE IDENTIFIERS OF REACTION VECTORS FOR TYPE BSCAT  AND MATERIAL h     :
+ bstc   bstr   bwt0   btot0  bheat  bchar  
+
+ PROCESS VECTOR REACTION BSTC  
+
+ PROCESS VECTOR REACTION BSTR  
+
+ PROCESS VECTOR REACTION BWT0  
+
+ PROCESS VECTOR REACTION BTOT0 
+
+ PROCESS VECTOR REACTION BHEAT 
+
+ PROCESS VECTOR REACTION BCHAR 
+
+ PROCESS MATRIX REACTION BINCH 
+
+ PROCESS MATRIX REACTION BELAS 
+
+ PROCESS MATRIX REACTION BBREM 
+
+ AVAILABLE IDENTIFIERS OF REACTION MATRICES FOR TYPE BSCAT  AND MATERIAL h     :
+  binch  belas  bbrem 
+
+ FLUX FOR MATERIAL Hnat    0001   SUM= 3.03937E+06
+   8.0200E+04  7.8090E+04  7.6020E+04  7.4020E+04  7.2070E+04  7.0160E+04  6.8320E+04  6.6510E+04  6.4760E+04  6.3050E+04
+   6.1380E+04  5.9770E+04  5.8190E+04  5.6660E+04  5.5160E+04  5.3710E+04  5.2290E+04  5.0910E+04  4.9560E+04  4.8260E+04
+   4.6990E+04  4.5750E+04  4.4540E+04  4.3370E+04  4.2220E+04  4.1110E+04  4.0020E+04  3.8970E+04  3.7940E+04  3.6940E+04
+   3.5960E+04  3.5020E+04  3.4090E+04  3.3200E+04  3.2310E+04  3.1470E+04  3.0630E+04  2.9830E+04  2.9040E+04  2.8280E+04
+   2.7520E+04  2.6806E+04  2.6096E+04  2.5407E+04  2.4736E+04  2.4085E+04  2.3449E+04  2.2830E+04  2.2228E+04  2.1642E+04
+   2.1071E+04  2.0515E+04  1.9974E+04  1.9448E+04  1.8934E+04  1.8435E+04  1.7948E+04  1.7475E+04  1.7014E+04  1.6565E+04
+   1.6128E+04  1.5703E+04  1.5289E+04  1.4885E+04  1.4493E+04  1.4110E+04  1.3738E+04  1.3376E+04  1.3023E+04  1.2680E+04
+   1.2345E+04  1.2019E+04  1.1702E+04  1.1394E+04  1.1093E+04  1.0800E+04  1.0516E+04  1.0238E+04  9.9680E+03  9.7050E+03
+   9.4490E+03  9.2000E+03  8.9580E+03  8.7200E+03  8.4910E+03  8.2670E+03  8.0490E+03  7.8370E+03  7.6300E+03  7.4280E+03
+   7.2330E+03  7.0420E+03  6.8560E+03  6.6750E+03  6.4990E+03  6.3280E+03  6.1600E+03  5.9990E+03  5.8400E+03  5.6860E+03
+   5.5360E+03  5.3900E+03  5.2480E+03  5.1090E+03  4.9750E+03  4.8430E+03  4.7160E+03  4.5910E+03  4.4700E+03  4.3520E+03
+   4.2380E+03  4.1250E+03  4.0170E+03  3.9110E+03  3.8080E+03  3.7070E+03  3.6090E+03  3.5140E+03  3.4220E+03  3.3310E+03
+   3.2440E+03  3.1580E+03  3.0740E+03  2.9940E+03  2.9140E+03  2.8380E+03  2.7620E+03  2.6904E+03  2.6189E+03  2.5499E+03
+   2.4825E+03  2.4171E+03  2.3534E+03  2.2913E+03  2.2308E+03  2.1720E+03  2.1147E+03  2.0589E+03  2.0046E+03  1.9517E+03
+   1.9002E+03  1.8501E+03  1.8013E+03  1.7538E+03  1.7075E+03  1.6625E+03  1.6187E+03  1.5759E+03  1.5344E+03  1.4939E+03
+   1.4545E+03  1.4161E+03  1.3787E+03  1.3424E+03  1.3070E+03  1.2725E+03  1.2390E+03  1.2062E+03  1.1745E+03  1.1434E+03
+   1.1133E+03  1.0840E+03  1.0553E+03  1.0275E+03  1.0004E+03  9.7400E+02  9.4830E+02  9.2330E+02  8.9900E+02  8.7520E+02
+   8.5220E+02  8.2960E+02  8.0780E+02  7.8650E+02  7.6570E+02  7.4560E+02  7.2580E+02  7.0680E+02  6.8800E+02  6.7000E+02
+   6.5220E+02  6.3510E+02  6.1830E+02  6.0190E+02  5.8620E+02  5.7060E+02  5.5560E+02  5.4090E+02  5.2670E+02  5.1280E+02
+   4.9920E+02  4.8610E+02  4.7330E+02  4.6080E+02  4.4860E+02  4.3680E+02  4.2520E+02  4.1410E+02  4.0310E+02  3.9250E+02
+   3.8210E+02  3.7210E+02  3.6220E+02  3.5270E+02  3.4340E+02  3.3440E+02  3.2550E+02  3.1690E+02  3.0850E+02  3.0050E+02
+   2.9250E+02  2.8480E+02  2.7720E+02  2.6998E+02  2.6284E+02  2.5590E+02  2.4916E+02  2.4258E+02  2.3618E+02  2.2995E+02
+   2.2389E+02  2.1798E+02  2.1223E+02  2.0663E+02  2.0118E+02  1.9587E+02  1.9071E+02  1.8568E+02  1.8078E+02  1.7601E+02
+   1.7137E+02  1.6685E+02  1.6244E+02  1.5816E+02  1.5399E+02  1.4993E+02  1.4597E+02  1.4212E+02  1.3838E+02  1.3472E+02
+   1.3117E+02  1.2771E+02  1.2434E+02  1.2106E+02  1.1787E+02  1.1476E+02  1.1173E+02  1.0878E+02  1.0591E+02  1.0312E+02
+   1.0040E+02  9.7760E+01  9.5170E+01  9.2660E+01  9.0220E+01  8.7840E+01  8.5520E+01  8.3270E+01  8.1070E+01  7.8930E+01
+   7.6850E+01  7.4820E+01  7.2850E+01  7.0920E+01  6.9060E+01  6.7230E+01  6.5460E+01  6.3730E+01  6.2060E+01  6.0410E+01
+   5.8820E+01  5.7280E+01  5.5750E+01  5.4290E+01  5.2860E+01  5.1460E+01  5.0110E+01  4.8780E+01  4.7500E+01  4.6240E+01
+   4.5020E+01  4.3840E+01  4.2680E+01  4.1550E+01  4.0460E+01  3.9390E+01  3.8350E+01  3.7340E+01  3.6360E+01  3.5400E+01
+   3.4460E+01  3.3550E+01  3.2670E+01  3.1810E+01  3.0960E+01  3.0150E+01  2.9360E+01  2.8580E+01  2.7830E+01  2.7090E+01
+
+ LIBTR2: PROCESSING SUBMATERIAL    1     INCIDENT PARTICLE=B-->B     DATA TYPE=BSCAT      MATERIAL=o     
+
+ AVAILABLE IDENTIFIERS OF REACTION VECTORS FOR TYPE BSCAT  AND MATERIAL o     :
+ bstc   bstr   bwt0   btot0  bheat  bchar  
+
+ PROCESS VECTOR REACTION BSTC  
+
+ PROCESS VECTOR REACTION BSTR  
+
+ PROCESS VECTOR REACTION BWT0  
+
+ PROCESS VECTOR REACTION BTOT0 
+
+ PROCESS VECTOR REACTION BHEAT 
+
+ PROCESS VECTOR REACTION BCHAR 
+
+ PROCESS MATRIX REACTION BINCH 
+
+ PROCESS MATRIX REACTION BELAS 
+
+ PROCESS MATRIX REACTION BBREM 
+
+ AVAILABLE IDENTIFIERS OF REACTION MATRICES FOR TYPE BSCAT  AND MATERIAL o     :
+  binch  belas  bbrem 
+
+ FLUX FOR MATERIAL Onat    0001   SUM= 3.03937E+06
+   8.0200E+04  7.8090E+04  7.6020E+04  7.4020E+04  7.2070E+04  7.0160E+04  6.8320E+04  6.6510E+04  6.4760E+04  6.3050E+04
+   6.1380E+04  5.9770E+04  5.8190E+04  5.6660E+04  5.5160E+04  5.3710E+04  5.2290E+04  5.0910E+04  4.9560E+04  4.8260E+04
+   4.6990E+04  4.5750E+04  4.4540E+04  4.3370E+04  4.2220E+04  4.1110E+04  4.0020E+04  3.8970E+04  3.7940E+04  3.6940E+04
+   3.5960E+04  3.5020E+04  3.4090E+04  3.3200E+04  3.2310E+04  3.1470E+04  3.0630E+04  2.9830E+04  2.9040E+04  2.8280E+04
+   2.7520E+04  2.6806E+04  2.6096E+04  2.5407E+04  2.4736E+04  2.4085E+04  2.3449E+04  2.2830E+04  2.2228E+04  2.1642E+04
+   2.1071E+04  2.0515E+04  1.9974E+04  1.9448E+04  1.8934E+04  1.8435E+04  1.7948E+04  1.7475E+04  1.7014E+04  1.6565E+04
+   1.6128E+04  1.5703E+04  1.5289E+04  1.4885E+04  1.4493E+04  1.4110E+04  1.3738E+04  1.3376E+04  1.3023E+04  1.2680E+04
+   1.2345E+04  1.2019E+04  1.1702E+04  1.1394E+04  1.1093E+04  1.0800E+04  1.0516E+04  1.0238E+04  9.9680E+03  9.7050E+03
+   9.4490E+03  9.2000E+03  8.9580E+03  8.7200E+03  8.4910E+03  8.2670E+03  8.0490E+03  7.8370E+03  7.6300E+03  7.4280E+03
+   7.2330E+03  7.0420E+03  6.8560E+03  6.6750E+03  6.4990E+03  6.3280E+03  6.1600E+03  5.9990E+03  5.8400E+03  5.6860E+03
+   5.5360E+03  5.3900E+03  5.2480E+03  5.1090E+03  4.9750E+03  4.8430E+03  4.7160E+03  4.5910E+03  4.4700E+03  4.3520E+03
+   4.2380E+03  4.1250E+03  4.0170E+03  3.9110E+03  3.8080E+03  3.7070E+03  3.6090E+03  3.5140E+03  3.4220E+03  3.3310E+03
+   3.2440E+03  3.1580E+03  3.0740E+03  2.9940E+03  2.9140E+03  2.8380E+03  2.7620E+03  2.6904E+03  2.6189E+03  2.5499E+03
+   2.4825E+03  2.4171E+03  2.3534E+03  2.2913E+03  2.2308E+03  2.1720E+03  2.1147E+03  2.0589E+03  2.0046E+03  1.9517E+03
+   1.9002E+03  1.8501E+03  1.8013E+03  1.7538E+03  1.7075E+03  1.6625E+03  1.6187E+03  1.5759E+03  1.5344E+03  1.4939E+03
+   1.4545E+03  1.4161E+03  1.3787E+03  1.3424E+03  1.3070E+03  1.2725E+03  1.2390E+03  1.2062E+03  1.1745E+03  1.1434E+03
+   1.1133E+03  1.0840E+03  1.0553E+03  1.0275E+03  1.0004E+03  9.7400E+02  9.4830E+02  9.2330E+02  8.9900E+02  8.7520E+02
+   8.5220E+02  8.2960E+02  8.0780E+02  7.8650E+02  7.6570E+02  7.4560E+02  7.2580E+02  7.0680E+02  6.8800E+02  6.7000E+02
+   6.5220E+02  6.3510E+02  6.1830E+02  6.0190E+02  5.8620E+02  5.7060E+02  5.5560E+02  5.4090E+02  5.2670E+02  5.1280E+02
+   4.9920E+02  4.8610E+02  4.7330E+02  4.6080E+02  4.4860E+02  4.3680E+02  4.2520E+02  4.1410E+02  4.0310E+02  3.9250E+02
+   3.8210E+02  3.7210E+02  3.6220E+02  3.5270E+02  3.4340E+02  3.3440E+02  3.2550E+02  3.1690E+02  3.0850E+02  3.0050E+02
+   2.9250E+02  2.8480E+02  2.7720E+02  2.6998E+02  2.6284E+02  2.5590E+02  2.4916E+02  2.4258E+02  2.3618E+02  2.2995E+02
+   2.2389E+02  2.1798E+02  2.1223E+02  2.0663E+02  2.0118E+02  1.9587E+02  1.9071E+02  1.8568E+02  1.8078E+02  1.7601E+02
+   1.7137E+02  1.6685E+02  1.6244E+02  1.5816E+02  1.5399E+02  1.4993E+02  1.4597E+02  1.4212E+02  1.3838E+02  1.3472E+02
+   1.3117E+02  1.2771E+02  1.2434E+02  1.2106E+02  1.1787E+02  1.1476E+02  1.1173E+02  1.0878E+02  1.0591E+02  1.0312E+02
+   1.0040E+02  9.7760E+01  9.5170E+01  9.2660E+01  9.0220E+01  8.7840E+01  8.5520E+01  8.3270E+01  8.1070E+01  7.8930E+01
+   7.6850E+01  7.4820E+01  7.2850E+01  7.0920E+01  6.9060E+01  6.7230E+01  6.5460E+01  6.3730E+01  6.2060E+01  6.0410E+01
+   5.8820E+01  5.7280E+01  5.5750E+01  5.4290E+01  5.2860E+01  5.1460E+01  5.0110E+01  4.8780E+01  4.7500E+01  4.6240E+01
+   4.5020E+01  4.3840E+01  4.2680E+01  4.1550E+01  4.0460E+01  3.9390E+01  3.8350E+01  3.7340E+01  3.6360E+01  3.5400E+01
+   3.4460E+01  3.3550E+01  3.2670E+01  3.1810E+01  3.0960E+01  3.0150E+01  2.9360E+01  2.8580E+01  2.7830E+01  2.7090E+01
+ LIBLIB: VALIDATION OF MICROLIB DATA
+
+ OPTIONS
+ -------
+ IMPX      99   (0=NO PRINT/1=SHORT/2=MORE)
+ IPROB      0   (0=DIRECT/1=ADJOINT)
+ ITIME      1   (1=STEADY-STATE/2=PROMPT)
+ NLIB       1   (NUMBER OF SETS OF LIBRARIES)
+ NGF      301   (NUMBER OF FAST GROUP WITHOUT SELF-SHIELDING)
+ IGRMAX     0   (LAST GROUP INDEX WITH SELF-SHIELDING)
+ NBISO      2   (NUMBER OF ISOTOPES OR MATERIALS)
+ NBMIX      1   (NUMBER OF MIXTURES)
+ NRES       0   (NUMBER OF SETS OF RESONANT MIXTURES)
+ NCOMB      0   (NUMBER OF DEPLETING MIXTURES)
+ NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
+ NGRO     300   (NUMBER OF ENERGY GROUPS)
+ NL         2   (NUMBER OF LEGENDRE ORDERS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/3=WIMS-D TYPE/4=LEAKAGE CORRECTION)
+ NBESP      0   (NUMBER OF ENERGY-DEPENDENT FISSION SPECTRA)
+ IPROC      0   (-1=SKIP LIBRARY PROCESSING/0=DILUTION INTERPOLATION/1=USE PHYSICAL TABLES/2=BUILD A DRAGLIB/3=COMPUTE CALENDF TABLES/4=SLOWING-DOWN TABLES/5=ALL CALENDF)
+ IMAC       1   (0=DO NOT/1=DO BUILD AN EMBEDDED MACROLIB)
+ NDEL       0   (NUMBER OF PRECURSOR GROUPS)
+ NDEPL      0   (NUMBER OF DEPLETING ISOTOPES)
+ NFISS      0   (NUMBER OF FISSILE ISOTOPES WITH PYIELD DATA)
+ NPART      0   (NUMBER OF COMPANION PARTICLES)
+ ISOADD     0   (0=COMPLETE BURNUP CHAIN/1=DO NOT)
+ MAXISM   300   (MAX. NUMBER OF ISOTOPES PER MIXTURE)
+ IPRECI     4   (CALENDF ACCURACY FLAG:1/2/3/4)
+
+ CROSS SECTION EDIT NAME (LCM DIRECTORY NAME)
+ --------------------------------------------
+   1  NFTOT        2  NG           3  N2N   
+   4  N3N          5  N4N          6  NA    
+   7  NP           8  N2A          9  NNP   
+  10  ND          11  NT          12  TRANC 
+  13  BSTC        14  BSTR        15  CSTC  
+  16  CSTR  
+
+ AVAILABLE CROSS-SECTION LIBRARIES:
+    1 -- _test_nc                                                        
+
+                                                        NUMBER
+ SPEC   LOCAL NAME    ISOTOPE       FROM LIBRARY  MIX   DENSITY     TEMP(K)    SIGZERO    SELF-SHIEL  THERMAL CORRECTION
+ -----  ------------  ------------  ------------  ----  ----------  ---------  ---------  ----------  ------------------
+     1  Hnat    0001  h             MATXS2     1     1  6.6856E-02  3.000E+02  1.000E+10   0             0                         
+     2  Onat    0001  o             MATXS2     1     1  3.3428E-02  3.000E+02  1.000E+10   0             0                         
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'MICRO       ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'ENERGY      '       301    REAL            
+        2  'DELTAU      '       300    REAL            
+        3  'ILIBRARYNAME'        16    CHARACTER       
+        4  'SIGNATURE   '         3    CHARACTER       ='L_LIBRARY   '
+        5  'STATE-VECTOR'        40    INTEGER         
+        6  'ISOTOPESUSED'         6    CHARACTER       
+        7  'ISOTOPERNAME'         6    CHARACTER       
+        8  'ISOTOPESMIX '         2    INTEGER         
+        9  'ISOTOPESTODO'         2    INTEGER         
+       10  'ISOTOPESTYPE'         2    INTEGER         
+       11  'ILIBRARYTYPE'         4    CHARACTER       
+       12  'ILIBRARYINDX'         2    INTEGER         
+       13  'ISOTOPESCOH '         4    CHARACTER       
+       14  'ISOTOPESINC '         4    CHARACTER       
+       15  'ISOTOPESRESK'         4    CHARACTER       
+       16  'ISOTOPESNTFG'         2    INTEGER         
+       17  'ISOTOPESHIN '         6    CHARACTER       
+       18  'ISOTOPESSHI '         2    INTEGER         
+       19  'ISOTOPESDSN '       600    REAL            
+       20  'ISOTOPESDSB '       600    REAL            
+       21  'ISOTOPESGIR '         2    REAL            
+       22  'ISOTOPESNIR '         2    INTEGER         
+       23  'ISOTOPESTEMP'         2    REAL            
+       24  'ADDXSNAME-P0'        32    CHARACTER       
+       25  'MIXTUREGAS  '         1    INTEGER         
+       26  'ISOTOPESLIST'         2    LIST            
+       27  'PARTICLE    '         1    CHARACTER       
+       28  'PARTICLE-NAM'         1    CHARACTER       
+       29  'PARTICLE-NGR'         1    INTEGER         
+       30  'PARTICLE-MC2'         1    REAL            
+       31  'ISOTOPESDENS'         2    REAL            
+       32  'MACROLIB    '        -1    DIRECTORY       
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =      1951
+
+->@END MODULE   : LIB:        
+-->>MODULE LIB:        : TIME SPENT=        0.866 MEMORY USAGE= 3.320E+03
+<|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0043
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: STEP UP TO LEVEL 'MACROLIB    '.
+-->>module EQU:        : time spent=        0.002 memory usage= 1.584E+03
+->@END MODULE   : EQU:        
+<|micr_xsr.txt   := MICRO ;                                               |<0044
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'MICRO       ' WAS EXPORTED TO FILE 'micr_xsr.txt'.
+-->>module EQU:        : time spent=        0.180 memory usage= 1.920E+02
+->@END MODULE   : EQU:        
+<|macr_xsr.txt   := MACRO ;                                               |<0045
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macr_xsr.txt'.
+-->>module EQU:        : time spent=        0.063 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|OLDMACRO := MACRO ;                                                     |<0047
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module EQU:        : time spent=        0.002 memory usage= 1.580E+03
+->@END MODULE   : EQU:        
+<|MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;                          |<0048
+->@BEGIN MODULE : MAC:        
+->@DESCRIPTION  : Macroscopic xs processor                                                
+->@CREDITS      : G. Marleau                                                              
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ OPTIONS
+ -------
+ IPRINT     1   (0=NO PRINT/1=SHORT/2=MORE)
+ NGROUP   300   (NUMBER OF ENERGY GROUPS)
+ NBMIX      2   (NUMBER OF MIXTURES IN THE MACROLIB)
+ NANISO     2   (MAXIMUM SCATTERING ANISOTROPY)
+ NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
+ NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
+ NLG        0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ NALB       0   (NUMBER OF PHYSICAL ALBEDOS)
+ ILEAK      0   (1=DIFF AVAILABLE; 2=DIFFX AVAILABLE)
+ NSTEP      0   (NUMBER OF PERTURBATION DIRECTORIES)
+ IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
+ NPART0     0   (NUMBER OF COMPANION PARTICLES)
+->@END MODULE   : MAC:        
+-->>MODULE MAC:        : TIME SPENT=        0.018 MEMORY USAGE= 7.920E+02
+<|OLDMACRO := DELETE: OLDMACRO ;                                          |<0049
+<|MACRO := MAC: MACRO ::                                                  |<0052
+<|READ INPUT                                                              |<0053
+<|MIX 1 FIXE                                                              |<0054
+<|<<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0       |<0056
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0057
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0058
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0059
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0060
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0061
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                                 |<0062
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0063
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0064
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0065
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0066
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0067
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0068
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                                 |<0069
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0070
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0071
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0072
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0073
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0074
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0075
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0                                 |<0076
+<|;                                                                       |<0077
+->@BEGIN MODULE : MAC:        
+->@DESCRIPTION  : Macroscopic xs processor                                                
+->@CREDITS      : G. Marleau                                                              
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ CROSS SECTION TYPE     NTOT0      NUSIGF     FIXE       CHI        SCAT (NL=  1,  2)        TRANC      DIFF       H-FACTOR   NFTOT      FLUX-INTG  FLUX-INTG-P1
+ MATERIAL     1                               READ                                                                                                        
+ MATERIAL     2                                                                                                                                           
+
+ OPTIONS
+ -------
+ IPRINT     1   (0=NO PRINT/1=SHORT/2=MORE)
+ NGROUP   300   (NUMBER OF ENERGY GROUPS)
+ NBMIX      2   (NUMBER OF MIXTURES IN THE MACROLIB)
+ NANISO     2   (MAXIMUM SCATTERING ANISOTROPY)
+ NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
+ NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
+ NLG        0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ NALB       0   (NUMBER OF PHYSICAL ALBEDOS)
+ ILEAK      0   (1=DIFF AVAILABLE; 2=DIFFX AVAILABLE)
+ NSTEP      0   (NUMBER OF PERTURBATION DIRECTORIES)
+ IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
+ NPART0     0   (NUMBER OF COMPANION PARTICLES)
+->@END MODULE   : MAC:        
+-->>MODULE MAC:        : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+<|SYSTEM := ASM: MACRO TRACK :: EDIT 2 ARM ;                              |<0079
+->@BEGIN MODULE : ASM:        
+->@DESCRIPTION  : To built system matrices (CP and IC)                                    
+->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ COMPUTATION OF DRAGON RESPONSE MATRICES BY DOOR =   SN          
+
+
+                               EDITION REGION/VOLUME/MIXTURE 
+
+     REGION     VOLUME       MIXTURE     REGION     VOLUME       MIXTURE     REGION     VOLUME       MIXTURE
+
+        1     3.33333E-04       1            2     3.33333E-04       1            3     3.33333E-04       1
+        4     3.33333E-04       1            5     3.33333E-04       1            6     3.33333E-04       1
+        7     3.33333E-04       1            8     3.33333E-04       1            9     3.33333E-04       1
+       10     3.33333E-04       1           11     3.33333E-04       1           12     3.33333E-04       1
+       13     3.33333E-04       1           14     3.33333E-04       1           15     3.33333E-04       1
+       16     3.33333E-04       1           17     3.33333E-04       1           18     3.33333E-04       1
+       19     3.33333E-04       1           20     3.33333E-04       1           21     3.33333E-04       1
+       22     3.33333E-04       1           23     3.33333E-04       1           24     3.33333E-04       1
+       25     3.33333E-04       1           26     3.33333E-04       1           27     3.33333E-04       1
+       28     3.33333E-04       1           29     3.33333E-04       1           30     3.33333E-04       1
+       31     2.84286E-02       2           32     2.84286E-02       2           33     2.84286E-02       2
+       34     2.84286E-02       2           35     2.84286E-02       2           36     2.84286E-02       2
+       37     2.84286E-02       2           38     2.84286E-02       2           39     2.84286E-02       2
+       40     2.84286E-02       2           41     2.84286E-02       2           42     2.84286E-02       2
+       43     2.84286E-02       2           44     2.84286E-02       2           45     2.84286E-02       2
+       46     2.84286E-02       2           47     2.84286E-02       2           48     2.84286E-02       2
+       49     2.84286E-02       2           50     2.84286E-02       2           51     2.84286E-02       2
+       52     2.84286E-02       2           53     2.84286E-02       2           54     2.84286E-02       2
+       55     2.84286E-02       2           56     2.84286E-02       2           57     2.84286E-02       2
+       58     2.84286E-02       2           59     2.84286E-02       2           60     2.84286E-02       2
+       61     2.84286E-02       2           62     2.84286E-02       2           63     2.84286E-02       2
+       64     2.84286E-02       2           65     2.84286E-02       2           66     2.84286E-02       2
+       67     2.84286E-02       2           68     2.84286E-02       2           69     2.84287E-02       2
+       70     2.84286E-02       2           71     2.84286E-02       2           72     2.84286E-02       2
+       73     2.84286E-02       2           74     2.84286E-02       2           75     2.84286E-02       2
+       76     2.84287E-02       2           77     2.84286E-02       2           78     2.84286E-02       2
+       79     2.84286E-02       2           80     2.84286E-02       2           81     2.84286E-02       2
+       82     2.84286E-02       2           83     2.84287E-02       2           84     2.84286E-02       2
+       85     2.84286E-02       2           86     2.84286E-02       2           87     2.84286E-02       2
+       88     2.84286E-02       2           89     2.84286E-02       2           90     2.84287E-02       2
+       91     2.84286E-02       2           92     2.84286E-02       2           93     2.84286E-02       2
+       94     2.84286E-02       2           95     2.84286E-02       2           96     2.84286E-02       2
+       97     2.84287E-02       2           98     2.84286E-02       2           99     2.84286E-02       2
+      100     2.84286E-02       2
+lcmget_c: UNABLE TO FIND BLOCK 'ESTOPW' INTO DIRECTORY '            ' IN THE OBJECT 'MACRO'.

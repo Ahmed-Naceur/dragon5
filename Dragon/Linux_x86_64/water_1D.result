@@ -365,7 +365,7 @@ QUIT "LIST" .                                                              0114
  TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =       631
 
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.074 MEMORY USAGE= 1.136E+03
+-->>MODULE LIB:        : TIME SPENT=        0.072 MEMORY USAGE= 1.136E+03
 <|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0043
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
