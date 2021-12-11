@@ -134,7 +134,7 @@ QUIT "LIST" .                                                              0063
  JSECT      0   (NUMBER OF NON-SECTORIZED ANNULII)
  IPIN       0   (PIN LOCATION OPTION)
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 <|MACRO := MAC: ::                                                        |<0027
 <|EDIT 2 NGRO 2 NMIX 4 NIFI 1                                             |<0028
 <|READ INPUT                                                              |<0029
@@ -237,7 +237,7 @@ QUIT "LIST" .                                                              0063
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+-->>MODULE MAC:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
 <|TRACK := BIVACT: IAEA ::                                                |<0056
 <|TITLE 'IAEA-2D BENCHMARK'                                               |<0057
 <|EDIT 2 MAXR 81 DUAL            1           2 ;                          |<0058
@@ -340,7 +340,7 @@ QUIT "LIST" .                                                              0063
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (BIVAC       )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.000 MEMORY USAGE= 2.640E+02
+-->>MODULE ASM:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 <|FLUX := FLU: MACRO TRACK SYS :: TYPE K EXTE 100 5.0E-8 ;                |<0060
 ->@BEGIN MODULE : FLU:        
 ->@DESCRIPTION  : Solve the flux equations                                                
@@ -604,7 +604,7 @@ QUIT "LIST" .                                                              0063
  ++ TRACKING CALLED=  69 TIMES FINAL KINF= 1.036643E+00 FINAL KEFF= 1.032710E+00 B2= 0.00000E+00 PRECISION= 4.76E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=       138
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.005 MEMORY USAGE= 2.640E+02
 <|assertS FLUX :: K-EFFECTIVE 1 1.032712 ;                                |<0061
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                

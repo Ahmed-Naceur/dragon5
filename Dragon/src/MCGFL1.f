@@ -79,7 +79,7 @@
 * FORM    input flux format flag (.TRUE. same format as output flux ;
 *         .FALSE. same format as input source).
 * LAST    flag for SCR and ACA rebalancing.
-* STIS    'Source term isolation' option for flux integration.
+* STIS    source term isolation' option for flux integration.
 * NPJJM   number of pjj modes to store for STIS option.
 * REBFLG  ACA or SCR rebalancing flag.
 * LPRISM  3D prismatic extended tracking flag.

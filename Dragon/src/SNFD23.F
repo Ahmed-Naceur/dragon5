@@ -1,7 +1,7 @@
 *DECK SNFD23
-      SUBROUTINE SNFD23(IOMP,NUN,NGRP,NGEFF,IMPX,INCONV,INGIND,LX,LY,LZ,
-     1 IELEM,NMAT,NPQ,NSCT,MAT,VOL,TOTAL,NCODE,ZCODE,QEXT,DU,DE,DZ,W,
-     2 MRMX,MRMY,MRMZ,DC,DB,DA,PL,FUNKNO)
+      SUBROUTINE SNFD23(IOMP,NUN,NGEFF,IMPX,INCONV,NGIND,LX,LY,LZ,
+     1 IELEM,NMAT,NPQ,NSCT,MAT,VOL,TOTAL,NCODE,ZCODE,QEXT,DU,DE,DZ,
+     2 W,MRMX,MRMY,MRMZ,DC,DB,DA,PL,FUNKNO)
 *
 *-----------------------------------------------------------------------
 *
@@ -22,11 +22,10 @@
 *Parameters: input
 * IOMP    number of cells per axis in a Domino macrocell.
 * NUN     total number of unknowns in vector FUNKNO.
-* NGRP    number of energy groups.
-* NGEFF   dimension of arrays INCONV and INGIND.
+* NGEFF   number of energy groups processed in parallel.
 * IMPX    print flag (equal to zero for no print).
 * INCONV  energy group convergence flag (set to .FALSE. if converged).
-* INGIND  energy group index assign to 1:NGEFF arrays.
+* NGIND   energy group indices assign to the NGEFF set.
 * LX      number of meshes along X axis.
 * LY      number of meshes along Y axis.
 * LZ      number of meshes along Z axis.
@@ -64,13 +63,12 @@
 *----
 *  SUBROUTINE ARGUMENTS
 *----
-      INTEGER IOMP,NUN,NGRP,NGEFF,IMPX,INGIND(NGEFF),LX,LY,LZ,IELEM,
-     1 NMAT,NPQ,NSCT,MAT(LX,LY,LZ),NCODE(6),MRMX(NPQ),MRMY(NPQ),
-     2 MRMZ(NPQ)
+      INTEGER IOMP,NUN,NGEFF,IMPX,NGIND(NGEFF),LX,LY,LZ,IELEM,NMAT,
+     1 NPQ,NSCT,MAT(LX,LY,LZ),NCODE(6),MRMX(NPQ),MRMY(NPQ),MRMZ(NPQ)
       LOGICAL INCONV(NGEFF)
-      REAL VOL(LX,LY,LZ),TOTAL(0:NMAT,NGRP),ZCODE(6),QEXT(NUN,NGRP),
+      REAL VOL(LX,LY,LZ),TOTAL(0:NMAT,NGEFF),ZCODE(6),QEXT(NUN,NGEFF),
      1 DU(NPQ),DE(NPQ),DZ(NPQ),W(NPQ),DC(LX,LY,NPQ),DB(LX,LZ,NPQ),
-     2 DA(LY,LZ,NPQ),PL(NSCT,NPQ),FUNKNO(NUN,NGRP)
+     2 DA(LY,LZ,NPQ),PL(NSCT,NPQ),FUNKNO(NUN,NGEFF)
 *----
 *  LOCAL VARIABLES
 *----
@@ -161,11 +159,10 @@
 *$OMP  PARALLEL DO
 *$OMP1 PRIVATE(M,IG,VU,VE,VZ,M1,E1,IOF,JOF,IEL,JEL,I,J,K)
 *$OMP2 SHARED(FUNKNO) COLLAPSE(2)
-      DO 150 IGEFF=1,NGEFF
+      DO 150 IG=1,NGEFF
       DO 140 IPQD=1,NPQD(IND)
-      IF(.NOT.INCONV(IGEFF)) GO TO 140
+      IF(.NOT.INCONV(IG)) GO TO 140
       M=INDANG(IPQD,IND)
-      IG=INGIND(IGEFF)
       VU=DU(M)
       VE=DE(M)
       VZ=DZ(M)
@@ -299,7 +296,7 @@
 *$OMP1 PRIVATE(ITID,FLUX,M,IG,IMX,IMY,IMZ,Q,Q2,IOF,IER,II,JJ,KK,IEL,JEL)
 *$OMP2 PRIVATE(I,J,K,L,VT,YNI,YNJ,YNK,CORNERQ)
 *$OMP3 SHARED(FUNKNO,XNI,XNJ,XNK) REDUCTION(+:FLUX_G) COLLAPSE(3)
-      DO 520 IGEFF=1,NGEFF
+      DO 520 IG=1,NGEFF
       DO 510 IPQD=1,NPQD(IND)
       DO 500 ICEL=1,NCEL
 #if defined(_OPENMP)
@@ -311,9 +308,8 @@
       JJ=JJJ(ICEL)
       KK=IDI-II-JJ+2
 *
-      IF(IMPX.GT.5) WRITE(IUNOUT,600) ITID,IGEFF,IPQD,II,JJ,KK
-      IF(.NOT.INCONV(IGEFF)) GO TO 500
-      IG=INGIND(IGEFF)
+      IF(IMPX.GT.5) WRITE(IUNOUT,600) ITID,NGIND(IG),IPQD,II,JJ,KK
+      IF(.NOT.INCONV(IG)) GO TO 500
       M=INDANG(IPQD,IND)
       IF(W(M).EQ.0.0) GO TO 500
 *
@@ -328,9 +324,9 @@
         DO 180 IEL=1,IELEM
         IOF=((((M-1)*LY+(J-1))*LX+(I-1))*IELEM+(JEL-1))*IELEM+IEL
         IF((IND.EQ.1).OR.(IND.EQ.2).OR.(IND.EQ.3).OR.(IND.EQ.4)) THEN
-          XNK(IEL,JEL,I,J,IPQD,IGEFF)=FUNKNO(L4+IOFZ+IOF,IG)*ZCODE(5)
+          XNK(IEL,JEL,I,J,IPQD,IG)=FUNKNO(L4+IOFZ+IOF,IG)*ZCODE(5)
         ELSE
-          XNK(IEL,JEL,I,J,IPQD,IGEFF)=FUNKNO(L4+IOFZ+IOF,IG)*ZCODE(6)
+          XNK(IEL,JEL,I,J,IPQD,IG)=FUNKNO(L4+IOFZ+IOF,IG)*ZCODE(6)
         ENDIF
   180   CONTINUE
   190   CONTINUE
@@ -348,9 +344,9 @@
         DO 220 IEL=1,IELEM
         IOF=((((M-1)*LZ+(K-1))*LX+(I-1))*IELEM+(JEL-1))*IELEM+IEL
         IF((IND.EQ.1).OR.(IND.EQ.2).OR.(IND.EQ.5).OR.(IND.EQ.6)) THEN
-          XNJ(IEL,JEL,I,K,IPQD,IGEFF)=FUNKNO(L4+IOFY+IOF,IG)*ZCODE(3)
+          XNJ(IEL,JEL,I,K,IPQD,IG)=FUNKNO(L4+IOFY+IOF,IG)*ZCODE(3)
         ELSE
-          XNJ(IEL,JEL,I,K,IPQD,IGEFF)=FUNKNO(L4+IOFY+IOF,IG)*ZCODE(4)
+          XNJ(IEL,JEL,I,K,IPQD,IG)=FUNKNO(L4+IOFY+IOF,IG)*ZCODE(4)
         ENDIF
   220   CONTINUE
   230   CONTINUE
@@ -368,9 +364,9 @@
         DO 260 IEL=1,IELEM
         IOF=((((M-1)*LZ+(K-1))*LY+(J-1))*IELEM+(JEL-1))*IELEM+IEL
         IF((IND.EQ.1).OR.(IND.EQ.4).OR.(IND.EQ.5).OR.(IND.EQ.8)) THEN
-          XNI(IEL,JEL,J,K,IPQD,IGEFF)=FUNKNO(L4+IOF,IG)*ZCODE(1)
+          XNI(IEL,JEL,J,K,IPQD,IG)=FUNKNO(L4+IOF,IG)*ZCODE(1)
         ELSE
-          XNI(IEL,JEL,J,K,IPQD,IGEFF)=FUNKNO(L4+IOF,IG)*ZCODE(2)
+          XNI(IEL,JEL,J,K,IPQD,IG)=FUNKNO(L4+IOF,IG)*ZCODE(2)
         ENDIF
   260   CONTINUE
   270   CONTINUE
@@ -400,9 +396,9 @@
       CALL XDDSET(Q2,(IELEM**3)*((IELEM**3)+1),0.0D0)
       DO 360 JEL=1,IELEM
       DO 350 IEL=1,IELEM
-      YNI(IEL,JEL)=XNI(IEL,JEL,J,K,IPQD,IGEFF)
-      YNJ(IEL,JEL)=XNJ(IEL,JEL,I,K,IPQD,IGEFF)
-      YNK(IEL,JEL)=XNK(IEL,JEL,I,J,IPQD,IGEFF)
+      YNI(IEL,JEL)=XNI(IEL,JEL,J,K,IPQD,IG)
+      YNJ(IEL,JEL)=XNJ(IEL,JEL,I,K,IPQD,IG)
+      YNK(IEL,JEL)=XNK(IEL,JEL,I,J,IPQD,IG)
   350 CONTINUE
   360 CONTINUE
 *
@@ -1850,232 +1846,232 @@
       IF(IER.NE.0) CALL XABORT('SNFD23: SINGULAR MATRIX.')
 *
       IF(IELEM.EQ.1)THEN
-      XNI(1,1,J,K,IPQD,IGEFF) = Q2(1,2) 
-      XNJ(1,1,I,K,IPQD,IGEFF) = Q2(1,2) 
-      XNK(1,1,I,J,IPQD,IGEFF) = Q2(1,2) 
+      XNI(1,1,J,K,IPQD,IG) = Q2(1,2) 
+      XNJ(1,1,I,K,IPQD,IG) = Q2(1,2) 
+      XNK(1,1,I,J,IPQD,IG) = Q2(1,2) 
       ELSEIF(IELEM.EQ.2)THEN
-      XNI(1,1,J,K,IPQD,IGEFF) = Q2(1,9) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(1,1,J,K,IPQD,IG) = Q2(1,9) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(2,9) 
-      XNI(2,1,J,K,IPQD,IGEFF) = Q2(3,9) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(2,1,J,K,IPQD,IG) = Q2(3,9) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(4,9) 
-      XNI(1,2,J,K,IPQD,IGEFF) = Q2(5,9) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(1,2,J,K,IPQD,IG) = Q2(5,9) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(6,9) 
-      XNI(2,2,J,K,IPQD,IGEFF) = Q2(7,9) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(2,2,J,K,IPQD,IG) = Q2(7,9) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(8,9) 
-      XNJ(1,1,I,K,IPQD,IGEFF) = Q2(1,9) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(1,1,I,K,IPQD,IG) = Q2(1,9) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(3,9) 
-      XNJ(2,1,I,K,IPQD,IGEFF) = Q2(2,9) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(2,1,I,K,IPQD,IG) = Q2(2,9) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(4,9) 
-      XNJ(1,2,I,K,IPQD,IGEFF) = Q2(5,9) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(1,2,I,K,IPQD,IG) = Q2(5,9) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(7,9) 
-      XNJ(2,2,I,K,IPQD,IGEFF) = Q2(6,9) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(2,2,I,K,IPQD,IG) = Q2(6,9) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(8,9) 
-      XNK(1,1,I,J,IPQD,IGEFF) = Q2(1,9) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(1,1,I,J,IPQD,IG) = Q2(1,9) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(5,9) 
-      XNK(2,1,I,J,IPQD,IGEFF) = Q2(2,9) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(2,1,I,J,IPQD,IG) = Q2(2,9) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(6,9) 
-      XNK(1,2,I,J,IPQD,IGEFF) = Q2(3,9) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(1,2,I,J,IPQD,IG) = Q2(3,9) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(7,9) 
-      XNK(2,2,I,J,IPQD,IGEFF) = Q2(4,9) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(2,2,I,J,IPQD,IG) = Q2(4,9) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(8,9) 
       ELSEIF(IELEM.EQ.3)THEN
-      XNI(1,1,J,K,IPQD,IGEFF) = Q2(01,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(1,1,J,K,IPQD,IG) = Q2(01,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(02,28) + 5**(0.5D0)*Q2(03,28)
-      XNI(2,1,J,K,IPQD,IGEFF) = Q2(04,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(2,1,J,K,IPQD,IG) = Q2(04,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(05,28) + 5**(0.5D0)*Q2(06,28)
-      XNI(3,1,J,K,IPQD,IGEFF) = Q2(07,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(3,1,J,K,IPQD,IG) = Q2(07,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(08,28) + 5**(0.5D0)*Q2(09,28)
-      XNI(1,2,J,K,IPQD,IGEFF) = Q2(10,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(1,2,J,K,IPQD,IG) = Q2(10,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(11,28) + 5**(0.5D0)*Q2(12,28)
-      XNI(2,2,J,K,IPQD,IGEFF) = Q2(13,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(2,2,J,K,IPQD,IG) = Q2(13,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(14,28) + 5**(0.5D0)*Q2(15,28)
-      XNI(3,2,J,K,IPQD,IGEFF) = Q2(16,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(3,2,J,K,IPQD,IG) = Q2(16,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(17,28) + 5**(0.5D0)*Q2(18,28)
-      XNI(1,3,J,K,IPQD,IGEFF) = Q2(19,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(1,3,J,K,IPQD,IG) = Q2(19,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(20,28) + 5**(0.5D0)*Q2(21,28)
-      XNI(2,3,J,K,IPQD,IGEFF) = Q2(22,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(2,3,J,K,IPQD,IG) = Q2(22,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(23,28) + 5**(0.5D0)*Q2(24,28)
-      XNI(3,3,J,K,IPQD,IGEFF) = Q2(25,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(3,3,J,K,IPQD,IG) = Q2(25,28) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(26,28) + 5**(0.5D0)*Q2(27,28)
-      XNJ(1,1,I,K,IPQD,IGEFF) = Q2(01,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(1,1,I,K,IPQD,IG) = Q2(01,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(04,28) + 5**(0.5D0)*Q2(07,28)
-      XNJ(2,1,I,K,IPQD,IGEFF) = Q2(02,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(2,1,I,K,IPQD,IG) = Q2(02,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(05,28) + 5**(0.5D0)*Q2(08,28)
-      XNJ(3,1,I,K,IPQD,IGEFF) = Q2(03,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(3,1,I,K,IPQD,IG) = Q2(03,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(06,28) + 5**(0.5D0)*Q2(09,28)
-      XNJ(1,2,I,K,IPQD,IGEFF) = Q2(10,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(1,2,I,K,IPQD,IG) = Q2(10,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(13,28) + 5**(0.5D0)*Q2(16,28)
-      XNJ(2,2,I,K,IPQD,IGEFF) = Q2(11,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(2,2,I,K,IPQD,IG) = Q2(11,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(14,28) + 5**(0.5D0)*Q2(17,28)
-      XNJ(3,2,I,K,IPQD,IGEFF) = Q2(12,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(3,2,I,K,IPQD,IG) = Q2(12,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(15,28) + 5**(0.5D0)*Q2(18,28)
-      XNJ(1,3,I,K,IPQD,IGEFF) = Q2(19,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(1,3,I,K,IPQD,IG) = Q2(19,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(22,28) + 5**(0.5D0)*Q2(25,28)
-      XNJ(2,3,I,K,IPQD,IGEFF) = Q2(20,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(2,3,I,K,IPQD,IG) = Q2(20,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(23,28) + 5**(0.5D0)*Q2(26,28)
-      XNJ(3,3,I,K,IPQD,IGEFF) = Q2(21,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(3,3,I,K,IPQD,IG) = Q2(21,28) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(24,28) + 5**(0.5D0)*Q2(27,28)
-      XNK(1,1,I,J,IPQD,IGEFF) = Q2(01,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(1,1,I,J,IPQD,IG) = Q2(01,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(10,28) + 5**(0.5D0)*Q2(19,28)
-      XNK(2,1,I,J,IPQD,IGEFF) = Q2(02,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(2,1,I,J,IPQD,IG) = Q2(02,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(11,28) + 5**(0.5D0)*Q2(20,28)
-      XNK(3,1,I,J,IPQD,IGEFF) = Q2(03,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(3,1,I,J,IPQD,IG) = Q2(03,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(12,28) + 5**(0.5D0)*Q2(21,28)
-      XNK(1,2,I,J,IPQD,IGEFF) = Q2(04,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(1,2,I,J,IPQD,IG) = Q2(04,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(13,28) + 5**(0.5D0)*Q2(22,28)
-      XNK(2,2,I,J,IPQD,IGEFF) = Q2(05,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(2,2,I,J,IPQD,IG) = Q2(05,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(14,28) + 5**(0.5D0)*Q2(23,28)
-      XNK(3,2,I,J,IPQD,IGEFF) = Q2(06,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(3,2,I,J,IPQD,IG) = Q2(06,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(15,28) + 5**(0.5D0)*Q2(24,28)
-      XNK(1,3,I,J,IPQD,IGEFF) = Q2(07,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(1,3,I,J,IPQD,IG) = Q2(07,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(16,28) + 5**(0.5D0)*Q2(25,28)
-      XNK(2,3,I,J,IPQD,IGEFF) = Q2(08,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(2,3,I,J,IPQD,IG) = Q2(08,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(17,28) + 5**(0.5D0)*Q2(26,28)
-      XNK(3,3,I,J,IPQD,IGEFF) = Q2(09,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(3,3,I,J,IPQD,IG) = Q2(09,28) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(18,28) + 5**(0.5D0)*Q2(27,28)
       ELSEIF(IELEM.EQ.4)THEN
-      XNI(1,1,J,K,IPQD,IGEFF) = Q2(01,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(1,1,J,K,IPQD,IG) = Q2(01,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(02,65) + 5**(0.5D0)*Q2(03,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(04,65)
-      XNI(2,1,J,K,IPQD,IGEFF) = Q2(05,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(2,1,J,K,IPQD,IG) = Q2(05,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(06,65) + 5**(0.5D0)*Q2(07,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(08,65)
-      XNI(3,1,J,K,IPQD,IGEFF) = Q2(09,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(3,1,J,K,IPQD,IG) = Q2(09,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(10,65) + 5**(0.5D0)*Q2(11,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(12,65)
-      XNI(4,1,J,K,IPQD,IGEFF) = Q2(13,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(4,1,J,K,IPQD,IG) = Q2(13,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(14,65) + 5**(0.5D0)*Q2(15,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(16,65)
-      XNI(1,2,J,K,IPQD,IGEFF) = Q2(17,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(1,2,J,K,IPQD,IG) = Q2(17,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(18,65) + 5**(0.5D0)*Q2(19,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(20,65)
-      XNI(2,2,J,K,IPQD,IGEFF) = Q2(21,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(2,2,J,K,IPQD,IG) = Q2(21,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(22,65) + 5**(0.5D0)*Q2(23,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(24,65)
-      XNI(3,2,J,K,IPQD,IGEFF) = Q2(25,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(3,2,J,K,IPQD,IG) = Q2(25,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(26,65) + 5**(0.5D0)*Q2(27,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(28,65)
-      XNI(4,2,J,K,IPQD,IGEFF) = Q2(29,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(4,2,J,K,IPQD,IG) = Q2(29,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(30,65) + 5**(0.5D0)*Q2(31,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(32,65)
-      XNI(1,3,J,K,IPQD,IGEFF) = Q2(33,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(1,3,J,K,IPQD,IG) = Q2(33,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(34,65) + 5**(0.5D0)*Q2(35,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(36,65)
-      XNI(2,3,J,K,IPQD,IGEFF) = Q2(37,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(2,3,J,K,IPQD,IG) = Q2(37,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(38,65) + 5**(0.5D0)*Q2(39,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(40,65)
-      XNI(3,3,J,K,IPQD,IGEFF) = Q2(41,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(3,3,J,K,IPQD,IG) = Q2(41,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(42,65) + 5**(0.5D0)*Q2(43,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(44,65)
-      XNI(4,3,J,K,IPQD,IGEFF) = Q2(45,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(4,3,J,K,IPQD,IG) = Q2(45,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(46,65) + 5**(0.5D0)*Q2(47,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(48,65)
-      XNI(1,4,J,K,IPQD,IGEFF) = Q2(49,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(1,4,J,K,IPQD,IG) = Q2(49,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(50,65) + 5**(0.5D0)*Q2(51,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(52,65)
-      XNI(2,4,J,K,IPQD,IGEFF) = Q2(53,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(2,4,J,K,IPQD,IG) = Q2(53,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(54,65) + 5**(0.5D0)*Q2(55,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(56,65)
-      XNI(3,4,J,K,IPQD,IGEFF) = Q2(57,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(3,4,J,K,IPQD,IG) = Q2(57,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(58,65) + 5**(0.5D0)*Q2(59,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(60,65)
-      XNI(4,4,J,K,IPQD,IGEFF) = Q2(61,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
+      XNI(4,4,J,K,IPQD,IG) = Q2(61,65) + SIGN(1.0,DU(M))*3**(0.5D0)*
      >   Q2(62,65) + 5**(0.5D0)*Q2(63,65) + SIGN(1.0,DU(M))*7**(0.5D0)*
      >   Q2(64,65)
-      XNJ(1,1,I,K,IPQD,IGEFF) = Q2(01,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(1,1,I,K,IPQD,IG) = Q2(01,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(05,65) + 5**(0.5D0)*Q2(09,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(13,65)
-      XNJ(2,1,I,K,IPQD,IGEFF) = Q2(02,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(2,1,I,K,IPQD,IG) = Q2(02,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(06,65) + 5**(0.5D0)*Q2(10,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(14,65)
-      XNJ(3,1,I,K,IPQD,IGEFF) = Q2(03,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(3,1,I,K,IPQD,IG) = Q2(03,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(07,65) + 5**(0.5D0)*Q2(11,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(15,65)
-      XNJ(4,1,I,K,IPQD,IGEFF) = Q2(04,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(4,1,I,K,IPQD,IG) = Q2(04,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(08,65) + 5**(0.5D0)*Q2(12,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(16,65)
-      XNJ(1,2,I,K,IPQD,IGEFF) = Q2(17,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(1,2,I,K,IPQD,IG) = Q2(17,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(21,65) + 5**(0.5D0)*Q2(25,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(29,65)
-      XNJ(2,2,I,K,IPQD,IGEFF) = Q2(18,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(2,2,I,K,IPQD,IG) = Q2(18,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(22,65) + 5**(0.5D0)*Q2(26,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(30,65)
-      XNJ(3,2,I,K,IPQD,IGEFF) = Q2(19,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(3,2,I,K,IPQD,IG) = Q2(19,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(23,65) + 5**(0.5D0)*Q2(27,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(31,65)
-      XNJ(4,2,I,K,IPQD,IGEFF) = Q2(20,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(4,2,I,K,IPQD,IG) = Q2(20,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(24,65) + 5**(0.5D0)*Q2(28,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(32,65)
-      XNJ(1,3,I,K,IPQD,IGEFF) = Q2(33,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(1,3,I,K,IPQD,IG) = Q2(33,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(37,65) + 5**(0.5D0)*Q2(41,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(45,65)
-      XNJ(2,3,I,K,IPQD,IGEFF) = Q2(34,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(2,3,I,K,IPQD,IG) = Q2(34,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(38,65) + 5**(0.5D0)*Q2(42,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(46,65)
-      XNJ(3,3,I,K,IPQD,IGEFF) = Q2(35,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(3,3,I,K,IPQD,IG) = Q2(35,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(39,65) + 5**(0.5D0)*Q2(43,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(47,65)
-      XNJ(4,3,I,K,IPQD,IGEFF) = Q2(36,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(4,3,I,K,IPQD,IG) = Q2(36,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(40,65) + 5**(0.5D0)*Q2(44,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(48,65)
-      XNJ(1,4,I,K,IPQD,IGEFF) = Q2(49,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(1,4,I,K,IPQD,IG) = Q2(49,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(53,65) + 5**(0.5D0)*Q2(57,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(61,65)
-      XNJ(2,4,I,K,IPQD,IGEFF) = Q2(50,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(2,4,I,K,IPQD,IG) = Q2(50,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(54,65) + 5**(0.5D0)*Q2(58,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(62,65)
-      XNJ(3,4,I,K,IPQD,IGEFF) = Q2(51,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(3,4,I,K,IPQD,IG) = Q2(51,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(55,65) + 5**(0.5D0)*Q2(59,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(63,65)
-      XNJ(4,4,I,K,IPQD,IGEFF) = Q2(52,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
+      XNJ(4,4,I,K,IPQD,IG) = Q2(52,65) + SIGN(1.0,DE(M))*3**(0.5D0)*
      >   Q2(56,65) + 5**(0.5D0)*Q2(60,65) + SIGN(1.0,DE(M))*7**(0.5D0)*
      >   Q2(64,65)
-      XNK(1,1,I,J,IPQD,IGEFF) = Q2(01,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(1,1,I,J,IPQD,IG) = Q2(01,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(17,65) + 5**(0.5D0)*Q2(33,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(49,65)
-      XNK(2,1,I,J,IPQD,IGEFF) = Q2(02,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(2,1,I,J,IPQD,IG) = Q2(02,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(18,65) + 5**(0.5D0)*Q2(34,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(50,65)
-      XNK(3,1,I,J,IPQD,IGEFF) = Q2(03,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(3,1,I,J,IPQD,IG) = Q2(03,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(19,65) + 5**(0.5D0)*Q2(35,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(51,65)
-      XNK(4,1,I,J,IPQD,IGEFF) = Q2(04,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(4,1,I,J,IPQD,IG) = Q2(04,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(20,65) + 5**(0.5D0)*Q2(36,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(52,65)
-      XNK(1,2,I,J,IPQD,IGEFF) = Q2(05,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(1,2,I,J,IPQD,IG) = Q2(05,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(21,65) + 5**(0.5D0)*Q2(37,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(53,65)
-      XNK(2,2,I,J,IPQD,IGEFF) = Q2(06,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(2,2,I,J,IPQD,IG) = Q2(06,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(22,65) + 5**(0.5D0)*Q2(38,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(54,65)
-      XNK(3,2,I,J,IPQD,IGEFF) = Q2(07,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(3,2,I,J,IPQD,IG) = Q2(07,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(23,65) + 5**(0.5D0)*Q2(39,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(55,65)
-      XNK(4,2,I,J,IPQD,IGEFF) = Q2(08,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(4,2,I,J,IPQD,IG) = Q2(08,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(24,65) + 5**(0.5D0)*Q2(40,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(56,65)
-      XNK(1,3,I,J,IPQD,IGEFF) = Q2(09,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(1,3,I,J,IPQD,IG) = Q2(09,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(25,65) + 5**(0.5D0)*Q2(41,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(57,65)
-      XNK(2,3,I,J,IPQD,IGEFF) = Q2(10,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(2,3,I,J,IPQD,IG) = Q2(10,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(26,65) + 5**(0.5D0)*Q2(42,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(58,65)
-      XNK(3,3,I,J,IPQD,IGEFF) = Q2(11,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(3,3,I,J,IPQD,IG) = Q2(11,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(27,65) + 5**(0.5D0)*Q2(43,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(59,65)
-      XNK(4,3,I,J,IPQD,IGEFF) = Q2(12,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(4,3,I,J,IPQD,IG) = Q2(12,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(28,65) + 5**(0.5D0)*Q2(44,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(60,65)
-      XNK(1,4,I,J,IPQD,IGEFF) = Q2(13,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(1,4,I,J,IPQD,IG) = Q2(13,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(29,65) + 5**(0.5D0)*Q2(45,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(61,65)
-      XNK(2,4,I,J,IPQD,IGEFF) = Q2(14,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(2,4,I,J,IPQD,IG) = Q2(14,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(30,65) + 5**(0.5D0)*Q2(46,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(62,65)
-      XNK(3,4,I,J,IPQD,IGEFF) = Q2(15,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(3,4,I,J,IPQD,IG) = Q2(15,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(31,65) + 5**(0.5D0)*Q2(47,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(63,65)
-      XNK(4,4,I,J,IPQD,IGEFF) = Q2(16,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
+      XNK(4,4,I,J,IPQD,IG) = Q2(16,65) + SIGN(1.0,DZ(M))*3**(0.5D0)*
      >   Q2(32,65) + 5**(0.5D0)*Q2(48,65) + SIGN(1.0,DZ(M))*7**(0.5D0)*
      >   Q2(64,65)
       ENDIF
@@ -2089,7 +2085,7 @@
         DO 420 JEL=1,IELEM
         DO 410 IEL=1,IELEM
         IOF=((((M-1)*LZ+(K-1))*LY+(J-1))*IELEM+(JEL-1))*IELEM+IEL
-        FUNKNO(L4+IOF,IG)=REAL(XNI(IEL,JEL,J,K,IPQD,IGEFF))
+        FUNKNO(L4+IOF,IG)=REAL(XNI(IEL,JEL,J,K,IPQD,IG))
   410   CONTINUE
   420   CONTINUE
       ENDIF
@@ -2097,7 +2093,7 @@
         DO 440 JEL=1,IELEM
         DO 430 IEL=1,IELEM
         IOF=((((M-1)*LZ+(K-1))*LX+(I-1))*IELEM+(JEL-1))*IELEM+IEL
-        FUNKNO(L4+IOFY+IOF,IG)=REAL(XNJ(IEL,JEL,I,K,IPQD,IGEFF))
+        FUNKNO(L4+IOFY+IOF,IG)=REAL(XNJ(IEL,JEL,I,K,IPQD,IG))
   430   CONTINUE
   440   CONTINUE
       ENDIF
@@ -2105,11 +2101,11 @@
         DO 460 JEL=1,IELEM
         DO 450 IEL=1,IELEM
         IOF=((((M-1)*LY+(J-1))*LX+(I-1))*IELEM+(JEL-1))*IELEM+IEL
-        FUNKNO(L4+IOFZ+IOF,IG)=REAL(XNK(IEL,JEL,I,J,IPQD,IGEFF))
+        FUNKNO(L4+IOFZ+IOF,IG)=REAL(XNK(IEL,JEL,I,J,IPQD,IG))
   450   CONTINUE
   460   CONTINUE
       ENDIF
-      FLUX_G(:,:,I,J,K,IGEFF)=FLUX_G(:,:,I,J,K,IGEFF)+FLUX(:,:)
+      FLUX_G(:,:,I,J,K,IG)=FLUX_G(:,:,I,J,K,IG)+FLUX(:,:)
   470 CONTINUE
   480 CONTINUE
   490 CONTINUE
@@ -2121,11 +2117,10 @@
       DEALLOCATE(JJJ,III)
   530 CONTINUE
   540 CONTINUE
-      DO 550 IGEFF=1,NGEFF
-        IF(.NOT.INCONV(IGEFF)) GO TO 550
-        IG=INGIND(IGEFF)
+      DO 550 IG=1,NGEFF
+        IF(.NOT.INCONV(IG)) GO TO 550
         FUNKNO(:L4,IG)=
-     1  RESHAPE(REAL(FLUX_G(:IELEM**3,:NSCT,:LX,:LY,:LZ,IGEFF)), (/L4/))
+     1  RESHAPE(REAL(FLUX_G(:IELEM**3,:NSCT,:LX,:LY,:LZ,IG)), (/L4/))
   550 CONTINUE
 *----
 *  SCRATCH STORAGE DEALLOCATION

@@ -156,7 +156,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.010 MEMORY USAGE= 2.622E+04
+-->>MODULE G2S:        : TIME SPENT=        0.039 MEMORY USAGE= 2.620E+04
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -178,7 +178,7 @@ QUIT "LIST" .                                                              0073
                 8 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.011 MEMORY USAGE= 1.520E+02
+-->>MODULE G2S:        : TIME SPENT=        0.036 MEMORY USAGE= 2.360E+02
 >|test hex completed                                                      |>0028
 <|hex_JST0 ;                                                              |<0022
 ->@BEGIN MODULE : GEO:        
@@ -220,7 +220,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.020 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -242,7 +242,7 @@ QUIT "LIST" .                                                              0073
                18 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.027 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.028 MEMORY USAGE= 0.000E+00
 >|test hex_JST0 completed                                                 |>0029
 <|hex_JST1 ;                                                              |<0023
 ->@BEGIN MODULE : GEO:        
@@ -253,7 +253,7 @@ QUIT "LIST" .                                                              0073
 
  CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE HEXAGONAL 2-D   .
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : G2S:        
 ->@DESCRIPTION  : Generate a surfacic file in SALOME format from a DRAGON geometry        
 ->@CREDITS      : G. Civario                                                              
@@ -284,7 +284,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -306,7 +306,7 @@ QUIT "LIST" .                                                              0073
                13 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.022 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.027 MEMORY USAGE= 0.000E+00
 >|test hex_JST1 completed                                                 |>0027
 <|hex_JST2 ;                                                              |<0024
 ->@BEGIN MODULE : GEO:        
@@ -348,7 +348,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.020 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -370,7 +370,7 @@ QUIT "LIST" .                                                              0073
                 8 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.023 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.027 MEMORY USAGE= 0.000E+00
 >|test hex_JST2 completed                                                 |>0028
 <|hex_P1_JST0 ;                                                           |<0025
 ->@BEGIN MODULE : GEO:        
@@ -412,7 +412,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.010 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -434,7 +434,7 @@ QUIT "LIST" .                                                              0073
                24 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.028 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.032 MEMORY USAGE= 0.000E+00
 >|test hex_P1_JST0 completed                                              |>0029
 <|hex_P1_JST1 ;                                                           |<0026
 ->@BEGIN MODULE : GEO:        
@@ -476,7 +476,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.022 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -498,7 +498,7 @@ QUIT "LIST" .                                                              0073
                19 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.026 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.031 MEMORY USAGE= 0.000E+00
 >|test hex_P1_JST1 completed                                              |>0027
 <|hex_P2_JST0 ;                                                           |<0028
 ->@BEGIN MODULE : GEO:        
@@ -540,7 +540,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.006 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -562,7 +562,7 @@ QUIT "LIST" .                                                              0073
                24 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.030 MEMORY USAGE= 0.000E+00
 >|test hex_P2_JST0 completed                                              |>0029
 <|hex_P2_JST1 ;                                                           |<0029
 ->@BEGIN MODULE : GEO:        
@@ -604,7 +604,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.020 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -626,7 +626,7 @@ QUIT "LIST" .                                                              0073
                19 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.011 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.030 MEMORY USAGE= 0.000E+00
 >|test hex_P2_JST1 completed                                              |>0029
 <|hex_P2_JST2 ;                                                           |<0030
 ->@BEGIN MODULE : GEO:        
@@ -668,7 +668,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -690,7 +690,7 @@ QUIT "LIST" .                                                              0073
                14 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.022 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.028 MEMORY USAGE= 0.000E+00
 >|test hex_P2_JST2 completed                                              |>0029
 <|hex_P3_JST0 ;                                                           |<0031
 ->@BEGIN MODULE : GEO:        
@@ -732,7 +732,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -754,7 +754,7 @@ QUIT "LIST" .                                                              0073
                15 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.028 MEMORY USAGE= 0.000E+00
 >|test hex_P3_JST0 completed                                              |>0030
 <|hex_P3_JST1 ;                                                           |<0032
 ->@BEGIN MODULE : GEO:        
@@ -796,7 +796,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.020 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -818,7 +818,7 @@ QUIT "LIST" .                                                              0073
                14 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.015 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.028 MEMORY USAGE= 0.000E+00
 >|test hex_P3_JST1 completed                                              |>0030
 <|hex_P3_JST2 ;                                                           |<0033
 ->@BEGIN MODULE : GEO:        
@@ -860,7 +860,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -882,7 +882,7 @@ QUIT "LIST" .                                                              0073
                 8 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.022 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.026 MEMORY USAGE= 0.000E+00
 >|test hex_P3_JST2 completed                                              |>0030
 <|hex_P4_JST0 ;                                                           |<0034
 ->@BEGIN MODULE : GEO:        
@@ -924,7 +924,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.020 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -946,7 +946,7 @@ QUIT "LIST" .                                                              0073
                18 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.010 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.029 MEMORY USAGE= 0.000E+00
 >|test hex_P4_JST0 completed                                              |>0029
 <|hex_P4_JST1 ;                                                           |<0035
 ->@BEGIN MODULE : GEO:        
@@ -988,7 +988,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.020 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1010,7 +1010,7 @@ QUIT "LIST" .                                                              0073
                13 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.023 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.028 MEMORY USAGE= 0.000E+00
 >|test hex_P4_JST1 completed                                              |>0029
 <|hex_P4_JST2 ;                                                           |<0036
 ->@BEGIN MODULE : GEO:        
@@ -1052,7 +1052,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1074,7 +1074,7 @@ QUIT "LIST" .                                                              0073
                 8 nodes
                 2 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.021 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.026 MEMORY USAGE= 0.000E+00
 >|test hex_P4_JST2 completed                                              |>0029
 <|car_JST0_IS2 ;                                                          |<0038
 ->@BEGIN MODULE : GEO:        
@@ -1098,7 +1098,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1120,7 +1120,7 @@ QUIT "LIST" .                                                              0073
                24 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.012 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.030 MEMORY USAGE= 0.000E+00
 >|test car_JST0_IS2 completed                                             |>0031
 <|cP1_JST0_IS2 ;                                                          |<0039
 ->@BEGIN MODULE : GEO:        
@@ -1144,7 +1144,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1166,7 +1166,7 @@ QUIT "LIST" .                                                              0073
                24 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.013 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.031 MEMORY USAGE= 0.000E+00
 >|test cP1_JST0_IS2 completed                                             |>0031
 <|cP1_JST0_IS3 ;                                                          |<0040
 ->@BEGIN MODULE : GEO:        
@@ -1190,7 +1190,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1212,7 +1212,7 @@ QUIT "LIST" .                                                              0073
                20 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.012 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.031 MEMORY USAGE= 0.000E+00
 >|test cP1_JST0_IS3 completed                                             |>0031
 <|cP1_JST0_IS4 ;                                                          |<0041
 ->@BEGIN MODULE : GEO:        
@@ -1236,7 +1236,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1258,7 +1258,7 @@ QUIT "LIST" .                                                              0073
                24 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.013 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.031 MEMORY USAGE= 0.000E+00
 >|test cP1_JST0_IS4 completed                                             |>0032
 <|cP1_JST1_IS2 ;                                                          |<0042
 ->@BEGIN MODULE : GEO:        
@@ -1282,7 +1282,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1304,7 +1304,7 @@ QUIT "LIST" .                                                              0073
                17 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.012 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.030 MEMORY USAGE= 0.000E+00
 >|test cP1_JST1_IS2 completed                                             |>0031
 <|cP1_JST1_IS3 ;                                                          |<0043
 ->@BEGIN MODULE : GEO:        
@@ -1328,7 +1328,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1337,7 +1337,7 @@ QUIT "LIST" .                                                              0073
 
  CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM2       ' WITH TYPE 2-D RECT. CELL  .
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : G2S:        
 ->@DESCRIPTION  : Generate a surfacic file in SALOME format from a DRAGON geometry        
 ->@CREDITS      : G. Civario                                                              
@@ -1350,7 +1350,7 @@ QUIT "LIST" .                                                              0073
                13 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.029 MEMORY USAGE= 0.000E+00
 >|test cP1_JST1_IS3 completed                                             |>0031
 <|cP1_JST1_IS4 ;                                                          |<0044
 ->@BEGIN MODULE : GEO:        
@@ -1361,7 +1361,7 @@ QUIT "LIST" .                                                              0073
 
  CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE CARTESIAN 2-D   .
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : G2S:        
 ->@DESCRIPTION  : Generate a surfacic file in SALOME format from a DRAGON geometry        
 ->@CREDITS      : G. Civario                                                              
@@ -1374,7 +1374,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1396,7 +1396,7 @@ QUIT "LIST" .                                                              0073
                17 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.031 MEMORY USAGE= 0.000E+00
 >|test cP1_JST1_IS4 completed                                             |>0031
 <|cP1_JST2_IS0 ;                                                          |<0045
 ->@BEGIN MODULE : GEO:        
@@ -1420,7 +1420,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.020 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1442,7 +1442,7 @@ QUIT "LIST" .                                                              0073
                 6 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.010 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.026 MEMORY USAGE= 0.000E+00
 >|test cP1_JST2_IS0 completed                                             |>0031
 <|cP1_JST2_IS1 ;                                                          |<0046
 ->@BEGIN MODULE : GEO:        
@@ -1453,7 +1453,7 @@ QUIT "LIST" .                                                              0073
 
  CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE CARTESIAN 2-D   .
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : G2S:        
 ->@DESCRIPTION  : Generate a surfacic file in SALOME format from a DRAGON geometry        
 ->@CREDITS      : G. Civario                                                              
@@ -1466,7 +1466,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1488,7 +1488,7 @@ QUIT "LIST" .                                                              0073
                 6 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.008 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.026 MEMORY USAGE= 0.000E+00
 >|test cP1_JST2_IS1 completed                                             |>0031
 <|cP1_JST2_IS2 ;                                                          |<0047
 ->@BEGIN MODULE : GEO:        
@@ -1512,7 +1512,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.006 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1521,7 +1521,7 @@ QUIT "LIST" .                                                              0073
 
  CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM2       ' WITH TYPE 2-D RECT. CELL  .
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : G2S:        
 ->@DESCRIPTION  : Generate a surfacic file in SALOME format from a DRAGON geometry        
 ->@CREDITS      : G. Civario                                                              
@@ -1534,7 +1534,7 @@ QUIT "LIST" .                                                              0073
                10 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.008 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.027 MEMORY USAGE= 0.000E+00
 >|test cP1_JST2_IS2 completed                                             |>0031
 <|cP1_JST2_IS3 ;                                                          |<0048
 ->@BEGIN MODULE : GEO:        
@@ -1558,7 +1558,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.006 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1580,7 +1580,7 @@ QUIT "LIST" .                                                              0073
                 6 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.008 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.026 MEMORY USAGE= 0.000E+00
 >|test cP1_JST2_IS3 completed                                             |>0031
 <|cR2_JST2_IS0 ;                                                          |<0051
 ->@BEGIN MODULE : GEO:        
@@ -1604,7 +1604,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.006 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1613,7 +1613,7 @@ QUIT "LIST" .                                                              0073
 
  CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM2       ' WITH TYPE 2-D RECT. CELL  .
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : G2S:        
 ->@DESCRIPTION  : Generate a surfacic file in SALOME format from a DRAGON geometry        
 ->@CREDITS      : G. Civario                                                              
@@ -1626,7 +1626,7 @@ QUIT "LIST" .                                                              0073
                 3 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.006 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 >|test cR2_JST2_IS0 completed                                             |>0031
 <|cR2_JST2_IS1 ;                                                          |<0052
 ->@BEGIN MODULE : GEO:        
@@ -1650,7 +1650,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.006 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1672,7 +1672,7 @@ QUIT "LIST" .                                                              0073
                 6 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.026 MEMORY USAGE= 0.000E+00
 >|test cR2_JST2_IS1 completed                                             |>0031
 <|cR2_JST2_IS4 ;                                                          |<0053
 ->@BEGIN MODULE : GEO:        
@@ -1696,7 +1696,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.006 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1718,7 +1718,7 @@ QUIT "LIST" .                                                              0073
                14 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.010 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.028 MEMORY USAGE= 0.000E+00
 >|test cR2_JST2_IS4 completed                                             |>0031
 <|cR2_JST2_Im1 ;                                                          |<0054
 ->@BEGIN MODULE : GEO:        
@@ -1729,7 +1729,7 @@ QUIT "LIST" .                                                              0073
 
  CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE CARTESIAN 2-D   .
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : G2S:        
 ->@DESCRIPTION  : Generate a surfacic file in SALOME format from a DRAGON geometry        
 ->@CREDITS      : G. Civario                                                              
@@ -1742,7 +1742,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.006 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1764,7 +1764,7 @@ QUIT "LIST" .                                                              0073
                 6 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.026 MEMORY USAGE= 0.000E+00
 >|test cR2_JST2_Im1 completed                                             |>0031
 <|cS1_JST0_IS3 ;                                                          |<0055
 ->@BEGIN MODULE : GEO:        
@@ -1788,7 +1788,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.006 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1810,7 +1810,7 @@ QUIT "LIST" .                                                              0073
                28 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.013 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.032 MEMORY USAGE= 0.000E+00
 >|test cS1_JST0_IS3 completed                                             |>0032
 <|cS1_JST1_IS3 ;                                                          |<0056
 ->@BEGIN MODULE : GEO:        
@@ -1834,7 +1834,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.006 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1856,7 +1856,7 @@ QUIT "LIST" .                                                              0073
                21 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.012 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.031 MEMORY USAGE= 0.000E+00
 >|test cS1_JST1_IS3 completed                                             |>0032
 <|cS1_JST2_IS3 ;                                                          |<0057
 ->@BEGIN MODULE : GEO:        
@@ -1880,7 +1880,7 @@ QUIT "LIST" .                                                              0073
                 1 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GEO:        
 ->@DESCRIPTION  : Geometry definition                                                     
 ->@CREDITS      : A. Hebert                                                               
@@ -1902,7 +1902,7 @@ QUIT "LIST" .                                                              0073
                14 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.010 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.029 MEMORY USAGE= 0.000E+00
 >|test cS1_JST2_IS3 completed                                             |>0031
 <|g2s_pincell ;                                                           |<0059
 ->@BEGIN MODULE : GEO:        
@@ -1926,7 +1926,7 @@ QUIT "LIST" .                                                              0073
                 3 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : SALT:       
 ->@DESCRIPTION  : Track calculations from a SALOME surfacic file                          
 ->@CREDITS      : A. Hebert, X. Warin                                                     
@@ -2066,7 +2066,7 @@ QUIT "LIST" .                                                              0073
  Processing lines for region =        3
    Output from --TLMDIR-- completed *)
 ->@END MODULE   : TLM:        
--->>MODULE TLM:        : TIME SPENT=        0.010 MEMORY USAGE= 0.000E+00
+-->>MODULE TLM:        : TIME SPENT=        0.008 MEMORY USAGE= 0.000E+00
 >|test g2s_pincell completed                                              |>0029
 <|g2s_test ;                                                              |<0060
 ->@BEGIN MODULE : GEO:        
@@ -2075,7 +2075,7 @@ QUIT "LIST" .                                                              0073
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.008 MEMORY USAGE= 1.200E+01
+-->>MODULE GEO:        : TIME SPENT=        0.010 MEMORY USAGE= 1.600E+01
 ->@BEGIN MODULE : G2S:        
 ->@DESCRIPTION  : Generate a surfacic file in SALOME format from a DRAGON geometry        
 ->@CREDITS      : G. Civario                                                              
@@ -2088,7 +2088,7 @@ QUIT "LIST" .                                                              0073
               650 nodes
                 3 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.682 MEMORY USAGE= 1.081E+04
+-->>MODULE G2S:        : TIME SPENT=        0.781 MEMORY USAGE= 1.082E+04
 ->@BEGIN MODULE : SALT:       
 ->@DESCRIPTION  : Track calculations from a SALOME surfacic file                          
 ->@CREDITS      : A. Hebert, X. Warin                                                     
@@ -2485,7 +2485,7 @@ QUIT "LIST" .                                                              0073
  Tracking of geometry completed
    Output from --SALTCG-- completed *)
 ->@END MODULE   : SALT:       
--->>MODULE SALT:       : TIME SPENT=        0.099 MEMORY USAGE= 0.000E+00
+-->>MODULE SALT:       : TIME SPENT=        0.116 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : TLM:        
 ->@DESCRIPTION  : Generate matlab line tracking file                                      
 ->@CREDITS      : C. Plamondon, G. Marleau                                                
@@ -3154,7 +3154,7 @@ QUIT "LIST" .                                                              0073
  Processing lines for region =      650
    Output from --TLMDIR-- completed *)
 ->@END MODULE   : TLM:        
--->>MODULE TLM:        : TIME SPENT=        3.550 MEMORY USAGE= 0.000E+00
+-->>MODULE TLM:        : TIME SPENT=        2.923 MEMORY USAGE= 0.000E+00
 >|test g2s_test completed                                                 |>0175
 <|tst2016_1 ;                                                             |<0061
 ->@BEGIN MODULE : GEO:        
@@ -3176,7 +3176,7 @@ QUIT "LIST" .                                                              0073
              1326 nodes
                 3 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        3.067 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        4.082 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : SALT:       
 ->@DESCRIPTION  : Track calculations from a SALOME surfacic file                          
 ->@CREDITS      : A. Hebert, X. Warin                                                     
@@ -3819,7 +3819,7 @@ QUIT "LIST" .                                                              0073
  ITRACK        1   (-1=MONTE-CARLO/0=DESACTIVATES TRACKING FILE BUILD/1=ACTIVATES TRACKING FILE BUILD)
  IBIHET        0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
 ->@END MODULE   : SALT:       
--->>MODULE SALT:       : TIME SPENT=        0.227 MEMORY USAGE= 1.108E+04
+-->>MODULE SALT:       : TIME SPENT=        0.247 MEMORY USAGE= 6.856E+03
 ->@BEGIN MODULE : MCCGT:      
 ->@DESCRIPTION  : Method of characteristics in 2- and 3-D                                 
 ->@CREDITS      : I. Suslov, R. Roy, R. Le Tellier, A. Hebert                             
@@ -3866,7 +3866,7 @@ QUIT "LIST" .                                                              0073
  FACSYM  0.0000E+00   (TRACKING SYMMETRY FACTOR FOR MAXIMUM TRACK LENGTH FOR 3D PRISMATIC GEOMETRY)
 
 ->@END MODULE   : MCCGT:      
--->>MODULE MCCGT:      : TIME SPENT=        0.037 MEMORY USAGE= 0.000E+00
+-->>MODULE MCCGT:      : TIME SPENT=        0.036 MEMORY USAGE= 0.000E+00
 >|test tst2016_1 completed                                                |>0083
 <|tst2016_2 ;                                                             |<0062
 ->@BEGIN MODULE : GEO:        
@@ -3875,7 +3875,7 @@ QUIT "LIST" .                                                              0073
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.051 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.048 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : UTL:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -3961,7 +3961,7 @@ QUIT "LIST" .                                                              0073
              2141 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.257 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.361 MEMORY USAGE= 0.000E+00
 >|test tst2016_2 completed                                                |>0209
 <|tst2016_3 ;                                                             |<0063
 ->@BEGIN MODULE : GEO:        
@@ -3970,7 +3970,7 @@ QUIT "LIST" .                                                              0073
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.050 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.047 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : G2S:        
 ->@DESCRIPTION  : Generate a surfacic file in SALOME format from a DRAGON geometry        
 ->@CREDITS      : G. Civario                                                              
@@ -3983,7 +3983,7 @@ QUIT "LIST" .                                                              0073
              5713 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        4.293 MEMORY USAGE= 3.160E+03
+-->>MODULE G2S:        : TIME SPENT=        6.706 MEMORY USAGE= 7.264E+03
 ->@BEGIN MODULE : G2MC:       
 ->@DESCRIPTION  : Generate a surfacic file in Monte Carlo format from a DRAGON geometry   
 ->@CREDITS      : G. Civario                                                              
@@ -3991,7 +3991,7 @@ QUIT "LIST" .                                                              0073
                   GNU LESSER GENERAL PUBLIC LICENSE
    At end of G2MC:            5713 volumes
 ->@END MODULE   : G2MC:       
--->>MODULE G2MC:       : TIME SPENT=        5.310 MEMORY USAGE= 6.800E+01
+-->>MODULE G2MC:       : TIME SPENT=        6.993 MEMORY USAGE= 0.000E+00
 >|test tst2016_3 completed                                                |>0221
 <|tst2016_4 ;                                                             |<0064
 ->@BEGIN MODULE : GEO:        
@@ -4000,7 +4000,7 @@ QUIT "LIST" .                                                              0073
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.008 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.010 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : G2S:        
 ->@DESCRIPTION  : Generate a surfacic file in SALOME format from a DRAGON geometry        
 ->@CREDITS      : G. Civario                                                              
@@ -4013,7 +4013,7 @@ QUIT "LIST" .                                                              0073
               798 nodes
                 3 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.825 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.989 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : SALT:       
 ->@DESCRIPTION  : Track calculations from a SALOME surfacic file                          
 ->@CREDITS      : A. Hebert, X. Warin                                                     
@@ -4444,7 +4444,7 @@ QUIT "LIST" .                                                              0073
  ITRACK        1   (-1=MONTE-CARLO/0=DESACTIVATES TRACKING FILE BUILD/1=ACTIVATES TRACKING FILE BUILD)
  IBIHET        0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
 ->@END MODULE   : SALT:       
--->>MODULE SALT:       : TIME SPENT=        0.559 MEMORY USAGE= 1.312E+04
+-->>MODULE SALT:       : TIME SPENT=        0.357 MEMORY USAGE= 9.760E+03
 ->@BEGIN MODULE : MCCGT:      
 ->@DESCRIPTION  : Method of characteristics in 2- and 3-D                                 
 ->@CREDITS      : I. Suslov, R. Roy, R. Le Tellier, A. Hebert                             
@@ -4491,7 +4491,7 @@ QUIT "LIST" .                                                              0073
  FACSYM  0.0000E+00   (TRACKING SYMMETRY FACTOR FOR MAXIMUM TRACK LENGTH FOR 3D PRISMATIC GEOMETRY)
 
 ->@END MODULE   : MCCGT:      
--->>MODULE MCCGT:      : TIME SPENT=        0.050 MEMORY USAGE= 0.000E+00
+-->>MODULE MCCGT:      : TIME SPENT=        0.054 MEMORY USAGE= 0.000E+00
 >|test tst2016_4 completed                                                |>0198
 <|tst2016_5 ;                                                             |<0065
 ->@BEGIN MODULE : GEO:        
@@ -4513,7 +4513,7 @@ QUIT "LIST" .                                                              0073
                10 nodes
                 3 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.009 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.027 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : SALT:       
 ->@DESCRIPTION  : Track calculations from a SALOME surfacic file                          
 ->@CREDITS      : A. Hebert, X. Warin                                                     
@@ -4628,7 +4628,7 @@ QUIT "LIST" .                                                              0073
  ITRACK        1   (-1=MONTE-CARLO/0=DESACTIVATES TRACKING FILE BUILD/1=ACTIVATES TRACKING FILE BUILD)
  IBIHET        0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
 ->@END MODULE   : SALT:       
--->>MODULE SALT:       : TIME SPENT=        0.005 MEMORY USAGE= 0.000E+00
+-->>MODULE SALT:       : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : MCCGT:      
 ->@DESCRIPTION  : Method of characteristics in 2- and 3-D                                 
 ->@CREDITS      : I. Suslov, R. Roy, R. Le Tellier, A. Hebert                             
@@ -4702,7 +4702,7 @@ QUIT "LIST" .                                                              0073
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+-->>MODULE MAC:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : ASM:        
 ->@DESCRIPTION  : To built system matrices (CP and IC)                                    
 ->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
@@ -4731,7 +4731,7 @@ QUIT "LIST" .                                                              0073
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (MCCG        )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+-->>MODULE ASM:        : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : FLU:        
 ->@DESCRIPTION  : Solve the flux equations                                                
 ->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
@@ -4815,7 +4815,7 @@ QUIT "LIST" .                                                              0073
  ++ TRACKING CALLED=   9 TIMES FINAL KINF= 1.325991E+00 FINAL KEFF= 1.325990E+00 B2= 0.00000E+00 PRECISION= 2.79E-07
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=        36
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.144 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.175 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -4839,7 +4839,7 @@ QUIT "LIST" .                                                              0073
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : G2S:        
 ->@DESCRIPTION  : Generate a surfacic file in SALOME format from a DRAGON geometry        
 ->@CREDITS      : G. Civario                                                              
@@ -4852,7 +4852,7 @@ QUIT "LIST" .                                                              0073
                14 nodes
                 3 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.011 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.031 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : SALT:       
 ->@DESCRIPTION  : Track calculations from a SALOME surfacic file                          
 ->@CREDITS      : A. Hebert, X. Warin                                                     
@@ -4968,7 +4968,7 @@ QUIT "LIST" .                                                              0073
  ITRACK        1   (-1=MONTE-CARLO/0=DESACTIVATES TRACKING FILE BUILD/1=ACTIVATES TRACKING FILE BUILD)
  IBIHET        0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
 ->@END MODULE   : SALT:       
--->>MODULE SALT:       : TIME SPENT=        0.007 MEMORY USAGE= 0.000E+00
+-->>MODULE SALT:       : TIME SPENT=        0.008 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : MCCGT:      
 ->@DESCRIPTION  : Method of characteristics in 2- and 3-D                                 
 ->@CREDITS      : I. Suslov, R. Roy, R. Le Tellier, A. Hebert                             
@@ -5042,7 +5042,7 @@ QUIT "LIST" .                                                              0073
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE MAC:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : ASM:        
 ->@DESCRIPTION  : To built system matrices (CP and IC)                                    
 ->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
@@ -5051,7 +5051,7 @@ QUIT "LIST" .                                                              0073
 
 
  COMPUTATION OF DRAGON RESPONSE MATRICES BY DOOR =   MCCG        
-   -->>TIME SPENT IN: SUMMATION UPON THE TRACKING FOR ACA/SCR :        0.002 s.
+   -->>TIME SPENT IN: SUMMATION UPON THE TRACKING FOR ACA/SCR :        0.003 s.
    -->>TIME SPENT IN: CALCULATION OF ACA PRECONDITIONER       :        0.000 s.
 
  OPTIONS
@@ -5071,7 +5071,7 @@ QUIT "LIST" .                                                              0073
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (MCCG        )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+-->>MODULE ASM:        : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : FLU:        
 ->@DESCRIPTION  : Solve the flux equations                                                
 ->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
@@ -5155,7 +5155,7 @@ QUIT "LIST" .                                                              0073
  ++ TRACKING CALLED=   9 TIMES FINAL KINF= 1.324070E+00 FINAL KEFF= 1.324069E+00 B2= 0.00000E+00 PRECISION= 3.01E-07
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=        36
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.188 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.189 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -5275,7 +5275,7 @@ QUIT "LIST" .                                                              0073
                69 nodes
                 3 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.060 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.058 MEMORY USAGE= 0.000E+00
 <|TRACK SEQTRK := SALT: Fil_SAL.tdt ::                                    |<0057
 <|EDIT 10                                                                 |<0058
 <|TSPC <<an2d>> <<densur>> REND ;                                         |<0059
@@ -51576,7 +51576,7 @@ SALTLC:  ANGLE EX EY =   1.2435E-01  9.9228E-01  1.2403E-01
  ITRACK        1   (-1=MONTE-CARLO/0=DESACTIVATES TRACKING FILE BUILD/1=ACTIVATES TRACKING FILE BUILD)
  IBIHET        0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
 ->@END MODULE   : SALT:       
--->>MODULE SALT:       : TIME SPENT=        0.208 MEMORY USAGE= 0.000E+00
+-->>MODULE SALT:       : TIME SPENT=        0.147 MEMORY USAGE= 0.000E+00
 <|SYS := ASM: MACRO TRACK SEQTRK ;                                        |<0060
 ->@BEGIN MODULE : ASM:        
 ->@DESCRIPTION  : To built system matrices (CP and IC)                                    
@@ -51604,7 +51604,7 @@ SALTLC:  ANGLE EX EY =   1.2435E-01  9.9228E-01  1.2403E-01
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (EXCELL      )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.127 MEMORY USAGE= 0.000E+00
+-->>MODULE ASM:        : TIME SPENT=        0.106 MEMORY USAGE= 0.000E+00
 <|FLUX := FLU: SYS MACRO TRACK ::                                         |<0064
 <|TYPE K                                                                  |<0065
 <|;                                                                       |<0066
@@ -51751,7 +51751,7 @@ SALTLC:  ANGLE EX EY =   1.2435E-01  9.9228E-01  1.2403E-01
                87 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.017 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.038 MEMORY USAGE= 0.000E+00
 >|test tst2019_1 completed                                                |>0051
 <|tst2019_2 ;                                                             |<0069
 ->@BEGIN MODULE : GEO:        
@@ -51773,7 +51773,7 @@ SALTLC:  ANGLE EX EY =   1.2435E-01  9.9228E-01  1.2403E-01
                57 nodes
                 1 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.015 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.034 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : SALT:       
 ->@DESCRIPTION  : Track calculations from a SALOME surfacic file                          
 ->@CREDITS      : A. Hebert, X. Warin                                                     
@@ -51927,7 +51927,7 @@ SALTLC:  ANGLE EX EY =   1.2435E-01  9.9228E-01  1.2403E-01
  ITRACK        1   (-1=MONTE-CARLO/0=DESACTIVATES TRACKING FILE BUILD/1=ACTIVATES TRACKING FILE BUILD)
  IBIHET        0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
 ->@END MODULE   : SALT:       
--->>MODULE SALT:       : TIME SPENT=        0.021 MEMORY USAGE= 0.000E+00
+-->>MODULE SALT:       : TIME SPENT=        0.023 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : TLM:        
 ->@DESCRIPTION  : Generate matlab line tracking file                                      
 ->@CREDITS      : C. Plamondon, G. Marleau                                                
@@ -51946,7 +51946,7 @@ SALTLC:  ANGLE EX EY =   1.2435E-01  9.9228E-01  1.2403E-01
 (* Output from --TLMDIR-- follows 
    Output from --TLMDIR-- completed *)
 ->@END MODULE   : TLM:        
--->>MODULE TLM:        : TIME SPENT=        0.332 MEMORY USAGE= 0.000E+00
+-->>MODULE TLM:        : TIME SPENT=        0.296 MEMORY USAGE= 0.000E+00
 >|test tst2019_2 completed                                                |>0053
 <|tst2019_3 ;                                                             |<0070
 ->@BEGIN MODULE : GEO:        
@@ -51968,7 +51968,7 @@ SALTLC:  ANGLE EX EY =   1.2435E-01  9.9228E-01  1.2403E-01
                57 nodes
                 1 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.014 MEMORY USAGE= 0.000E+00
+-->>MODULE G2S:        : TIME SPENT=        0.032 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : SALT:       
 ->@DESCRIPTION  : Track calculations from a SALOME surfacic file                          
 ->@CREDITS      : A. Hebert, X. Warin                                                     
@@ -52122,7 +52122,7 @@ SALTLC:  ANGLE EX EY =   1.2435E-01  9.9228E-01  1.2403E-01
  ITRACK        1   (-1=MONTE-CARLO/0=DESACTIVATES TRACKING FILE BUILD/1=ACTIVATES TRACKING FILE BUILD)
  IBIHET        0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
 ->@END MODULE   : SALT:       
--->>MODULE SALT:       : TIME SPENT=        0.022 MEMORY USAGE= 0.000E+00
+-->>MODULE SALT:       : TIME SPENT=        0.023 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : TLM:        
 ->@DESCRIPTION  : Generate matlab line tracking file                                      
 ->@CREDITS      : C. Plamondon, G. Marleau                                                
@@ -52141,7 +52141,7 @@ SALTLC:  ANGLE EX EY =   1.2435E-01  9.9228E-01  1.2403E-01
 (* Output from --TLMDIR-- follows 
    Output from --TLMDIR-- completed *)
 ->@END MODULE   : TLM:        
--->>MODULE TLM:        : TIME SPENT=        0.355 MEMORY USAGE= 0.000E+00
+-->>MODULE TLM:        : TIME SPENT=        0.329 MEMORY USAGE= 0.000E+00
 >|test tst2019_3 completed                                                |>0053
 <|tst2019_4 ;                                                             |<0071
 ->@BEGIN MODULE : GEO:        
@@ -52150,7 +52150,7 @@ SALTLC:  ANGLE EX EY =   1.2435E-01  9.9228E-01  1.2403E-01
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.301 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.221 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : G2S:        
 ->@DESCRIPTION  : Generate a surfacic file in SALOME format from a DRAGON geometry        
 ->@CREDITS      : G. Civario                                                              
@@ -52163,7 +52163,7 @@ SALTLC:  ANGLE EX EY =   1.2435E-01  9.9228E-01  1.2403E-01
             12339 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=       32.283 MEMORY USAGE= 2.288E+04
+-->>MODULE G2S:        : TIME SPENT=       45.239 MEMORY USAGE= 2.636E+04
 ->@BEGIN MODULE : SALT:       
 ->@DESCRIPTION  : Track calculations from a SALOME surfacic file                          
 ->@CREDITS      : A. Hebert, X. Warin                                                     
@@ -57316,7 +57316,7 @@ SALTLC:  ANGLE EX EY =   1.2435E-01  9.9228E-01  1.2403E-01
  Tracking of geometry completed
    Output from --SALTCG-- completed *)
 ->@END MODULE   : SALT:       
--->>MODULE SALT:       : TIME SPENT=       10.051 MEMORY USAGE= 0.000E+00
+-->>MODULE SALT:       : TIME SPENT=        9.386 MEMORY USAGE= 0.000E+00
 >|test tst2019_4 completed                                                |>0144
 . ------------------------------------------------------------------------ .
 

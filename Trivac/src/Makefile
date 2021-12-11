@@ -13,13 +13,18 @@ endif
 
 DIRNAME = $(shell uname -sm | sed 's/[ ]/_/')
 OS = $(shell uname -s | cut -d"_" -f1)
-fcompiler = gfortran
 opt = -O
 ifeq ($(openmp),1)
   COMP = -fopenmp
   ccompiler = gcc-11
 else
   COMP =
+endif
+
+ifeq ($(intel),1)
+  fcompiler = ifort
+else
+  fcompiler = gfortran
 endif
 
 ifeq ($(OS),AIX)
@@ -76,11 +81,23 @@ bin = ../bin/$(DIRNAME)
 INCLUDE = -I../../Ganlib/lib/$(DIRNAME)/modules/
 
 ifeq ($(intel),1)
-  fcompiler = ifort
   FFLAGS = -fPIC
   FFLAG77 = -fPIC
+  lib = ../lib/$(DIRNAME)_intel
+  libUtl = ../../Utilib/lib/$(DIRNAME)_intel
+  libGan = ../../Ganlib/lib/$(DIRNAME)_intel
+  bin = ../bin/$(DIRNAME)_intel
+  INCLUDE = -I../../Ganlib/lib/$(DIRNAME)_intel/modules/
 else
-  fcompiler = gfortran
+  lib = ../lib/$(DIRNAME)
+  libUtl = ../../Utilib/lib/$(DIRNAME)
+  libGan = ../../Ganlib/lib/$(DIRNAME)
+  bin = ../bin/$(DIRNAME)
+  INCLUDE = -I../../Ganlib/lib/$(DIRNAME)/modules/
+endif
+
+ifeq ($(hdf5),1)
+  LFLAGS += -L${HDF5_DIR}/lib -lhdf5 -lhdf5_fortran
 endif
 
 SRC77 = $(shell ls *.f)
@@ -90,6 +107,7 @@ else
   SRC90 = $(shell python3 ../../script/make_depend_py3.py ls *.f90)
 endif
 OBJ90 = $(SRC90:.f90=.o)
+OBJ77 = $(SRC77:.f=.o)
 all : sub-make Trivac
 ifeq ($(openmp),1)
 	@echo 'Trivac: openmp is defined'
@@ -97,12 +115,14 @@ endif
 ifeq ($(intel),1)
 	@echo 'Trivac: intel is defined'
 endif
+ifeq ($(hdf5),1)
+	@echo 'Trivac: hdf5 is defined'
+endif
 sub-make:
 	$(MAKE) openmp=$(openmp) intel=$(intel) -C ../../Utilib/src
-	$(MAKE) openmp=$(openmp) intel=$(intel) -C ../../Ganlib/src
+	$(MAKE) openmp=$(openmp) intel=$(intel) hdf5=$(hdf5) -C ../../Ganlib/src
 %.o : %.f90
 	$(F90) $(FFLAGS) $(opt) $(COMP) $(INCLUDE) -c $< -o $@
-OBJ77 = $(SRC77:.f=.o)
 %.o : %.f
 	$(F90) $(FFLAG77) $(opt) $(COMP) $(INCLUDE) -c $< -o $@
 $(lib)/:
@@ -119,4 +139,4 @@ Trivac: libTrivac.a TRIVAC.o $(bin)/ sub-make
 clean:
 	$(MAKE) -C ../../Utilib/src clean
 	$(MAKE) -C ../../Ganlib/src clean
-	/bin/rm -f *.o *.a Trivac
+	/bin/rm -f *.o *.a sub-make temp.* Trivac

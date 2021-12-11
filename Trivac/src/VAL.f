@@ -137,8 +137,8 @@
          NXD=IGP(12)
          NYD=IGP(13)
          NZD=1
-        IF(NYD.EQ.0) L2D=.FALSE.
-        CALL XABORT('VAL: BIVAC is currently not supported.')
+         IF(NYD.EQ.0) L2D=.FALSE.
+         CALL XABORT('VAL: BIVAC is currently not supported.')
       ELSE IF(CMODUL.EQ.'TRIVAC') THEN
          L3D=.TRUE.
          IELEM=IGP(9)

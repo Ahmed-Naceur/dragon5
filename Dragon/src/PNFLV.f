@@ -1,6 +1,6 @@
 *DECK PNFLV
-      SUBROUTINE PNFLV(KPSYS,INCONV,INGIND,IPTRK,IMPX,NGRP,NGEFF,NREG,
-     1 NBMIX,NUN,MAT,VOL,KEYFLX,FUNKNO,SUNKNO)
+      SUBROUTINE PNFLV(KPSYS,INCONV,NGIND,IPTRK,IMPX,NGEFF,NREG,NBMIX,
+     1 NUN,MAT,VOL,KEYFLX,FUNKNO,SUNKNO)
 *
 *-----------------------------------------------------------------------
 *
@@ -21,11 +21,10 @@
 * KPSYS   pointer to the assembly matrices. KPSYS is an array of
 *         directories.
 * INCONV  energy group convergence flag (set to .false. if converged).
-* INGIND  energy group index assign to 1:NGEFF arrays.
+* NGIND   energy group indices assign to the NGEFF set.
 * IPTRK   pointer to the tracking (L_TRACK signature).
 * IMPX    print flag (equal to zero for no print).
-* NGRP    number of energy groups.
-* NGEFF   dimension of arrays KPSYS and INGIND.
+* NGEFF   number of energy groups processed in parallel.
 * NREG    total number of regions for which specific values of the
 *         neutron flux and reactions rates are required.
 * NBMIX   number of mixtures.
@@ -45,16 +44,15 @@
 *  SUBROUTINE ARGUMENTS
 *----
       TYPE(C_PTR) KPSYS(NGEFF),IPTRK
-      INTEGER     NGEFF,INGIND(NGEFF),IMPX,NGRP,NREG,NBMIX,NUN,
-     1            MAT(NREG),KEYFLX(NREG)
+      INTEGER     NGEFF,NGIND(NGEFF),IMPX,NREG,NBMIX,NUN,MAT(NREG),
+     1            KEYFLX(NREG)
       LOGICAL     INCONV(NGEFF)
-      REAL        VOL(NREG),FUNKNO(NUN,NGRP),SUNKNO(NUN,NGRP)
+      REAL        VOL(NREG),FUNKNO(NUN,NGEFF),SUNKNO(NUN,NGEFF)
 *----
 *  LOCAL VARIABLES
 *----
       PARAMETER  (IUNOUT=6,NSTATE=40,MAXIT=20,EPSINR=1.0E-5,ICL1=3,
      1            ICL2=3)
-      TYPE(C_PTR) JPSYS
       INTEGER     IPAR(NSTATE)
       DOUBLE PRECISION F1,F2,R1,R2,DMU
       CHARACTER   NAMP*12
@@ -107,19 +105,17 @@
       ALLOCATE(OLD1(NUN),OLD2(NUN))
       DO 140 II=1,NGEFF
       IF(.NOT.INCONV(II)) GO TO 140
-      JPSYS=KPSYS(II)
-      IG=INGIND(II)
       IF(IMPX.GT.1) WRITE(IUNOUT,'(/24H PNFLV: PROCESSING GROUP,I5,
-     1 6H WITH ,A,1H.)') IG,'BIVAC/PN'
+     1 6H WITH ,A,1H.)') NGIND(II),'BIVAC/PN'
 *----
 *  RECOVER CROSS SECTIONS.
 *----
-      CALL LCMGET(JPSYS,'STATE-VECTOR',IPAR)
+      CALL LCMGET(KPSYS(II),'STATE-VECTOR',IPAR)
       NAN=IPAR(8)
       ALLOCATE(SGDI(NBMIX*NAN))
       DO 10 IL=0,NAN-1
       WRITE(NAMP,'(4HSCAI,I2.2,6H001001)') IL
-      CALL LCMGET(JPSYS,NAMP,SGDI(IL*NBMIX+1))
+      CALL LCMGET(KPSYS(II),NAMP,SGDI(IL*NBMIX+1))
    10 CONTINUE
 *----
 *  MULTIPLICATION OF THE EVEN-PARITY SOURCES BY THE VOLUMES.
@@ -127,12 +123,12 @@
       DO 20 K=1,NREG
       IF(MAT(K).EQ.0) GO TO 20
       JND1=KEYFLX(K)
-      SUNKNO(JND1,IG)=SUNKNO(JND1,IG)*VOL(K)
+      SUNKNO(JND1,II)=SUNKNO(JND1,II)*VOL(K)
    20 CONTINUE
 *----
 *  INNER ITERATION LOOP FOR ONE-GROUP TRANSPORT EQUATION.
 *----
-      CALL LCMGET(JPSYS,'IA001001',SYS)
+      CALL LCMGET(KPSYS(II),'IA001001',SYS)
       CALL XDRSET(OLD2,NUN,0.0)
       TEST=0.0
       ITER=0
@@ -144,15 +140,15 @@
       ENDIF
       DO 40 I=1,NUN
       OLD1(I)=OLD2(I)
-      OLD2(I)=FUNKNO(I,IG)
+      OLD2(I)=FUNKNO(I,II)
    40 CONTINUE
       IF((ITYPE.EQ.2).OR.((ITYPE.EQ.5).AND.(ISPN.EQ.1))) THEN
          ALLOCATE(XX(NREG),YY(NREG))
          CALL LCMGET(IPTRK,'XX',XX)
          CALL LCMGET(IPTRK,'YY',YY)
          CALL PNFL2E(NREG,IELEM,ICOL,XX,YY,MAT,VOL,NBMIX,NLF,NVD,
-     1   NAN,SGDI,L4,KN,QFR,MU,IIMAX,LC,RR,VV,SYS,SUNKNO(1,IG),
-     2   FUNKNO(1,IG),1)
+     1   NAN,SGDI,L4,KN,QFR,MU,IIMAX,LC,RR,VV,SYS,SUNKNO(1,II),
+     2   FUNKNO(1,II),1)
          DEALLOCATE(YY,XX)
       ELSE IF((ITYPE.EQ.2).OR.((ITYPE.EQ.8).AND.(ISPN.EQ.1))) THEN
          NBLOS=LX/3
@@ -160,7 +156,7 @@
          CALL LCMGET(IPTRK,'SIDE',SIDE)
          CALL LCMGET(IPTRK,'IPERT',IPERT)
          CALL PNFH2E(IELEM,ICOL,NBLOS,SIDE,NLF,NVD,L4,IPERT,KN,QFR,MU,
-     1   IIMAX,LC,VV,SYS,SUNKNO(1,IG),FUNKNO(1,IG),1)
+     1   IIMAX,LC,VV,SYS,SUNKNO(1,II),FUNKNO(1,II),1)
          DEALLOCATE(IPERT)
       ELSE
          CALL XABORT('PNFLV: TYPE OF DISCRETIZATION NOT IMPLEMENTED.')
@@ -175,14 +171,14 @@
          F2=0.0
          DO  70 I=1,NUN
          R1=OLD2(I)-OLD1(I)
-         R2=FUNKNO(I,IG)-OLD2(I)
+         R2=FUNKNO(I,II)-OLD2(I)
          F1=F1+R1*(R2-R1)
          F2=F2+(R2-R1)*(R2-R1)
    70    CONTINUE
          DMU=-F1/F2
          IF(DMU.GT.0.0) THEN
             DO  80 I=1,NUN
-            FUNKNO(I,IG)=OLD2(I)+REAL(DMU)*(FUNKNO(I,IG)-OLD2(I))
+            FUNKNO(I,II)=OLD2(I)+REAL(DMU)*(FUNKNO(I,II)-OLD2(I))
             OLD2(I)=OLD1(I)+REAL(DMU)*(OLD2(I)-OLD1(I))
    80       CONTINUE
          ENDIF
@@ -192,8 +188,8 @@
       BBB=0.0
       DO 90 I=1,NREG
       IF(KEYFLX(I).EQ.0) GO TO 90
-      AAA=MAX(AAA,ABS(FUNKNO(KEYFLX(I),IG)-OLD2(KEYFLX(I))))
-      BBB=MAX(BBB,ABS(FUNKNO(KEYFLX(I),IG)))
+      AAA=MAX(AAA,ABS(FUNKNO(KEYFLX(I),II)-OLD2(KEYFLX(I))))
+      BBB=MAX(BBB,ABS(FUNKNO(KEYFLX(I),II)))
    90 CONTINUE
       IF(IMPX.GT.2) WRITE(IUNOUT,300) ITER,AAA,BBB,DMU
       IF(AAA.LE.EPSINR*BBB) GO TO 100
@@ -211,7 +207,7 @@
       DO 130 K=1,NREG
       IF(MAT(K).EQ.0) GO TO 130
       JND1=KEYFLX(K)
-      SUNKNO(JND1,IG)=SUNKNO(JND1,IG)/VOL(K)
+      SUNKNO(JND1,II)=SUNKNO(JND1,II)/VOL(K)
   130 CONTINUE
 *----
 *  END OF LOOP OVER ENERGY GROUPS.

@@ -1,7 +1,7 @@
 *DECK SNFP12
-      SUBROUTINE SNFP12(NUN,NGRP,NGEFF,IMPX,INCONV,INGIND,LX,LY,IELEM,
-     1 IBFP,NMAT,NPQ,NSCT,MAT,VOL,TOTAL,ESTOPW,NCODE,ZCODE,DELTAE,QEXT,
-     1 LFIXUP,DU,DE,W,MRM,MRMY,DB,DA,PL,FUNKNO,DCUTOFF)
+      SUBROUTINE SNFP12(NUN,NGEFF,IMPX,INCONV,NGIND,LX,LY,IELEM,IBFP,
+     1 NMAT,NPQ,NSCT,MAT,VOL,TOTAL,ESTOPW,NCODE,ZCODE,DELTAE,QEXT,
+     1 LFIXUP,DU,DE,W,MRM,MRMY,DB,DA,PL,FUNKNO)
 *
 *-----------------------------------------------------------------------
 *
@@ -21,11 +21,10 @@
 *
 *Parameters: input
 * NUN     total number of unknowns in vector FUNKNO.
-* NGRP    number of energy groups.
-* NGEFF   dimension of arrays INCONV and INGIND.
+* NGEFF   number of energy groups processed in parallel.
 * IMPX    print flag (equal to zero for no print).
 * INCONV  energy group convergence flag (set to .FALSE. if converged).
-* INGIND  energy group index assign to 1:NGEFF arrays.
+* NGIND   energy group indices assign to the NGEFF set.
 * LX      number of meshes along X axis.
 * LY      number of meshes along Y axis.
 * IELEM   measure of order of the spatial approximation polynomial:
@@ -60,7 +59,6 @@
 *
 *Parameters: input/output
 * FUNKNO  Legendre components of the flux and boundary fluxes.
-* DCUTOFF energy deposition under the energy cutoff.
 *
 *-----------------------------------------------------------------------
 *
@@ -70,12 +68,12 @@
 *----
 *  SUBROUTINE ARGUMENTS
 *----
-      INTEGER NUN,NGRP,NGEFF,IMPX,INGIND(NGEFF),LX,LY,IELEM,IBFP,NMAT,
-     1 NPQ,NSCT,MAT(LX,LY),NCODE(4),MRM(NPQ),MRMY(NPQ)
+      INTEGER NUN,NGEFF,IMPX,NGIND(NGEFF),LX,LY,IELEM,IBFP,NMAT,NPQ,
+     1 NSCT,MAT(LX,LY),NCODE(4),MRM(NPQ),MRMY(NPQ)
       LOGICAL INCONV(NGEFF)
-      REAL VOL(LX,LY),TOTAL(0:NMAT,NGRP),ESTOPW(0:NMAT,2,NGRP),ZCODE(4),
-     1 DELTAE(NGRP),QEXT(NUN,NGRP),DU(NPQ),DE(NPQ),W(NPQ),DB(LX,NPQ),
-     2 DA(LX,LY,NPQ),PL(NSCT,NPQ),FUNKNO(NUN,NGRP),DCUTOFF(LX,LY)
+      REAL VOL(LX,LY),TOTAL(0:NMAT,NGEFF),ESTOPW(0:NMAT,2,NGEFF),
+     1 ZCODE(4),DELTAE(NGEFF),QEXT(NUN,NGEFF),DU(NPQ),DE(NPQ),W(NPQ),
+     2 DB(LX,NPQ),DA(LX,LY,NPQ),PL(NSCT,NPQ),FUNKNO(NUN,NGEFF)
       LOGICAL LFIXUP
 *----
 *  LOCAL VARIABLES
@@ -152,11 +150,10 @@
 *$OMP  PARALLEL DO
 *$OMP1 PRIVATE(M,IG,WEIGHT,VU,VE,M1,E1,IOF,JOF,IEL,I,J)
 *$OMP2 SHARED(FUNKNO) COLLAPSE(2)
-      DO 70 IGEFF=1,NGEFF
+      DO 70 IG=1,NGEFF
       DO 60 IPQD=1,NPQD(IND)
-      IF(.NOT.INCONV(IGEFF)) GO TO 60
+      IF(.NOT.INCONV(IG)) GO TO 60
       M=INDANG(IPQD,IND)
-      IG=INGIND(IGEFF)
       WEIGHT=W(M)
       VU=DU(M)
       VE=DE(M)
@@ -219,17 +216,16 @@
 *$OMP1 PRIVATE(FEP,FLUX0,FN,FD,G1,G2)
 *$OMP2 PRIVATE(VT) SHARED(FUNKNO) REDUCTION(+:FLUX_G,FLUX0_G)
 *$OMP3 COLLAPSE(2)
-      DO 180 IGEFF=1,NGEFF
+      DO 180 IG=1,NGEFF
       DO 170 IPQD=1,NPQD(IND)
 #if defined(_OPENMP)
         ITID=omp_get_thread_num()
 #else
         ITID=0
 #endif
-      IF(IMPX.GT.5) WRITE(IUNOUT,400) ITID,IGEFF,IPQD
-      IF(.NOT.INCONV(IGEFF)) GO TO 170
+      IF(IMPX.GT.5) WRITE(IUNOUT,400) ITID,NGIND(IG),IPQD
+      IF(.NOT.INCONV(IG)) GO TO 170
       M=INDANG(IPQD,IND)
-      IG=INGIND(IGEFF)
       FLUX(:IELEM**2,:NSCT,:LX,:LY)=0.0D0
       FLUX0(:IELEM**2,:NPQ,:LX,:LY)=0.0D0
       IF(W(M).EQ.0.0) GO TO 170
@@ -375,9 +371,6 @@
       ENDIF
       FEP(:IELEM**2)=G2*Q2(:IELEM**2,IELEM**2+1)-G1*FEP(:IELEM**2)
       FLUX0(:IELEM**2,M,I,J)=FEP(:IELEM**2)/DELTAE(IG)
-      IF(IG.EQ.NGRP) THEN
-      DCUTOFF(I,J)=DCUTOFF(I,J)+2.0*W(M)*REAL(FLUX0(1,M,I,J))*PL(1,M)
-      ENDIF
       DO 135 K=1,NSCT
       DO 130 IEL=1,IELEM**2
       FLUX(IEL,K,I,J)=FLUX(IEL,K,I,J)+2.0D0*W(M)*Q2(IEL,IELEM**2+1)*
@@ -398,19 +391,18 @@
       FUNKNO(L4+IOF,IG)=REAL(XNI(IEL,J))
   160 CONTINUE
   165 CONTINUE
-      FLUX_G(:,:,:,:,IGEFF)=FLUX_G(:,:,:,:,IGEFF)+FLUX(:,:,:,:)
-      FLUX0_G(:,:,:,:,IGEFF)=FLUX0_G(:,:,:,:,IGEFF)+FLUX0(:,:,:,:)
+      FLUX_G(:,:,:,:,IG)=FLUX_G(:,:,:,:,IG)+FLUX(:,:,:,:)
+      FLUX0_G(:,:,:,:,IG)=FLUX0_G(:,:,:,:,IG)+FLUX0(:,:,:,:)
   170 CONTINUE
   180 CONTINUE
 *$OMP END PARALLEL DO
   190 CONTINUE
-      DO 200 IGEFF=1,NGEFF
-        IF(.NOT.INCONV(IGEFF)) GO TO 200
-        IG=INGIND(IGEFF)
+      DO 200 IG=1,NGEFF
+        IF(.NOT.INCONV(IG)) GO TO 200
         FUNKNO(:L4,IG)=
-     1  RESHAPE(REAL(FLUX_G(:IELEM**2,:NSCT,:LX,:LY,IGEFF)), (/ L4 /) )
+     1  RESHAPE(REAL(FLUX_G(:IELEM**2,:NSCT,:LX,:LY,IG)), (/ L4 /) )
         FUNKNO(L5+1:L5+L6,IG)=
-     1  RESHAPE(REAL(FLUX0_G(:IELEM**2,:NPQ,:LX,:LY,IGEFF)), (/ L6 /) )
+     1  RESHAPE(REAL(FLUX0_G(:IELEM**2,:NPQ,:LX,:LY,IG)), (/ L6 /) )
   200 CONTINUE
 *----
 *  SCRATCH STORAGE DEALLOCATION

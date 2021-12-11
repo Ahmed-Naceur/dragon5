@@ -13,7 +13,6 @@ endif
 
 DIRNAME = $(shell uname -sm | sed 's/[ ]/_/')
 OS = $(shell uname -s | cut -d"_" -f1)
-fcompiler = gfortran
 ccompiler = gcc
 opt = -O
 PREPRO = cpp
@@ -23,6 +22,12 @@ ifeq ($(openmp),1)
   ccompiler = gcc-11
 else
   COMP =
+endif
+
+ifeq ($(intel),1)
+  fcompiler = ifort
+else
+  fcompiler = gfortran
 endif
 
 ifeq ($(OS),AIX)
@@ -88,13 +93,30 @@ endif
 endif
 endif
 endif
-lib = ../lib/$(DIRNAME)
-libUtl = ../../Utilib/lib/$(DIRNAME)
-libGan = ../../Ganlib/lib/$(DIRNAME)
-libTri = ../../Trivac/lib/$(DIRNAME)
-bin = ../bin/$(DIRNAME)
-lib_module = ../lib/$(DIRNAME)/modules
-INCLUDE = -I../../Ganlib/lib/$(DIRNAME)/modules/
+
+ifeq ($(intel),1)
+  FFLAGS = -fPIC
+  FFLAG77 = -fPIC
+  lib = ../lib/$(DIRNAME)_intel
+  libUtl = ../../Utilib/lib/$(DIRNAME)_intel
+  libGan = ../../Ganlib/lib/$(DIRNAME)_intel
+  libTri = ../../Trivac/lib/$(DIRNAME)_intel
+  bin = ../bin/$(DIRNAME)_intel
+  lib_module = ../lib/$(DIRNAME)_intel/modules
+  INCLUDE = -I../../Ganlib/lib/$(DIRNAME)_intel/modules/
+else
+  lib = ../lib/$(DIRNAME)
+  libUtl = ../../Utilib/lib/$(DIRNAME)
+  libGan = ../../Ganlib/lib/$(DIRNAME)
+  libTri = ../../Trivac/lib/$(DIRNAME)
+  bin = ../bin/$(DIRNAME)
+  lib_module = ../lib/$(DIRNAME)/modules
+  INCLUDE = -I../../Ganlib/lib/$(DIRNAME)/modules/
+endif
+
+ifeq ($(hdf5),1)
+  LFLAGS += -L${HDF5_DIR}/lib -lhdf5
+endif
 
 SRCC = $(shell ls *.c)
 SRC77 = $(shell ls *.f)
@@ -105,21 +127,27 @@ else
   SRC90 = $(shell python3 ../../script/make_depend_py3.py ls *.f90)
 endif
 OBJC = $(SRCC:.c=.o)
+OBJ90 = $(SRC90:.f90=.o)
+OBJ77 = $(SRC77:.f=.o)
+OBJF77 = $(SRCF77:.F=.o)
 all : sub-make Dragon
 ifeq ($(openmp),1)
 	@echo 'Dragon: openmp is defined'
 endif
+ifeq ($(intel),1)
+	@echo 'Dragon: intel is defined'
+endif
+ifeq ($(hdf5),1)
+	@echo 'Dragon: hdf5 is defined'
+endif
 sub-make:
-	$(MAKE) openmp=$(openmp) -C ../../Trivac/src
+	$(MAKE) openmp=$(openmp) intel=$(intel) hdf5=$(hdf5) -C ../../Trivac/src
 %.o : %.c
 	$(C) $(CFLAGS) $(opt) $(COMP) -c $< -o $@
-OBJ90 = $(SRC90:.f90=.o)
 %.o : %.f90
 	$(F90) $(FFLAGS) $(opt) $(COMP) $(INCLUDE) -c $< -o $@
-OBJ77 = $(SRC77:.f=.o)
 %.o : %.f
 	$(F90) $(FFLAG77) $(opt) $(COMP) $(INCLUDE) -c $< -o $@
-OBJF77 = $(SRCF77:.F=.o)
 %.o : %.F
 	$(PREPRO) -P -W -traditional  $(FLAGS) $< temp.f
 	$(F90) $(FFLAG77) $(opt) $(COMP) $(INCLUDE) -c temp.f -o $@
@@ -138,4 +166,4 @@ Dragon: libDragon.a DRAGON.o $(bin)/ sub-make
 	cp $@ $(bin)/$@
 clean:
 	$(MAKE) -C ../../Trivac/src clean
-	/bin/rm -f *.o *.mod *.a Dragon
+	/bin/rm -f *.o *.mod *.a sub-make temp.* Dragon

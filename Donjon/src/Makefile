@@ -13,14 +13,21 @@ endif
 
 DIRNAME = $(shell uname -sm | sed 's/[ ]/_/')
 OS = $(shell uname -s | cut -d"_" -f1)
-fcompiler = gfortran
 ccompiler = gcc
 opt = -O
+PREPRO = cpp
 ifeq ($(openmp),1)
   COMP = -fopenmp
+  PREPRO = cpp -D_OPENMP
   ccompiler = gcc-11
 else
   COMP =
+endif
+
+ifeq ($(intel),1)
+  fcompiler = ifort
+else
+  fcompiler = gfortran
 endif
 
 ifeq ($(OS),AIX)
@@ -61,6 +68,7 @@ ifeq ($(OS),SunOS)
   MAKE = gmake
   F90 = f90
   C = cc
+  PREPRO = /usr/lib/cpp
   FLAGS = -DSunOS -DUnix
   CFLAGS = $(nbit)
   FFLAGS = $(nbit) -s -ftrap=%none
@@ -85,30 +93,45 @@ endif
 endif
 endif
 endif
-lib = ../lib/$(DIRNAME)
-libUtl = ../../Utilib/lib/$(DIRNAME)
-libGan = ../../Ganlib/lib/$(DIRNAME)
-libTri = ../../Trivac/lib/$(DIRNAME)
-libDra = ../../Dragon/lib/$(DIRNAME)
-bin = ../bin/$(DIRNAME)
-INCLUDE = -I../../Ganlib/lib/$(DIRNAME)/modules/
 
 ifeq ($(intel),1)
-  fcompiler = ifort
   FFLAGS = -fPIC
   FFLAG77 = -fPIC
+  lib = ../lib/$(DIRNAME)_intel
+  libUtl = ../../Utilib/lib/$(DIRNAME)_intel
+  libGan = ../../Ganlib/lib/$(DIRNAME)_intel
+  libTri = ../../Trivac/lib/$(DIRNAME)_intel
+  libDra = ../../Dragon/lib/$(DIRNAME)_intel
+  bin = ../bin/$(DIRNAME)_intel
+  lib_module = ../lib/$(DIRNAME)_intel/modules
+  INCLUDE = -I../../Ganlib/lib/$(DIRNAME)_intel/modules/
 else
-  fcompiler = gfortran
+  lib = ../lib/$(DIRNAME)
+  libUtl = ../../Utilib/lib/$(DIRNAME)
+  libGan = ../../Ganlib/lib/$(DIRNAME)
+  libTri = ../../Trivac/lib/$(DIRNAME)
+  libDra = ../../Dragon/lib/$(DIRNAME)
+  bin = ../bin/$(DIRNAME)
+  lib_module = ../lib/$(DIRNAME)/modules
+  INCLUDE = -I../../Ganlib/lib/$(DIRNAME)/modules/
+endif
+
+ifeq ($(hdf5),1)
+  LFLAGS += -L${HDF5_DIR}/lib -lhdf5
 endif
 
 SRCC = $(shell ls *.c)
 SRC77 = $(shell ls *.f)
+SRCF77 = $(shell ls *.F)
 ifeq ($(python_version_major),2)
   SRC90 = $(shell python ../../script/make_depend.py ls *.f90)
 else
   SRC90 = $(shell python3 ../../script/make_depend_py3.py ls *.f90)
 endif
 OBJC = $(SRCC:.c=.o)
+OBJ90 = $(SRC90:.f90=.o)
+OBJ77 = $(SRC77:.f=.o)
+OBJF77 = $(SRCF77:.F=.o)
 all : sub-make Donjon
 ifeq ($(openmp),1)
 	@echo 'Donjon: openmp is defined'
@@ -116,21 +139,27 @@ endif
 ifeq ($(intel),1)
 	@echo 'Donjon: intel is defined'
 endif
+ifeq ($(hdf5),1)
+	@echo 'Donjon: hdf5 is defined'
+endif
 sub-make:
-	$(MAKE) openmp=$(openmp) intel=$(intel) -C ../../Dragon/src
+	$(MAKE) openmp=$(openmp) intel=$(intel) hdf5=$(hdf5) -C ../../Dragon/src
 %.o : %.c
 	$(C) $(CFLAGS) $(opt) $(COMP) -c $< -o $@
-OBJ90 = $(SRC90:.f90=.o)
 %.o : %.f90
 	$(F90) $(FFLAGS) $(opt) $(COMP) $(INCLUDE) -c $< -o $@
-OBJ77 = $(SRC77:.f=.o)
 %.o : %.f
 	$(F90) $(FFLAG77) $(opt) $(COMP) $(INCLUDE) -c $< -o $@
-$(lib)/:
-	mkdir -p $(lib)/
-libDonjon.a: $(OBJC) $(OBJ90) $(OBJ77) $(lib)/
-	ar r $@ $(OBJC) $(OBJ90) $(OBJ77)
+%.o : %.F
+	$(PREPRO) -P -W -traditional  $(FLAGS) $< temp.f
+	$(F90) $(FFLAG77) $(opt) $(COMP) $(INCLUDE) -c temp.f -o $@
+	/bin/rm temp.f
+$(lib_module)/:
+	mkdir -p $(lib_module)/
+libDonjon.a: $(OBJC) $(OBJ90) $(OBJ77) $(OBJF77) $(lib_module)/
+	ar r $@ $(OBJC) $(OBJ90) $(OBJ77) $(OBJF77)
 	cp $@ $(lib)/$@
+	cp *.mod $(lib_module)
 $(bin)/:
 	mkdir -p $(bin)/
 Donjon: libDonjon.a DONJON.o $(bin)/ sub-make
@@ -139,4 +168,4 @@ Donjon: libDonjon.a DONJON.o $(bin)/ sub-make
 	cp $@ $(bin)/$@
 clean:
 	$(MAKE) -C ../../Dragon/src clean
-	/bin/rm -f *.o *.mod *.a Donjon
+	/bin/rm -f *.o *.mod *.a sub-make temp.* Donjon

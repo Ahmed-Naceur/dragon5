@@ -13,7 +13,6 @@ endif
 
 DIRNAME = $(shell uname -sm | sed 's/[ ]/_/')
 OS = $(shell uname -s | cut -d"_" -f1)
-fcompiler = gfortran
 ccompiler = g++
 opt = -O
 ifeq ($(openmp),1)
@@ -24,26 +23,22 @@ else
 endif
 
 ifeq ($(OS),Darwin)
-  F90 = $(fcompiler)
   C = $(ccompiler)
   FLAGS = -DLinux -DUnix
   CFLAGS = -Wall $(nbit) -fPIC
 else
 ifeq ($(OS),Linux)
-  F90 = $(fcompiler)
   C = $(ccompiler)
   FLAGS = -DLinux -DUnix
   CFLAGS = -Wall $(nbit) -fPIC
 else
 ifeq ($(OS),CYGWIN)
-  F90 = $(fcompiler)
   C = $(ccompiler)
   FLAGS = -DLinux -DUnix
   CFLAGS = -Wall $(nbit) -fPIC
 else
 ifeq ($(OS),SunOS)
   MAKE = gmake
-  F90 = f90
   C = cc
   FLAGS = -DSunOS -DUnix
   CFLAGS = $(nbit)
@@ -52,7 +47,6 @@ ifeq ($(OS),AIX)
   opt = -O4
   MAKE = gmake
   DIRNAME = AIX
-  F90 = xlf90
   C = xlc
   FLAGS = -DAIX -DUnix
   CFLAGS = -qstrict
@@ -66,6 +60,10 @@ endif
 lib = ../lib/$(DIRNAME)
 INCLUDE = -I../../Ganlib/src/ -I../../Skin++/src/
 
+ifeq ($(hdf5),1)
+  CFLAGS += -L${HDF5_DIR}/lib -lhdf5
+endif
+
 SRCC = $(shell ls *.cxx)
 OBJC = $(SRCC:.cxx=.o)
 all : sub-make libYacs++.a
@@ -75,8 +73,11 @@ endif
 ifeq ($(intel),1)
 	@echo 'Yacs++: intel is defined'
 endif
+ifeq ($(hdf5),1)
+	@echo 'Dragon: hdf5 is defined'
+endif
 sub-make:
-	$(MAKE) openmp=$(openmp) intel=$(intel) -C ../../Skin++/src
+	$(MAKE) openmp=$(openmp) intel=$(intel) hdf5=$(hdf5) -C ../../Skin++/src
 %.o : %.cxx
 	$(C) $(CFLAGS) $(FLAGS) $(opt) $(COMP) $(INCLUDE) -I$(BOOST_ROOT) -I$(SALOME_KERNEL)/include/salome/ -c $< -o $@
 $(lib)/:
@@ -86,4 +87,4 @@ libYacs++.a: $(OBJC) $(lib)/
 	cp $@ $(lib)/$@
 clean:
 	$(MAKE) -C ../../Skin++/src clean
-	/bin/rm -f *.o *.a
+	/bin/rm -f *.o *.a sub-make temp.

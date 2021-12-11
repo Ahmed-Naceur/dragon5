@@ -13,7 +13,6 @@ endif
 
 DIRNAME = $(shell uname -sm | sed 's/[ ]/_/')
 OS = $(shell uname -s | cut -d"_" -f1)
-fcompiler = gfortran
 ccompiler = gcc
 opt = -O
 ifeq ($(openmp),1)
@@ -21,6 +20,12 @@ ifeq ($(openmp),1)
   ccompiler = gcc-11
 else
   COMP =
+endif
+
+ifeq ($(intel),1)
+  fcompiler = ifort
+else
+  fcompiler = gfortran
 endif
 
 ifeq ($(OS),AIX)
@@ -73,14 +78,13 @@ endif
 endif
 endif
 endif
-lib = ../lib/$(DIRNAME)
 
 ifeq ($(intel),1)
-  fcompiler = ifort
   FFLAGS = -fPIC
   FFLAG77 = -fPIC
+  lib = ../lib/$(DIRNAME)_intel
 else
-  fcompiler = gfortran
+  lib = ../lib/$(DIRNAME)
 endif
 
 SRCC = $(shell ls *.c)
@@ -91,6 +95,8 @@ else
   SRC90 = $(shell python3 ../../script/make_depend_py3.py ls *.f90)
 endif
 OBJC = $(SRCC:.c=.o)
+OBJ90 = $(SRC90:.f90=.o)
+OBJ77 = $(SRC77:.f=.o)
 all : libUtilib.a
 ifeq ($(openmp),1)
 	@echo 'Utilib: openmp is defined'
@@ -101,10 +107,8 @@ endif
 	@echo "python version=" ${python_version_major}
 %.o : %.c
 	$(C) $(CFLAGS) $(opt) $(COMP) -c $< -o $@
-OBJ90 = $(SRC90:.f90=.o)
 %.o : %.f90
 	$(F90) $(FFLAGS) $(opt) $(COMP) $(INCLUDE) -c $< -o $@
-OBJ77 = $(SRC77:.f=.o)
 %.o : %.f
 	$(F90) $(FFLAG77) $(opt) $(COMP) -c $< -o $@
 $(lib)/:

@@ -237,9 +237,6 @@
 *----
 *  RECOVER PARTICLE DATA
 *----
-      !PRINT *,NPART
-      !CALL XABORT('AHMED:LIBDEN.f')
-      !NPART=1 !AHMED
       IF(NPART.EQ.0) THEN
         HPRT1=' '
         HNPART(1)=' '

@@ -1,6 +1,6 @@
 *DECK SNF
-      SUBROUTINE SNF (IPSYS,NPSYS,IPTRK,IFTRAK,IMPX,NGRP,IDIR,NREG,
-     1 NBMIX,NUN,MAT,VOL,KEYFLX,FUNKNO,SUNKNO,TITR,DCUTOFF)
+      SUBROUTINE SNF(KPSYS,IPTRK,IFTRAK,IMPX,NGEFF,NGIND,IDIR,NREG,
+     1 NBMIX,NUN,MAT,VOL,KEYFLX,FUNKNO,SUNKNO,TITR)
 *
 *-----------------------------------------------------------------------
 *
@@ -18,15 +18,13 @@
 *Author(s): A. Hebert
 *
 *Parameters: input
-* IPSYS   pointer to the assembly LCM object (L_PIJ signature). IPSYS is
-*         a list of directories.
-* NPSYS   index array pointing to the IPSYS list component corresponding
-*         to each energy group. Set to zero if a group is not to be
-*         processed. Usually, NPSYS(I)=I.
+* KPSYS   pointer to the assembly LCM object (L_PIJ signature). KPSYS is
+*         an array of directories.
 * IPTRK   pointer to the tracking (L_TRACK signature).
 * IFTRAK  not used.
 * IMPX    print flag (equal to zero for no print).
-* NGRP    number of energy groups.
+* NGEFF   number of energy groups processed in parallel.
+* NGIND   energy group indices assign to the NGEFF set.
 * IDIR    not used.
 * NREG    total number of regions for which specific values of the
 *         neutron flux and reactions rates are required.
@@ -40,7 +38,6 @@
 *
 *Parameters: input/output
 * FUNKNO  unknown vector.
-* DCUTOFF energy deposition under the energy cutoff
 *
 *-----------------------------------------------------------------------
 *
@@ -49,27 +46,23 @@
 *  SUBROUTINE ARGUMENTS
 *----
       CHARACTER   TITR*72
-      TYPE(C_PTR) IPSYS,IPTRK
-      INTEGER     NGRP,NPSYS(NGRP),IFTRAK,IMPX,IDIR,NREG,NBMIX,NUN,
+      TYPE(C_PTR) KPSYS(NGEFF),IPTRK
+      INTEGER     NGEFF,NGIND(NGEFF),IFTRAK,IMPX,IDIR,NREG,NBMIX,NUN,
      1            MAT(NREG),KEYFLX(NREG)
-      REAL        VOL(NREG),FUNKNO(NUN,NGRP),SUNKNO(NUN,NGRP),
-     1            DCUTOFF(NREG)
+      REAL        VOL(NREG),FUNKNO(NUN,NGEFF),SUNKNO(NUN,NGEFF)
 *----
 *  LOCAL VARIABLES
 *----
       PARAMETER  (IUNOUT=6,NSTATE=40)
-      TYPE(C_PTR) JPSYS
       INTEGER     IPAR(NSTATE)
-      LOGICAL     LBIHET,LIVO
+      LOGICAL     LIVO
       DOUBLE PRECISION F1,F2,R1,R2,DMU
 *----
 *  ALLOCATABLE ARRAYS
 *----
-      INTEGER, ALLOCATABLE, DIMENSION(:) :: INGIND
       REAL, ALLOCATABLE, DIMENSION(:) :: FGAR,TEST
-      REAL, ALLOCATABLE, DIMENSION(:,:) :: SUNKN,OLD1,OLD2
+      REAL, ALLOCATABLE, DIMENSION(:,:) :: OLD1,OLD2
       LOGICAL, ALLOCATABLE, DIMENSION(:) :: INCONV
-      TYPE(C_PTR), ALLOCATABLE, DIMENSION(:) :: KPSYS
 *----
 *  RECOVER SN SPECIFIC PARAMETERS
 *----
@@ -80,96 +73,33 @@
       IF(IDIR.NE.0) CALL XABORT('SNF: EXPECTING IDIR=0')
       IF(IFTRAK.NE.0) CALL XABORT('SNF: EXPECTING IFTRAK=0')
       CALL LCMGET(IPTRK,'STATE-VECTOR',IPAR)
-      IF(NREG.NE.IPAR(1)) CALL XABORT('SNF: INVALID NREG ON LCM.')
-      IF(NUN.NE.IPAR(2)) CALL XABORT('SNF: INVALID NUN ON LCM.')
       NSTART=IPAR(20)
       MAXIT=IPAR(22)
       LIVO=(IPAR(23).EQ.1)
       ICL1=IPAR(24)
       ICL2=IPAR(25)
       IBFP=IPAR(31)
-      LBIHET=IPAR(40).NE.0
       CALL LCMGET(IPTRK,'EPSI',EPSINR)
       IF(IMPX.GT.3) THEN
         ALLOCATE(FGAR(NREG))
-        DO IG=1,NGRP
-          IF(NPSYS(IG).EQ.0) CYCLE
+        DO II=1,NGEFF
           CALL XDRSET(FGAR,NREG,0.0)
           DO I=1,NREG
-            IF(KEYFLX(I).NE.0) FGAR(I)=SUNKNO(KEYFLX(I),IG)
+            IF(KEYFLX(I).NE.0) FGAR(I)=SUNKNO(KEYFLX(I),II)
           ENDDO
           WRITE(IUNOUT,'(/33H N E U T R O N    S O U R C E S (,I5,
-     1    3H ):)') IG
+     1    3H ):)') NGIND(II)
           WRITE(IUNOUT,'(1P,6(5X,E15.7))') (FGAR(I),I=1,NREG)
         ENDDO
         DEALLOCATE(FGAR)
       ENDIF
-*----
-* DOUBLE HETEROGENEITY TREATMENT
-*----
-      NBMIXG=0
-      NREGAR=0
-      CALL LCMGET(IPTRK,'STATE-VECTOR',IPAR)
-      LBIHET=IPAR(40).NE.0
-      IF(LBIHET) THEN
-         ALLOCATE(SUNKN(NUN,NGRP))
-         NBMIXG=NBMIX
-         NREGAR=NREG
-         DO IG=1,NGRP
-           IOFSET=NPSYS(IG)
-           IF(IOFSET.NE.0) THEN
-             JPSYS=LCMGIL(IPSYS,IOFSET)
-             SUNKN(:NUN,IG)=SUNKNO(:NUN,IG)
-             CALL DOORFB2(JPSYS,IPTRK,IMPX,NBMIX,NREG,NUN,KEYFLX,
-     1       NBMIX2,NREG2,SUNKNO(1,IG))
-           ENDIF
-         ENDDO
-         NBMIX=NBMIX2
-         NREG=NREG2
-      ENDIF
-*---
-* DETERMINE THE NUMBER OF GROUPS TO BE PROCESSED
-* RECOVER FLUXES FROM A PREVIOUS SELF-SHIELDING CALCULATION IF AVAILABLE
-*---
-      NGEFF=0
-      DO IG=1,NGRP
-         IOFSET=NPSYS(IG)
-         IF(IOFSET.NE.0) THEN
-            NGEFF=NGEFF+1
-            JPSYS=LCMGIL(IPSYS,IOFSET)
-            CALL LCMLEN(JPSYS,'FUNKNO$USS',ILENG,ITYLCM)
-            IF(ILENG.EQ.NUN) THEN
-               CALL LCMGET(JPSYS,'FUNKNO$USS',FUNKNO(1,IG))
-            ENDIF
-         ENDIF
-      ENDDO
-      IF(NGEFF.EQ.0) GO TO 100
-*---
-* RECOVER POINTERS TO EACH GROUP PROPERTIES
-* CREATE AN INDEX FOR THE GROUPS TO BE PROCESSED
-*---
-      ALLOCATE(INGIND(NGEFF),KPSYS(NGEFF))
-      II=1
-      DO IG=1,NGRP
-         IOFSET=NPSYS(IG)
-         IF(IOFSET.NE.0) THEN
-            INGIND(II)=IG
-            IF(LBIHET) THEN
-               JPSYS=LCMGIL(IPSYS,IOFSET)
-               KPSYS(II)=LCMGID(JPSYS,'BIHET')
-            ELSE
-               KPSYS(II)=LCMGIL(IPSYS,IOFSET)
-            ENDIF
-            II=II+1
-         ENDIF
-      ENDDO
 *
       IF(NSTART.GT.0) THEN
 *----
 *  GMRES(M) INNER ITERATION LOOP FOR ONE-SPEED TRANSPORT EQUATION
 *----
-         CALL SNGMRE (KPSYS,INGIND,IPTRK,IMPX,NGRP,NGEFF,NREG,NBMIX,
-     1   NUN,NSTART,MAXIT,EPSINR,MAT,VOL,KEYFLX,FUNKNO,SUNKNO,DCUTOFF)
+         CALL SNGMRE (KPSYS,NGIND,IPTRK,IMPX,NGEFF,NREG,NBMIX,NUN,
+     1   NSTART,MAXIT,EPSINR,MAT,VOL,KEYFLX,FUNKNO,SUNKNO)
       ELSE
 *----
 *  LIVOLANT INNER ITERATION LOOP FOR ONE-SPEED TRANSPORT EQUATION
@@ -190,23 +120,21 @@
          ENDIF
 *
          DO II=1,NGEFF
-           IG=INGIND(II)
            DO I=1,NUN
              OLD1(I,II)=OLD2(I,II)
-             OLD2(I,II)=FUNKNO(I,IG)
+             OLD2(I,II)=FUNKNO(I,II)
            ENDDO
          ENDDO
 *----
 *  UPDATE THE FIXED SOURCE AND COMPUTE THE FLUX
 *----
-         CALL SNFLUX(KPSYS,INCONV,INGIND,IPTRK,IMPX,NGRP,NGEFF,NREG,
-     1   NBMIX,NUN,MAT,VOL,KEYFLX,FUNKNO,SUNKNO,ITER,DCUTOFF)
+         CALL SNFLUX(KPSYS,INCONV,NGIND,IPTRK,IMPX,NGEFF,NREG,NBMIX,
+     1   NUN,MAT,VOL,KEYFLX,FUNKNO,SUNKNO,ITER)
 *----
 *  LOOP OVER ENERGY GROUPS
 *----
          DO 60 II=1,NGEFF
          IF(INCONV(II)) THEN
-           IG=INGIND(II)
 *----
 *  VARIATIONAL ACCELERATION. LIVOLANT INNER ITERATION LOOP FOR ONE-GROUP
 *  TRANSPORT EQUATION.
@@ -217,7 +145,7 @@
               F2=0.0
               DO 30 I=1,NUN
               R1=OLD2(I,II)-OLD1(I,II)
-              R2=FUNKNO(I,IG)-OLD2(I,II)
+              R2=FUNKNO(I,II)-OLD2(I,II)
               F1=F1+R1*(R2-R1)
               F2=F2+(R2-R1)*(R2-R1)
    30         CONTINUE
@@ -225,7 +153,7 @@
               IF(DMU.GT.0.0) THEN
                 RDMU=REAL(DMU)
                 DO 40 I=1,NUN
-                FUNKNO(I,IG)=OLD2(I,II)+RDMU*(FUNKNO(I,IG)-OLD2(I,II))
+                FUNKNO(I,II)=OLD2(I,II)+RDMU*(FUNKNO(I,II)-OLD2(I,II))
                 OLD2(I,II)=OLD1(I,II)+RDMU*(OLD2(I,II)-OLD1(I,II))
    40           CONTINUE
               ENDIF
@@ -237,15 +165,16 @@
            BBB=0.0
            DO 50 I=1,NREG
            IF(KEYFLX(I).EQ.0) GO TO 50
-           AAA=MAX(AAA,ABS(FUNKNO(KEYFLX(I),IG)-OLD2(KEYFLX(I),II)))
-           BBB=MAX(BBB,ABS(FUNKNO(KEYFLX(I),IG)))
+           AAA=MAX(AAA,ABS(FUNKNO(KEYFLX(I),II)-OLD2(KEYFLX(I),II)))
+           BBB=MAX(BBB,ABS(FUNKNO(KEYFLX(I),II)))
    50      CONTINUE
-           IF(IMPX.GT.2) WRITE(IUNOUT,300) IG,ITER,AAA,BBB,AAA/BBB,DMU
+           IF(IMPX.GT.2) WRITE(IUNOUT,300) NGIND(II),ITER,AAA,BBB,
+     1     AAA/BBB,DMU
            IF(IMPX.GT.5) THEN
              ALLOCATE(FGAR(NREG))
              CALL XDRSET(FGAR,NREG,0.0)
              DO I=1,NREG
-              IF(KEYFLX(I).NE.0) FGAR(I)=FUNKNO(KEYFLX(I),IG)
+              IF(KEYFLX(I).NE.0) FGAR(I)=FUNKNO(KEYFLX(I),II)
              ENDDO
              WRITE(IUNOUT,'(//33H N E U T R O N    F L U X E S   :)')
              WRITE(IUNOUT,'(1P,6(5X,E15.7))') (FGAR(I),I=1,NREG)
@@ -258,7 +187,7 @@
            IF(ITER.EQ.1) TEST(II)=AAA
            IF((ITER.GE.10).AND.(AAA.GT.TEST(II))) THEN
              WRITE(IUNOUT,'(39H SNF: UNABLE TO CONVERGE ONE-SPEED ITER,
-     1       15HATIONS IN GROUP,I5,1H.)') IG
+     1       15HATIONS IN GROUP,I5,1H.)') NGIND(II)
              LNCONV=LNCONV-1
              INCONV(II)=.FALSE.
            ENDIF
@@ -272,39 +201,6 @@
    70    IF(IMPX.GT.1) WRITE(IUNOUT,'(29H SNF: NUMBER OF ONE-SPEED ITE,
      1   8HRATIONS=,I5,1H.)') ITER
          DEALLOCATE(TEST,OLD2,OLD1,INCONV)
-      ENDIF
-      DEALLOCATE(KPSYS,INGIND)
-*----
-* DOUBLE HETEROGENEITY TREATMENT
-*----
-  100 IF(LBIHET) THEN
-         DO IG=1,NGRP
-           IOFSET=NPSYS(IG)
-           IF(IOFSET.NE.0) THEN
-             SUNKNO(:NUN,IG)=SUNKN(:NUN,IG)
-             JPSYS=LCMGIL(IPSYS,IOFSET)
-             CALL DOORFB3(JPSYS,IPTRK,IMPX,NBMIXG,NREGAR,NUN,KEYFLX,
-     1       SUNKNO(1,IG),FUNKNO(1,IG))
-           ENDIF
-         ENDDO
-         NBMIX=NBMIXG
-         NREG=NREGAR
-         DEALLOCATE(SUNKN)
-      ENDIF
-*
-      IF(IMPX.GT.3) THEN
-        ALLOCATE(FGAR(NREG))
-        DO IG=1,NGRP
-          IF(NPSYS(IG).EQ.0) CYCLE
-          CALL XDRSET(FGAR,NREG,0.0)
-          DO I=1,NREG
-            IF(KEYFLX(I).NE.0) FGAR(I)=FUNKNO(KEYFLX(I),IG)
-          ENDDO
-          WRITE(IUNOUT,'(//31H N E U T R O N    F L U X E S (,I5,
-     1    3H ):)') IG
-          WRITE(IUNOUT,'(1P,6(5X,E15.7))') (FGAR(I),I=1,NREG)
-        ENDDO
-        DEALLOCATE(FGAR)
       ENDIF
       IF(IMPX.GT.2) THEN
         CALL KDRCPU(TK2)
