@@ -128,7 +128,7 @@ QUIT "LIST" .                                                              0008
  IBIHET       0   (0/1: DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
  EPSI      0.1E-03  (CONVERGENCE CRITERION ON INNER ITERATIONS)
 ->@END MODULE   : SNT:        
--->>MODULE SNT:        : TIME SPENT=        0.000 MEMORY USAGE= 2.520E+02
+-->>MODULE SNT:        : TIME SPENT=        0.001 MEMORY USAGE= 2.520E+02
 ->@BEGIN MODULE : LIB:        
 ->@DESCRIPTION  : Microscopic xs-library processing                                       
 ->@CREDITS      : A. Hebert, G. Marleau                                                   
@@ -301,7 +301,7 @@ QUIT "LIST" .                                                              0008
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module EQU:        : time spent=        0.001 memory usage= 2.640E+02
+-->>module EQU:        : time spent=        0.000 memory usage= 2.640E+02
 ->@END MODULE   : EQU:        
 ->@BEGIN MODULE : MAC:        
 ->@DESCRIPTION  : Macroscopic xs processor                                                
@@ -352,7 +352,7 @@ QUIT "LIST" .                                                              0008
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE MAC:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : ASM:        
 ->@DESCRIPTION  : To built system matrices (CP and IC)                                    
 ->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
@@ -419,7 +419,7 @@ QUIT "LIST" .                                                              0008
  IBFP         2   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (SN          )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.001 MEMORY USAGE= 2.640E+02
+-->>MODULE ASM:        : TIME SPENT=        0.000 MEMORY USAGE= 2.640E+02
 ->@BEGIN MODULE : FLU:        
 ->@DESCRIPTION  : Solve the flux equations                                                
 ->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
@@ -6112,7 +6112,7 @@ QUIT "LIST" .                                                              0008
  ++ TRACKING CALLED=   5 TIMES PRECISION= 0.00E+00
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=        42
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.679 MEMORY USAGE= 1.412E+03
+-->>MODULE FLU:        : TIME SPENT=        0.753 MEMORY USAGE= 1.396E+03
 ->@BEGIN MODULE : OUT:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -6505,7 +6505,7 @@ QUIT "LIST" .                                                              0008
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module GREP:       : time spent=        0.001 memory usage= 0.000E+00
+-->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
 ->@END MODULE   : GREP:       
 >|TEST SUCCESSFUL; DELTA=  0.000000e+00                                   |>0028
 ->@BEGIN MODULE : GREP:       

@@ -239,11 +239,11 @@
 *----
       !PRINT *,NPART
       !CALL XABORT('AHMED:LIBDEN.f')
-      !NPART=1 !AHMED
-      IF(NPART.EQ.0) THEN
-        HPRT1=' '
-        HNPART(1)=' '
-      ELSE
+      !AHMED-CORRECTION
+      !IF(NPART.EQ.0) THEN
+      !  HPRT1=' '
+      !  HNPART(1)=' '
+      !ELSE
         CALL LCMGTC(IPLIB,'PARTICLE',1,1,HPRT1)
         CALL LCMGTC(IPLIB,'PARTICLE-NAM',1,NPART+1,HNPART)
         CALL LCMGET(IPLIB,'PARTICLE-NGR',NGPART)
@@ -267,7 +267,7 @@
           CALL LCMSIX(IPLIB,' ',2)
           DEALLOCATE(GA1)
    32   CONTINUE
-      ENDIF
+      !ENDIF
 *----
 *  SELECT NUMBER OF GROUPS TO PROCESS
 *----
