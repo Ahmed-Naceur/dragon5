@@ -1,0 +1,5 @@
+./rdragon iaea2d.x2m -quiet
+/tmp/rundir24
+[0;32m[OK][0m
+./rdragon g2s_prestation.x2m -quiet
+/tmp/rundir24
