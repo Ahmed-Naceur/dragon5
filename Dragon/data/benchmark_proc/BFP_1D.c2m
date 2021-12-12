@@ -11,19 +11,19 @@ MODULE GEO: FMAC: MAC: SNT: ASM: FLU: PSOUR: OUT: DELETE: END: UTL:
 LINKED_LIST  EMACRO EMACRO2 GMACRO GMACRO2 GEOM ETRACK GTRACK SYSTEM
        EFLUX GFLUX ESOUR GSOUR EEDITS GEDITS DEPOS ;
 REAL esum DELTA ;
-SEQ_ASCII FMAC_M :: FILE './water.txt' ;
+SEQ_ASCII FMAC_M :: FILE './W_6MeV_e_ph_CSD.txt' ;
 *----
 *  Set and track the geometry
 *----
 GEOM := GEO: :: CAR1D 2
            X- VOID  X+ VOID
            MIX 1 2
-           MESHX 0.0 0.3 4.0
-           SPLITX 30 370
+           MESHX 0.0 0.3 20.0
+           SPLITX 30 100
            ;
 ETRACK := SNT: GEOM ::
       TITLE 'HOMOGENIZED W_6Mev_e_ph_CSD BENCHMARK WITH FMAC-M'
-      EDIT 2 MAXR 1000000 DIAM 0 NLIVO SN 8 SCAT 8 EPSI 1.E-5
+      EDIT 2 MAXR 1000000 DIAM 2 NLIVO SN 8 SCAT 8 EPSI 1.E-5
       MAXI 300 BFPG ;
 GTRACK := ETRACK ;
 GTRACK := SNT: GTRACK GEOM :: EDIT 2 BTE ;
@@ -104,6 +104,14 @@ SYSTEM := DELETE: SYSTEM ;
 DEPOS := HEAT: EEDITS GEDITS ::
     EDIT 1 SOUR 0.05181 ! 1/(\ro_{W} g/cm^{3})
     ;
+
+
+END: ;
+
+
+
+
+
 EEDITS GEDITS EFLUX := DELETE: EEDITS GEDITS EFLUX ;
 *----
 *  Compute the secondary electron source

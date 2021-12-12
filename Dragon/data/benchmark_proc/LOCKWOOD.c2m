@@ -23,8 +23,8 @@ GEOM := GEO: :: CAR1D 3
            ;
 ETRACK := SNT: GEOM ::
       TITLE 'Water slab - isotropic - test module SOUR'
-      EDIT 2 MAXR 1000000 DIAM 2 NLIVO SN 16 SCAT 16 EPSI 1.E-5
-      MAXI 300 BFPG ;
+      EDIT 2 MAXR 1000000 SCHM 2 DIAM 3 NLIVO SN 16 SCAT 16
+      EPSI 1.E-5 MAXI 300 BFPG ;
 GTRACK := ETRACK ;
 GTRACK := SNT: GTRACK GEOM :: EDIT 2 BTE ;
 *----

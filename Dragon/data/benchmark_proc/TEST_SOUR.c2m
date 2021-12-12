@@ -15,11 +15,11 @@ SEQ_ASCII FMAC_M :: FILE './water.txt' ;
 *----
 *  Set and track the geometry
 *----
-GEOM := GEO: :: CAR1D 1
+GEOM := GEO: :: CAR1D 2
            X- VOID  X+ VOID
-           MIX 1
-           MESHX 0.0 4.0
-           SPLITX 400
+           MIX 1 1
+           MESHX 0.0 0.3 4.0
+           SPLITX 30 370
            ;
 *GEOM := GEO: :: CAR3D 1 1 1
 *            X- VOID X+ VOID
@@ -35,8 +35,8 @@ GEOM := GEO: :: CAR1D 1
 *            ;
 ETRACK := SNT: GEOM ::
       TITLE 'Water slab - isotropic - test module SOUR'
-      EDIT 2 MAXR 1000000 DIAM 0 NLIVO SN 8 SCAT 8 EPSI 1.E-5
-      MAXI 300 BFPG ;
+      EDIT 2 MAXR 1000000 DIAM 1 NLIVO SN 16 SCAT 16 EPSI 1.E-4
+      MAXI 300 BFPG SCHM 2 ;
 GTRACK := ETRACK ;
 GTRACK := SNT: GTRACK GEOM :: EDIT 2 BTE ;
 *----
@@ -55,17 +55,17 @@ EMACRO2 := DELETE: EMACRO2 ;
 *
 *
 *
-*ESOUR := SOUR: EMACRO ETRACK GEOM ::
-*     MONO 1
-*     X-
-*     INTG 1 1.0E10
-*     DIR 1.0 0.0 0.0
-*     ;
 ESOUR := SOUR: EMACRO ETRACK GEOM ::
-     ISO 1
-     XLIM 0.0 0.3
-     INTG 1 1.0
+     MONO 1
+     X-
+     INTG 1 1.0E10
+     DIR 1.0 0.0 0.0
      ;
+*ESOUR := SOUR: EMACRO ETRACK GEOM ::
+*     ISO 1
+*     XLIM 0.0 0.3
+*     INTG 1 1.0
+*     ;
 SYSTEM := ASM: EMACRO ETRACK :: EDIT 2 ARM ;
 EFLUX := FLU: EMACRO ETRACK SYSTEM ESOUR ::
      EDIT 2 TYPE S EXTE 100
@@ -106,8 +106,12 @@ SYSTEM := DELETE: SYSTEM ;
 *  Compute the primary energy deposition
 *----
 DEPOS := HEAT: EEDITS GEDITS ::
-    EDIT 1 NORM 19.3 
+    EDIT 1 NORM 1.0
     ;
+
+END: ;
+
+
 EEDITS GEDITS EFLUX ESOUR := DELETE: EEDITS GEDITS EFLUX ESOUR ;
 *----
 *  Compute the secondary electron source
@@ -150,7 +154,7 @@ SYSTEM ESOUR := DELETE: SYSTEM ESOUR ;
 *  Compute the secondary total energy deposition
 *----
 DEPOS := HEAT: DEPOS EEDITS GEDITS ::
-    EDIT 1 NORM 19.3 PICKE >>esum<<
+    EDIT 1 NORM 1.0 PICKE >>esum<<
     ;
 ECHO "total energy deposition=" esum "MeV/cc" ;
 *----
