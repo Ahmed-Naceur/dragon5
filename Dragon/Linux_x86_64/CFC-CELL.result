@@ -318,7 +318,7 @@ QUIT .                                                                     0245
 (* Output from --NXTTPO-- follows 
 (* Output from --NXTBRT-- follows 
 ->@END MODULE   : NXT:        
--->>MODULE NXT:        : TIME SPENT=        0.417 MEMORY USAGE= 7.880E+02
+-->>MODULE NXT:        : TIME SPENT=        0.440 MEMORY USAGE= 7.880E+02
 ->@BEGIN MODULE : NXT:        
 ->@DESCRIPTION  : New excell tracking in 2- and 3-D                                       
 ->@CREDITS      : G. Marleau                                                              
@@ -327,7 +327,7 @@ QUIT .                                                                     0245
 (* Output from --NXTTPO-- follows 
 (* Output from --NXTBRT-- follows 
 ->@END MODULE   : NXT:        
--->>MODULE NXT:        : TIME SPENT=        1.238 MEMORY USAGE= 2.640E+02
+-->>MODULE NXT:        : TIME SPENT=        1.220 MEMORY USAGE= 2.640E+02
 >|GEOMETRY CREATION FINISHED                                              |>0337
 >|CALCULATION  1  STARTED, Creep =  0                                     |>0093
 >|LIBRY PROCEDURE                                                         |>0029
@@ -346,14 +346,14 @@ QUIT .                                                                     0245
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+-->>MODULE INFO:       : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : INFO:       
 ->@DESCRIPTION  : Information on water, UO2 and ThO2                                      
 ->@CREDITS      : R. Roy                                                                  
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+-->>MODULE INFO:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 >|PARAMETERS USED                                                         |>0091
 >| 6.267865e-01  8.752883e+01  1.184438e+01                               |>0092
 >| 1.462190e-01  1.985934e+01  7.999445e+01                               |>0093
@@ -373,6 +373,42 @@ QUIT .                                                                     0245
 ->@CREDITS      : A. Hebert, G. Marleau                                                   
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
-           1
-           0
-AHMED
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'LIBR        ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'DEPL-CHAIN  '        -1    DIRECTORY       
+        2  'ENERGY      '        90    REAL            
+        3  'DELTAU      '        89    REAL            
+        4  'ILIBRARYNAME'        16    CHARACTER       
+        5  'SIGNATURE   '         3    CHARACTER       ='L_LIBRARY   '
+        6  'STATE-VECTOR'        40    INTEGER         
+        7  'ISOTOPESUSED'      1056    CHARACTER       
+        8  'ISOTOPERNAME'      1056    CHARACTER       
+        9  'ISOTOPESMIX '       352    INTEGER         
+       10  'ISOTOPESTODO'       352    INTEGER         
+       11  'ISOTOPESTYPE'       352    INTEGER         
+       12  'ILIBRARYTYPE'       704    CHARACTER       
+       13  'ILIBRARYINDX'       352    INTEGER         
+       14  'ISOTOPESCOH '       704    CHARACTER       
+       15  'ISOTOPESINC '       704    CHARACTER       
+       16  'ISOTOPESRESK'       704    CHARACTER       
+       17  'ISOTOPESNTFG'       352    INTEGER         
+       18  'ISOTOPESHIN '      1056    CHARACTER       
+       19  'ISOTOPESSHI '       352    INTEGER         
+       20  'ISOTOPESDSN '     31328    REAL            
+       21  'ISOTOPESDSB '     31328    REAL            
+       22  'ISOTOPESGIR '       352    REAL            
+       23  'ISOTOPESNIR '       352    INTEGER         
+       24  'ISOTOPESTEMP'       352    REAL            
+       25  'ADDXSNAME-P0'        32    CHARACTER       
+       26  'MIXTUREGAS  '        10    INTEGER         
+       27  'ISOTOPESLIST'       352    LIST            
+       28  'ISOTOPESDENS'       352    REAL            
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =     72440
+
+LCMGTC: record PARTICLE     not found.

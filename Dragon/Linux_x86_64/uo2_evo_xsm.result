@@ -601,6 +601,28 @@ QUIT "LIST" .                                                              0313
 <|Ho165    FROM DECAY    1.0000E+00 Dy165                                 |<0231
 <|ENDCHAIN                                                                |<0232
 <|MIXS LIB: APXSM FIL: D281CEAV5                                          |<0234
+<|MIX <<COMB0101>> 293.0                                                  |<0235
+<|O16     = O16    4.6624E-2                                              |<0236
+<|U235    = U235   7.0803E-4 1 SHIB U235SS                                |<0237
+<|U238    = U238   2.2604E-2 1 SHIB U238SS                                |<0238
+<|MIX <<COMB0102>> COMB <<COMB0101>> 1.0                                  |<0239
+<|MIX <<COMB0103>> COMB <<COMB0101>> 1.0                                  |<0240
+<|MIX <<COMB0104>> COMB <<COMB0101>> 1.0                                  |<0241
+<|MIX <<COMB0105>> COMB <<COMB0101>> 1.0                                  |<0242
+<|MIX <<COMB0106>> COMB <<COMB0101>> 1.0                                  |<0243
+<|MIX <<GAIN1>> 293.0                                                     |<0244
+<|Zr90    = Zr90   2.2247E-2 2 SHIB Zr90SS                                |<0245
+<|Zr91    = Zr91   0.4852E-2 2 SHIB Zr91SS                                |<0246
+<|Zr92    = Zr92   0.7416E-2 2 SHIB Zr92SS                                |<0247
+<|Zr94    = Zr94   0.7515E-2 2 SHIB Zr94SS                                |<0248
+<|Zr96    = Zr96   0.1211E-2 2 SHIB Zr96SS                                |<0249
+<|MIX <<MODE1>> 293.6                                                     |<0250
+<|H1      = H1_H2O 6.6988E-2                                              |<0251
+<|O16     = O16    3.3494E-2                                              |<0252
+<|MIX <<MODE2>> 293.6                                                     |<0253
+<|H1      = H1_H2O 6.6988E-2                                              |<0254
+<|O16     = O16    3.3494E-2                                              |<0255
+<|;                                                                       |<0256
 ->@BEGIN MODULE : LIB:        
 ->@DESCRIPTION  : Microscopic xs-library processing                                       
 ->@CREDITS      : A. Hebert, G. Marleau                                                   
@@ -623,6 +645,1622 @@ QUIT "LIST" .                                                              0313
 
  TOTAL NUMBER OF WORDS ON DIRECTORY 'PCONST      ' =      3020
 
-           1
-           0
-AHMED
+
+ LIBEAD:  138 DEPLETING ISOTOPES HAVE BEEN ADDED IN MIXTURE    1.
+
+ LIBEAD:  138 DEPLETING ISOTOPES HAVE BEEN ADDED IN MIXTURE    2.
+
+ LIBEAD:  138 DEPLETING ISOTOPES HAVE BEEN ADDED IN MIXTURE    3.
+
+ LIBEAD:  138 DEPLETING ISOTOPES HAVE BEEN ADDED IN MIXTURE    4.
+
+ LIBEAD:  138 DEPLETING ISOTOPES HAVE BEEN ADDED IN MIXTURE    5.
+
+ LIBEAD:  138 DEPLETING ISOTOPES HAVE BEEN ADDED IN MIXTURE    6.
+
+ LIBEAD:   28 DEPLETING ISOTOPES HAVE BEEN ADDED IN MIXTURE    7.
+
+ LIBXS4: PROCESSING APOLIB-2 LIBRARY NAME: D281CEAV5   .
+
+ LIBXS4: X-SECTION LIBRARY INFO:
+         CEAV5_1 MAILLAGE:SHEM281 NISO:421 DATE:Fri Jun 24 12:01:21 2011 VERSION:GV0.2.5 
+
+
+ LIBSUB: PROCESSING ISOTOPE/MATERIAL 'U235    0001'.
+
+ LIBSUB: PROCESSING ISOTOPE/MATERIAL 'U238    0001'.
+
+ LIBSUB: PROCESSING ISOTOPE/MATERIAL 'Zr90    0007'.
+
+ LIBSUB: PROCESSING ISOTOPE/MATERIAL 'Zr91    0007'.
+
+ LIBSUB: PROCESSING ISOTOPE/MATERIAL 'Zr92    0007'.
+
+ LIBSUB: PROCESSING ISOTOPE/MATERIAL 'Zr94    0007'.
+
+ LIBSUB: PROCESSING ISOTOPE/MATERIAL 'Zr96    0007'.
+
+ LIBSUB: CPU TIME IN LIBLIB=     51.50 SECONDS.
+         CPU TIME IN LIBPTW=      0.59 SECONDS.
+
+ OPTIONS
+ -------
+ IMPX       1   (0=NO PRINT/1=SHORT/2=MORE)
+ IPROB      0   (0=DIRECT/1=ADJOINT)
+ ITIME      1   (1=STEADY-STATE/2=PROMPT)
+ NLIB       1   (NUMBER OF SETS OF LIBRARIES)
+ NGF       31   (NUMBER OF FAST GROUP WITHOUT SELF-SHIELDING)
+ IGRMAX   256   (LAST GROUP INDEX WITH SELF-SHIELDING)
+ NBISO    883   (NUMBER OF ISOTOPES OR MATERIALS)
+ NBMIX      9   (NUMBER OF MIXTURES)
+ NRES       2   (NUMBER OF SETS OF RESONANT MIXTURES)
+ NCOMB      7   (NUMBER OF DEPLETING MIXTURES)
+ NEDMAC    17   (NUMBER OF CROSS SECTION EDITS)
+ NGRO     281   (NUMBER OF ENERGY GROUPS)
+ NL         2   (NUMBER OF LEGENDRE ORDERS)
+ ITRANC     2   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/3=WIMS-D TYPE/4=LEAKAGE CORRECTION)
+ NBESP      0   (NUMBER OF ENERGY-DEPENDENT FISSION SPECTRA)
+ IPROC      1   (-1=SKIP LIBRARY PROCESSING/0=DILUTION INTERPOLATION/1=USE PHYSICAL TABLES/2=BUILD A DRAGLIB/3=COMPUTE CALENDF TABLES/4=SLOWING-DOWN TABLES/5=ALL CALENDF)
+ IMAC       0   (0=DO NOT/1=DO BUILD AN EMBEDDED MACROLIB)
+ NDEL       8   (NUMBER OF PRECURSOR GROUPS)
+ NDEPL    437   (NUMBER OF DEPLETING ISOTOPES)
+ NFISS      0   (NUMBER OF FISSILE ISOTOPES WITH PYIELD DATA)
+ NPART      0   (NUMBER OF COMPANION PARTICLES)
+ ISOADD     0   (0=COMPLETE BURNUP CHAIN/1=DO NOT)
+ MAXISM   300   (MAX. NUMBER OF ISOTOPES PER MIXTURE)
+ IPRECI     4   (CALENDF ACCURACY FLAG:1/2/3/4)
+
+ CROSS SECTION EDIT NAME (LCM DIRECTORY NAME)
+ --------------------------------------------
+   1  NELAS        2  N4N          3  N2N   
+   4  N3N          5  NFTOT        6  NG    
+   7  NA           8  NP           9  N2A   
+  10  NNP         11  ND          12  NT    
+  13  TRANC       14  BSTC        15  BSTR  
+  16  CSTC        17  CSTR  
+
+ AVAILABLE CROSS-SECTION LIBRARIES:
+    1 -- D281CEAV5                                                       
+
+                                                        NUMBER
+ SPEC   LOCAL NAME    ISOTOPE       FROM LIBRARY  MIX   DENSITY     TEMP(K)    SIGZERO    SELF-SHIEL  THERMAL CORRECTION
+ -----  ------------  ------------  ------------  ----  ----------  ---------  ---------  ----------  ------------------
+     1  O16     0001  O16           APXSM      1     1  4.6624E-02  2.930E+02  1.000E+10   0             0                         
+     2  U235    0001  U235          APXSM      1     1  7.0803E-04  2.930E+02  1.000E+10   1  U235SS     0                         
+     3  U238    0001  U238          APXSM      1     1  2.2604E-02  2.930E+02  1.000E+10   1  U238SS     0                         
+     4  O16     0001  O16           APXSM      1     2  4.6624E-02  2.930E+02  1.000E+10   0             0                         
+     5  U235    0001  U235          APXSM      1     2  7.0803E-04  2.930E+02  1.000E+10   1  U235SS     0                         
+     6  U238    0001  U238          APXSM      1     2  2.2604E-02  2.930E+02  1.000E+10   1  U238SS     0                         
+     7  O16     0001  O16           APXSM      1     3  4.6624E-02  2.930E+02  1.000E+10   0             0                         
+     8  U235    0001  U235          APXSM      1     3  7.0803E-04  2.930E+02  1.000E+10   1  U235SS     0                         
+     9  U238    0001  U238          APXSM      1     3  2.2604E-02  2.930E+02  1.000E+10   1  U238SS     0                         
+    10  O16     0001  O16           APXSM      1     4  4.6624E-02  2.930E+02  1.000E+10   0             0                         
+    11  U235    0001  U235          APXSM      1     4  7.0803E-04  2.930E+02  1.000E+10   1  U235SS     0                         
+    12  U238    0001  U238          APXSM      1     4  2.2604E-02  2.930E+02  1.000E+10   1  U238SS     0                         
+    13  O16     0001  O16           APXSM      1     5  4.6624E-02  2.930E+02  1.000E+10   0             0                         
+    14  U235    0001  U235          APXSM      1     5  7.0803E-04  2.930E+02  1.000E+10   1  U235SS     0                         
+    15  U238    0001  U238          APXSM      1     5  2.2604E-02  2.930E+02  1.000E+10   1  U238SS     0                         
+    16  O16     0001  O16           APXSM      1     6  4.6624E-02  2.930E+02  1.000E+10   0             0                         
+    17  U235    0001  U235          APXSM      1     6  7.0803E-04  2.930E+02  1.000E+10   1  U235SS     0                         
+    18  U238    0001  U238          APXSM      1     6  2.2604E-02  2.930E+02  1.000E+10   1  U238SS     0                         
+    19  Zr90    0007  Zr90          APXSM      1     7  2.2247E-02  2.930E+02  1.000E+10   2  Zr90SS     0                         
+    20  Zr91    0007  Zr91          APXSM      1     7  4.8520E-03  2.930E+02  1.000E+10   2  Zr91SS     0                         
+    21  Zr92    0007  Zr92          APXSM      1     7  7.4160E-03  2.930E+02  1.000E+10   2  Zr92SS     0                         
+    22  Zr94    0007  Zr94          APXSM      1     7  7.5150E-03  2.930E+02  1.000E+10   2  Zr94SS     0                         
+    23  Zr96    0007  Zr96          APXSM      1     7  1.2110E-03  2.930E+02  1.000E+10   2  Zr96SS     0                         
+    24  H1      0008  H1_H2O        APXSM      1     8  6.6988E-02  2.936E+02  1.000E+10   0             0                         
+    25  O16     0008  O16           APXSM      1     8  3.3494E-02  2.936E+02  1.000E+10   0             0                         
+    26  H1      0008  H1_H2O        APXSM      1     9  6.6988E-02  2.936E+02  1.000E+10   0             0                         
+    27  O16     0008  O16           APXSM      1     9  3.3494E-02  2.936E+02  1.000E+10   0             0                         
+    28  Dy165   0001  Dy165         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    29  Ho165   0001  Ho165         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    30  Gd158   0001  Gd158         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    31  Gd157   0001  Gd157         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    32  Gd156   0001  Gd156         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    33  Gd155   0001  Gd155         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    34  Gd154   0001  Gd154         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    35  Np239   0001  Np239         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    36  Np238   0001  Np238         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    37  U237    0001  U237          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    38  U236    0001  U236          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    39  U234    0001  U234          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    40  U233    0001  U233          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    41  U232    0001  U232          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    42  Dy164   0001  Dy164         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    43  Dy163   0001  Dy163         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    44  Dy162   0001  Dy162         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    45  Dy161   0001  Dy161         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    46  Dy160   0001  Dy160         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    47  Tb160   0001  Tb160         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    48  Tb159   0001  Tb159         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    49  Eu157   0001  Eu157         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    50  Eu156   0001  Eu156         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    51  Eu155   0001  Eu155         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    52  Eu154   0001  Eu154         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    53  Eu153   0001  Eu153         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    54  Eu151   0001  Eu151         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    55  Sm154   0001  Sm154         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    56  Sm153   0001  Sm153         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    57  Sm152   0001  Sm152         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    58  Sm151   0001  Sm151         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    59  Sm150   0001  Sm150         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    60  Sm149   0001  Sm149         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    61  Sm148   0001  Sm148         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    62  Sm147   0001  Sm147         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    63  Pm149   0001  Pm149         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    64  Pm148M  0001  Pm148M        APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    65  Pm148   0001  Pm148         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    66  Pm147   0001  Pm147         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    67  Nd148   0001  Nd148         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    68  Nd147   0001  Nd147         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    69  Nd146   0001  Nd146         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    70  Nd145   0001  Nd145         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    71  Nd144   0001  Nd144         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    72  Nd143   0001  Nd143         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    73  Nd142   0001  Nd142         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    74  Pr143   0001  Pr143         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    75  Pr141   0001  Pr141         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    76  Ce142   0001  Ce142         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    77  Ce141   0001  Ce141         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    78  Ce140   0001  Ce140         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    79  La140   0001  La140         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    80  La139   0001  La139         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    81  Ba138   0001  Ba138         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    82  Zr96    0001  Zr96          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    83  Tc99    0001  Tc99          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    84  Mo95    0001  Mo95          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    85  Gd160   0001  Gd160         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    86  Pm151   0001  Pm151         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    87  Nd150   0001  Nd150         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    88  Ce144   0001  Ce144         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    89  Ba134   0001  Ba134         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    90  Cs137   0001  Cs137         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    91  Cs136   0001  Cs136         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    92  Cs135   0001  Cs135         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    93  Cs134   0001  Cs134         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    94  Cs133   0001  Cs133         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    95  Xe136   0001  Xe136         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    96  Xe135   0001  Xe135         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    97  Xe134   0001  Xe134         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    98  Xe133   0001  Xe133         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+    99  Xe132   0001  Xe132         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   100  Xe131   0001  Xe131         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   101  I135    0001  I135          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   102  I131    0001  I131          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   103  I129    0001  I129          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   104  I127    0001  I127          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   105  Te129M  0001  Te129M        APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   106  Te128   0001  Te128         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   107  Te127M  0001  Te127M        APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   108  Te125   0001  Te125         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   109  Sb123   0001  Sb123         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   110  Sb121   0001  Sb121         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   111  In115   0001  In115         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   112  Cd113   0001  Cd113         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   113  Cd111   0001  Cd111         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   114  Cd110   0001  Cd110         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   115  Ag110M  0001  Ag110M        APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   116  Ag109   0001  Ag109         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   117  Pd108   0001  Pd108         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   118  Pd107   0001  Pd107         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   119  Pd106   0001  Pd106         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   120  Pd105   0001  Pd105         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   121  Pd104   0001  Pd104         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   122  Rh105   0001  Rh105         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   123  Rh103   0001  Rh103         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   124  Ru106   0001  Ru106         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   125  Ru105   0001  Ru105         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   126  Ru104   0001  Ru104         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   127  Ru103   0001  Ru103         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   128  Ru102   0001  Ru102         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   129  Ru101   0001  Ru101         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   130  Ru100   0001  Ru100         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   131  Mo100   0001  Mo100         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   132  Mo99    0001  Mo99          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   133  Mo98    0001  Mo98          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   134  Mo97    0001  Mo97          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   135  Mo96    0001  Mo96          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   136  Nb95    0001  Nb95          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   137  Zr95    0001  Zr95          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   138  Zr94    0001  Zr94          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   139  Zr93    0001  Zr93          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   140  Zr92    0001  Zr92          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   141  Zr91    0001  Zr91          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   142  Y89     0001  Y89           APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   143  Sr90    0001  Sr90          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   144  Rb87    0001  Rb87          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   145  Rb85    0001  Rb85          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   146  Kr83    0001  Kr83          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   147  Br81    0001  Br81          APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   148  Pu239   0001  Pu239         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   149  Np237   0001  Np237         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   150  Pu240   0001  Pu240         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   151  Pu238   0001  Pu238         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   152  Pu236   0001  Pu236         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   153  Ba137   0001  Ba137         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   154  Pu241   0001  Pu241         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   155  Am241   0001  Am241         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   156  Pu242   0001  Pu242         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   157  Cm242   0001  Cm242         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   158  Am243   0001  Am243         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   159  Am242M  0001  Am242M        APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   160  Cm244   0001  Cm244         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   161  Cm245   0001  Cm245         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   162  Cm243   0001  Cm243         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   163  Cm246   0001  Cm246         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   164  Cm247   0001  Cm247         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   165  Cm248   0001  Cm248         APXSM      1     1  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   166  Dy165   0001  Dy165         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   167  Ho165   0001  Ho165         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   168  Gd158   0001  Gd158         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   169  Gd157   0001  Gd157         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   170  Gd156   0001  Gd156         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   171  Gd155   0001  Gd155         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   172  Gd154   0001  Gd154         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   173  Np239   0001  Np239         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   174  Np238   0001  Np238         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   175  U237    0001  U237          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   176  U236    0001  U236          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   177  U234    0001  U234          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   178  U233    0001  U233          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   179  U232    0001  U232          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   180  Dy164   0001  Dy164         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   181  Dy163   0001  Dy163         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   182  Dy162   0001  Dy162         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   183  Dy161   0001  Dy161         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   184  Dy160   0001  Dy160         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   185  Tb160   0001  Tb160         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   186  Tb159   0001  Tb159         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   187  Eu157   0001  Eu157         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   188  Eu156   0001  Eu156         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   189  Eu155   0001  Eu155         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   190  Eu154   0001  Eu154         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   191  Eu153   0001  Eu153         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   192  Eu151   0001  Eu151         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   193  Sm154   0001  Sm154         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   194  Sm153   0001  Sm153         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   195  Sm152   0001  Sm152         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   196  Sm151   0001  Sm151         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   197  Sm150   0001  Sm150         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   198  Sm149   0001  Sm149         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   199  Sm148   0001  Sm148         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   200  Sm147   0001  Sm147         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   201  Pm149   0001  Pm149         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   202  Pm148M  0001  Pm148M        APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   203  Pm148   0001  Pm148         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   204  Pm147   0001  Pm147         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   205  Nd148   0001  Nd148         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   206  Nd147   0001  Nd147         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   207  Nd146   0001  Nd146         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   208  Nd145   0001  Nd145         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   209  Nd144   0001  Nd144         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   210  Nd143   0001  Nd143         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   211  Nd142   0001  Nd142         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   212  Pr143   0001  Pr143         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   213  Pr141   0001  Pr141         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   214  Ce142   0001  Ce142         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   215  Ce141   0001  Ce141         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   216  Ce140   0001  Ce140         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   217  La140   0001  La140         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   218  La139   0001  La139         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   219  Ba138   0001  Ba138         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   220  Zr96    0001  Zr96          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   221  Tc99    0001  Tc99          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   222  Mo95    0001  Mo95          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   223  Gd160   0001  Gd160         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   224  Pm151   0001  Pm151         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   225  Nd150   0001  Nd150         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   226  Ce144   0001  Ce144         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   227  Ba134   0001  Ba134         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   228  Cs137   0001  Cs137         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   229  Cs136   0001  Cs136         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   230  Cs135   0001  Cs135         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   231  Cs134   0001  Cs134         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   232  Cs133   0001  Cs133         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   233  Xe136   0001  Xe136         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   234  Xe135   0001  Xe135         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   235  Xe134   0001  Xe134         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   236  Xe133   0001  Xe133         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   237  Xe132   0001  Xe132         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   238  Xe131   0001  Xe131         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   239  I135    0001  I135          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   240  I131    0001  I131          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   241  I129    0001  I129          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   242  I127    0001  I127          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   243  Te129M  0001  Te129M        APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   244  Te128   0001  Te128         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   245  Te127M  0001  Te127M        APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   246  Te125   0001  Te125         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   247  Sb123   0001  Sb123         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   248  Sb121   0001  Sb121         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   249  In115   0001  In115         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   250  Cd113   0001  Cd113         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   251  Cd111   0001  Cd111         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   252  Cd110   0001  Cd110         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   253  Ag110M  0001  Ag110M        APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   254  Ag109   0001  Ag109         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   255  Pd108   0001  Pd108         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   256  Pd107   0001  Pd107         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   257  Pd106   0001  Pd106         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   258  Pd105   0001  Pd105         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   259  Pd104   0001  Pd104         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   260  Rh105   0001  Rh105         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   261  Rh103   0001  Rh103         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   262  Ru106   0001  Ru106         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   263  Ru105   0001  Ru105         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   264  Ru104   0001  Ru104         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   265  Ru103   0001  Ru103         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   266  Ru102   0001  Ru102         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   267  Ru101   0001  Ru101         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   268  Ru100   0001  Ru100         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   269  Mo100   0001  Mo100         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   270  Mo99    0001  Mo99          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   271  Mo98    0001  Mo98          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   272  Mo97    0001  Mo97          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   273  Mo96    0001  Mo96          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   274  Nb95    0001  Nb95          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   275  Zr95    0001  Zr95          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   276  Zr94    0001  Zr94          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   277  Zr93    0001  Zr93          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   278  Zr92    0001  Zr92          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   279  Zr91    0001  Zr91          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   280  Y89     0001  Y89           APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   281  Sr90    0001  Sr90          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   282  Rb87    0001  Rb87          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   283  Rb85    0001  Rb85          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   284  Kr83    0001  Kr83          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   285  Br81    0001  Br81          APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   286  Pu239   0001  Pu239         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   287  Np237   0001  Np237         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   288  Pu240   0001  Pu240         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   289  Pu238   0001  Pu238         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   290  Pu236   0001  Pu236         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   291  Ba137   0001  Ba137         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   292  Pu241   0001  Pu241         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   293  Am241   0001  Am241         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   294  Pu242   0001  Pu242         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   295  Cm242   0001  Cm242         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   296  Am243   0001  Am243         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   297  Am242M  0001  Am242M        APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   298  Cm244   0001  Cm244         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   299  Cm245   0001  Cm245         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   300  Cm243   0001  Cm243         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   301  Cm246   0001  Cm246         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   302  Cm247   0001  Cm247         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   303  Cm248   0001  Cm248         APXSM      1     2  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   304  Dy165   0001  Dy165         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   305  Ho165   0001  Ho165         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   306  Gd158   0001  Gd158         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   307  Gd157   0001  Gd157         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   308  Gd156   0001  Gd156         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   309  Gd155   0001  Gd155         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   310  Gd154   0001  Gd154         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   311  Np239   0001  Np239         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   312  Np238   0001  Np238         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   313  U237    0001  U237          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   314  U236    0001  U236          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   315  U234    0001  U234          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   316  U233    0001  U233          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   317  U232    0001  U232          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   318  Dy164   0001  Dy164         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   319  Dy163   0001  Dy163         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   320  Dy162   0001  Dy162         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   321  Dy161   0001  Dy161         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   322  Dy160   0001  Dy160         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   323  Tb160   0001  Tb160         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   324  Tb159   0001  Tb159         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   325  Eu157   0001  Eu157         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   326  Eu156   0001  Eu156         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   327  Eu155   0001  Eu155         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   328  Eu154   0001  Eu154         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   329  Eu153   0001  Eu153         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   330  Eu151   0001  Eu151         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   331  Sm154   0001  Sm154         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   332  Sm153   0001  Sm153         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   333  Sm152   0001  Sm152         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   334  Sm151   0001  Sm151         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   335  Sm150   0001  Sm150         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   336  Sm149   0001  Sm149         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   337  Sm148   0001  Sm148         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   338  Sm147   0001  Sm147         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   339  Pm149   0001  Pm149         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   340  Pm148M  0001  Pm148M        APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   341  Pm148   0001  Pm148         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   342  Pm147   0001  Pm147         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   343  Nd148   0001  Nd148         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   344  Nd147   0001  Nd147         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   345  Nd146   0001  Nd146         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   346  Nd145   0001  Nd145         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   347  Nd144   0001  Nd144         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   348  Nd143   0001  Nd143         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   349  Nd142   0001  Nd142         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   350  Pr143   0001  Pr143         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   351  Pr141   0001  Pr141         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   352  Ce142   0001  Ce142         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   353  Ce141   0001  Ce141         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   354  Ce140   0001  Ce140         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   355  La140   0001  La140         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   356  La139   0001  La139         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   357  Ba138   0001  Ba138         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   358  Zr96    0001  Zr96          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   359  Tc99    0001  Tc99          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   360  Mo95    0001  Mo95          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   361  Gd160   0001  Gd160         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   362  Pm151   0001  Pm151         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   363  Nd150   0001  Nd150         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   364  Ce144   0001  Ce144         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   365  Ba134   0001  Ba134         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   366  Cs137   0001  Cs137         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   367  Cs136   0001  Cs136         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   368  Cs135   0001  Cs135         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   369  Cs134   0001  Cs134         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   370  Cs133   0001  Cs133         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   371  Xe136   0001  Xe136         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   372  Xe135   0001  Xe135         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   373  Xe134   0001  Xe134         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   374  Xe133   0001  Xe133         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   375  Xe132   0001  Xe132         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   376  Xe131   0001  Xe131         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   377  I135    0001  I135          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   378  I131    0001  I131          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   379  I129    0001  I129          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   380  I127    0001  I127          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   381  Te129M  0001  Te129M        APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   382  Te128   0001  Te128         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   383  Te127M  0001  Te127M        APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   384  Te125   0001  Te125         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   385  Sb123   0001  Sb123         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   386  Sb121   0001  Sb121         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   387  In115   0001  In115         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   388  Cd113   0001  Cd113         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   389  Cd111   0001  Cd111         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   390  Cd110   0001  Cd110         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   391  Ag110M  0001  Ag110M        APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   392  Ag109   0001  Ag109         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   393  Pd108   0001  Pd108         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   394  Pd107   0001  Pd107         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   395  Pd106   0001  Pd106         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   396  Pd105   0001  Pd105         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   397  Pd104   0001  Pd104         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   398  Rh105   0001  Rh105         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   399  Rh103   0001  Rh103         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   400  Ru106   0001  Ru106         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   401  Ru105   0001  Ru105         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   402  Ru104   0001  Ru104         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   403  Ru103   0001  Ru103         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   404  Ru102   0001  Ru102         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   405  Ru101   0001  Ru101         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   406  Ru100   0001  Ru100         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   407  Mo100   0001  Mo100         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   408  Mo99    0001  Mo99          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   409  Mo98    0001  Mo98          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   410  Mo97    0001  Mo97          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   411  Mo96    0001  Mo96          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   412  Nb95    0001  Nb95          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   413  Zr95    0001  Zr95          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   414  Zr94    0001  Zr94          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   415  Zr93    0001  Zr93          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   416  Zr92    0001  Zr92          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   417  Zr91    0001  Zr91          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   418  Y89     0001  Y89           APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   419  Sr90    0001  Sr90          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   420  Rb87    0001  Rb87          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   421  Rb85    0001  Rb85          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   422  Kr83    0001  Kr83          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   423  Br81    0001  Br81          APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   424  Pu239   0001  Pu239         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   425  Np237   0001  Np237         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   426  Pu240   0001  Pu240         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   427  Pu238   0001  Pu238         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   428  Pu236   0001  Pu236         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   429  Ba137   0001  Ba137         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   430  Pu241   0001  Pu241         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   431  Am241   0001  Am241         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   432  Pu242   0001  Pu242         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   433  Cm242   0001  Cm242         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   434  Am243   0001  Am243         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   435  Am242M  0001  Am242M        APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   436  Cm244   0001  Cm244         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   437  Cm245   0001  Cm245         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   438  Cm243   0001  Cm243         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   439  Cm246   0001  Cm246         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   440  Cm247   0001  Cm247         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   441  Cm248   0001  Cm248         APXSM      1     3  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   442  Dy165   0001  Dy165         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   443  Ho165   0001  Ho165         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   444  Gd158   0001  Gd158         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   445  Gd157   0001  Gd157         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   446  Gd156   0001  Gd156         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   447  Gd155   0001  Gd155         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   448  Gd154   0001  Gd154         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   449  Np239   0001  Np239         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   450  Np238   0001  Np238         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   451  U237    0001  U237          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   452  U236    0001  U236          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   453  U234    0001  U234          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   454  U233    0001  U233          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   455  U232    0001  U232          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   456  Dy164   0001  Dy164         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   457  Dy163   0001  Dy163         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   458  Dy162   0001  Dy162         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   459  Dy161   0001  Dy161         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   460  Dy160   0001  Dy160         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   461  Tb160   0001  Tb160         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   462  Tb159   0001  Tb159         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   463  Eu157   0001  Eu157         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   464  Eu156   0001  Eu156         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   465  Eu155   0001  Eu155         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   466  Eu154   0001  Eu154         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   467  Eu153   0001  Eu153         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   468  Eu151   0001  Eu151         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   469  Sm154   0001  Sm154         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   470  Sm153   0001  Sm153         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   471  Sm152   0001  Sm152         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   472  Sm151   0001  Sm151         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   473  Sm150   0001  Sm150         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   474  Sm149   0001  Sm149         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   475  Sm148   0001  Sm148         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   476  Sm147   0001  Sm147         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   477  Pm149   0001  Pm149         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   478  Pm148M  0001  Pm148M        APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   479  Pm148   0001  Pm148         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   480  Pm147   0001  Pm147         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   481  Nd148   0001  Nd148         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   482  Nd147   0001  Nd147         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   483  Nd146   0001  Nd146         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   484  Nd145   0001  Nd145         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   485  Nd144   0001  Nd144         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   486  Nd143   0001  Nd143         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   487  Nd142   0001  Nd142         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   488  Pr143   0001  Pr143         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   489  Pr141   0001  Pr141         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   490  Ce142   0001  Ce142         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   491  Ce141   0001  Ce141         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   492  Ce140   0001  Ce140         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   493  La140   0001  La140         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   494  La139   0001  La139         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   495  Ba138   0001  Ba138         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   496  Zr96    0001  Zr96          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   497  Tc99    0001  Tc99          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   498  Mo95    0001  Mo95          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   499  Gd160   0001  Gd160         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   500  Pm151   0001  Pm151         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   501  Nd150   0001  Nd150         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   502  Ce144   0001  Ce144         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   503  Ba134   0001  Ba134         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   504  Cs137   0001  Cs137         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   505  Cs136   0001  Cs136         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   506  Cs135   0001  Cs135         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   507  Cs134   0001  Cs134         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   508  Cs133   0001  Cs133         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   509  Xe136   0001  Xe136         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   510  Xe135   0001  Xe135         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   511  Xe134   0001  Xe134         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   512  Xe133   0001  Xe133         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   513  Xe132   0001  Xe132         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   514  Xe131   0001  Xe131         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   515  I135    0001  I135          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   516  I131    0001  I131          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   517  I129    0001  I129          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   518  I127    0001  I127          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   519  Te129M  0001  Te129M        APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   520  Te128   0001  Te128         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   521  Te127M  0001  Te127M        APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   522  Te125   0001  Te125         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   523  Sb123   0001  Sb123         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   524  Sb121   0001  Sb121         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   525  In115   0001  In115         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   526  Cd113   0001  Cd113         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   527  Cd111   0001  Cd111         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   528  Cd110   0001  Cd110         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   529  Ag110M  0001  Ag110M        APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   530  Ag109   0001  Ag109         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   531  Pd108   0001  Pd108         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   532  Pd107   0001  Pd107         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   533  Pd106   0001  Pd106         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   534  Pd105   0001  Pd105         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   535  Pd104   0001  Pd104         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   536  Rh105   0001  Rh105         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   537  Rh103   0001  Rh103         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   538  Ru106   0001  Ru106         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   539  Ru105   0001  Ru105         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   540  Ru104   0001  Ru104         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   541  Ru103   0001  Ru103         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   542  Ru102   0001  Ru102         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   543  Ru101   0001  Ru101         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   544  Ru100   0001  Ru100         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   545  Mo100   0001  Mo100         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   546  Mo99    0001  Mo99          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   547  Mo98    0001  Mo98          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   548  Mo97    0001  Mo97          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   549  Mo96    0001  Mo96          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   550  Nb95    0001  Nb95          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   551  Zr95    0001  Zr95          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   552  Zr94    0001  Zr94          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   553  Zr93    0001  Zr93          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   554  Zr92    0001  Zr92          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   555  Zr91    0001  Zr91          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   556  Y89     0001  Y89           APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   557  Sr90    0001  Sr90          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   558  Rb87    0001  Rb87          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   559  Rb85    0001  Rb85          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   560  Kr83    0001  Kr83          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   561  Br81    0001  Br81          APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   562  Pu239   0001  Pu239         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   563  Np237   0001  Np237         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   564  Pu240   0001  Pu240         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   565  Pu238   0001  Pu238         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   566  Pu236   0001  Pu236         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   567  Ba137   0001  Ba137         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   568  Pu241   0001  Pu241         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   569  Am241   0001  Am241         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   570  Pu242   0001  Pu242         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   571  Cm242   0001  Cm242         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   572  Am243   0001  Am243         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   573  Am242M  0001  Am242M        APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   574  Cm244   0001  Cm244         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   575  Cm245   0001  Cm245         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   576  Cm243   0001  Cm243         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   577  Cm246   0001  Cm246         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   578  Cm247   0001  Cm247         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   579  Cm248   0001  Cm248         APXSM      1     4  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   580  Dy165   0001  Dy165         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   581  Ho165   0001  Ho165         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   582  Gd158   0001  Gd158         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   583  Gd157   0001  Gd157         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   584  Gd156   0001  Gd156         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   585  Gd155   0001  Gd155         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   586  Gd154   0001  Gd154         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   587  Np239   0001  Np239         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   588  Np238   0001  Np238         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   589  U237    0001  U237          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   590  U236    0001  U236          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   591  U234    0001  U234          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   592  U233    0001  U233          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   593  U232    0001  U232          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   594  Dy164   0001  Dy164         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   595  Dy163   0001  Dy163         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   596  Dy162   0001  Dy162         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   597  Dy161   0001  Dy161         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   598  Dy160   0001  Dy160         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   599  Tb160   0001  Tb160         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   600  Tb159   0001  Tb159         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   601  Eu157   0001  Eu157         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   602  Eu156   0001  Eu156         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   603  Eu155   0001  Eu155         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   604  Eu154   0001  Eu154         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   605  Eu153   0001  Eu153         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   606  Eu151   0001  Eu151         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   607  Sm154   0001  Sm154         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   608  Sm153   0001  Sm153         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   609  Sm152   0001  Sm152         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   610  Sm151   0001  Sm151         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   611  Sm150   0001  Sm150         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   612  Sm149   0001  Sm149         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   613  Sm148   0001  Sm148         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   614  Sm147   0001  Sm147         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   615  Pm149   0001  Pm149         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   616  Pm148M  0001  Pm148M        APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   617  Pm148   0001  Pm148         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   618  Pm147   0001  Pm147         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   619  Nd148   0001  Nd148         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   620  Nd147   0001  Nd147         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   621  Nd146   0001  Nd146         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   622  Nd145   0001  Nd145         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   623  Nd144   0001  Nd144         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   624  Nd143   0001  Nd143         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   625  Nd142   0001  Nd142         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   626  Pr143   0001  Pr143         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   627  Pr141   0001  Pr141         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   628  Ce142   0001  Ce142         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   629  Ce141   0001  Ce141         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   630  Ce140   0001  Ce140         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   631  La140   0001  La140         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   632  La139   0001  La139         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   633  Ba138   0001  Ba138         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   634  Zr96    0001  Zr96          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   635  Tc99    0001  Tc99          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   636  Mo95    0001  Mo95          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   637  Gd160   0001  Gd160         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   638  Pm151   0001  Pm151         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   639  Nd150   0001  Nd150         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   640  Ce144   0001  Ce144         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   641  Ba134   0001  Ba134         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   642  Cs137   0001  Cs137         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   643  Cs136   0001  Cs136         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   644  Cs135   0001  Cs135         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   645  Cs134   0001  Cs134         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   646  Cs133   0001  Cs133         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   647  Xe136   0001  Xe136         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   648  Xe135   0001  Xe135         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   649  Xe134   0001  Xe134         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   650  Xe133   0001  Xe133         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   651  Xe132   0001  Xe132         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   652  Xe131   0001  Xe131         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   653  I135    0001  I135          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   654  I131    0001  I131          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   655  I129    0001  I129          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   656  I127    0001  I127          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   657  Te129M  0001  Te129M        APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   658  Te128   0001  Te128         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   659  Te127M  0001  Te127M        APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   660  Te125   0001  Te125         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   661  Sb123   0001  Sb123         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   662  Sb121   0001  Sb121         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   663  In115   0001  In115         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   664  Cd113   0001  Cd113         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   665  Cd111   0001  Cd111         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   666  Cd110   0001  Cd110         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   667  Ag110M  0001  Ag110M        APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   668  Ag109   0001  Ag109         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   669  Pd108   0001  Pd108         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   670  Pd107   0001  Pd107         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   671  Pd106   0001  Pd106         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   672  Pd105   0001  Pd105         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   673  Pd104   0001  Pd104         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   674  Rh105   0001  Rh105         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   675  Rh103   0001  Rh103         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   676  Ru106   0001  Ru106         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   677  Ru105   0001  Ru105         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   678  Ru104   0001  Ru104         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   679  Ru103   0001  Ru103         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   680  Ru102   0001  Ru102         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   681  Ru101   0001  Ru101         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   682  Ru100   0001  Ru100         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   683  Mo100   0001  Mo100         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   684  Mo99    0001  Mo99          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   685  Mo98    0001  Mo98          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   686  Mo97    0001  Mo97          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   687  Mo96    0001  Mo96          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   688  Nb95    0001  Nb95          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   689  Zr95    0001  Zr95          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   690  Zr94    0001  Zr94          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   691  Zr93    0001  Zr93          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   692  Zr92    0001  Zr92          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   693  Zr91    0001  Zr91          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   694  Y89     0001  Y89           APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   695  Sr90    0001  Sr90          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   696  Rb87    0001  Rb87          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   697  Rb85    0001  Rb85          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   698  Kr83    0001  Kr83          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   699  Br81    0001  Br81          APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   700  Pu239   0001  Pu239         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   701  Np237   0001  Np237         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   702  Pu240   0001  Pu240         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   703  Pu238   0001  Pu238         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   704  Pu236   0001  Pu236         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   705  Ba137   0001  Ba137         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   706  Pu241   0001  Pu241         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   707  Am241   0001  Am241         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   708  Pu242   0001  Pu242         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   709  Cm242   0001  Cm242         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   710  Am243   0001  Am243         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   711  Am242M  0001  Am242M        APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   712  Cm244   0001  Cm244         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   713  Cm245   0001  Cm245         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   714  Cm243   0001  Cm243         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   715  Cm246   0001  Cm246         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   716  Cm247   0001  Cm247         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   717  Cm248   0001  Cm248         APXSM      1     5  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   718  Dy165   0001  Dy165         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   719  Ho165   0001  Ho165         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   720  Gd158   0001  Gd158         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   721  Gd157   0001  Gd157         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   722  Gd156   0001  Gd156         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   723  Gd155   0001  Gd155         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   724  Gd154   0001  Gd154         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   725  Np239   0001  Np239         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   726  Np238   0001  Np238         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   727  U237    0001  U237          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   728  U236    0001  U236          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   729  U234    0001  U234          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   730  U233    0001  U233          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   731  U232    0001  U232          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   732  Dy164   0001  Dy164         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   733  Dy163   0001  Dy163         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   734  Dy162   0001  Dy162         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   735  Dy161   0001  Dy161         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   736  Dy160   0001  Dy160         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   737  Tb160   0001  Tb160         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   738  Tb159   0001  Tb159         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   739  Eu157   0001  Eu157         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   740  Eu156   0001  Eu156         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   741  Eu155   0001  Eu155         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   742  Eu154   0001  Eu154         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   743  Eu153   0001  Eu153         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   744  Eu151   0001  Eu151         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   745  Sm154   0001  Sm154         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   746  Sm153   0001  Sm153         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   747  Sm152   0001  Sm152         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   748  Sm151   0001  Sm151         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   749  Sm150   0001  Sm150         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   750  Sm149   0001  Sm149         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   751  Sm148   0001  Sm148         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   752  Sm147   0001  Sm147         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   753  Pm149   0001  Pm149         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   754  Pm148M  0001  Pm148M        APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   755  Pm148   0001  Pm148         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   756  Pm147   0001  Pm147         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   757  Nd148   0001  Nd148         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   758  Nd147   0001  Nd147         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   759  Nd146   0001  Nd146         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   760  Nd145   0001  Nd145         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   761  Nd144   0001  Nd144         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   762  Nd143   0001  Nd143         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   763  Nd142   0001  Nd142         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   764  Pr143   0001  Pr143         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   765  Pr141   0001  Pr141         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   766  Ce142   0001  Ce142         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   767  Ce141   0001  Ce141         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   768  Ce140   0001  Ce140         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   769  La140   0001  La140         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   770  La139   0001  La139         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   771  Ba138   0001  Ba138         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   772  Zr96    0001  Zr96          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   773  Tc99    0001  Tc99          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   774  Mo95    0001  Mo95          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   775  Gd160   0001  Gd160         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   776  Pm151   0001  Pm151         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   777  Nd150   0001  Nd150         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   778  Ce144   0001  Ce144         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   779  Ba134   0001  Ba134         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   780  Cs137   0001  Cs137         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   781  Cs136   0001  Cs136         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   782  Cs135   0001  Cs135         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   783  Cs134   0001  Cs134         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   784  Cs133   0001  Cs133         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   785  Xe136   0001  Xe136         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   786  Xe135   0001  Xe135         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   787  Xe134   0001  Xe134         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   788  Xe133   0001  Xe133         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   789  Xe132   0001  Xe132         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   790  Xe131   0001  Xe131         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   791  I135    0001  I135          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   792  I131    0001  I131          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   793  I129    0001  I129          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   794  I127    0001  I127          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   795  Te129M  0001  Te129M        APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   796  Te128   0001  Te128         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   797  Te127M  0001  Te127M        APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   798  Te125   0001  Te125         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   799  Sb123   0001  Sb123         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   800  Sb121   0001  Sb121         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   801  In115   0001  In115         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   802  Cd113   0001  Cd113         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   803  Cd111   0001  Cd111         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   804  Cd110   0001  Cd110         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   805  Ag110M  0001  Ag110M        APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   806  Ag109   0001  Ag109         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   807  Pd108   0001  Pd108         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   808  Pd107   0001  Pd107         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   809  Pd106   0001  Pd106         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   810  Pd105   0001  Pd105         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   811  Pd104   0001  Pd104         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   812  Rh105   0001  Rh105         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   813  Rh103   0001  Rh103         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   814  Ru106   0001  Ru106         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   815  Ru105   0001  Ru105         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   816  Ru104   0001  Ru104         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   817  Ru103   0001  Ru103         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   818  Ru102   0001  Ru102         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   819  Ru101   0001  Ru101         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   820  Ru100   0001  Ru100         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   821  Mo100   0001  Mo100         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   822  Mo99    0001  Mo99          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   823  Mo98    0001  Mo98          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   824  Mo97    0001  Mo97          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   825  Mo96    0001  Mo96          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   826  Nb95    0001  Nb95          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   827  Zr95    0001  Zr95          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   828  Zr94    0001  Zr94          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   829  Zr93    0001  Zr93          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   830  Zr92    0001  Zr92          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   831  Zr91    0001  Zr91          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   832  Y89     0001  Y89           APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   833  Sr90    0001  Sr90          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   834  Rb87    0001  Rb87          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   835  Rb85    0001  Rb85          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   836  Kr83    0001  Kr83          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   837  Br81    0001  Br81          APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   838  Pu239   0001  Pu239         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   839  Np237   0001  Np237         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   840  Pu240   0001  Pu240         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   841  Pu238   0001  Pu238         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   842  Pu236   0001  Pu236         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   843  Ba137   0001  Ba137         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   844  Pu241   0001  Pu241         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   845  Am241   0001  Am241         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   846  Pu242   0001  Pu242         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   847  Cm242   0001  Cm242         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   848  Am243   0001  Am243         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   849  Am242M  0001  Am242M        APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   850  Cm244   0001  Cm244         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   851  Cm245   0001  Cm245         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   852  Cm243   0001  Cm243         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   853  Cm246   0001  Cm246         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   854  Cm247   0001  Cm247         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   855  Cm248   0001  Cm248         APXSM      1     6  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   856  Mo97    0001  Mo97          APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   857  Mo96    0001  Mo96          APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   858  Zr95    0001  Zr95          APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   859  Zr93    0001  Zr93          APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   860  Mo95    0001  Mo95          APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   861  Mo98    0001  Mo98          APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   862  Nb95    0001  Nb95          APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   863  Mo99    0001  Mo99          APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   864  Tc99    0001  Tc99          APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   865  Ru100   0001  Ru100         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   866  Mo100   0001  Mo100         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   867  Ru101   0001  Ru101         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   868  Ru102   0001  Ru102         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   869  Ru103   0001  Ru103         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   870  Rh103   0001  Rh103         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   871  Ru104   0001  Ru104         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   872  Pd104   0001  Pd104         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   873  Ru105   0001  Ru105         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   874  Pd105   0001  Pd105         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   875  Rh105   0001  Rh105         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   876  Ru106   0001  Ru106         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   877  Pd107   0001  Pd107         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   878  Pd106   0001  Pd106         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   879  Pd108   0001  Pd108         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   880  Ag109   0001  Ag109         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   881  Ag110M  0001  Ag110M        APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   882  Cd111   0001  Cd111         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+   883  Cd110   0001  Cd110         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
+->@END MODULE   : LIB:        
+-->>MODULE LIB:        : TIME SPENT=       61.503 MEMORY USAGE= 8.532E+04
+<|LIBRARY2 := USS: LIBRARY TRACK :: EDIT 1 TRAN PASS 2 GRMAX 93 ;         |<0257
+->@BEGIN MODULE : USS:        
+->@DESCRIPTION  : Self-shielding by subgroup method                                       
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+1UU   UU  SSSSS   SSSSS ***********************************************************************************************************
+ UU   UU SSSSSSS SSSSSSS *************************************************************** UNIVERSAL SELF-SHIELDING MODEL.  A. HEBERT
+ UU   UU SS   SS SS   SS
+ UU   UU  SSS     SSS
+ UU   UU    SSS     SSS
+ UU   UU SS   SS SS   SS
+ UUUUUUU SSSSSSS SSSSSSS
+  UUUUU   SSSSS   SSSSS
+
+
+ UO2 ROWLAND S BENCHMARK                                                 
+
+ OPTIONS
+ -------
+ CDOOR SYBIL      (NAME OF THE SOLUTION DOOR)
+ IGRMIN      32   (FIRST GROUP TO PROCESS)
+ IGRMAX      93   (MOST THERMAL GROUP TO PROCESS)
+ KSPH         1   (=0: NO SPH CORRECTION; =1: SPH CORRECTION IN RESONANT REGIONS)
+ ITRANZ       1   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/3=WIMS-D TYPE/4=LEAKAGE CORRECTION)
+ NPASS        2   (NUMBER OF OUTER ITERATIONS)
+ IPHASE       2   (=1: NATIVE ASSEMBLY; =2: USE PIJ)
+ ICALC        0   (=0: NO &CALC DATA; =1: &CALC DATA AVAILABLE)
+ ICORR        0   (=1: SUPPRESS MUTUAL RESONANCE SHIELDING EFFECT)
+ MAXST       50   (MAXIMUM NUMBER OF ST ITERATIONS)
+
+ USSDRV: SELF SHIELDING ITERATION NUMBER   1.
+
+ USSDRV: PERFORMING SELF-SHIELDING CALCULATION NAMED C00003/00883.
+         -->U238    0001
+         -->U238    0001
+         -->U238    0001
+         -->U238    0001
+         -->U238    0001
+         -->U238    0001
+
+ USSDRV: NUMBER OF CORRELATED RESONANT ISOTOPES=   1
+         NUMBER OF CORRELATED FUEL MIXTURES=   6 IN RESONANT REGION  1
+ USSIT1: GROUP=   33. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   34. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   35. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   36. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   37. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   38. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   39. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   40. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   41. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   42. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   43. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   44. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   45. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   46. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   47. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   48. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   49. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   50. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   51. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   52. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   53. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   54. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   55. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   56. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   57. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   58. SUBGROUP ITERATION CONVERGENCE IN   6 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   59. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   60. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   61. SUBGROUP ITERATION CONVERGENCE IN   6 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   62. SUBGROUP ITERATION CONVERGENCE IN   6 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   63. SUBGROUP ITERATION CONVERGENCE IN   7 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   64. SUBGROUP ITERATION CONVERGENCE IN   6 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   65. SUBGROUP ITERATION CONVERGENCE IN   7 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   66. SUBGROUP ITERATION CONVERGENCE IN   6 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   67. SUBGROUP ITERATION CONVERGENCE IN   6 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   68. SUBGROUP ITERATION CONVERGENCE IN   7 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   69. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   70. SUBGROUP ITERATION CONVERGENCE IN   7 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   71. SUBGROUP ITERATION CONVERGENCE IN   6 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   72. SUBGROUP ITERATION CONVERGENCE IN   6 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   73. SUBGROUP ITERATION CONVERGENCE IN   6 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   74. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   75. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   76. SUBGROUP ITERATION CONVERGENCE IN   7 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   77. SUBGROUP ITERATION CONVERGENCE IN   6 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   78. SUBGROUP ITERATION CONVERGENCE IN   6 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   79. SUBGROUP ITERATION CONVERGENCE IN   7 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   80. SUBGROUP ITERATION CONVERGENCE IN   8 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   81. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   82. SUBGROUP ITERATION CONVERGENCE IN   7 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   83. SUBGROUP ITERATION CONVERGENCE IN   8 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   84. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   85. SUBGROUP ITERATION CONVERGENCE IN   8 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   86. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   88. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   90. SUBGROUP ITERATION CONVERGENCE IN  11 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   91. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='U238    0001'.
+
+ USSIN1: PROCESSING ISOTOPE 'U238    0001'.
+
+ USSIN1: PROCESSING ISOTOPE 'U238    0002'.
+
+ USSIN1: PROCESSING ISOTOPE 'U238    0003'.
+
+ USSIN1: PROCESSING ISOTOPE 'U238    0004'.
+
+ USSIN1: PROCESSING ISOTOPE 'U238    0005'.
+
+ USSIN1: PROCESSING ISOTOPE 'U238    0006'.
+
+ USSDRV: PERFORMING SELF-SHIELDING CALCULATION NAMED C00002/00883.
+         -->U235    0001
+         -->U235    0001
+         -->U235    0001
+         -->U235    0001
+         -->U235    0001
+         -->U235    0001
+
+ USSDRV: NUMBER OF CORRELATED RESONANT ISOTOPES=   1
+         NUMBER OF CORRELATED FUEL MIXTURES=   6 IN RESONANT REGION  2
+ USSIT1: GROUP=   65. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   66. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   67. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   68. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   69. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   70. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   71. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   72. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   73. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   74. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   75. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   76. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   77. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   78. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   79. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   80. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   81. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   82. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   83. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   84. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   85. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   86. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   87. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   89. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   90. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   91. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   92. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   93. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U235    0001'.
+
+ USSIN1: PROCESSING ISOTOPE 'U235    0001'.
+
+ USSIN1: PROCESSING ISOTOPE 'U235    0002'.
+
+ USSIN1: PROCESSING ISOTOPE 'U235    0003'.
+
+ USSIN1: PROCESSING ISOTOPE 'U235    0004'.
+
+ USSIN1: PROCESSING ISOTOPE 'U235    0005'.
+
+ USSIN1: PROCESSING ISOTOPE 'U235    0006'.
+
+ USSDRV: PERFORMING SELF-SHIELDING CALCULATION NAMED C00019/00883.
+         -->Zr90    0007
+
+ USSDRV: NUMBER OF CORRELATED RESONANT ISOTOPES=   1
+         NUMBER OF CORRELATED FUEL MIXTURES=   1 IN RESONANT REGION  3
+ USSIT1: GROUP=   35. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   36. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   37. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   38. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   39. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   40. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   41. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   42. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   43. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   44. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   45. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   47. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   48. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   51. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   52. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   54. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   55. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   57. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   58. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   61. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   63. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr90    0007'.
+
+ USSIN1: PROCESSING ISOTOPE 'Zr90    0007'.
+
+ USSDRV: PERFORMING SELF-SHIELDING CALCULATION NAMED C00022/00883.
+         -->Zr94    0007
+
+ USSDRV: NUMBER OF CORRELATED RESONANT ISOTOPES=   1
+         NUMBER OF CORRELATED FUEL MIXTURES=   1 IN RESONANT REGION  4
+ USSIT1: GROUP=   38. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   39. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   40. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   41. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   42. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   43. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   44. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   45. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   46. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   49. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   50. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   51. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   52. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   54. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   55. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   56. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   58. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   59. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   65. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr94    0007'.
+
+ USSIN1: PROCESSING ISOTOPE 'Zr94    0007'.
+
+ USSDRV: PERFORMING SELF-SHIELDING CALCULATION NAMED C00021/00883.
+         -->Zr92    0007
+
+ USSDRV: NUMBER OF CORRELATED RESONANT ISOTOPES=   1
+         NUMBER OF CORRELATED FUEL MIXTURES=   1 IN RESONANT REGION  5
+ USSIT1: GROUP=   38. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   39. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   40. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   41. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   42. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   43. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   44. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   45. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   46. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   47. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   48. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   50. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   51. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   52. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   54. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   55. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   56. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   57. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   58. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   59. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   60. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   61. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   62. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   63. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   64. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   65. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr92    0007'.
+
+ USSIN1: PROCESSING ISOTOPE 'Zr92    0007'.
+
+ USSDRV: PERFORMING SELF-SHIELDING CALCULATION NAMED C00020/00883.
+         -->Zr91    0007
+
+ USSDRV: NUMBER OF CORRELATED RESONANT ISOTOPES=   1
+         NUMBER OF CORRELATED FUEL MIXTURES=   1 IN RESONANT REGION  6
+ USSIT1: GROUP=   38. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   39. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   40. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   41. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   42. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   43. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   44. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   45. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   46. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   47. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   48. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   49. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   50. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   51. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   52. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   53. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   54. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   55. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   56. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   57. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   58. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   59. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   60. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   61. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   62. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   63. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   64. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   67. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   71. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   72. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   74. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   77. SUBGROUP ITERATION CONVERGENCE IN   5 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   78. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   79. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   80. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr91    0007'.
+
+ USSIN1: PROCESSING ISOTOPE 'Zr91    0007'.
+
+ USSDRV: PERFORMING SELF-SHIELDING CALCULATION NAMED C00023/00883.
+         -->Zr96    0007
+
+ USSDRV: NUMBER OF CORRELATED RESONANT ISOTOPES=   1
+         NUMBER OF CORRELATED FUEL MIXTURES=   1 IN RESONANT REGION  7
+ USSIT1: GROUP=   39. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   40. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   41. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   42. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   43. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   45. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   46. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   47. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   50. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   51. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   52. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   53. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   55. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   57. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   59. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   60. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   61. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   64. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   68. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   71. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   77. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   78. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   83. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr96    0007'.
+
+ USSIN1: PROCESSING ISOTOPE 'Zr96    0007'.
+
+ USSDRV: SELF SHIELDING ITERATION NUMBER   2.
+
+ USSDRV: PERFORMING SELF-SHIELDING CALCULATION NAMED C00003/00883.
+         -->U238    0001
+         -->U238    0001
+         -->U238    0001
+         -->U238    0001
+         -->U238    0001
+         -->U238    0001
+
+ USSDRV: NUMBER OF CORRELATED RESONANT ISOTOPES=   1
+         NUMBER OF CORRELATED FUEL MIXTURES=   6 IN RESONANT REGION  1
+ USSIT1: GROUP=   33. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   34. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   35. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   36. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   37. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   38. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   39. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   40. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   41. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   42. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   43. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   44. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   45. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   46. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   47. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   48. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   49. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   50. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   51. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   52. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   53. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   54. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   55. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   56. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   57. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   58. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   59. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   60. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   61. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   62. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   63. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   64. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   65. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   66. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   67. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   68. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   69. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   70. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   71. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   72. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   73. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   74. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   75. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   76. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   77. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   78. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   79. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   80. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   81. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   82. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   83. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   84. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   85. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   86. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   88. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   90. SUBGROUP ITERATION CONVERGENCE IN   4 ITERATIONS. ISOTOPE='U238    0001'.
+ USSIT1: GROUP=   91. SUBGROUP ITERATION CONVERGENCE IN   3 ITERATIONS. ISOTOPE='U238    0001'.
+
+ USSIN1: PROCESSING ISOTOPE 'U238    0001'.
+
+ USSIN1: PROCESSING ISOTOPE 'U238    0002'.
+
+ USSIN1: PROCESSING ISOTOPE 'U238    0003'.
+
+ USSIN1: PROCESSING ISOTOPE 'U238    0004'.
+
+ USSIN1: PROCESSING ISOTOPE 'U238    0005'.
+
+ USSIN1: PROCESSING ISOTOPE 'U238    0006'.
+
+ USSDRV: PERFORMING SELF-SHIELDING CALCULATION NAMED C00002/00883.
+         -->U235    0001
+         -->U235    0001
+         -->U235    0001
+         -->U235    0001
+         -->U235    0001
+         -->U235    0001
+
+ USSDRV: NUMBER OF CORRELATED RESONANT ISOTOPES=   1
+         NUMBER OF CORRELATED FUEL MIXTURES=   6 IN RESONANT REGION  2
+ USSIT1: GROUP=   65. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   66. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   67. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   68. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   69. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   70. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   71. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   72. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   73. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   74. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   75. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   76. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   77. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   78. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   79. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   80. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   81. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   82. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   83. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   84. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   85. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   86. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   87. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   89. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   90. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   91. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   92. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+ USSIT1: GROUP=   93. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='U235    0001'.
+
+ USSIN1: PROCESSING ISOTOPE 'U235    0001'.
+
+ USSIN1: PROCESSING ISOTOPE 'U235    0002'.
+
+ USSIN1: PROCESSING ISOTOPE 'U235    0003'.
+
+ USSIN1: PROCESSING ISOTOPE 'U235    0004'.
+
+ USSIN1: PROCESSING ISOTOPE 'U235    0005'.
+
+ USSIN1: PROCESSING ISOTOPE 'U235    0006'.
+
+ USSDRV: PERFORMING SELF-SHIELDING CALCULATION NAMED C00019/00883.
+         -->Zr90    0007
+
+ USSDRV: NUMBER OF CORRELATED RESONANT ISOTOPES=   1
+         NUMBER OF CORRELATED FUEL MIXTURES=   1 IN RESONANT REGION  3
+ USSIT1: GROUP=   35. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   36. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   37. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   38. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   39. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   40. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   41. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   42. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   43. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   44. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   45. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   47. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   48. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   51. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   52. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   54. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   55. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   57. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   58. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   61. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr90    0007'.
+ USSIT1: GROUP=   63. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr90    0007'.
+
+ USSIN1: PROCESSING ISOTOPE 'Zr90    0007'.
+
+ USSDRV: PERFORMING SELF-SHIELDING CALCULATION NAMED C00022/00883.
+         -->Zr94    0007
+
+ USSDRV: NUMBER OF CORRELATED RESONANT ISOTOPES=   1
+         NUMBER OF CORRELATED FUEL MIXTURES=   1 IN RESONANT REGION  4
+ USSIT1: GROUP=   38. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   39. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   40. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   41. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   42. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   43. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   44. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   45. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   46. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   49. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   50. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   51. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   52. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   54. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   55. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   56. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   58. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   59. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+ USSIT1: GROUP=   65. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr94    0007'.
+
+ USSIN1: PROCESSING ISOTOPE 'Zr94    0007'.
+
+ USSDRV: PERFORMING SELF-SHIELDING CALCULATION NAMED C00021/00883.
+         -->Zr92    0007
+
+ USSDRV: NUMBER OF CORRELATED RESONANT ISOTOPES=   1
+         NUMBER OF CORRELATED FUEL MIXTURES=   1 IN RESONANT REGION  5
+ USSIT1: GROUP=   38. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   39. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   40. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   41. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   42. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   43. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   44. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   45. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   46. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   47. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   48. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   50. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   51. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   52. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   54. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   55. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   56. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   57. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   58. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   59. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   60. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   61. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   62. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   63. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   64. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr92    0007'.
+ USSIT1: GROUP=   65. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr92    0007'.
+
+ USSIN1: PROCESSING ISOTOPE 'Zr92    0007'.
+
+ USSDRV: PERFORMING SELF-SHIELDING CALCULATION NAMED C00020/00883.
+         -->Zr91    0007
+
+ USSDRV: NUMBER OF CORRELATED RESONANT ISOTOPES=   1
+         NUMBER OF CORRELATED FUEL MIXTURES=   1 IN RESONANT REGION  6
+ USSIT1: GROUP=   38. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   39. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   40. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   41. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   42. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   43. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   44. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   45. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   46. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   47. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   48. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   49. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   50. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   51. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   52. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   53. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   54. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   55. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   56. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   57. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   58. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   59. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   60. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   61. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   62. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   63. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   64. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   67. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   71. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   72. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   74. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   77. SUBGROUP ITERATION CONVERGENCE IN   2 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   78. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   79. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+ USSIT1: GROUP=   80. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr91    0007'.
+
+ USSIN1: PROCESSING ISOTOPE 'Zr91    0007'.
+
+ USSDRV: PERFORMING SELF-SHIELDING CALCULATION NAMED C00023/00883.
+         -->Zr96    0007
+
+ USSDRV: NUMBER OF CORRELATED RESONANT ISOTOPES=   1
+         NUMBER OF CORRELATED FUEL MIXTURES=   1 IN RESONANT REGION  7
+ USSIT1: GROUP=   39. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   40. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   41. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   42. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   43. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   45. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   46. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   47. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   50. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   51. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   52. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   53. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   55. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   57. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   59. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   60. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   61. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   64. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   68. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   71. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   77. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   78. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+ USSIT1: GROUP=   83. SUBGROUP ITERATION CONVERGENCE IN   1 ITERATIONS. ISOTOPE='Zr96    0007'.
+
+ USSIN1: PROCESSING ISOTOPE 'Zr96    0007'.
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'LIBRARY2    ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'SIGNATURE   '         3    CHARACTER       ='L_LIBRARY   '
+        2  'ISOTOPESMIX '       883    INTEGER         
+        3  'ISOTOPESTODO'       883    INTEGER         
+        4  'ISOTOPESTYPE'       883    INTEGER         
+        5  'ISOTOPESTEMP'       883    REAL            
+        6  'ISOTOPESDENS'       883    REAL            
+        7  'ISOTOPESDSN '    248123    REAL            
+        8  'ISOTOPESDSB '    248123    REAL            
+        9  'ENERGY      '       282    REAL            
+       10  'DELTAU      '       281    REAL            
+       11  'ILIBRARYTYPE'      1766    INTEGER         
+       12  'ILIBRARYINDX'       883    INTEGER         
+       13  'ISOTOPESLIST'       883    LIST            
+       14  'STATE-VECTOR'        40    INTEGER         
+       15  'ADDXSNAME-P0'        34    CHARACTER       
+       16  'DEPL-CHAIN  '        -1    DIRECTORY       
+       17  'ISOTOPESUSED'      2649    CHARACTER       
+       18  'SHIBA_SG    '        -1    DIRECTORY       
+       19  'ISOTOPERNAME'      2649    CHARACTER       
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =    509248
+
+LCMGTC: record PARTICLE     not found.

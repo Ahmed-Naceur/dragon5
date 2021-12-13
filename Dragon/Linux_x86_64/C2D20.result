@@ -158,7 +158,7 @@ QUIT "LIST" .                                                              0117
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.002 MEMORY USAGE= 2.520E+02
+-->>MODULE INFO:       : TIME SPENT=        0.058 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : INFO:       
 ->@DESCRIPTION  : Information on water, UO2 and ThO2                                      
 ->@CREDITS      : R. Roy                                                                  
@@ -171,6 +171,551 @@ QUIT "LIST" .                                                              0117
 ->@CREDITS      : A. Hebert, G. Marleau                                                   
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
-           1
-           0
-AHMED
+
+ LIBEAD:   61 DEPLETING ISOTOPES HAVE BEEN ADDED IN MIXTURE    8.
+
+ LIBEAD:   61 DEPLETING ISOTOPES HAVE BEEN ADDED IN MIXTURE    9.
+
+ LIBEAD:   61 DEPLETING ISOTOPES HAVE BEEN ADDED IN MIXTURE   10.
+
+ LIBEAD:   61 DEPLETING ISOTOPES HAVE BEEN ADDED IN MIXTURE   12.
+
+ LIBEAD:   61 DEPLETING ISOTOPES HAVE BEEN ADDED IN MIXTURE   13.
+
+ OPTIONS
+ -------
+ IMPX       1   (0=NO PRINT/1=SHORT/2=MORE)
+ IPROB      0   (0=DIRECT/1=ADJOINT)
+ ITIME      1   (1=STEADY-STATE/2=PROMPT)
+ NLIB       1   (NUMBER OF SETS OF LIBRARIES)
+ NGF       24   (NUMBER OF FAST GROUP WITHOUT SELF-SHIELDING)
+ IGRMAX    47   (LAST GROUP INDEX WITH SELF-SHIELDING)
+ NBISO    456   (NUMBER OF ISOTOPES OR MATERIALS)
+ NBMIX     13   (NUMBER OF MIXTURES)
+ NRES       1   (NUMBER OF SETS OF RESONANT MIXTURES)
+ NCOMB      6   (NUMBER OF DEPLETING MIXTURES)
+ NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
+ NGRO      89   (NUMBER OF ENERGY GROUPS)
+ NL         2   (NUMBER OF LEGENDRE ORDERS)
+ ITRANC     2   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/3=WIMS-D TYPE/4=LEAKAGE CORRECTION)
+ NBESP      0   (NUMBER OF ENERGY-DEPENDENT FISSION SPECTRA)
+ IPROC      0   (-1=SKIP LIBRARY PROCESSING/0=DILUTION INTERPOLATION/1=USE PHYSICAL TABLES/2=BUILD A DRAGLIB/3=COMPUTE CALENDF TABLES/4=SLOWING-DOWN TABLES/5=ALL CALENDF)
+ IMAC       1   (0=DO NOT/1=DO BUILD AN EMBEDDED MACROLIB)
+ NDEL       0   (NUMBER OF PRECURSOR GROUPS)
+ NDEPL     74   (NUMBER OF DEPLETING ISOTOPES)
+ NFISS      0   (NUMBER OF FISSILE ISOTOPES WITH PYIELD DATA)
+ NPART      0   (NUMBER OF COMPANION PARTICLES)
+ ISOADD     0   (0=COMPLETE BURNUP CHAIN/1=DO NOT)
+ MAXISM   300   (MAX. NUMBER OF ISOTOPES PER MIXTURE)
+ IPRECI     4   (CALENDF ACCURACY FLAG:1/2/3/4)
+
+ CROSS SECTION EDIT NAME (LCM DIRECTORY NAME)
+ --------------------------------------------
+   1  NFTOT        2  NG           3  N2N   
+   4  N3N          5  N4N          6  NA    
+   7  NP           8  N2A          9  NNP   
+  10  ND          11  NT          12  TRANC 
+  13  BSTC        14  BSTR        15  CSTC  
+  16  CSTR  
+
+ AVAILABLE CROSS-SECTION LIBRARIES:
+    1 -- E6MLIB                                                          
+
+                                                        NUMBER
+ SPEC   LOCAL NAME    ISOTOPE       FROM LIBRARY  MIX   DENSITY     TEMP(K)    SIGZERO    SELF-SHIEL  THERMAL CORRECTION
+ -----  ------------  ------------  ------------  ----  ----------  ---------  ---------  ----------  ------------------
+     1  H1      0001  H1H2O         WIMSAECL   1     1  4.7649E-02  5.732E+02  1.000E+10   0             0                         
+     2  O16     0001  O16           WIMSAECL   1     1  2.3824E-02  5.732E+02  1.000E+10   0             0                         
+     3  ZR90PT  0002  ZR90PT        WIMSAECL   1     2  2.1433E-02  5.732E+02  1.000E+10   0             0                         
+     4  ZR91PT  0002  ZR91PT        WIMSAECL   1     2  4.6740E-03  5.732E+02  1.000E+10   0             0                         
+     5  ZR92PT  0002  ZR92PT        WIMSAECL   1     2  7.1444E-03  5.732E+02  1.000E+10   0             0                         
+     6  ZR94PT  0002  ZR94PT        WIMSAECL   1     2  7.2402E-03  5.732E+02  1.000E+10   0             0                         
+     7  ZR96PT  0002  ZR96PT        WIMSAECL   1     2  1.1664E-03  5.732E+02  1.000E+10   0             0                         
+     8  NB93    0002  NB93          WIMSAECL   1     2  1.1178E-03  5.732E+02  1.000E+10   0             0                         
+     9  FE54    0002  FE54          WIMSAECL   1     2  5.3317E-06  5.732E+02  1.000E+10   0             0                         
+    10  FE56    0002  FE56          WIMSAECL   1     2  8.3699E-05  5.732E+02  1.000E+10   0             0                         
+    11  FE57    0002  FE57          WIMSAECL   1     2  1.9326E-06  5.732E+02  1.000E+10   0             0                         
+    12  FE58    0002  FE58          WIMSAECL   1     2  2.5703E-07  5.732E+02  1.000E+10   0             0                         
+    13  CR50    0002  CR50          WIMSAECL   1     2  3.2717E-07  5.732E+02  1.000E+10   0             0                         
+    14  CR52    0002  CR52          WIMSAECL   1     2  6.3148E-06  5.732E+02  1.000E+10   0             0                         
+    15  CR53    0002  CR53          WIMSAECL   1     2  7.1577E-07  5.732E+02  1.000E+10   0             0                         
+    16  CR54    0002  CR54          WIMSAECL   1     2  1.7799E-07  5.732E+02  1.000E+10   0             0                         
+    17  NI58    0002  NI58          WIMSAECL   1     2  2.9544E-06  5.732E+02  1.000E+10   0             0                         
+    18  NI60    0002  NI60          WIMSAECL   1     2  1.1377E-06  5.732E+02  1.000E+10   0             0                         
+    19  NI61    0002  NI61          WIMSAECL   1     2  4.9520E-08  5.732E+02  1.000E+10   0             0                         
+    20  NI62    0002  NI62          WIMSAECL   1     2  1.5756E-07  5.732E+02  1.000E+10   0             0                         
+    21  NI64    0002  NI64          WIMSAECL   1     2  4.0456E-08  5.732E+02  1.000E+10   0             0                         
+    22  MN55    0002  MN55          WIMSAECL   1     2  3.5664E-06  5.732E+02  1.000E+10   0             0                         
+    23  C       0002  C             WIMSAECL   1     2  2.6122E-05  5.732E+02  1.000E+10   0             0                         
+    24  O16     0001  O16           WIMSAECL   1     2  3.3083E-04  5.732E+02  1.000E+10   0             0                         
+    25  B10     0002  B10           WIMSAECL   1     2  1.1506E-07  5.732E+02  1.000E+10   0             0                         
+    26  C       0003  C             WIMSAECL   1     3  1.7413E-05  4.597E+02  1.000E+10   0             0                         
+    27  O16     0003  O16           WIMSAECL   1     3  3.5137E-05  4.597E+02  1.000E+10   0             0                         
+    28  ZR90CT  0004  ZR90CT        WIMSAECL   1     4  2.1842E-02  3.462E+02  1.000E+10   0             0                         
+    29  ZR91CT  0004  ZR91CT        WIMSAECL   1     4  4.7634E-03  3.462E+02  1.000E+10   0             0                         
+    30  ZR92CT  0004  ZR92CT        WIMSAECL   1     4  7.2810E-03  3.462E+02  1.000E+10   0             0                         
+    31  ZR94CT  0004  ZR94CT        WIMSAECL   1     4  7.3787E-03  3.462E+02  1.000E+10   0             0                         
+    32  ZR96CT  0004  ZR96CT        WIMSAECL   1     4  1.1887E-03  3.462E+02  1.000E+10   0             0                         
+    33  FE54    0004  FE54          WIMSAECL   1     4  8.6911E-06  3.462E+02  1.000E+10   0             0                         
+    34  FE56    0004  FE56          WIMSAECL   1     4  1.3643E-04  3.462E+02  1.000E+10   0             0                         
+    35  FE57    0004  FE57          WIMSAECL   1     4  3.1509E-06  3.462E+02  1.000E+10   0             0                         
+    36  FE58    0004  FE58          WIMSAECL   1     4  4.1907E-07  3.462E+02  1.000E+10   0             0                         
+    37  NI58    0004  NI58          WIMSAECL   1     4  3.2104E-06  3.462E+02  1.000E+10   0             0                         
+    38  NI60    0004  NI60          WIMSAECL   1     4  1.2364E-06  3.462E+02  1.000E+10   0             0                         
+    39  NI61    0004  NI61          WIMSAECL   1     4  5.3862E-08  3.462E+02  1.000E+10   0             0                         
+    40  NI62    0004  NI62          WIMSAECL   1     4  1.7112E-07  3.462E+02  1.000E+10   0             0                         
+    41  NI64    0004  NI64          WIMSAECL   1     4  4.3915E-08  3.462E+02  1.000E+10   0             0                         
+    42  CR50    0004  CR50          WIMSAECL   1     4  3.3044E-06  3.462E+02  1.000E+10   0             0                         
+    43  CR52    0004  CR52          WIMSAECL   1     4  6.3718E-05  3.462E+02  1.000E+10   0             0                         
+    44  CR53    0004  CR53          WIMSAECL   1     4  7.2254E-06  3.462E+02  1.000E+10   0             0                         
+    45  CR54    0004  CR54          WIMSAECL   1     4  1.7982E-06  3.462E+02  1.000E+10   0             0                         
+    46  C       0004  C             WIMSAECL   1     4  1.3179E-04  3.462E+02  1.000E+10   0             0                         
+    47  O16     0004  O16           WIMSAECL   1     4  3.0909E-04  3.462E+02  1.000E+10   0             0                         
+    48  NB93    0004  NB93          WIMSAECL   1     4  4.2561E-06  3.462E+02  1.000E+10   0             0                         
+    49  MN55    0004  MN55          WIMSAECL   1     4  3.5987E-06  3.462E+02  1.000E+10   0             0                         
+    50  B10     0004  B10           WIMSAECL   1     4  2.7564E-07  3.462E+02  1.000E+10   0             0                         
+    51  H1      0005  H1H2O         WIMSAECL   1     5  1.8100E-04  3.462E+02  1.000E+10   0             0                         
+    52  D2      0005  DD2O          WIMSAECL   1     5  6.4957E-02  3.462E+02  1.000E+10   0             0                         
+    53  O16     0004  O16           WIMSAECL   1     5  3.2569E-02  3.462E+02  1.000E+10   0             0                         
+    54  ZR90CL  0006  ZR90CL        WIMSAECL   1     6  2.4727E-02  5.732E+02  1.000E+10   0             0                         
+    55  ZR91CL  0006  ZR91CL        WIMSAECL   1     6  5.3925E-03  5.732E+02  1.000E+10   0             0                         
+    56  ZR92CL  0006  ZR92CL        WIMSAECL   1     6  8.2426E-03  5.732E+02  1.000E+10   0             0                         
+    57  ZR94CL  0006  ZR94CL        WIMSAECL   1     6  8.3531E-03  5.732E+02  1.000E+10   0             0                         
+    58  ZR96CL  0006  ZR96CL        WIMSAECL   1     6  1.3457E-03  5.732E+02  1.000E+10   0             0                         
+    59  FE54    0002  FE54          WIMSAECL   1     6  9.8389E-06  5.732E+02  1.000E+10   0             0                         
+    60  FE56    0002  FE56          WIMSAECL   1     6  1.5445E-04  5.732E+02  1.000E+10   0             0                         
+    61  FE57    0002  FE57          WIMSAECL   1     6  3.5670E-06  5.732E+02  1.000E+10   0             0                         
+    62  FE58    0002  FE58          WIMSAECL   1     6  4.7441E-07  5.732E+02  1.000E+10   0             0                         
+    63  NI58    0002  NI58          WIMSAECL   1     6  3.6344E-06  5.732E+02  1.000E+10   0             0                         
+    64  NI60    0002  NI60          WIMSAECL   1     6  1.3997E-06  5.732E+02  1.000E+10   0             0                         
+    65  NI61    0002  NI61          WIMSAECL   1     6  6.0975E-08  5.732E+02  1.000E+10   0             0                         
+    66  NI62    0002  NI62          WIMSAECL   1     6  1.9371E-07  5.732E+02  1.000E+10   0             0                         
+    67  NI64    0002  NI64          WIMSAECL   1     6  4.9714E-08  5.732E+02  1.000E+10   0             0                         
+    68  CR50    0002  CR50          WIMSAECL   1     6  3.7408E-06  5.732E+02  1.000E+10   0             0                         
+    69  CR52    0002  CR52          WIMSAECL   1     6  7.2132E-05  5.732E+02  1.000E+10   0             0                         
+    70  CR53    0002  CR53          WIMSAECL   1     6  8.1795E-06  5.732E+02  1.000E+10   0             0                         
+    71  CR54    0002  CR54          WIMSAECL   1     6  2.0357E-06  5.732E+02  1.000E+10   0             0                         
+    72  C       0002  C             WIMSAECL   1     6  1.4919E-04  5.732E+02  1.000E+10   0             0                         
+    73  O16     0001  O16           WIMSAECL   1     6  3.4991E-04  5.732E+02  1.000E+10   0             0                         
+    74  NB93    0002  NB93          WIMSAECL   1     6  4.8182E-06  5.732E+02  1.000E+10   0             0                         
+    75  MN55    0002  MN55          WIMSAECL   1     6  4.0739E-06  5.732E+02  1.000E+10   0             0                         
+    76  B10     0002  B10           WIMSAECL   1     6  3.1204E-07  5.732E+02  1.000E+10   0             0                         
+    77  O16     0001  O16           WIMSAECL   1     7  5.1155E-02  5.732E+02  1.000E+10   0             0                         
+    78  DY160   0007  DY160         WIMSAECL   1     7  7.3812E-05  5.732E+02  1.000E+10   0             0                         
+    79  DY161   0007  DY161         WIMSAECL   1     7  5.5831E-04  5.732E+02  1.000E+10   0             0                         
+    80  DY162   0007  DY162         WIMSAECL   1     7  7.5317E-04  5.732E+02  1.000E+10   0             0                         
+    81  DY163   0007  DY163         WIMSAECL   1     7  7.3517E-04  5.732E+02  1.000E+10   0             0                         
+    82  DY164   0007  DY164         WIMSAECL   1     7  8.3201E-04  5.732E+02  1.000E+10   0             0                         
+    83  Gd152   0007  GD152         WIMSAECL   1     7  5.6733E-06  5.732E+02  1.000E+10   0             0                         
+    84  Gd154   0007  GD154         WIMSAECL   1     7  6.1826E-05  5.732E+02  1.000E+10   0             0                         
+    85  Gd155   0007  GD155         WIMSAECL   1     7  4.1974E-04  5.732E+02  1.000E+10   0             0                         
+    86  Gd156   0007  GD156         WIMSAECL   1     7  5.8054E-04  5.732E+02  1.000E+10   0             0                         
+    87  Gd157   0007  GD157         WIMSAECL   1     7  4.4384E-04  5.732E+02  1.000E+10   0             0                         
+    88  Gd158   0007  GD158         WIMSAECL   1     7  7.0448E-04  5.732E+02  1.000E+10   0             0                         
+    89  Gd160   0007  GD160         WIMSAECL   1     7  6.1997E-04  5.732E+02  1.000E+10   0             0                         
+    90  Zr90    0007  ZR90CL        WIMSAECL   1     7  1.0882E-02  5.732E+02  1.000E+10   0             0                         
+    91  Zr91    0007  ZR91CL        WIMSAECL   1     7  2.3732E-03  5.732E+02  1.000E+10   0             0                         
+    92  zr92    0007  ZR92CL        WIMSAECL   1     7  3.6274E-03  5.732E+02  1.000E+10   0             0                         
+    93  Zr94    0007  ZR94CL        WIMSAECL   1     7  3.6761E-03  5.732E+02  1.000E+10   0             0                         
+    94  Zr96    0007  ZR96CL        WIMSAECL   1     7  5.9224E-04  5.732E+02  1.000E+10   0             0                         
+    95  U5      0008  U235          WIMSAECL   1     8  4.5846E-04  9.602E+02  1.000E+10   1             0                         
+    96  U8      0008  U238          WIMSAECL   1     8  2.2181E-02  9.602E+02  1.000E+10   1             0                         
+    97  O16     0008  O16           WIMSAECL   1     8  4.5291E-02  9.602E+02  1.000E+10   0             0                         
+    98  U6      0008  U236          WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+    99  PU9     0008  PU239         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   100  PU240   0008  PU240         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   101  AM241   0008  AM241         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   102  PU241   0008  PU241         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   103  AM242M  0008  AM242M        WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   104  PU242   0008  PU242         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   105  AM243   0008  AM243         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   106  U5      0009  U235          WIMSAECL   1     9  4.5846E-04  9.602E+02  1.000E+10   1             0                         
+   107  U8      0009  U238          WIMSAECL   1     9  2.2181E-02  9.602E+02  1.000E+10   1             0                         
+   108  O16     0008  O16           WIMSAECL   1     9  4.5291E-02  9.602E+02  1.000E+10   0             0                         
+   109  U6      0009  U236          WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   110  PU9     0009  PU239         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   111  PU240   0009  PU240         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   112  AM241   0009  AM241         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   113  PU241   0009  PU241         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   114  AM242M  0009  AM242M        WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   115  PU242   0009  PU242         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   116  AM243   0009  AM243         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   117  U5      0010  U235          WIMSAECL   1    10  4.5846E-04  9.602E+02  1.000E+10   1             0                         
+   118  U8      0010  U238          WIMSAECL   1    10  2.2181E-02  9.602E+02  1.000E+10   1             0                         
+   119  O16     0008  O16           WIMSAECL   1    10  4.5291E-02  9.602E+02  1.000E+10   0             0                         
+   120  U6      0010  U236          WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   121  PU9     0010  PU239         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   122  PU240   0010  PU240         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   123  AM241   0010  AM241         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   124  PU241   0010  PU241         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   125  AM242M  0010  AM242M        WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   126  PU242   0010  PU242         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   127  AM243   0010  AM243         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   128  H1      0001  H1H2O         WIMSAECL   1    11  2.3824E-02  5.732E+02  1.000E+10   0             0                         
+   129  O16     0001  O16           WIMSAECL   1    11  1.1912E-02  5.732E+02  1.000E+10   0             0                         
+   130  U5      0012  U235          WIMSAECL   1    12  4.1261E-04  9.602E+02  1.000E+10   1             0                         
+   131  U8      0012  U238          WIMSAECL   1    12  2.2226E-02  9.602E+02  1.000E+10   1             0                         
+   132  O16     0008  O16           WIMSAECL   1    12  4.5290E-02  9.602E+02  1.000E+10   0             0                         
+   133  U6      0012  U236          WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   134  PU9     0012  PU239         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   135  PU240   0012  PU240         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   136  AM241   0012  AM241         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   137  PU241   0012  PU241         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   138  AM242M  0012  AM242M        WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   139  PU242   0012  PU242         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   140  AM243   0012  AM243         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   141  U5      0013  U235          WIMSAECL   1    13  4.5846E-04  9.602E+02  1.000E+10   1             0                         
+   142  U8      0013  U238          WIMSAECL   1    13  2.2181E-02  9.602E+02  1.000E+10   1             0                         
+   143  O16     0008  O16           WIMSAECL   1    13  4.5291E-02  9.602E+02  1.000E+10   0             0                         
+   144  U6      0013  U236          WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   145  PU9     0013  PU239         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   146  PU240   0013  PU240         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   147  AM241   0013  AM241         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   148  PU241   0013  PU241         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   149  AM242M  0013  AM242M        WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   150  PU242   0013  PU242         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   151  AM243   0013  AM243         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   1             0                         
+   152  NP239   0008  NP239         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   153  NP237   0008  NP237         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   154  U234    0008  U234          WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   155  U233    0008  U233          WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   156  PFP2    0008  PFP2          WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   157  PFP     0008  PFP           WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   158  GD157   0008  GD157         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   159  EU156   0008  EU156         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   160  EU155   0008  EU155         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   161  EU154   0008  EU154         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   162  EU153   0008  EU153         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   163  SM152   0008  SM152         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   164  SM151   0008  SM151         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   165  SM150   0008  SM150         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   166  SM149   0008  SM149         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   167  SM147   0008  SM147         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   168  PM151   0008  PM151         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   169  PM149   0008  PM149         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   170  PM148M  0008  PM148M        WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   171  PM148   0008  PM148         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   172  PM147   0008  PM147         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   173  ND148   0008  ND148         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   174  ND147   0008  ND147         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   175  ND146   0008  ND146         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   176  ND145   0008  ND145         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   177  ND144   0008  ND144         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   178  ND143   0008  ND143         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   179  PR143   0008  PR143         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   180  PR141   0008  PR141         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   181  CE144   0008  CE144         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   182  CE142   0008  CE142         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   183  CE141   0008  CE141         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   184  LA139   0008  LA139         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   185  CS135   0008  CS135         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   186  CS134   0008  CS134         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   187  CS133   0008  CS133         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   188  XE135   0008  XE135         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   189  XE133   0008  XE133         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   190  XE131   0008  XE131         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   191  I135    0008  I135          WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   192  I129    0008  I129          WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   193  IN115   0008  IN115         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   194  CD113   0008  CD113         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   195  AG109   0008  AG109         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   196  PD108   0008  PD108         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   197  PD107   0008  PD107         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   198  PD105   0008  PD105         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   199  RH105   0008  RH105         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   200  RH103   0008  RH103         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   201  RU103   0008  RU103         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   202  RU102   0008  RU102         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   203  RU101   0008  RU101         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   204  TC99    0008  TC99          WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   205  MO100   0008  MO100         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   206  MO97    0008  MO97          WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   207  MO95    0008  MO95          WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   208  ZR93    0008  ZR93          WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   209  KR83    0008  KR83          WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   210  PU236   0008  PU236         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   211  NP238   0008  NP238         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   212  PU238   0008  PU238         WIMSAECL   1     8  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   213  NP239   0008  NP239         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   214  NP237   0008  NP237         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   215  U234    0008  U234          WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   216  U233    0008  U233          WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   217  PFP2    0008  PFP2          WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   218  PFP     0008  PFP           WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   219  GD157   0008  GD157         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   220  EU156   0008  EU156         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   221  EU155   0008  EU155         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   222  EU154   0008  EU154         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   223  EU153   0008  EU153         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   224  SM152   0008  SM152         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   225  SM151   0008  SM151         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   226  SM150   0008  SM150         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   227  SM149   0008  SM149         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   228  SM147   0008  SM147         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   229  PM151   0008  PM151         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   230  PM149   0008  PM149         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   231  PM148M  0008  PM148M        WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   232  PM148   0008  PM148         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   233  PM147   0008  PM147         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   234  ND148   0008  ND148         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   235  ND147   0008  ND147         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   236  ND146   0008  ND146         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   237  ND145   0008  ND145         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   238  ND144   0008  ND144         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   239  ND143   0008  ND143         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   240  PR143   0008  PR143         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   241  PR141   0008  PR141         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   242  CE144   0008  CE144         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   243  CE142   0008  CE142         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   244  CE141   0008  CE141         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   245  LA139   0008  LA139         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   246  CS135   0008  CS135         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   247  CS134   0008  CS134         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   248  CS133   0008  CS133         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   249  XE135   0008  XE135         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   250  XE133   0008  XE133         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   251  XE131   0008  XE131         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   252  I135    0008  I135          WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   253  I129    0008  I129          WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   254  IN115   0008  IN115         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   255  CD113   0008  CD113         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   256  AG109   0008  AG109         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   257  PD108   0008  PD108         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   258  PD107   0008  PD107         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   259  PD105   0008  PD105         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   260  RH105   0008  RH105         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   261  RH103   0008  RH103         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   262  RU103   0008  RU103         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   263  RU102   0008  RU102         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   264  RU101   0008  RU101         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   265  TC99    0008  TC99          WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   266  MO100   0008  MO100         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   267  MO97    0008  MO97          WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   268  MO95    0008  MO95          WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   269  ZR93    0008  ZR93          WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   270  KR83    0008  KR83          WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   271  PU236   0008  PU236         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   272  NP238   0008  NP238         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   273  PU238   0008  PU238         WIMSAECL   1     9  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   274  NP239   0008  NP239         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   275  NP237   0008  NP237         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   276  U234    0008  U234          WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   277  U233    0008  U233          WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   278  PFP2    0008  PFP2          WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   279  PFP     0008  PFP           WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   280  GD157   0008  GD157         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   281  EU156   0008  EU156         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   282  EU155   0008  EU155         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   283  EU154   0008  EU154         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   284  EU153   0008  EU153         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   285  SM152   0008  SM152         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   286  SM151   0008  SM151         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   287  SM150   0008  SM150         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   288  SM149   0008  SM149         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   289  SM147   0008  SM147         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   290  PM151   0008  PM151         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   291  PM149   0008  PM149         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   292  PM148M  0008  PM148M        WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   293  PM148   0008  PM148         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   294  PM147   0008  PM147         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   295  ND148   0008  ND148         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   296  ND147   0008  ND147         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   297  ND146   0008  ND146         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   298  ND145   0008  ND145         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   299  ND144   0008  ND144         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   300  ND143   0008  ND143         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   301  PR143   0008  PR143         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   302  PR141   0008  PR141         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   303  CE144   0008  CE144         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   304  CE142   0008  CE142         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   305  CE141   0008  CE141         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   306  LA139   0008  LA139         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   307  CS135   0008  CS135         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   308  CS134   0008  CS134         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   309  CS133   0008  CS133         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   310  XE135   0008  XE135         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   311  XE133   0008  XE133         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   312  XE131   0008  XE131         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   313  I135    0008  I135          WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   314  I129    0008  I129          WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   315  IN115   0008  IN115         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   316  CD113   0008  CD113         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   317  AG109   0008  AG109         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   318  PD108   0008  PD108         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   319  PD107   0008  PD107         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   320  PD105   0008  PD105         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   321  RH105   0008  RH105         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   322  RH103   0008  RH103         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   323  RU103   0008  RU103         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   324  RU102   0008  RU102         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   325  RU101   0008  RU101         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   326  TC99    0008  TC99          WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   327  MO100   0008  MO100         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   328  MO97    0008  MO97          WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   329  MO95    0008  MO95          WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   330  ZR93    0008  ZR93          WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   331  KR83    0008  KR83          WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   332  PU236   0008  PU236         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   333  NP238   0008  NP238         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   334  PU238   0008  PU238         WIMSAECL   1    10  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   335  NP239   0008  NP239         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   336  NP237   0008  NP237         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   337  U234    0008  U234          WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   338  U233    0008  U233          WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   339  PFP2    0008  PFP2          WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   340  PFP     0008  PFP           WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   341  GD157   0008  GD157         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   342  EU156   0008  EU156         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   343  EU155   0008  EU155         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   344  EU154   0008  EU154         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   345  EU153   0008  EU153         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   346  SM152   0008  SM152         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   347  SM151   0008  SM151         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   348  SM150   0008  SM150         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   349  SM149   0008  SM149         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   350  SM147   0008  SM147         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   351  PM151   0008  PM151         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   352  PM149   0008  PM149         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   353  PM148M  0008  PM148M        WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   354  PM148   0008  PM148         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   355  PM147   0008  PM147         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   356  ND148   0008  ND148         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   357  ND147   0008  ND147         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   358  ND146   0008  ND146         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   359  ND145   0008  ND145         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   360  ND144   0008  ND144         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   361  ND143   0008  ND143         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   362  PR143   0008  PR143         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   363  PR141   0008  PR141         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   364  CE144   0008  CE144         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   365  CE142   0008  CE142         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   366  CE141   0008  CE141         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   367  LA139   0008  LA139         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   368  CS135   0008  CS135         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   369  CS134   0008  CS134         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   370  CS133   0008  CS133         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   371  XE135   0008  XE135         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   372  XE133   0008  XE133         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   373  XE131   0008  XE131         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   374  I135    0008  I135          WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   375  I129    0008  I129          WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   376  IN115   0008  IN115         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   377  CD113   0008  CD113         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   378  AG109   0008  AG109         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   379  PD108   0008  PD108         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   380  PD107   0008  PD107         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   381  PD105   0008  PD105         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   382  RH105   0008  RH105         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   383  RH103   0008  RH103         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   384  RU103   0008  RU103         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   385  RU102   0008  RU102         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   386  RU101   0008  RU101         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   387  TC99    0008  TC99          WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   388  MO100   0008  MO100         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   389  MO97    0008  MO97          WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   390  MO95    0008  MO95          WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   391  ZR93    0008  ZR93          WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   392  KR83    0008  KR83          WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   393  PU236   0008  PU236         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   394  NP238   0008  NP238         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   395  PU238   0008  PU238         WIMSAECL   1    12  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   396  NP239   0008  NP239         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   397  NP237   0008  NP237         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   398  U234    0008  U234          WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   399  U233    0008  U233          WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   400  PFP2    0008  PFP2          WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   401  PFP     0008  PFP           WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   402  GD157   0008  GD157         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   403  EU156   0008  EU156         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   404  EU155   0008  EU155         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   405  EU154   0008  EU154         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   406  EU153   0008  EU153         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   407  SM152   0008  SM152         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   408  SM151   0008  SM151         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   409  SM150   0008  SM150         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   410  SM149   0008  SM149         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   411  SM147   0008  SM147         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   412  PM151   0008  PM151         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   413  PM149   0008  PM149         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   414  PM148M  0008  PM148M        WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   415  PM148   0008  PM148         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   416  PM147   0008  PM147         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   417  ND148   0008  ND148         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   418  ND147   0008  ND147         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   419  ND146   0008  ND146         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   420  ND145   0008  ND145         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   421  ND144   0008  ND144         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   422  ND143   0008  ND143         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   423  PR143   0008  PR143         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   424  PR141   0008  PR141         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   425  CE144   0008  CE144         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   426  CE142   0008  CE142         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   427  CE141   0008  CE141         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   428  LA139   0008  LA139         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   429  CS135   0008  CS135         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   430  CS134   0008  CS134         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   431  CS133   0008  CS133         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   432  XE135   0008  XE135         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   433  XE133   0008  XE133         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   434  XE131   0008  XE131         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   435  I135    0008  I135          WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   436  I129    0008  I129          WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   437  IN115   0008  IN115         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   438  CD113   0008  CD113         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   439  AG109   0008  AG109         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   440  PD108   0008  PD108         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   441  PD107   0008  PD107         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   442  PD105   0008  PD105         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   443  RH105   0008  RH105         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   444  RH103   0008  RH103         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   445  RU103   0008  RU103         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   446  RU102   0008  RU102         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   447  RU101   0008  RU101         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   448  TC99    0008  TC99          WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   449  MO100   0008  MO100         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   450  MO97    0008  MO97          WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   451  MO95    0008  MO95          WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   452  ZR93    0008  ZR93          WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   453  KR83    0008  KR83          WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   454  PU236   0008  PU236         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   455  NP238   0008  NP238         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+   456  PU238   0008  PU238         WIMSAECL   1    13  0.0000E+00  9.602E+02  1.000E+10   0             0                         
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE XSM FILE 'MicLib      ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'ENERGY      '        90    REAL            
+        2  'DELTAU      '        89    REAL            
+        3  'ILIBRARYNAME'        16    CHARACTER       
+        4  'SIGNATURE   '         3    CHARACTER       ='L_LIBRARY   '
+        5  'STATE-VECTOR'        40    INTEGER         
+        6  'ISOTOPESUSED'      1368    CHARACTER       
+        7  'ISOTOPERNAME'      1368    CHARACTER       
+        8  'ISOTOPESMIX '       456    INTEGER         
+        9  'ISOTOPESTODO'       456    INTEGER         
+       10  'ISOTOPESTYPE'       456    INTEGER         
+       11  'ILIBRARYTYPE'       912    CHARACTER       
+       12  'ILIBRARYINDX'       456    INTEGER         
+       13  'ISOTOPESCOH '       912    CHARACTER       
+       14  'ISOTOPESINC '       912    CHARACTER       
+       15  'ISOTOPESRESK'       912    CHARACTER       
+       16  'ISOTOPESNTFG'       456    INTEGER         
+       17  'ISOTOPESHIN '      1368    CHARACTER       
+       18  'ISOTOPESSHI '       456    INTEGER         
+       19  'ISOTOPESDSN '     40584    REAL            
+       20  'ISOTOPESDSB '     40584    REAL            
+       21  'ISOTOPESGIR '       456    REAL            
+       22  'ISOTOPESNIR '       456    INTEGER         
+       23  'ISOTOPESTEMP'       456    REAL            
+       24  'ADDXSNAME-P0'        32    CHARACTER       
+       25  'MIXTUREGAS  '        13    INTEGER         
+       26  'ISOTOPESLIST'       456    LIST            
+       27  'ISOTOPESDENS'       456    REAL            
+       28  'DEPL-CHAIN  '        -1    DIRECTORY       
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =     93763
+
+LCMGTC: record PARTICLE     not found.
