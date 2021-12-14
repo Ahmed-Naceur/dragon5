@@ -4,8 +4,8 @@
  *   $$$  $$       $$  $$$$$$$   $$  $$    *  nuclear     *  vday: 01may21   *
  *   $$$$ $$       $$  $$   $$    $$$$     *  data        *  site: poly mtl  *
  *   $$ $$$$  $$   $$  $$   $$     $$      *  processing  *  mach: linux     *
- *   $$  $$$  $$$$$$$  $$$$$$$     $$      *  system      *  date: 12/11/21  *
- *   $$   $$   $$$$$    $$$$$      $$      *              *  time: 22:42:39  *
+ *   $$  $$$  $$$$$$$  $$$$$$$     $$      *  system      *  date: 12/13/21  *
+ *   $$   $$   $$$$$    $$$$$      $$      *              *  time: 19:51:25  *
  *                                         *              *                  *
  *****************************************************************************
 
@@ -117,7 +117,7 @@
  ------------------------------------------------------------------
    1-H -  0 NDS,IAEA   Eval-Dec17 D.E.Cullen                         
 
- group constants                                                          4.2s
+ group constants                                                          2.5s
  for mf23 and mt507 estc                                                        
  stopping power(    1) =   5.65959E+02
  stopping power(    2) =   4.80982E+02
@@ -201,7 +201,7 @@
  stopping power(   80) =   6.15212E+00
  stopping power(   81) =   6.20110E+00
 
- group constants                                                          4.2s
+ group constants                                                          2.5s
  for mf23 and mt508 estr                                                        
  stopping power(    1) =   3.59398E-03
  stopping power(    2) =   2.15728E-03
@@ -285,7 +285,7 @@
  stopping power(   80) =   1.03129E-02
  stopping power(   81) =   1.14694E-02
 
- group constants                                                          4.2s
+ group constants                                                          2.5s
  for mf26 and mt522 inel                                                        
  
  initl  final  cross sections vs
@@ -3690,7 +3690,7 @@
   80   xsec    5.20731-1
   80   heat    4.63807+0
 
- group constants                                                          4.4s
+ group constants                                                          2.6s
  for mf26 and mt525 elas                                                        
  
  initl  final  cross sections vs
@@ -3936,7 +3936,7 @@
   80   xsec    4.03428-1
   80   heat    0.00000+0
 
- group constants                                                          4.4s
+ group constants                                                          2.6s
  for mf26 and mt527 brem                                                        
  
  initl  final  cross sections vs
@@ -7300,7 +7300,7 @@
   80   xsec    2.51341-2
   80   heat    6.06867-2
 
- group constants                                                          4.8s
+ group constants                                                          2.7s
  for mf26 and mt534 shk                                                         
  
    1      1    0.00000+0
@@ -7544,7 +7544,7 @@
   80   xsec    0.00000+0
   80   heat    0.00000+0
 
- group constants                                                          4.8s
+ group constants                                                          2.7s
  for mf26 and mt535 shl1                                                        
  
    1      1    0.00000+0
@@ -7788,7 +7788,7 @@
   80   xsec    0.00000+0
   80   heat    0.00000+0
 
- group constants                                                          4.8s
+ group constants                                                          2.7s
  for mf26 and mt536 shl2                                                        
  
    1      1    0.00000+0
@@ -8032,7 +8032,7 @@
   80   xsec    0.00000+0
   80   heat    0.00000+0
 
- group constants                                                          4.8s
+ group constants                                                          2.7s
  for mf26 and mt537 shl3                                                        
  
    1      1    0.00000+0
@@ -8276,7 +8276,7 @@
   80   xsec    0.00000+0
   80   heat    0.00000+0
 
- group constants                                                          4.8s
+ group constants                                                          2.7s
  for mf26 and mt538 shm                                                         
  
    1      1    0.00000+0
@@ -8520,7 +8520,7 @@
   80   xsec    0.00000+0
   80   heat    0.00000+0
 
- group constants                                                          4.9s
+ group constants                                                          2.8s
  for mf23 and mt501 totl                                                        
  
  electron sigma  
@@ -8606,7 +8606,7 @@
   79    1.07392+0
   80    9.49293-1
 
- group constants                                                          4.9s
+ group constants                                                          2.8s
  for mf23 and mt530 heat                                                        
  
  electron energy deposition
@@ -8692,7 +8692,7 @@
   79    4.66589+0
   80    4.69876+0
 
- group constants                                                          4.9s
+ group constants                                                          2.8s
  for mf23 and mt531 char                                                        
  
  electron charge deposition
@@ -8781,7 +8781,7 @@
  ------------------------------------------------------------------
    8-O -  0 NDS,IAEA   Eval-Dec17 D.E.Cullen                         
 
- group constants                                                          4.9s
+ group constants                                                          2.8s
  for mf23 and mt507 estc                                                        
  stopping power(    1) =   3.06367E+03
  stopping power(    2) =   2.51350E+03
@@ -8865,7 +8865,7 @@
  stopping power(   80) =   4.26998E+01
  stopping power(   81) =   4.31159E+01
 
- group constants                                                          4.9s
+ group constants                                                          2.8s
  for mf23 and mt508 estr                                                        
  stopping power(    1) =   1.56657E-01
  stopping power(    2) =   9.20186E-02
@@ -8949,7 +8949,7 @@
  stopping power(   80) =   3.40545E-01
  stopping power(   81) =   3.77930E-01
 
- group constants                                                          4.9s
+ group constants                                                          2.8s
  for mf26 and mt522 inel                                                        
  
  initl  final  cross sections vs
@@ -12354,7 +12354,7 @@
   80   xsec    4.16585+0
   80   heat    3.06002+1
 
- group constants                                                          5.0s
+ group constants                                                          2.8s
  for mf26 and mt525 elas                                                        
  
  initl  final  cross sections vs
@@ -12600,7 +12600,7 @@
   80   xsec    2.31584+1
   80   heat    0.00000+0
 
- group constants                                                          5.1s
+ group constants                                                          2.8s
  for mf26 and mt527 brem                                                        
  
  initl  final  cross sections vs
@@ -16005,7 +16005,7 @@
   80   xsec    8.80022-1
   80   heat    2.12463+0
 
- group constants                                                          5.4s
+ group constants                                                          3.0s
  for mf26 and mt534 shk                                                         
  
    1      1    0.00000+0
@@ -16249,7 +16249,7 @@
   80   xsec    0.00000+0
   80   heat    0.00000+0
 
- group constants                                                          5.5s
+ group constants                                                          3.0s
  for mf26 and mt535 shl1                                                        
  
    1      1    0.00000+0
@@ -16493,7 +16493,7 @@
   80   xsec    0.00000+0
   80   heat    0.00000+0
 
- group constants                                                          5.5s
+ group constants                                                          3.0s
  for mf26 and mt536 shl2                                                        
  
    1      1    0.00000+0
@@ -16737,7 +16737,7 @@
   80   xsec    0.00000+0
   80   heat    0.00000+0
 
- group constants                                                          5.5s
+ group constants                                                          3.0s
  for mf26 and mt537 shl3                                                        
  
    1      1    0.00000+0
@@ -16981,7 +16981,7 @@
   80   xsec    0.00000+0
   80   heat    0.00000+0
 
- group constants                                                          5.5s
+ group constants                                                          3.0s
  for mf26 and mt538 shm                                                         
  
    1      1    0.00000+0
@@ -17225,7 +17225,7 @@
   80   xsec    0.00000+0
   80   heat    0.00000+0
 
- group constants                                                          5.5s
+ group constants                                                          3.0s
  for mf23 and mt501 totl                                                        
  
  electron sigma  
@@ -17311,7 +17311,7 @@
   79    3.27132+1
   80    2.82042+1
 
- group constants                                                          5.5s
+ group constants                                                          3.0s
  for mf23 and mt530 heat                                                        
  
  electron energy deposition
@@ -17397,7 +17397,7 @@
   79    3.22533+1
   80    3.27249+1
 
- group constants                                                          5.5s
+ group constants                                                          3.0s
  for mf23 and mt531 char                                                        
  
  electron charge deposition
@@ -17481,10 +17481,10 @@
   78   -2.09946+3
   79   -2.08994+3
   80   -2.08185+3
-                                                                          5.5s
+                                                                          3.0s
  *****************************************************************************
 
- matxsr...produce a matxs format output file                              5.5s
+ matxsr...produce a matxs format output file                              3.0s
 
  input gendf unit .....................          0
  input gamout unit ....................          0
@@ -17509,7 +17509,7 @@
  output particles .....................            1
 
 
-          doing h        for bscat    ...     5.6s
-          doing o        for bscat    ...     5.7s
-                                                                          5.8s
+          doing h        for bscat    ...     3.0s
+          doing o        for bscat    ...     3.1s
+                                                                          3.2s
  *****************************************************************************

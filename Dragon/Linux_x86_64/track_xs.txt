@@ -11,7 +11,7 @@ TITLE
          4         4         4         4         4         4         4         4
          4         4         4         4         4         4         4         4
          4         4
-Water-Slab: CEPXS-BFP-DRAGON                                            
+TUNGSTEN-Slab: CEPXS-BFP-DRAGON                                         
 ->       1      12       3       3                                 <-   
 LINK.GEOM                                                                       
          4         4         4

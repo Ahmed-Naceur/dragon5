@@ -2,12 +2,16 @@
 * A. Naceur
 *
 PROCEDURE wat_xs_80G wat_xsr_80G wat_xsr_2G 
-          watxs3OOG watxsr3OOG W_xs_80G W_xsr_80G ;
+          watxs3OOG watxsr3OOG W_xs_80G W_xsr_80G 
+          W_xs_300G W_xsr_300G ;
+
 *wat_xs_80G ;
-wat_xsr_80G ;
+*wat_xsr_80G ;
 *wat_xsr_2G ;
 *watxs3OOG ;
 *watxsr3OOG ;
 *W_xs_80G ;
 *W_xsr_80G ;
+W_xs_300G ;
+W_xsr_300G ;
 QUIT "LIST" .
