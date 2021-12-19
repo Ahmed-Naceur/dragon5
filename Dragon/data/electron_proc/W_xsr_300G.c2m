@@ -35,7 +35,8 @@ GEOM := GEO: :: CAR1D 2
 
 TRACK := SNT: GEOM ::
              TITLE 'Water-Slab:Cepxsr-Dragon'
-             EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2 EPSI 1.E-5
+             EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2 
+             EPSI 1.E-5
              QUAD 1 MAXI 300 BFPL ;
 
 * --- Library access

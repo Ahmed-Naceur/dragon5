@@ -471,6 +471,10 @@
   261    CONTINUE
          LDEP(1)=.TRUE.
          CALL LCMPUT(KPLIB,'H-FACTOR',NGRO,2,VECT)
+         !AHMED
+         !DO I=1,NGRO
+         !   PRINT *,"I=",I,"VECT(I)=",VECT(I)
+         !ENDDO
          GO TO 270
       ELSE IF(HVPS(2:).EQ.'CHAR') THEN
          VECT(:NGRO+1)=0.0
