@@ -2,9 +2,9 @@
 # --- MANUAL ENERGY GROUP SELECTION 
 # execute: ./W_debug
 
-#cd /home/ahnac/Compiler/Njoy2012_EPM_cepxsr
-#./install
-#cd /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc
+cd /home/ahnac/Compiler/Njoy2012_EPM_cepxsr
+./install
+cd /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc
 
 
 echo "**********************************************************"

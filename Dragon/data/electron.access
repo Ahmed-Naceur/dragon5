@@ -13,13 +13,16 @@ ln -s /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/matxs_wate
 ln -s /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_water_300g_10MeV_nc.txt _wat300g_10MeV
 ln -s /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_water_300g_20MeV_nc.txt _wat300g_20MeV
 ln -s /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_20MeV_nc.txt _W300g_20MeV
+ln -s /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_P8_20MeV_nc.txt _W300g_P8_20MeV
+ln -s /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_20MeV_fc.txt _W300g_20MeV_fc
+
 ln -s /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_10MeV_nc.txt _W300g_10MeV
 ln -s /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_nc.txt _W300g
 
 #--- CEPXS-BFP
 ln -s $1/data/electron_proc/FMAC_e_W_20.00MeV_0g_300e_P2_NC.txt .
 
-
+ln -s $1/data/cepxs-dragon/FMAC_e_W_lobatto_20.00MeV_0g_300e_P8_NC.txt .
 ln -s $1/data/cepxs-dragon/FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt .
 ln -s $1/data/cepxs-dragon/FMAC_e_W_lobatto_10.00MeV_0g_300e_P2_NC.txt .
 ln -s $1/data/cepxs-dragon/FMAC_e_water_lobatto_10.00MeV_0g_300e_P2_NC.txt .

@@ -3,7 +3,7 @@
 #source ~/.profile
 
 # -- TUNGSTEN MATERIAL
-# Execution ./cepxs_W_lobatto 3.00 0 300 2 no-coupling no-csda
+# Execution ./cepxs_W_lobatto 20.00 0 300 2 no-coupling no-csda
 
 #Your_Path_To_Cepxs="/home/ahnac/cepxs-radiotherapy/CSD/";
 Your_Path_To_Cepxs="/home/ahnac/cepxs-radiotherapy/CEPXS-BFP-LOBATTO/data/";
@@ -17,6 +17,7 @@ cd src;
 ./compile ;
 cd .. ;
 cp CEPXS ./data/ ;
+
 #--------------------------------------------------------
 # Main execution variables definition
 #--------------------------------------------------------
@@ -207,6 +208,8 @@ EOF
 #run_cepxs is supposed to be in $Your_Path_To_Cepxs.
 
 ./run_cepxs.sh $file_cepxs_name ;
+
+
 
 
 cd $Your_Path_To_Arves ;  

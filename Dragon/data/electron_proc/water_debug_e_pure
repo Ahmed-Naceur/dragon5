@@ -27,7 +27,7 @@ Nmat=2;
 Emin=$4; Emax=$5; 
 
 Title="test:non-coupled";
-FileExtension="water_300g_10MeV_nc.txt"
+FileExtension="water_300g_20MeV_nc.txt"
 FileInPut="in_${FileExtension}";
 FileOutPut="out_${FileExtension}";
 FileGendf="gendf_${FileExtension}";

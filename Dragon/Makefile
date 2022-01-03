@@ -4,7 +4,6 @@
 #  Author : A. Hebert (2018-5-10)
 #
 #---------------------------------------------------------------------------
-#
 OS = $(shell uname -s | cut -d"_" -f1)
 ifneq (,$(filter $(OS),SunOS AIX))
   MAKE = gmake

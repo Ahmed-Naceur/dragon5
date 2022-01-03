@@ -512,7 +512,7 @@
          CALL LCMLEN(JPLIB,'H-FACTOR'//NORD(IXSPER),ILONG,ITYLCM)
          IF(ILONG.GT.0) THEN
             LH=.TRUE.
-            CALL LCMGET(JPLIB,'H-FACTOR'//NORD(IXSPER),GA1) !eV.barn
+            CALL LCMGET(JPLIB,'H-FACTOR'//NORD(IXSPER),GA1) !eV-barns
             DO 290 LLL=1,NGROUP
             GAF(IBM,LLL,7)=GAF(IBM,LLL,7)+GA1(LLL)*DENISO   !eV/cm
   290       CONTINUE
@@ -520,9 +520,9 @@
          CALL LCMLEN(JPLIB,'C-FACTOR'//NORD(IXSPER),ILONG,ITYLCM)
          IF(ILONG.GT.0) THEN
             LC=.TRUE.
-            CALL LCMGET(JPLIB,'C-FACTOR'//NORD(IXSPER),GA1)
+            CALL LCMGET(JPLIB,'C-FACTOR'//NORD(IXSPER),GA1) !e-barns
             DO 295 LLL=1,NGROUP
-            GAF(IBM,LLL,13)=GAF(IBM,LLL,13)+GA1(LLL)*DENISO
+            GAF(IBM,LLL,13)=GAF(IBM,LLL,13)+GA1(LLL)*DENISO !e/cm
   295       CONTINUE
          ENDIF
          CALL LCMLEN(JPLIB,'OVERV   '//NORD(IXSPER),ILONG,ITYLCM)
@@ -599,10 +599,9 @@
                IF(.NOT.MASK(IBM)) GAF(IBM,LLL,7)=GAF(IBM,LLL,8)
   390          CONTINUE
             ENDIF
-            CALL LCMPUT(KPLIB,'H-FACTOR',NBMIX,2,GAF(1,LLL,7))
-            !PRINT*,GAF(1,LLL,7) !HERE,AHMED
+            CALL LCMPUT(KPLIB,'H-FACTOR',NBMIX,2,GAF(1,LLL,7)) !eV/cm
+            !PRINT *,GAF(1,LLL,7) !HERE,AHMED
          ENDIF
-         !CALL XABORT('AHMED,LIBDEN.f') !HERE,AHMED
          IF(LC) THEN
             IF(MASKK) THEN
                CALL XDRSET(GAF(1,LLL,14),NBMIX,0.0)
@@ -611,7 +610,7 @@
                IF(.NOT.MASK(IBM)) GAF(IBM,LLL,13)=GAF(IBM,LLL,14)
   395          CONTINUE
             ENDIF
-            CALL LCMPUT(KPLIB,'C-FACTOR',NBMIX,2,GAF(1,LLL,13))
+            CALL LCMPUT(KPLIB,'C-FACTOR',NBMIX,2,GAF(1,LLL,13)) !e/cm
          ENDIF
          IF(LOVERV) THEN
             IF(MASKK) THEN

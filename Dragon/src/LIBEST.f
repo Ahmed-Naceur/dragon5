@@ -199,16 +199,16 @@
      1   DENMAT)
          DO IBM=1,NBMIX
             DO LLL=1,NGROUP+1
-               !PRINT *,ENER(LLL)
+               PRINT *,ENER(LLL)
                !PRINT *,"ESTOP(IBM,LLL,1)=",ESTOP(IBM,LLL,1)
-               !PRINT *,"DENMAT(IBM,LLL)",DENMAT(IBM,LLL)
+               PRINT *,"DENMAT(IBM,LLL )=",DENMAT(IBM,LLL)
                ESTOP(IBM,LLL,1)=ESTOP(IBM,LLL,1)-DENMAT(IBM,LLL) !MeV/cm
                !PRINT *,"ESTOP(IBM,LLL,1)=",ESTOP(IBM,LLL,1)
             ENDDO
          ENDDO
          DEALLOCATE(ENER,ISONRF)
       ENDIF
-      !CALL XABORT('AHMED,LIBEST.f'),AHMED
+      CALL XABORT('AHMED,LIBEST.f') 
 *----
 *  SAVE STOPPING POWERS IN THE MACROLIB
 *----
