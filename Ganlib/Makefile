@@ -22,3 +22,6 @@ tests :
 	./rganlib testgan1.x2m $(fcompiler) -quiet
 	./rganlib testgan2.x2m $(fcompiler) -quiet
 	./rganlib testgan3.x2m $(fcompiler) -quiet
+ifeq ($(hdf5),1)
+	./rganlib testgan4.x2m $(fcompiler) -quiet
+endif

@@ -1,0 +1,18 @@
+#!/bin/sh
+if [ $# = 0 ]
+   then
+   echo "usage: testgan4.access directory" 1>&2
+   exit 1
+fi
+System=`uname -s`
+Sysx="`echo $System | cut -b -6`"
+MACH=`uname -sm | sed 's/[ ]/_/'`
+if [ $Sysx = "CYGWIN" ]; then
+   System=`uname -o`
+   MACH=$System
+elif [ $Sysx = "AIX" ]; then
+   MACH=`uname -s`
+fi
+echo "System :" $System "   MACH :" "$MACH"
+ln -s $1/data/testgan4_proc/*.h5 .
+ls -l

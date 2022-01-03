@@ -17,6 +17,9 @@ cd ~/Version5/Donjon/
 make intel=1
 make clean
 #
+# To build an HDF5-enabled version, simply write
+make hdf5=1
+#
 # To build an OpenMP-enabled version, simply write
 make openmp=1
 #
@@ -25,6 +28,9 @@ make tests
 #
 # To execute the non-regression tests with Intel compiler:
 make tests intel=1
+#
+# To execute the non-regression tests, including those requiring hdf5 support:
+make tests hdf5=1
 #
 # On AIX and Solaris OS, you must use GNU Make:
 cd ~/Version5/Donjon/

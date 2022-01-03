@@ -100,6 +100,7 @@ static PyObject *lcm_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
      } else if ((strcmp(pytype,"BINARY") == 0) || (strcmp(pytype,"ASCII") == 0)) {
      } else if (strcmp(pytype,"DA")== 0) {
        self->lrda_lcm = lrda;
+     } else if (strcmp(pytype,"HDF5")== 0) {
      } else if (strcmp(pytype,"LCM_INP") == 0) {
        strcpy(self->type_lcm, "LCM");
        int_32 medium = 1; /* create a lcm file */
@@ -169,7 +170,7 @@ static PyObject *PyLCM_lib(pylcmobject *self) {
      char *nomsub="PyLCM_lib";
      char *pytype = self->type_lcm;
      if ((strcmp(pytype,"BINARY") == 0) || (strcmp(pytype,"ASCII") == 0) ||
-         (strcmp(pytype,"DA") == 0)) {
+         (strcmp(pytype,"DA") == 0) || (strcmp(pytype,"HDF5") == 0)) {
        sprintf(AbortString,"%s: invalid type=%s",nomsub,pytype);
        PyErr_SetString(PyLcmError, AbortString);
        return NULL;
@@ -188,7 +189,7 @@ static PyObject *PyLCM_val(pylcmobject *self) {
      char *nomsub="PyLCM_val";
      char *pytype = self->type_lcm;
      if ((strcmp(pytype,"BINARY") == 0) || (strcmp(pytype,"ASCII") == 0) ||
-         (strcmp(pytype,"DA") == 0)) {
+         (strcmp(pytype,"DA") == 0) || (strcmp(pytype,"HDF5") == 0)) {
        sprintf(AbortString,"%s: invalid type=%s",nomsub,pytype);
        PyErr_SetString(PyLcmError, AbortString);
        return NULL;
@@ -242,7 +243,7 @@ static PyObject *PyLCM_len(pylcmobject *self) {
      int_32 vide, longueur, memoire, access;
      char *pytype = self->type_lcm;
      if ((strcmp(pytype,"BINARY") == 0) || (strcmp(pytype,"ASCII") == 0) ||
-         (strcmp(pytype,"DA") == 0)) {
+         (strcmp(pytype,"DA") == 0) || (strcmp(pytype,"HDF5") == 0)) {
        sprintf(AbortString,"%s: invalid type=%s",nomsub,pytype);
        PyErr_SetString(PyLcmError, AbortString);
        return NULL;
@@ -287,7 +288,7 @@ static PyObject *PyLCM_copy(pylcmobject *self, PyObject *args) {
        printf("%s: new lcm type=%s name=%s impx=%d\n", nomsub, pytype, s, self->impx_lcm);
      }
      if ((strcmp(pytype,"BINARY") == 0) || (strcmp(pytype,"ASCII") == 0) ||
-         (strcmp(pytype,"DA") == 0)) {
+         (strcmp(pytype,"DA") == 0) || (strcmp(pytype,"HDF5") == 0)) {
        sprintf(AbortString,"%s: invalid type=%s",nomsub,pytype);
        PyErr_SetString(PyLcmError, AbortString);
        return NULL;
@@ -331,7 +332,7 @@ static PyObject *PyLCM_rep(pylcmobject *self, PyObject *args) {
      int_32 vide, longueur, memoire, access;
      char *pytype = self->type_lcm;
      if ((strcmp(pytype,"BINARY") == 0) || (strcmp(pytype,"ASCII") == 0) ||
-         (strcmp(pytype,"DA") == 0)) {
+         (strcmp(pytype,"DA") == 0) || (strcmp(pytype,"HDF5") == 0)) {
        sprintf(AbortString,"%s: invalid type=%s",nomsub,pytype);
        PyErr_SetString(PyLcmError, AbortString);
        return NULL;
@@ -382,7 +383,7 @@ static PyObject *PyLCM_lis(pylcmobject *self, PyObject *args) {
      char *pytype = self->type_lcm;
      long list_length = 0;
      if ((strcmp(pytype,"BINARY") == 0) || (strcmp(pytype,"ASCII") == 0) ||
-         (strcmp(pytype,"DA") == 0)) {
+         (strcmp(pytype,"DA") == 0) || (strcmp(pytype,"HDF5") == 0)) {
        sprintf(AbortString,"%s: invalid type=%s",nomsub,pytype);
        PyErr_SetString(PyLcmError, AbortString);
        return NULL;
@@ -633,7 +634,7 @@ static long pylcm_assign_dict(pylcmobject *self, PyObject *key, PyObject *v) {
          pylcmobject *new_pylcm = (pylcmobject *)v;
          char *pytype = new_pylcm->type_lcm;
          if ((strcmp(pytype,"BINARY") == 0) || (strcmp(pytype,"ASCII") == 0) ||
-             (strcmp(pytype,"DA") == 0)) {
+             (strcmp(pytype,"DA") == 0) || (strcmp(pytype,"HDF5") == 0)) {
            sprintf(AbortString,"%s: invalid type=%s",nomsub,pytype);
            PyErr_SetString(PyLcmError, AbortString);
            return -1;
@@ -802,7 +803,7 @@ static long pylcm_assign_list(pylcmobject *self, PyObject* i, PyObject *v) {
          pylcmobject *new_pylcm = (pylcmobject *)v;
          char *pytype = new_pylcm->type_lcm;
          if ((strcmp(pytype,"BINARY") == 0) || (strcmp(pytype,"ASCII") == 0) ||
-             (strcmp(pytype,"DA") == 0)) {
+             (strcmp(pytype,"DA") == 0) || (strcmp(pytype,"HDF5") == 0)) {
            sprintf(AbortString,"%s: invalid type=%s",nomsub,pytype);
            PyErr_SetString(PyLcmError, AbortString);
            return -1;
@@ -831,7 +832,7 @@ static PyObject *PyLCM_subscript(pylcmobject *self, PyObject *index) {
    PyObject *ret = NULL;
    char *pytype = self->type_lcm;
    if ((strcmp(pytype,"BINARY") == 0) || (strcmp(pytype,"ASCII") == 0) ||
-       (strcmp(pytype,"DA") == 0)) {
+       (strcmp(pytype,"DA") == 0) || (strcmp(pytype,"HDF5") == 0)) {
      sprintf(AbortString,"%s: invalid type=%s",nomsub,pytype);
      PyErr_SetString(PyLcmError, AbortString);
      return NULL;
@@ -853,7 +854,7 @@ static long PyLCM_assign_subscript(pylcmobject *self, PyObject *index, PyObject 
    long ret = 0;
    char *pytype = self->type_lcm;
    if ((strcmp(pytype,"BINARY") == 0) || (strcmp(pytype,"ASCII") == 0) ||
-       (strcmp(pytype,"DA") == 0)) {
+       (strcmp(pytype,"DA") == 0) || (strcmp(pytype,"HDF5") == 0)) {
      sprintf(AbortString,"%s: invalid type=%s",nomsub,pytype);
      PyErr_SetString(PyLcmError, AbortString);
      return -1;

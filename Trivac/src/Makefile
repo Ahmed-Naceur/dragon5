@@ -97,7 +97,7 @@ else
 endif
 
 ifeq ($(hdf5),1)
-  LFLAGS += -L${HDF5_DIR}/lib -lhdf5 -lhdf5_fortran
+  LFLAGS += -L${HDF5_DIR}/lib -lhdf5
 endif
 
 SRC77 = $(shell ls *.f)

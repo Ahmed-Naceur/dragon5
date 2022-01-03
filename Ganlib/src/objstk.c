@@ -11,7 +11,7 @@
 #include "header.h"
 #define index_f(A, B) (strstr(A, B) == NULL ? 0 : strstr(A, B) - A + 1)
 #define maxdxt 200 /* maximum number of modules */
-#define ndclkw 8
+#define ndclkw 9
 #define nmodst 15
 #define nmawrd 36
 
@@ -28,7 +28,7 @@ int_32 objstk(kdi_file *iunito, FILE *iwrite, int_32 ldatav)
                             "ARCTAN", "EXP", "SQRT", "R_TO_I", "D_TO_I", "I_TO_R", "D_TO_R", "I_TO_D",
                             "R_TO_D", "I_TO_S", "I_TO_S4", "_MIN_", "_MAX_", "_TRIM_"};
    static char *cdclkw[] = {"PROCEDURE", "MODULE", "LINKED_LIST", "XSM_FILE", "SEQ_BINARY", "SEQ_ASCII",
-                            "DIR_ACCESS", "PARAMETER"};
+                            "DIR_ACCESS", "HDF5_FILE", "PARAMETER"};
 
 /*     GAN-2000 SYSTEM: R.ROY (12/1999), VERSION 2.0 */
 

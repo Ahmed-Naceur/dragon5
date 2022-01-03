@@ -477,19 +477,15 @@ WHILE IndexCB 2 <= DO
     !----------------------------------------------------------
     !  Multicompo creation
     !----------------------------------------------------------
-      ECHO 'debug1' ;
     Edition := EDI: MacrRefl :: EDIT 3 ADFM SAVE ;
-      ECHO 'debug2' ;
     GeomRefl MacrRefl := DELETE: GeomRefl MacrRefl ;
 
-      ECHO 'debug3' ;
     MlticompTous := COMPO: MlticompTous Edition :: EDIT 1
       STEP UP <<Localisation>>
       C-BORE <<CB>>
       Method ERM-NEM
       Palier <<Palier>>
       MACRO ;
-      ECHO 'debug4' ;
     Edition := DELETE: Edition ;
 
     EVALUATE iPalier := iPalier 1 + ;

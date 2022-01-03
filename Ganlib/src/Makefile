@@ -50,7 +50,7 @@ ifeq ($(OS),Darwin)
   C = $(ccompiler)
   FLAGS = -DLinux -DUnix
   CFLAGS = -Wall $(nbit) -fPIC
-  FFLAGS = -Wall $(nbit) -fPIC -ffpe-summary=none
+  FFLAGS = -Wno-maybe-uninitialized $(nbit) -fPIC -ffpe-summary=none
   FFLAG77 = -Wall $(nbit) -fPIC -ffpe-summary=none -frecord-marker=4
   LFLAGS = $(nbit)
 else
@@ -59,7 +59,7 @@ ifeq ($(OS),Linux)
   C = $(ccompiler)
   FLAGS = -DLinux -DUnix
   CFLAGS = -Wall $(nbit) -fPIC
-  FFLAGS = -Wall $(nbit) -fPIC
+  FFLAGS = -Wno-maybe-uninitialized $(nbit) -fPIC
   FFLAG77 = -Wall $(nbit) -fPIC -frecord-marker=4
   LFLAGS = $(nbit)
 else
@@ -116,7 +116,7 @@ ifeq ($(hdf5),1)
   CFLAGS += -DHDF5_LIB
   FLAGS += -DHDF5_LIB -I${HDF5_DIR}/include
   FFLAGS += -I${HDF5_DIR}/include
-  LFLAGS += -L${HDF5_DIR}/lib -lhdf5 -lhdf5_fortran
+  LFLAGS += -L${HDF5_DIR}/lib -lhdf5
 endif
 
 SRCC = $(shell ls *.c)

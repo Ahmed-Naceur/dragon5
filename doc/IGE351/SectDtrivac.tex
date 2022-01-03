@@ -236,6 +236,16 @@ void boundary conditions if {\tt ICOL} $=3$ and {\tt NLF}$\ne 0$:
 \end{array} \right.
 \end{displaymath}
 
+\item $\mathcal{S}^{t}_{38}$: ({\tt LUMP}) Unknown lumping option with the nodal expansion method (NEM):
+\begin{displaymath}
+\mathcal{S}^{t}_{38} = \left\{
+\begin{array}{rl}
+ 0 & \textrm{The averaged nodal fluxes and nodal expansion coefficients are saved in the} \\
+   & \textrm{flux unknow vector} \\
+ 1 & \textrm{Only the averaged nodal fluxes are saved in the flux unknow vector.} \\
+\end{array} \right.
+\end{displaymath}
+
 \item $\mathcal{S}^{t}_{39}$: ({\tt IGMAX}) Hyperbolic nodal expansion functions are used in energy groups indices $\ge$ {\tt IGMAX}.
 
 \end{itemize}

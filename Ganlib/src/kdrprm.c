@@ -9,13 +9,13 @@
 #include <string.h>
 #include "cle2000.h"
 #define mpara2 64
-#define ndclkw 8
+#define ndclkw 9
 
 int_32 kdrprm(lifo **my_iptrun, lifo **my_param, int_32 minput, int_32 nentry, int_32 *jentry, char (*hentry)[13])
 {
    char *nomsub = "kdrprm";
-   static char *cdclkw[] = {"PROCEDURE", "MODULE", "LINKED_LIST",  "XSM_FILE",
-                            "SEQ_BINARY", "SEQ_ASCII", "DIR_ACCESS", "PARAMETER"};
+   static char *cdclkw[] = {"PROCEDURE", "MODULE", "LINKED_LIST", "XSM_FILE", "SEQ_BINARY",
+                            "SEQ_ASCII", "DIR_ACCESS", "HDF5_FILE", "PARAMETER"};
 
 /*     GAN-2000 SYSTEM: R.ROY (01/2000), VERSION 2.1 */
 
@@ -138,6 +138,9 @@ int_32 kdrprm(lifo **my_iptrun, lifo **my_param, int_32 minput, int_32 nentry, i
          my_node->access = jparam;
          if (iparam == 3) my_node->value.mylcm = kparam;
          if (iparam == 7) my_node->lparam = lparam;
+#if defined(HDF5_LIB)
+         if (iparam == 8) my_node->value.myhdf5 = (hid_t)kparam;
+#endif
          strcpy(my_node->OSname, hparam);
          if (iprint > 0) {
             printf("PARAMETER %s <= %s with name(*%s*)\n", hentry[iloop1], aparam, hparam);
@@ -233,6 +236,9 @@ L25:
       } else if (strcmp(cmodul, "DIR_ACCESS") == 0) {
 /*       *DIR_ACCESS  * DECLARATION MODULE */
          iretcd = kdrdda(my_iptrun, npara2, hpara2);
+      } else if (strcmp(cmodul, "HDF5_FILE") == 0) {
+/*       *HDF5_FILE   * DECLARATION MODULE */
+         iretcd = kdrdh5(my_iptrun, npara2, hpara2);
       } else {
 /*       OTHERWISE, DECLARATION MODULE IS NOT AVAILABLE */
          sprintf(messag, "%s: EMBEDDED PARAMETER MODULE *%s* IS NOT AVAILABLE", nomsub, cmodul);
@@ -878,3 +884,111 @@ L8002:
    ret_val = 8002;
    goto L666;
 } /* kdrdda */
+
+int_32 kdrdh5(lifo **my_iptrun, int_32 nentry, char (*hentry)[13])
+{
+
+/*     GAN-2000 SYSTEM: R.ROY (01/2000), VERSION 2.1 */
+
+/*             *KDRDH5* IS THE MODULE FOR *HDF5_FILE   * DECLARATIONS */
+/*                      =0 IF NO ERROR */
+
+/*      INPUT: *MY_IPTRUN* IS THE EXEC STRUCTURE POINTER (ALLOCATED) */
+/*             *NENTRY* IS THE # OF LINKED LISTS AND FILES USED. */
+/*             *HENTRY* NAMES OF EACH OBJECT <- LINKED LIST OR FILE. */
+/*                      ( CHARACTER*12 HENTRY(NENTRY) ) */
+
+   char *nomsub = "kdrdh5";
+   int_32 ret_val = 0;
+   int_32 ityp, nitma, lndata;
+   float_32 flott;
+   double_64 dflot;
+   char text[73], messag[73];
+   int_32 iprint = 0;
+   int_32 iloop1, iparam;
+
+   redget_c(&ityp, &nitma, &flott, text, &dflot);
+   lndata = ityp != 10 && (ityp != 3 || strcmp(text, ";") != 0);
+   if (lndata) {
+      if (ityp == 3) {
+         if (strcmp(text, "EDIT") == 0) {
+            redget_c(&ityp, &iprint, &flott, text, &dflot);
+            if (ityp != 1 && iprint < 0) {
+               sprintf(messag, "%s: AFTER *EDIT*, PUT A POSITIVE INT", nomsub);
+               printf("%-132s\n", messag);
+               ret_val = -1;
+               goto L666;
+            }
+            redget_c(&ityp, &nitma, &flott, text, &dflot);
+         }
+         if (strcmp(text, "FILE") != 0) {
+            sprintf(messag, "%s: EXPECTING *FILE* KEYWORD; TEXT=%.12s", nomsub, text);
+            printf("%-132s\n", messag);
+            ret_val = -2;
+            goto L666;
+         }
+      } else {
+         sprintf(messag, "%s: INVALID INPUT", nomsub);
+         printf("%-132s\n", messag);
+         ret_val = -666;
+         goto L666;
+      }
+   }
+   for (iloop1 = 0; iloop1 < nentry; ++iloop1) {
+      lifo_node *my_node;
+      
+      my_node = clenode(my_iptrun, hentry[iloop1]);
+      if (my_node == NULL) {
+         printf("%s: UNABLE TO FIND NODE FOR %s\n", nomsub, hentry[iloop1]);
+         ret_val = -21;
+         goto L666;
+      }
+      iparam = my_node->type ;
+      if (abs(iparam) != 8) goto L8001;
+      if (lndata) {
+         FILE *file;
+         redget_c(&ityp, &nitma, &flott, text, &dflot);
+         if (ityp != 3) {
+            sprintf(messag, "%s: INVALID FILE NAME", nomsub);
+            printf("%-132s\n", messag);
+            ret_val = -666;
+            goto L666;
+         }
+         file = fopen(text, "r");
+
+/*       DEFINE EXISTENCE MODE */
+         if (file != NULL) {
+            fclose(file);
+            if (iprint != 0) printf("OLD/XF: %s\n", text);
+            if (iparam < 0) my_node->type = -iparam;
+            my_node->access = 2;
+         } else {
+            if (iprint != 0) printf("NEW/XF: %s\n", text);
+            if (iparam > 0) my_node->type = -iparam;
+            my_node->access = 0;
+         }
+
+/*       REGISTER FILE NAME */
+         strcpy(my_node->OSname, text);
+      }
+   }
+
+/* CAN WE FOUND *;* AT THE END OF THE SENTENCE ? */
+   if (lndata) {
+      redget_c(&ityp, &nitma, &flott, text, &dflot);
+      if (ityp != 3 || strcmp(text, ";") != 0) goto L8002;
+   }
+L666:
+   return ret_val;
+
+L8001:
+   sprintf(messag, "%s: INVALID TYPE (%d) IN *HDF5_FILE   * DATA.", nomsub, (int)iparam);
+   printf("%-132s\n", messag);
+   ret_val = 8001;
+   goto L666;
+L8002:
+   sprintf(messag, "%s: INVALID END  IN *HDF5_FILE   * DATA.", nomsub);
+   printf("%-132s\n", messag);
+   ret_val = 8002;
+   goto L666;
+} /* kdrdh5 */

@@ -2235,6 +2235,7 @@ L\_GEOM}) containing the geometry.
 $[$ \moc{EDIT} \dusa{iprint} $]$ \\
 $[$ \moc{TITL} \dusa{TITLE} $]$ \\
 $[$ \moc{HYPE} \dusa{igmax} $]$ \\
+$[$ \moc{LUMP} $]$ \\
 ;
 \end{DataStructure}
 
@@ -2256,6 +2257,8 @@ title may contain up to 72 characters. The default when \moc{TITL} is not specif
 methods. By default, the polynomial base~(\ref{eq:nem1}) is used.
 
 \item[\dusa{igmax}] hyperbolic base functions~(\ref{eq:nem2}) are used for energy groups with indices $\ge$ \dusa{igmax}.
+
+\item[\moc{LUMP}] keyword used to include only the averaged nodal fluxes in the unknown vector. By default, the nodal expansion coefficients are included.
 
 \end{ListeDeDescription}
 
