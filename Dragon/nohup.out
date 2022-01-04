@@ -1,6 +1,0 @@
-./rdragon iaea2d.x2m  -quiet
-creation of directory Linux_x86_64
-/tmp/rundir2
-[0;32m[OK][0m
-./rdragon g2s_prestation.x2m  -quiet
-/tmp/rundir2

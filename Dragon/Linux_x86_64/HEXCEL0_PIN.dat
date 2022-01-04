@@ -1,0 +1,297 @@
+BEGIN
+
+          DEFINE DOMAINE
+          ==============
+
+          1.main dimensions:
+
+*typgeo  nbfold  nbnode  nbelem 
+     1    12    18    36     1    18
+
+          2.impression and precision:
+
+*index   kndex   prec
+     0     0     1
+
+           3.precision of geometry data:
+
+*eps
+     0.1000000E-03
+
+          4.flux region number per geometry region (mesh):
+
+*merge
+     1     2     3     4     5     6     7     8     9    10
+    11    12    13    14    15    16    17    18
+
+          5.name of geometry:
+
+*macro_name
+   GEOM2       
+
+         6.macro order number per flux region:
+
+*macro_indices
+     1     1     1     1     1     1     1     1     1     1
+     1     1     1     1     1     1     1     1
+
+          7.read integer and real data for each elements:
+
+ elem =           1
+*type    node-   node+
+     1     0    18
+*cx            cy            ex or R       ey or theta1  theta2
+     0.1000000E+01     0.1732051E+01    -0.1000000E+01     0.0000000E+00     0.0000000E+00
+
+ elem =           2
+*type    node-   node+
+     1     0    10
+*cx            cy            ex or R       ey or theta1  theta2
+     0.0000000E+00     0.1732051E+01    -0.5000000E+00    -0.8660254E+00     0.0000000E+00
+
+ elem =           3
+*type    node-   node+
+     1     0     1
+*cx            cy            ex or R       ey or theta1  theta2
+    -0.5000000E+00     0.8660254E+00     0.5000000E+00    -0.8660254E+00     0.0000000E+00
+
+ elem =           4
+*type    node-   node+
+     1     0     2
+*cx            cy            ex or R       ey or theta1  theta2
+     0.0000000E+00     0.0000000E+00     0.1000000E+01     0.0000000E+00     0.0000000E+00
+
+ elem =           5
+*type    node-   node+
+     1     0     3
+*cx            cy            ex or R       ey or theta1  theta2
+     0.1000000E+01     0.0000000E+00     0.5000000E+00     0.8660254E+00     0.0000000E+00
+
+ elem =           6
+*type    node-   node+
+     1     0    16
+*cx            cy            ex or R       ey or theta1  theta2
+     0.1500000E+01     0.8660254E+00    -0.5000000E+00     0.8660254E+00     0.0000000E+00
+
+ elem =           7
+*type    node-   node+
+     1    14    13
+*cx            cy            ex or R       ey or theta1  theta2
+     0.5000000E+00     0.8660254E+00     0.1250000E+00     0.2165063E+00     0.0000000E+00
+
+ elem =           8
+*type    node-   node+
+     1    18    10
+*cx            cy            ex or R       ey or theta1  theta2
+     0.2500000E+00     0.1299038E+01    -0.2500000E+00     0.4330127E+00     0.0000000E+00
+
+ elem =           9
+*type    node-   node+
+     1    12     8
+*cx            cy            ex or R       ey or theta1  theta2
+     0.5000000E+00     0.8660254E+00    -0.2500000E+00     0.0000000E+00     0.0000000E+00
+
+ elem =          10
+*type    node-   node+
+     1     2     1
+*cx            cy            ex or R       ey or theta1  theta2
+     0.0000000E+00     0.0000000E+00     0.2500000E+00     0.4330127E+00     0.0000000E+00
+
+ elem =          11
+*type    node-   node+
+     1     9     7
+*cx            cy            ex or R       ey or theta1  theta2
+     0.6250000E+00     0.6495190E+00    -0.1250000E+00     0.2165063E+00     0.0000000E+00
+
+ elem =          12
+*type    node-   node+
+     1    16     3
+*cx            cy            ex or R       ey or theta1  theta2
+     0.1500000E+01     0.8660254E+00    -0.5000000E+00     0.0000000E+00     0.0000000E+00
+
+ elem =          13
+*type    node-   node+
+     1    13    12
+*cx            cy            ex or R       ey or theta1  theta2
+     0.5000000E+00     0.8660254E+00    -0.1250000E+00     0.2165063E+00     0.0000000E+00
+
+ elem =          14
+*type    node-   node+
+     1    17    11
+*cx            cy            ex or R       ey or theta1  theta2
+     0.3750000E+00     0.1082532E+01    -0.1250000E+00     0.2165063E+00     0.0000000E+00
+
+ elem =          15
+*type    node-   node+
+     3    13    17
+*cx            cy            ex or R       ey or theta1  theta2
+     0.5000000E+00     0.8660254E+00     0.2500000E+00     0.6000000E+02     0.6000000E+02
+
+ elem =          16
+*type    node-   node+
+     3    12    11
+*cx            cy            ex or R       ey or theta1  theta2
+     0.5000000E+00     0.8660254E+00     0.2500000E+00     0.1200000E+03     0.6000000E+02
+
+ elem =          17
+*type    node-   node+
+     1    11     5
+*cx            cy            ex or R       ey or theta1  theta2
+     0.2500000E+00     0.8660254E+00    -0.2500000E+00     0.0000000E+00     0.0000000E+00
+
+ elem =          18
+*type    node-   node+
+     1    10     1
+*cx            cy            ex or R       ey or theta1  theta2
+     0.0000000E+00     0.8660254E+00    -0.5000000E+00     0.0000000E+00     0.0000000E+00
+
+ elem =          19
+*type    node-   node+
+     3    11    10
+*cx            cy            ex or R       ey or theta1  theta2
+     0.5000000E+00     0.8660254E+00     0.5000000E+00     0.1200000E+03     0.6000000E+02
+
+ elem =          20
+*type    node-   node+
+     3     5     1
+*cx            cy            ex or R       ey or theta1  theta2
+     0.5000000E+00     0.8660254E+00     0.5000000E+00     0.1800000E+03     0.6000000E+02
+
+ elem =          21
+*type    node-   node+
+     1    15    17
+*cx            cy            ex or R       ey or theta1  theta2
+     0.6250000E+00     0.1082532E+01     0.1250000E+00     0.2165063E+00     0.0000000E+00
+
+ elem =          22
+*type    node-   node+
+     1    16    18
+*cx            cy            ex or R       ey or theta1  theta2
+     0.7500000E+00     0.1299038E+01     0.2500000E+00     0.4330127E+00     0.0000000E+00
+
+ elem =          23
+*type    node-   node+
+     3    15    16
+*cx            cy            ex or R       ey or theta1  theta2
+     0.5000000E+00     0.8660254E+00     0.5000000E+00     0.0000000E+00     0.6000000E+02
+
+ elem =          24
+*type    node-   node+
+     3    17    18
+*cx            cy            ex or R       ey or theta1  theta2
+     0.5000000E+00     0.8660254E+00     0.5000000E+00     0.6000000E+02     0.6000000E+02
+
+ elem =          25
+*type    node-   node+
+     1     7     8
+*cx            cy            ex or R       ey or theta1  theta2
+     0.3750000E+00     0.6495190E+00     0.1250000E+00     0.2165063E+00     0.0000000E+00
+
+ elem =          26
+*type    node-   node+
+     1     4     5
+*cx            cy            ex or R       ey or theta1  theta2
+     0.2500000E+00     0.4330127E+00     0.1250000E+00     0.2165063E+00     0.0000000E+00
+
+ elem =          27
+*type    node-   node+
+     3     8     5
+*cx            cy            ex or R       ey or theta1  theta2
+     0.5000000E+00     0.8660254E+00     0.2500000E+00     0.1800000E+03     0.6000000E+02
+
+ elem =          28
+*type    node-   node+
+     3     7     4
+*cx            cy            ex or R       ey or theta1  theta2
+     0.5000000E+00     0.8660254E+00     0.2500000E+00    -0.1200000E+03     0.6000000E+02
+
+ elem =          29
+*type    node-   node+
+     1     6     4
+*cx            cy            ex or R       ey or theta1  theta2
+     0.7500000E+00     0.4330127E+00    -0.1250000E+00     0.2165063E+00     0.0000000E+00
+
+ elem =          30
+*type    node-   node+
+     1     3     2
+*cx            cy            ex or R       ey or theta1  theta2
+     0.1000000E+01     0.0000000E+00    -0.2500000E+00     0.4330127E+00     0.0000000E+00
+
+ elem =          31
+*type    node-   node+
+     3     4     2
+*cx            cy            ex or R       ey or theta1  theta2
+     0.5000000E+00     0.8660254E+00     0.5000000E+00    -0.1200000E+03     0.6000000E+02
+
+ elem =          32
+*type    node-   node+
+     3     6     3
+*cx            cy            ex or R       ey or theta1  theta2
+     0.5000000E+00     0.8660254E+00     0.5000000E+00    -0.6000000E+02     0.6000000E+02
+
+ elem =          33
+*type    node-   node+
+     1    14     9
+*cx            cy            ex or R       ey or theta1  theta2
+     0.7500000E+00     0.8660254E+00    -0.2500000E+00     0.0000000E+00     0.0000000E+00
+
+ elem =          34
+*type    node-   node+
+     1    15     6
+*cx            cy            ex or R       ey or theta1  theta2
+     0.1000000E+01     0.8660254E+00    -0.2500000E+00     0.0000000E+00     0.0000000E+00
+
+ elem =          35
+*type    node-   node+
+     3     9     6
+*cx            cy            ex or R       ey or theta1  theta2
+     0.5000000E+00     0.8660254E+00     0.2500000E+00    -0.6000000E+02     0.6000000E+02
+
+ elem =          36
+*type    node-   node+
+     3    14    15
+*cx            cy            ex or R       ey or theta1  theta2
+     0.5000000E+00     0.8660254E+00     0.2500000E+00     0.0000000E+00     0.6000000E+02
+
+          8.read integer and real data for boundary conditions:
+
+*defaul  nbbcda  allsur  divsur  ndivsur
+     1     2     0     0     0
+
+          DEFAULT = REFL
+          ==============
+
+*albedo  deltasur
+     0.0000000E+00     0.0000000E+00
+
+ particular boundary condition number           1
+
+*type    nber
+     4    12
+
+*elems(1,nber)
+     7     9    11    13    15    16    25    27    28    33
+    35    36
+
+*cx      cy      angle
+     0.0000000E+00     0.0000000E+00     0.0000000E+00
+
+ particular boundary condition number           2
+
+*type    nber
+     4    12
+
+*elems(1,nber)
+     7     9    11    13    15    16    25    27    28    33
+    35    36
+
+*cx      cy      angle
+     0.0000000E+00     0.0000000E+00     0.0000000E+00
+
+          9.medium per node:
+
+*mil(nbreg)
+     3     3     3     2     2     2     1     1     1     3
+     2     1     1     1     2     3     2     3
+
+END
