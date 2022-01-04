@@ -97,7 +97,7 @@
 * DISFCT  disadvantage factor.
 * ALBP    physical albedos.
 * TAUXE   extra edit rates.
-* HVECT  extra edit names.
+* HVECT   extra edit names.
 * OVERV   1/v merge condensed.
 * HFACT   H-factors condensed.
 *
@@ -115,7 +115,7 @@
      >            FLUXCM(NMERGE,NGCOND,NW+1),FADJCM(NMERGE,NGCOND,NW+1),
      >            SIGS(NMERGE,NGCOND,NL),
      >            SCATTS(NMERGE,NGCOND,NGCOND,NL),DISFCT(NGCOND),
-     >            ALBP(NALBP,NGCOND),TAUXE(NMERGE,NGCOND,NEDMAC),
+     >            ALBP(NALBP,NGCOND,NGCOND),TAUXE(NMERGE,NGCOND,NEDMAC),
      >            OVERV(NMERGE,NGCOND),HFACT(NMERGE,NGCOND),TIMEF(3)
       LOGICAL     LH
       CHARACTER   CURNAM*12,HVECT(NEDMAC)*8
@@ -129,9 +129,13 @@
       CHARACTER   CEDNAM*12,HSIGN*12,CM*2
       INTEGER     IDATA(NSTATE)
       DOUBLE PRECISION SCATWG,SCATTN
+      LOGICAL     LAL1D
+*----
+*  ALLOCATABLE ARRAYS
+*----
       INTEGER, ALLOCATABLE, DIMENSION(:) ::IJJ,NJJ,IPOS
       REAL, ALLOCATABLE, DIMENSION(:) ::SCATC,DIFF
-      REAL, ALLOCATABLE, DIMENSION(:,:) :: FACT
+      REAL, ALLOCATABLE, DIMENSION(:,:) :: FACT,ALB1
 *----
 *  SCRATCH STORAGE ALLOCATION
 *----
@@ -389,7 +393,33 @@
             CALL LCMPUT(IPEDIT,'K-INFINITY',1,2,CUREIN)
           ENDIF
           CALL LCMPUT(IPEDIT,'FLUXDISAFACT',NGCOND,2,DISFCT)
-          IF(NALBP.GT.0)CALL LCMPUT(IPEDIT,'ALBEDO',NALBP*NGCOND,2,ALBP)
+          IF(NALBP.GT.0) THEN
+            LAL1D=.TRUE.
+            DO IAL=1,NALBP
+              DO IGR=1,NGCOND
+                DO JGR=1,NGCOND
+                  IF((IGR.NE.JGR).AND.(ALBP(IAL,IGR,JGR).NE.0.0)) THEN
+                    LAL1D=.FALSE.
+                    GO TO 218
+                  ENDIF
+                ENDDO
+              ENDDO
+            ENDDO
+ 218        IF(LAL1D) THEN
+*             diagonal physical albedos
+              ALLOCATE(ALB1(NALBP,NGCOND))
+              DO IAL=1,NALBP
+                DO IGR=1,NGCOND
+                  ALB1(IAL,IGR)=ALBP(IAL,IGR,IGR)
+                ENDDO
+              ENDDO
+              CALL LCMPUT(IPEDIT,'ALBEDO',NALBP*NGCOND,2,ALB1)
+              DEALLOCATE(ALB1)
+            ELSE
+*             matrix physical albedos
+              CALL LCMPUT(IPEDIT,'ALBEDO',NALBP*NGCOND*NGCOND,2,ALBP)
+            ENDIF
+          ENDIF
           CALL LCMSIX(IPEDIT,' ',ILCMDN)
           CALL LCMSIX(IPEDIT,' ',ILCMDN)
           IF(IPRINT.GT.0) WRITE(IUNOUT,6031) CURNAM

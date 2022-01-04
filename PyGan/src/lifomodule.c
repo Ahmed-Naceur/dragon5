@@ -124,6 +124,8 @@ static PyObject *lifo_push(lifoobject *self, PyObject *args) {
      } else if (strcmp(pytype,"DA")== 0) {
        my_node->type = 7;
        my_node->lparam = lcm_object->lrda_lcm;
+     } else if (strcmp(pytype,"HDF5") == 0) {
+       my_node->type = 8;
      } else {
        sprintf(AbortString,"%s: invalid type=%s",nomsub,pytype);
        PyErr_SetString(PyLifoError, AbortString);
@@ -199,6 +201,8 @@ static PyObject *lifo_pushEmpty(lifoobject *self, PyObject *args) {
        my_node->type = -6;
      } else if (strcmp(htype,"DA")== 0) {
        my_node->type = -7;
+     } else if (strcmp(htype,"HDF5")== 0) {
+       my_node->type = -8;
      } else if (strcmp(htype,"I")== 0) {
        my_node->type = -11;
      } else if (strcmp(htype,"S")== 0) {
@@ -254,6 +258,9 @@ static PyObject *lifo_pop(lifoobject *self) {
      goto c37;
    case 7 :
      strcpy(lcm_type, "DA");
+     goto c37;
+   case 8 :
+     strcpy(lcm_type, "HDF5");
      c37: 
      rv = (pylcmobject*)PyObject_New(pylcmobject, protocolClass);
      rv->iplist = my_node->value.mylcm;
@@ -370,6 +377,9 @@ static PyObject *lifo_pos(lifoobject *self, PyObject *args) {
      goto c37;
    case 7 :
      strcpy(lcm_type, "DA");
+     goto c37;
+   case 8 :
+     strcpy(lcm_type, "HDF5");
      c37: 
      rv = (pylcmobject*)PyObject_New(pylcmobject, protocolClass);
      rv->iplist = my_node->value.mylcm;

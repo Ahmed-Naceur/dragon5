@@ -13,7 +13,6 @@ endif
 
 DIRNAME = $(shell uname -sm | sed 's/[ ]/_/')
 OS = $(shell uname -s | cut -d"_" -f1)
-fcompiler = gfortran
 ccompiler = g++
 opt = -O
 ifeq ($(openmp),1)
@@ -23,6 +22,12 @@ ifeq ($(openmp),1)
 else
   COMP =
   FOMP =
+endif
+
+ifeq ($(intel),1)
+  fcompiler = ifort
+else
+  fcompiler = gfortran
 endif
 
 clib = -lstdc++
@@ -72,14 +77,31 @@ endif
 endif
 endif
 endif
-lib = ../lib/$(DIRNAME)
-bin = ../bin/$(DIRNAME)
 INCLUDE = -I../../Ganlib/src/
-libUtl = ../../Utilib/lib/$(DIRNAME)
-libGan = ../../Ganlib/lib/$(DIRNAME)
-libTri = ../../Trivac/lib/$(DIRNAME)
-libDra = ../../Dragon/lib/$(DIRNAME)
-libDon = ../../Donjon/lib/$(DIRNAME)
+
+ifeq ($(intel),1)
+  FFLAGS = -fPIC
+  FFLAG77 = -fPIC
+  lib = ../lib/$(DIRNAME)_intel
+  bin = ../bin/$(DIRNAME)_intel
+  libUtl = ../../Utilib/lib/$(DIRNAME)_intel
+  libGan = ../../Ganlib/lib/$(DIRNAME)_intel
+  libTri = ../../Trivac/lib/$(DIRNAME)_intel
+  libDra = ../../Dragon/lib/$(DIRNAME)_intel
+  libDon = ../../Donjon/lib/$(DIRNAME)_intel
+else
+  lib = ../lib/$(DIRNAME)
+  bin = ../bin/$(DIRNAME)
+  libUtl = ../../Utilib/lib/$(DIRNAME)
+  libGan = ../../Ganlib/lib/$(DIRNAME)
+  libTri = ../../Trivac/lib/$(DIRNAME)
+  libDra = ../../Dragon/lib/$(DIRNAME)
+  libDon = ../../Donjon/lib/$(DIRNAME)
+endif
+
+ifeq ($(hdf5),1)
+  LFLAGS += -L${HDF5_DIR}/lib -lhdf5
+endif
 
 SRCC = $(shell ls *.cxx)
 OBJC = $(SRCC:.cxx=.o)
@@ -90,8 +112,11 @@ endif
 ifeq ($(intel),1)
 	@echo 'Skin++: intel is defined'
 endif
+ifeq ($(hdf5),1)
+	@echo 'Dragon: hdf5 is defined'
+endif
 sub-make:
-	$(MAKE) openmp=$(openmp) intel=$(intel) -C ../../Donjon/src
+	$(MAKE) openmp=$(openmp) intel=$(intel) hdf5=$(hdf5) -C ../../Donjon/src
 %.o : %.cxx
 	$(C) $(CFLAGS) $(FLAGS) $(opt) $(COMP) $(INCLUDE) -I$(BOOST_ROOT) -c $< -o $@
 $(lib)/:
@@ -107,4 +132,4 @@ Skin++: libSkin++.a Skin++.o $(bin)/ sub-make
 	cp $@ $(bin)/$@
 clean:
 	$(MAKE) -C ../../Donjon/src clean
-	/bin/rm -f *.o *.a Skin++
+	/bin/rm -f *.o *.a sub-make temp.* Skin++

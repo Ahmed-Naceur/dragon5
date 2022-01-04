@@ -1,7 +1,7 @@
 *DECK SNFT23
-      SUBROUTINE SNFT23(NUN,NGRP,NGEFF,IMPX,INCONV,INGIND,LX,LY,LZ,
-     1 IELEM,NMAT,NPQ,NSCT,MAT,VOL,TOTAL,NCODE,ZCODE,QEXT,DU,DE,DZ,
-     2 W,MRMX,MRMY,MRMZ,DC,DB,DA,PL,FUNKNO)
+      SUBROUTINE SNFT23(NUN,NGEFF,IMPX,INCONV,NGIND,LX,LY,LZ,IELEM,
+     1 NMAT,NPQ,NSCT,MAT,VOL,TOTAL,NCODE,ZCODE,QEXT,DU,DE,DZ,W,MRMX,
+     2 MRMY,MRMZ,DC,DB,DA,PL,FUNKNO)
 *
 *-----------------------------------------------------------------------
 *
@@ -21,11 +21,10 @@
 *
 *Parameters: input
 * NUN     total number of unknowns in vector FUNKNO.
-* NGRP    number of energy groups.
-* NGEFF   dimension of arrays INCONV and INGIND.
+* NGEFF   number of energy groups processed in parallel.
 * IMPX    print flag (equal to zero for no print).
 * INCONV  energy group convergence flag (set to .FALSE. if converged).
-* INGIND  energy group index assign to 1:NGEFF arrays.
+* NGIND   energy group indices assign to the NGEFF set.
 * LX      number of meshes along X axis.
 * LY      number of meshes along Y axis.
 * LZ      number of meshes along Z axis.
@@ -63,12 +62,12 @@
 *----
 *  SUBROUTINE ARGUMENTS
 *----
-      INTEGER NUN,NGRP,NGEFF,IMPX,INGIND(NGEFF),LX,LY,LZ,IELEM,NMAT,
-     1 NPQ,NSCT,MAT(LX,LY,LZ),NCODE(6),MRMX(NPQ),MRMY(NPQ),MRMZ(NPQ)
+      INTEGER NUN,NGEFF,IMPX,NGIND(NGEFF),LX,LY,LZ,IELEM,NMAT,NPQ,
+     1 NSCT,MAT(LX,LY,LZ),NCODE(6),MRMX(NPQ),MRMY(NPQ),MRMZ(NPQ)
       LOGICAL INCONV(NGEFF)
-      REAL VOL(LX,LY,LZ),TOTAL(0:NMAT,NGRP),ZCODE(6),QEXT(NUN,NGRP),
+      REAL VOL(LX,LY,LZ),TOTAL(0:NMAT,NGEFF),ZCODE(6),QEXT(NUN,NGEFF),
      1 DU(NPQ),DE(NPQ),DZ(NPQ),W(NPQ),DC(LX,LY,NPQ),DB(LX,LZ,NPQ),
-     2 DA(LY,LZ,NPQ),PL(NSCT,NPQ),FUNKNO(NUN,NGRP)
+     2 DA(LY,LZ,NPQ),PL(NSCT,NPQ),FUNKNO(NUN,NGEFF)
 *----
 *  LOCAL VARIABLES
 *----
@@ -154,11 +153,10 @@
 *$OMP  PARALLEL DO
 *$OMP1 PRIVATE(M,IG,VU,VE,VZ,M1,E1,IOF,JOF,IEL,JEL,I,J,K)
 *$OMP2 SHARED(FUNKNO) COLLAPSE(2)
-      DO 150 IGEFF=1,NGEFF
+      DO 150 IG=1,NGEFF
       DO 140 IPQD=1,NPQD(IND)
-      IF(.NOT.INCONV(IGEFF)) GO TO 140
+      IF(.NOT.INCONV(IG)) GO TO 140
       M=INDANG(IPQD,IND)
-      IG=INGIND(IGEFF)
       VU=DU(M)
       VE=DE(M)
       VZ=DZ(M)
@@ -271,17 +269,16 @@
 *$OMP1 PRIVATE(ITID,FLUX,M,IG,XNI,XNJ,XNK,Q,Q2,IOF,IER,IX,IY,IZ,IEL,JEL)
 *$OMP2 PRIVATE(I,J,K,L,VT,CORNERQ) SHARED(FUNKNO)
 *$OMP3 REDUCTION(+:FLUX_G) COLLAPSE(2)
-      DO 410 IGEFF=1,NGEFF
+      DO 410 IG=1,NGEFF
       DO 400 IPQD=1,NPQD(IND)
 #if defined(_OPENMP)
         ITID=omp_get_thread_num()
 #else
         ITID=0
 #endif
-      IF(IMPX.GT.5) WRITE(IUNOUT,500) ITID,IGEFF,IPQD
-      IF(.NOT.INCONV(IGEFF)) GO TO 400
+      IF(IMPX.GT.5) WRITE(IUNOUT,500) ITID,NGIND(IG),IPQD
+      IF(.NOT.INCONV(IG)) GO TO 400
       M=INDANG(IPQD,IND)
-      IG=INGIND(IGEFF)
       FLUX(:IELEM**3,:NSCT,:LX,:LY,:LZ)=0.0D0
       IF(W(M).EQ.0.0) GO TO 400
 *----
@@ -2041,16 +2038,15 @@
   370 CONTINUE
   380 CONTINUE
   390 CONTINUE
-      FLUX_G(:,:,:,:,:,IGEFF)=FLUX_G(:,:,:,:,:,IGEFF)+FLUX(:,:,:,:,:)
+      FLUX_G(:,:,:,:,:,IG)=FLUX_G(:,:,:,:,:,IG)+FLUX(:,:,:,:,:)
   400 CONTINUE
   410 CONTINUE
 *$OMP END PARALLEL DO
   420 CONTINUE
-      DO 430 IGEFF=1,NGEFF
-        IF(.NOT.INCONV(IGEFF)) GO TO 430
-        IG=INGIND(IGEFF)
+      DO 430 IG=1,NGEFF
+        IF(.NOT.INCONV(IG)) GO TO 430
         FUNKNO(:L4,IG)=
-     1  RESHAPE(REAL(FLUX_G(:IELEM**3,:NSCT,:LX,:LY,:LZ,IGEFF)), (/L4/))
+     1  RESHAPE(REAL(FLUX_G(:IELEM**3,:NSCT,:LX,:LY,:LZ,IG)), (/L4/))
   430 CONTINUE
 *----
 *  SCRATCH STORAGE DEALLOCATION

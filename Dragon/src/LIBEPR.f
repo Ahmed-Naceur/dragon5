@@ -68,7 +68,7 @@
       CHARACTER   NONOFF(2)*3
       CHARACTER   LINE*130
       SAVE        NONOFF
-      DATA        NONOFF/' NO','YES'/
+      DATA        NONOFF/'NO ','YES'/
 *----
 *  PRINT THE DEPLETION CHAIN.
 *----
@@ -329,7 +329,7 @@
      >       '                -----------------------------',
      >       '--------------------------------------------'/
      >       '   ISOTOPE      ......DECAY................  ..........',
-     >       '.FISSION.........  ......NG.......  ',12A4:/(91X,12A4))
+     >       '.FISSION.........  ......NG.......  ',10A4:/(91X,10A4))
  6010 FORMAT('   NB. NAME         MLIFE(DAYS) ENERGY(MEV)      ENERGY',
      >       '(MEV) TOTAL YIELD      ENERGY(MEV)')
  6012 FORMAT(I5,1X,2A4,4X,2A4,3X,I5,1X,2A4,1X,1P,E14.6)

@@ -49,12 +49,13 @@
 *         depletion chain.
 * IEVOLB  flag making an isotope non-depleting:
 *         =1 to force an isotope to be non-depleting;
-*         =2 to force an isotope to be at saturation.
+*         =2 to force an isotope to be depleting;
+*         =3 to force an isotope to be at saturation.
 * SIG1    initial reaction rates for nuclide I:
 *         SIG1(I,1) fission reaction rate;
 *         SIG1(I,2) gamma reaction rate;
 *         SIG1(I,3) N2N reaction rate;
-*         s...;
+*         ...;
 *         SIG1(I,NREAC) neutron-induced energy;
 *         SIG1(I,NREAC+1) decay energy released.
 * SIG2    final reaction rates.

@@ -82,7 +82,8 @@
 *   MASKG   group update mask.
 *   IEVOL   flag making an isotope non-depleting:
 *           =1 to force an isotope to be non-depleting;
-*           =2 to force an isotope to be at saturation
+*           =2 to force an isotope to be depleting;
+*           =3 to force an isotope to be at saturation
 *----
       ALLOCATE(MIX(MAXISO),MIXIX(NBISOX),LOCUPD(NBMIX),LISM(MAXISO),
      > IEVOL(MAXISO),IEVOLX(NBISOX))
@@ -243,6 +244,10 @@
         DO 30 ISO=1,NBISO
         IF(NNMIX.EQ.MIX(ISO)) IEVOL(ISO)=1
  30     CONTINUE
+      ELSE IF(CARLIR.EQ.'EVOL') THEN
+        DO 35 ISO=1,NBISO
+        IF(NNMIX.EQ.MIX(ISO)) IEVOL(ISO)=2
+ 35     CONTINUE
       ELSE
         READ(CARLIR,'(2A4)') (KCHAR(ITC),ITC=1,NTC-1)
         MODISO=0

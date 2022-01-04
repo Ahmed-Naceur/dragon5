@@ -1,7 +1,7 @@
 *DECK SNDSA
-      SUBROUTINE SNDSA (KPSYS,INCONV,INGIND,IPTRK,IMPX,NGRP,NGEFF,NREG,
-     1 NBMIX,NUN,ISCAT,MAT,VOL,KEYFLX,KEYSPN,NUNSA,IELEMSA,ZCODE,FUNOLD,
-     2 FUNKNO,NHEX)
+      SUBROUTINE SNDSA (KPSYS,INCONV,NGIND,IPTRK,IMPX,NGEFF,NREG,
+     1 NBMIX,NUN,ISCAT,MAT,VOL,KEYFLX,KEYSPN,NUNSA,IELEMSA,ZCODE,
+     2 FUNOLD,FUNKNO,NHEX)
 *
 *-----------------------------------------------------------------------
 *
@@ -22,11 +22,10 @@
 * KPSYS   pointer to the assembly matrices. KPSYS is an array of
 *         directories.
 * INCONV  energy group convergence flag (set to .FALSE. if converged).
-* INGIND  energy group index assign to 1:NGEFF arrays.
+* NGIND   energy group indices assign to the NGEFF set.
 * IPTRK   pointer to the tracking (L_TRACK signature).
 * IMPX    print flag (equal to zero for no print).
-* NGRP    number of energy groups.
-* NGEFF   dimension of arrays KPSYS, INCONV and INGIND.
+* NGEFF   number of energy groups processed in parallel.
 * NREG    total number of regions for which specific values of the
 *         neutron flux and reactions rates are required.
 * NBMIX   number of mixtures.
@@ -56,15 +55,15 @@
 *  SUBROUTINE ARGUMENTS
 *----
       TYPE(C_PTR) KPSYS(NGEFF),IPTRK
-      INTEGER     NGEFF,INGIND(NGEFF),IMPX,NGRP,NREG,NBMIX,NUN,ISCAT,
-     >            MAT(NREG),KEYFLX(NREG),KEYSPN(NREG),NUNSA,NHEX,IELEMSA
+      INTEGER     NGEFF,NGIND(NGEFF),IMPX,NREG,NBMIX,NUN,ISCAT,
+     >            MAT(NREG),KEYFLX(NREG),KEYSPN(NREG),NUNSA,NHEX,
+     >            IELEMSA
       LOGICAL     INCONV(NGEFF)
-      REAL        VOL(NREG),ZCODE(6),FUNOLD(NUN,NGRP),FUNKNO(NUN,NGRP)
+      REAL        VOL(NREG),ZCODE(6),FUNOLD(NUN,NGEFF),FUNKNO(NUN,NGEFF)
 *----
 *  LOCAL VARIABLES
 *----
       PARAMETER (IUNOUT=6,NSTATE=40,PI=3.141592654)
-      TYPE(C_PTR) JPSYS 
       INTEGER IPAR(NSTATE),NLOZH,SPLTL,REM,SBMSH
       LOGICAL LSHOOT
 *
@@ -77,7 +76,7 @@
 *----
 *  SCRATCH STORAGE ALLOCATION
 *----
-      ALLOCATE(FUNSA(NUNSA,NGRP),SUNSA(NUNSA,NGRP),FUNHLF(NUN,NGRP))
+      ALLOCATE(FUNSA(NUNSA,NGEFF),SUNSA(NUNSA,NGEFF),FUNHLF(NUN,NGEFF))
 *----
 *  RECOVER TRACKING INFORMATION
 *----
@@ -111,22 +110,20 @@
 *----
 *  LOOP OVER ENERGY GROUPS.
 *----
-      CALL XDRSET(SUNSA,NUNSA*NGRP,0.0)
+      CALL XDRSET(SUNSA,NUNSA*NGEFF,0.0)
       DO 30 IING=1,NGEFF
       IF(.NOT.INCONV(IING)) GO TO 30
-      JPSYS=KPSYS(IING)
-      IGP=INGIND(IING)
       IF(IMPX.GT.1) WRITE(IUNOUT,'(/24H SNDSA: PROCESSING GROUP,I5,
-     1 6H WITH ,A,1H.)') IGP,'SN/DSA'
+     1 6H WITH ,A,1H.)') NGIND(IING),'SN/DSA'
 *----
 *  RECOVER WITHIN-GROUP SCATTERING CROSS SECTION.
 *----
-      CALL LCMLEN(JPSYS,'DRAGON-TXSC',ILONG,ITYLCM)
+      CALL LCMLEN(KPSYS(IING),'DRAGON-TXSC',ILONG,ITYLCM)
       IF(ILONG.NE.NBMIX+1) CALL XABORT('SNDSA: INVALID TXSC LENGTH.')
-      CALL LCMLEN(JPSYS,'DRAGON-S0XSC',ILONG,ITYLCM)
+      CALL LCMLEN(KPSYS(IING),'DRAGON-S0XSC',ILONG,ITYLCM)
       NANI=ILONG/(NBMIX+1)
       ALLOCATE(SGAS(ILONG))
-      CALL LCMGET(JPSYS,'DRAGON-S0XSC',SGAS)
+      CALL LCMGET(KPSYS(IING),'DRAGON-S0XSC',SGAS)
 *----
 *  REBUILD KEYFLX FOR HEXAGONAL CASES
 *----
@@ -176,8 +173,8 @@
       DO 10 IEL=1,(IELEMSA**NDIM)
       IND=KEYFLX(IR)+IEL-1
       JND=KEYSPN(IR)+IEL-1
-      SUNSA(JND,IGP)=SUNSA(JND,IGP)+SIGS*(FUNKNO(IND,IGP)-
-     >   FUNOLD(IND,IGP))
+      SUNSA(JND,IING)=SUNSA(JND,IING)+SIGS*(FUNKNO(IND,IING)-
+     >   FUNOLD(IND,IING))
   10  CONTINUE       
   20  CONTINUE      
       DEALLOCATE(SGAS)
@@ -186,13 +183,13 @@
 *  SOLVE THE DSA EQUATION USING A P1 METHOD.
 *----
       CALL LCMSIX(IPTRK,'DSA',1)
-      CALL XDRSET(FUNSA,NUNSA*NGRP,0.0)
+      CALL XDRSET(FUNSA,NUNSA*NGEFF,0.0)
       IF(ITYPE.EQ.7) THEN  
-         CALL TRIFLV(KPSYS,INCONV,INGIND,IPTRK,IMPX,NGRP,NGEFF,NREG,
-     >      NUNSA,MAT,VOL,KEYSPN,FUNSA,SUNSA)
+         CALL TRIFLV(KPSYS,INCONV,NGIND,IPTRK,IMPX,NGEFF,NREG,NUNSA,
+     >      MAT,VOL,KEYSPN,FUNSA,SUNSA)
       ELSE
-         CALL PNFLV(KPSYS,INCONV,INGIND,IPTRK,IMPX,NGRP,NGEFF,NREG,
-     >      NBMIX,NUNSA,MAT,VOL,KEYSPN,FUNSA,SUNSA)
+         CALL PNFLV(KPSYS,INCONV,NGIND,IPTRK,IMPX,NGEFF,NREG,NBMIX,
+     >      NUNSA,MAT,VOL,KEYSPN,FUNSA,SUNSA)
       ENDIF
       CALL LCMSIX(IPTRK,' ',2)
 *----
@@ -201,21 +198,20 @@
       RAT0=0.0
       DO 400 IING=1,NGEFF
       IF(.NOT.INCONV(IING)) GO TO 400
-      IGP=INGIND(IING)
 *--------
 * UPGRADE ZEROTH AND HIGHER MOMENTS OF THE P0 SN SOLUTION
-      FUNHLF(:,IGP)=FUNKNO(:,IGP)
+      FUNHLF(:,IING)=FUNKNO(:,IING)
       DO 171 IR=1,NREG
       IF(MAT(IR).LE.0) GO TO 171
       DO IEL=1,NLEG
          IF(IEL.EQ.1)THEN
             INDSN=KEYFLX(IR)
             INDPN=KEYSPN(IR)
-            FUNKNO(INDSN,IGP)=FUNKNO(INDSN,IGP)+FUNSA(INDPN,IGP)
-            RAT0 =FUNSA(INDPN,IGP)/FUNHLF(INDSN,IGP)
+            FUNKNO(INDSN,IING)=FUNKNO(INDSN,IING)+FUNSA(INDPN,IING)
+            RAT0 =FUNSA(INDPN,IING)/FUNHLF(INDSN,IING)
          ELSE
             INDSN=KEYFLX(IR)+IEL-1 
-            FUNKNO(INDSN,IGP)=(1+RAT0)*FUNHLF(INDSN,IGP)
+            FUNKNO(INDSN,IING)=(1+RAT0)*FUNHLF(INDSN,IING)
          ENDIF
       ENDDO
  171  CONTINUE
@@ -229,10 +225,10 @@
             IF(IK.EQ.1)THEN
                INDSN=KEYFLX(IR)
                INDPN=KEYSPN(IR)
-               RAT0 =FUNSA(INDPN,IGP)/FUNHLF(INDSN,IGP)
+               RAT0 =FUNSA(INDPN,IING)/FUNHLF(INDSN,IING)
             ELSE
                INDSN=KEYFLX(IR)+IEL-1 + ((IK-1)*NLEG)
-               FUNKNO(INDSN,IGP)=(1+RAT0)*FUNHLF(INDSN,IGP)
+               FUNKNO(INDSN,IING)=(1+RAT0)*FUNHLF(INDSN,IING)
             ENDIF
          ENDDO
       ENDDO
@@ -260,8 +256,8 @@
             SG=1.0
             DO IE=1,IELEM
                INDSN=KEYFLX(IR)+IE-1
-               FHLF = FHLF+SG*SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IGP)
-               FONE = FONE+SG*SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IGP)
+               FHLF = FHLF+SG*SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IING)
+               FONE = FONE+SG*SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IING)
                SG=-SG
             ENDDO
             BHLF=0.0
@@ -271,9 +267,9 @@
             IF(U(M).LT.0.0) THEN
                IND1=LX*NSCT*IELEM + 1
                INDB=LX*NSCT*IELEM + M
-               BHLF=BHLF+W(M)*FUNHLF(INDB,IGP)*1.0*(ZCODE(1))
-               IF(FUNHLF(IND1,IGP).NE.0.0)
-     >          TOTW=TOTW+(W(M) * FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP) )
+               BHLF=BHLF+W(M)*FUNHLF(INDB,IING)*1.0*(ZCODE(1))
+               IF(FUNHLF(IND1,IING).NE.0.0)
+     >          TOTW=TOTW+(W(M) * FUNHLF(INDB,IING)/FUNHLF(IND1,IING) )
             ENDIF
             ENDDO
 
@@ -283,14 +279,14 @@
             IF(U(M).LT.0.0) THEN
                IND1=LX*NSCT*IELEM + 1
                INDB=LX*NSCT*IELEM + M
-               IF(FUNHLF(INDB,IGP).EQ.0.0)THEN
-                  FUNKNO(INDB,IGP)=0.0
+               IF(FUNHLF(INDB,IING).EQ.0.0)THEN
+                  FUNKNO(INDB,IING)=0.0
                ELSE
-                  IF(FUNHLF(IND1,IGP).NE.0.0)THEN
-                     FUNKNO(INDB,IGP)= (BONE/TOTW)*
-     >                FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP)
+                  IF(FUNHLF(IND1,IING).NE.0.0)THEN
+                     FUNKNO(INDB,IING)= (BONE/TOTW)*
+     >                FUNHLF(INDB,IING)/FUNHLF(IND1,IING)
                   ELSE
-                     FUNKNO(INDB,IGP)=FUNHLF(INDB,IGP)
+                     FUNKNO(INDB,IING)=FUNHLF(INDB,IING)
                   ENDIF
                ENDIF
             ENDIF
@@ -302,8 +298,8 @@
             FONE=0.0
             DO IE=1,IELEM
                INDSN=KEYFLX(IR)+IE-1
-               FHLF = FHLF+SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IGP)
-               FONE = FONE+SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IGP)
+               FHLF = FHLF+SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IING)
+               FONE = FONE+SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IING)
             ENDDO
             BHLF=0.0
             BONE=0.0
@@ -312,9 +308,9 @@
             IF(U(M).GT.0.0) THEN
                IND1=LX*NSCT*IELEM + NLF
                INDB=LX*NSCT*IELEM + M
-               BHLF=BHLF+W(M)*FUNHLF(INDB,IGP)*1.0*(ZCODE(2))
-               IF(FUNHLF(IND1,IGP).NE.0.0)
-     >          TOTW=TOTW+(W(M) * FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP) )
+               BHLF=BHLF+W(M)*FUNHLF(INDB,IING)*1.0*(ZCODE(2))
+               IF(FUNHLF(IND1,IING).NE.0.0)
+     >          TOTW=TOTW+(W(M) * FUNHLF(INDB,IING)/FUNHLF(IND1,IING) )
                ! TOTW=TOTW+ABS(W(M))
             ENDIF
             ENDDO
@@ -325,14 +321,14 @@
             IF(U(M).GT.0.0) THEN
                IND1=LX*NSCT*IELEM + NLF
                INDB=LX*NSCT*IELEM + M
-               IF(FUNHLF(INDB,IGP).EQ.0.0)THEN
-                  FUNKNO(INDB,IGP)=0.0
+               IF(FUNHLF(INDB,IING).EQ.0.0)THEN
+                  FUNKNO(INDB,IING)=0.0
                ELSE
-                  IF(FUNHLF(IND1,IGP).NE.0.0)THEN
-                     FUNKNO(INDB,IGP)= (BONE/TOTW)*
-     >                FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP)
+                  IF(FUNHLF(IND1,IING).NE.0.0)THEN
+                     FUNKNO(INDB,IING)= (BONE/TOTW)*
+     >                FUNHLF(INDB,IING)/FUNHLF(IND1,IING)
                   ELSE
-                     FUNKNO(INDB,IGP)=FUNHLF(INDB,IGP)
+                     FUNKNO(INDB,IING)=FUNHLF(INDB,IING)
                   ENDIF
                ENDIF
             ENDIF
@@ -365,8 +361,8 @@
             SG=1.0
             DO IE=1,IELEM
                INDSN=KEYFLX(IR)+(JE-1)*IELEM+IE-1
-               FHLF = FHLF+SG*SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IGP)
-               FONE = FONE+SG*SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IGP)
+               FHLF = FHLF+SG*SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IING)
+               FONE = FONE+SG*SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IING)
                SG=-SG
             ENDDO
             BHLF=0.0
@@ -378,9 +374,9 @@
                IF(ICNT.EQ.0) ICNT=M
                IND1 = LL4 + (ICNT-1)*LY*IELEM + (JJ-1)*IELEM + JE
                INDB = LL4 +    (M-1)*LY*IELEM + (JJ-1)*IELEM + JE
-               BHLF=BHLF + 2.0*W(M)*FUNHLF(INDB,IGP)*1.0*(ZCODE(1))
-               IF(FUNHLF(IND1,IGP).NE.0.0)
-     >          TOTW=TOTW+(2.0*W(M)*FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP))
+               BHLF=BHLF + 2.0*W(M)*FUNHLF(INDB,IING)*1.0*(ZCODE(1))
+               IF(FUNHLF(IND1,IING).NE.0.0)
+     >          TOTW=TOTW+(2.0*W(M)*FUNHLF(INDB,IING)/FUNHLF(IND1,IING))
             ENDIF
             ENDDO
 
@@ -390,14 +386,14 @@
             IF((DU(M).LT.0.0).AND.(W(M).NE.0.0)) THEN
                IND1 = LL4 + (ICNT-1)*LY*IELEM + (JJ-1)*IELEM + JE
                INDB = LL4 +    (M-1)*LY*IELEM + (JJ-1)*IELEM + JE
-               IF(FUNHLF(INDB,IGP).EQ.0.0)THEN
-                  FUNKNO(INDB,IGP)=0.0
+               IF(FUNHLF(INDB,IING).EQ.0.0)THEN
+                  FUNKNO(INDB,IING)=0.0
                ELSE
-                  IF(FUNHLF(IND1,IGP).NE.0.0)THEN
-                     FUNKNO(INDB,IGP)= (BONE/TOTW)*
-     >                FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP)
+                  IF(FUNHLF(IND1,IING).NE.0.0)THEN
+                     FUNKNO(INDB,IING)= (BONE/TOTW)*
+     >                FUNHLF(INDB,IING)/FUNHLF(IND1,IING)
                   ELSE
-                     FUNKNO(INDB,IGP)=FUNHLF(INDB,IGP)
+                     FUNKNO(INDB,IING)=FUNHLF(INDB,IING)
                   ENDIF
                ENDIF
             ENDIF
@@ -411,8 +407,8 @@
             FONE=0.0
             DO IE=1,IELEM
                INDSN=KEYFLX(IR)+(JE-1)*IELEM+IE-1
-               FHLF = FHLF+SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IGP)
-               FONE = FONE+SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IGP)
+               FHLF = FHLF+SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IING)
+               FONE = FONE+SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IING)
             ENDDO
             BHLF=0.0
             BONE=0.0
@@ -423,9 +419,9 @@
                IF(ICNT.EQ.0) ICNT=M
                IND1 = LL4 + (ICNT-1)*LY*IELEM + (JJ-1)*IELEM + JE
                INDB = LL4 +    (M-1)*LY*IELEM + (JJ-1)*IELEM + JE
-               BHLF=BHLF + 2.0*W(M)*FUNHLF(INDB,IGP)*1.0*(ZCODE(2))
-               IF(FUNHLF(IND1,IGP).NE.0.0)
-     >          TOTW=TOTW+(2.0*W(M)*FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP))
+               BHLF=BHLF + 2.0*W(M)*FUNHLF(INDB,IING)*1.0*(ZCODE(2))
+               IF(FUNHLF(IND1,IING).NE.0.0)
+     >          TOTW=TOTW+(2.0*W(M)*FUNHLF(INDB,IING)/FUNHLF(IND1,IING))
             ENDIF
             ENDDO
 
@@ -435,14 +431,14 @@
             IF((DU(M).GT.0.0).AND.(W(M).NE.0.0)) THEN
                IND1 = LL4 + (ICNT-1)*LY*IELEM + (JJ-1)*IELEM + JE
                INDB = LL4 +    (M-1)*LY*IELEM + (JJ-1)*IELEM + JE
-               IF(FUNHLF(INDB,IGP).EQ.0.0)THEN
-                  FUNKNO(INDB,IGP)=0.0
+               IF(FUNHLF(INDB,IING).EQ.0.0)THEN
+                  FUNKNO(INDB,IING)=0.0
                ELSE
-                  IF(FUNHLF(IND1,IGP).NE.0.0)THEN
-                     FUNKNO(INDB,IGP)= (BONE/TOTW)*
-     >                FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP)
+                  IF(FUNHLF(IND1,IING).NE.0.0)THEN
+                     FUNKNO(INDB,IING)= (BONE/TOTW)*
+     >                FUNHLF(INDB,IING)/FUNHLF(IND1,IING)
                   ELSE
-                     FUNKNO(INDB,IGP)=FUNHLF(INDB,IGP)
+                     FUNKNO(INDB,IING)=FUNHLF(INDB,IING)
                   ENDIF
                ENDIF
             ENDIF
@@ -457,8 +453,8 @@
             SG=1.0
             DO JE=1,IELEM
                INDSN=KEYFLX(IR)+(JE-1)*IELEM+IE-1
-               FHLF = FHLF+SG*SQRT(REAL(2*JE-1))*FUNHLF(INDSN,IGP)
-               FONE = FONE+SG*SQRT(REAL(2*JE-1))*FUNKNO(INDSN,IGP)
+               FHLF = FHLF+SG*SQRT(REAL(2*JE-1))*FUNHLF(INDSN,IING)
+               FONE = FONE+SG*SQRT(REAL(2*JE-1))*FUNKNO(INDSN,IING)
                SG=-SG
             ENDDO
             BHLF=0.0
@@ -470,9 +466,9 @@
                IF(ICNT.EQ.0) ICNT=M
                IND1=LL4+IELEM*LY*NPQ+(ICNT-1)*LX*IELEM+(II-1)*IELEM+IE
                INDB=LL4+IELEM*LY*NPQ+   (M-1)*LX*IELEM+(II-1)*IELEM+IE
-               BHLF=BHLF + 2.0*W(M)*FUNHLF(INDB,IGP)*1.0*(ZCODE(3))
-               IF(FUNHLF(IND1,IGP).NE.0.0)
-     >          TOTW=TOTW+(2.0*W(M)*FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP))
+               BHLF=BHLF + 2.0*W(M)*FUNHLF(INDB,IING)*1.0*(ZCODE(3))
+               IF(FUNHLF(IND1,IING).NE.0.0)
+     >          TOTW=TOTW+(2.0*W(M)*FUNHLF(INDB,IING)/FUNHLF(IND1,IING))
             ENDIF
             ENDDO
 
@@ -482,14 +478,14 @@
             IF((DE(M).LT.0.0).AND.(W(M).NE.0.0)) THEN
                IND1=LL4+IELEM*LY*NPQ+(ICNT-1)*LX*IELEM+(II-1)*IELEM+IE
                INDB=LL4+IELEM*LY*NPQ+   (M-1)*LX*IELEM+(II-1)*IELEM+IE
-               IF(FUNHLF(INDB,IGP).EQ.0.0)THEN
-                  FUNKNO(INDB,IGP)=0.0
+               IF(FUNHLF(INDB,IING).EQ.0.0)THEN
+                  FUNKNO(INDB,IING)=0.0
                ELSE
-                  IF(FUNHLF(IND1,IGP).NE.0.0)THEN
-                     FUNKNO(INDB,IGP)= (BONE/TOTW)*
-     >                FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP)
+                  IF(FUNHLF(IND1,IING).NE.0.0)THEN
+                     FUNKNO(INDB,IING)= (BONE/TOTW)*
+     >                FUNHLF(INDB,IING)/FUNHLF(IND1,IING)
                   ELSE
-                     FUNKNO(INDB,IGP)=FUNHLF(INDB,IGP)
+                     FUNKNO(INDB,IING)=FUNHLF(INDB,IING)
                   ENDIF
                ENDIF
             ENDIF
@@ -503,8 +499,8 @@
             FONE=0.0
             DO JE=1,IELEM
                INDSN=KEYFLX(IR)+(JE-1)*IELEM+IE-1
-               FHLF = FHLF+SQRT(REAL(2*JE-1))*FUNHLF(INDSN,IGP)
-               FONE = FONE+SQRT(REAL(2*JE-1))*FUNKNO(INDSN,IGP)
+               FHLF = FHLF+SQRT(REAL(2*JE-1))*FUNHLF(INDSN,IING)
+               FONE = FONE+SQRT(REAL(2*JE-1))*FUNKNO(INDSN,IING)
             ENDDO
             BHLF=0.0
             BONE=0.0
@@ -515,9 +511,9 @@
                IF(ICNT.EQ.0) ICNT=M
                IND1=LL4+IELEM*LY*NPQ+(ICNT-1)*LX*IELEM+(II-1)*IELEM+IE
                INDB=LL4+IELEM*LY*NPQ+   (M-1)*LX*IELEM+(II-1)*IELEM+IE
-               BHLF=BHLF + 2.0*W(M)*FUNHLF(INDB,IGP)*1.0*(ZCODE(4))
-               IF(FUNHLF(IND1,IGP).NE.0.0)
-     >          TOTW=TOTW+(2.0*W(M)*FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP))
+               BHLF=BHLF + 2.0*W(M)*FUNHLF(INDB,IING)*1.0*(ZCODE(4))
+               IF(FUNHLF(IND1,IING).NE.0.0)
+     >          TOTW=TOTW+(2.0*W(M)*FUNHLF(INDB,IING)/FUNHLF(IND1,IING))
             ENDIF
             ENDDO
 
@@ -527,14 +523,14 @@
             IF((DE(M).GT.0.0).AND.(W(M).NE.0.0)) THEN
                IND1=LL4+IELEM*LY*NPQ+(ICNT-1)*LX*IELEM+(II-1)*IELEM+IE
                INDB=LL4+IELEM*LY*NPQ+   (M-1)*LX*IELEM+(II-1)*IELEM+IE
-               IF(FUNHLF(INDB,IGP).EQ.0.0)THEN
-                  FUNKNO(INDB,IGP)=0.0
+               IF(FUNHLF(INDB,IING).EQ.0.0)THEN
+                  FUNKNO(INDB,IING)=0.0
                ELSE
-                  IF(FUNHLF(IND1,IGP).NE.0.0)THEN
-                     FUNKNO(INDB,IGP)= (BONE/TOTW)*
-     >                FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP)
+                  IF(FUNHLF(IND1,IING).NE.0.0)THEN
+                     FUNKNO(INDB,IING)= (BONE/TOTW)*
+     >                FUNHLF(INDB,IING)/FUNHLF(IND1,IING)
                   ELSE
-                     FUNKNO(INDB,IGP)=FUNHLF(INDB,IGP)
+                     FUNKNO(INDB,IING)=FUNHLF(INDB,IING)
                   ENDIF
                ENDIF
             ENDIF
@@ -573,8 +569,8 @@
             SG=1.0
             DO IE=1,IELEM
                INDSN=KEYFLX(IR)+(KE-1)*IELEM**2+(JE-1)*IELEM+IE-1
-               FHLF = FHLF+SG*SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IGP)
-               FONE = FONE+SG*SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IGP)
+               FHLF = FHLF+SG*SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IING)
+               FONE = FONE+SG*SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IING)
                SG=-SG
             ENDDO
             BHLF=0.0
@@ -588,9 +584,9 @@
      >            + (JJ-1)*IELEM**2 + (KE-1)*IELEM + JE
                INDB=LL4+    (M-1)*LY*LZ*IELEM**2 + (KK-1)*LY*IELEM**2 
      >            + (JJ-1)*IELEM**2 + (KE-1)*IELEM + JE
-               BHLF=BHLF + W(M)*FUNHLF(INDB,IGP)*1.0*(ZCODE(1))
-               IF(FUNHLF(IND1,IGP).NE.0.0)
-     >          TOTW=TOTW+(W(M)*FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP))
+               BHLF=BHLF + W(M)*FUNHLF(INDB,IING)*1.0*(ZCODE(1))
+               IF(FUNHLF(IND1,IING).NE.0.0)
+     >          TOTW=TOTW+(W(M)*FUNHLF(INDB,IING)/FUNHLF(IND1,IING))
             ENDIF
             ENDDO
 
@@ -602,14 +598,14 @@
      >            + (JJ-1)*IELEM**2 + (KE-1)*IELEM + JE
                INDB=LL4+    (M-1)*LY*LZ*IELEM**2 + (KK-1)*LY*IELEM**2 
      >            + (JJ-1)*IELEM**2 + (KE-1)*IELEM + JE
-               IF(FUNHLF(INDB,IGP).EQ.0.0)THEN
-                  FUNKNO(INDB,IGP)=0.0
+               IF(FUNHLF(INDB,IING).EQ.0.0)THEN
+                  FUNKNO(INDB,IING)=0.0
                ELSE
-                  IF(FUNHLF(IND1,IGP).NE.0.0)THEN
-                     FUNKNO(INDB,IGP)= (BONE/TOTW)*
-     >                FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP)
+                  IF(FUNHLF(IND1,IING).NE.0.0)THEN
+                     FUNKNO(INDB,IING)= (BONE/TOTW)*
+     >                FUNHLF(INDB,IING)/FUNHLF(IND1,IING)
                   ELSE
-                     FUNKNO(INDB,IGP)=FUNHLF(INDB,IGP)
+                     FUNKNO(INDB,IING)=FUNHLF(INDB,IING)
                   ENDIF
                ENDIF
             ENDIF
@@ -625,8 +621,8 @@
             FONE=0.0
             DO IE=1,IELEM
                INDSN=KEYFLX(IR)+(KE-1)*IELEM**2+(JE-1)*IELEM+IE-1
-               FHLF = FHLF+SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IGP)
-               FONE = FONE+SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IGP)
+               FHLF = FHLF+SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IING)
+               FONE = FONE+SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IING)
             ENDDO
             BHLF=0.0
             BONE=0.0
@@ -639,9 +635,9 @@
      >            + (JJ-1)*IELEM**2 + (KE-1)*IELEM + JE
                INDB=LL4+    (M-1)*LY*LZ*IELEM**2 + (KK-1)*LY*IELEM**2 
      >            + (JJ-1)*IELEM**2 + (KE-1)*IELEM + JE
-               BHLF=BHLF + W(M)*FUNHLF(INDB,IGP)*1.0*(ZCODE(2))
-               IF(FUNHLF(IND1,IGP).NE.0.0)
-     >          TOTW=TOTW+(W(M)*FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP))
+               BHLF=BHLF + W(M)*FUNHLF(INDB,IING)*1.0*(ZCODE(2))
+               IF(FUNHLF(IND1,IING).NE.0.0)
+     >          TOTW=TOTW+(W(M)*FUNHLF(INDB,IING)/FUNHLF(IND1,IING))
             ENDIF
             ENDDO
 
@@ -653,14 +649,14 @@
      >            + (JJ-1)*IELEM**2 + (KE-1)*IELEM + JE
                INDB=LL4+    (M-1)*LY*LZ*IELEM**2 + (KK-1)*LY*IELEM**2 
      >            + (JJ-1)*IELEM**2 + (KE-1)*IELEM + JE
-               IF(FUNHLF(INDB,IGP).EQ.0.0)THEN
-                  FUNKNO(INDB,IGP)=0.0
+               IF(FUNHLF(INDB,IING).EQ.0.0)THEN
+                  FUNKNO(INDB,IING)=0.0
                ELSE
-                  IF(FUNHLF(IND1,IGP).NE.0.0)THEN
-                     FUNKNO(INDB,IGP)= (BONE/TOTW)*
-     >                FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP)
+                  IF(FUNHLF(IND1,IING).NE.0.0)THEN
+                     FUNKNO(INDB,IING)= (BONE/TOTW)*
+     >                FUNHLF(INDB,IING)/FUNHLF(IND1,IING)
                   ELSE
-                     FUNKNO(INDB,IGP)=FUNHLF(INDB,IGP)
+                     FUNKNO(INDB,IING)=FUNHLF(INDB,IING)
                   ENDIF
                ENDIF
             ENDIF
@@ -677,8 +673,8 @@
             SG=1.0
             DO JE=1,IELEM
                INDSN=KEYFLX(IR)+(KE-1)*IELEM**2+(JE-1)*IELEM+IE-1
-               FHLF = FHLF+SG*SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IGP)
-               FONE = FONE+SG*SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IGP)
+               FHLF = FHLF+SG*SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IING)
+               FONE = FONE+SG*SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IING)
                SG=-SG
             ENDDO
             BHLF=0.0
@@ -694,9 +690,9 @@
                INDB=LL4+ LY*LZ*NPQ*IELEM**2 +    (M-1)*LX*LZ*IELEM**2 
      >            + (KK-1)*LX*IELEM**2 + (II-1)*IELEM**2 + (KE-1)*IELEM 
      >            + IE
-               BHLF=BHLF + W(M)*FUNHLF(INDB,IGP)*1.0*(ZCODE(3))
-               IF(FUNHLF(IND1,IGP).NE.0.0)
-     >          TOTW=TOTW+(W(M)*FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP))
+               BHLF=BHLF + W(M)*FUNHLF(INDB,IING)*1.0*(ZCODE(3))
+               IF(FUNHLF(IND1,IING).NE.0.0)
+     >          TOTW=TOTW+(W(M)*FUNHLF(INDB,IING)/FUNHLF(IND1,IING))
             ENDIF
             ENDDO
 
@@ -710,14 +706,14 @@
                INDB=LL4+ LY*LZ*NPQ*IELEM**2 +    (M-1)*LX*LZ*IELEM**2 
      >            + (KK-1)*LX*IELEM**2 + (II-1)*IELEM**2 + (KE-1)*IELEM 
      >            + IE
-               IF(FUNHLF(INDB,IGP).EQ.0.0)THEN
-                  FUNKNO(INDB,IGP)=0.0
+               IF(FUNHLF(INDB,IING).EQ.0.0)THEN
+                  FUNKNO(INDB,IING)=0.0
                ELSE
-                  IF(FUNHLF(IND1,IGP).NE.0.0)THEN
-                     FUNKNO(INDB,IGP)= (BONE/TOTW)*
-     >                FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP)
+                  IF(FUNHLF(IND1,IING).NE.0.0)THEN
+                     FUNKNO(INDB,IING)= (BONE/TOTW)*
+     >                FUNHLF(INDB,IING)/FUNHLF(IND1,IING)
                   ELSE
-                     FUNKNO(INDB,IGP)=FUNHLF(INDB,IGP)
+                     FUNKNO(INDB,IING)=FUNHLF(INDB,IING)
                   ENDIF
                ENDIF
             ENDIF
@@ -733,8 +729,8 @@
             FONE=0.0
             DO JE=1,IELEM
                INDSN=KEYFLX(IR)+(KE-1)*IELEM**2+(JE-1)*IELEM+IE-1
-               FHLF = FHLF+SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IGP)
-               FONE = FONE+SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IGP)
+               FHLF = FHLF+SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IING)
+               FONE = FONE+SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IING)
             ENDDO
             BHLF=0.0
             BONE=0.0
@@ -749,9 +745,9 @@
                INDB=LL4+ LY*LZ*NPQ*IELEM**2 +    (M-1)*LX*LZ*IELEM**2 
      >            + (KK-1)*LX*IELEM**2 + (II-1)*IELEM**2 + (KE-1)*IELEM 
      >            + IE
-               BHLF=BHLF + W(M)*FUNHLF(INDB,IGP)*1.0*(ZCODE(4))
-               IF(FUNHLF(IND1,IGP).NE.0.0)
-     >          TOTW=TOTW+(W(M)*FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP))
+               BHLF=BHLF + W(M)*FUNHLF(INDB,IING)*1.0*(ZCODE(4))
+               IF(FUNHLF(IND1,IING).NE.0.0)
+     >          TOTW=TOTW+(W(M)*FUNHLF(INDB,IING)/FUNHLF(IND1,IING))
             ENDIF
             ENDDO
 
@@ -765,14 +761,14 @@
                INDB=LL4+ LY*LZ*NPQ*IELEM**2 +    (M-1)*LX*LZ*IELEM**2 
      >            + (KK-1)*LX*IELEM**2 + (II-1)*IELEM**2 + (KE-1)*IELEM 
      >            + IE
-               IF(FUNHLF(INDB,IGP).EQ.0.0)THEN
-                  FUNKNO(INDB,IGP)=0.0
+               IF(FUNHLF(INDB,IING).EQ.0.0)THEN
+                  FUNKNO(INDB,IING)=0.0
                ELSE
-                  IF(FUNHLF(IND1,IGP).NE.0.0)THEN
-                     FUNKNO(INDB,IGP)= (BONE/TOTW)*
-     >                FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP)
+                  IF(FUNHLF(IND1,IING).NE.0.0)THEN
+                     FUNKNO(INDB,IING)= (BONE/TOTW)*
+     >                FUNHLF(INDB,IING)/FUNHLF(IND1,IING)
                   ELSE
-                     FUNKNO(INDB,IGP)=FUNHLF(INDB,IGP)
+                     FUNKNO(INDB,IING)=FUNHLF(INDB,IING)
                   ENDIF
                ENDIF
             ENDIF
@@ -789,8 +785,8 @@
             SG=1.0
             DO KE=1,IELEM
                INDSN=KEYFLX(IR)+(KE-1)*IELEM**2+(JE-1)*IELEM+IE-1
-               FHLF = FHLF+SG*SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IGP)
-               FONE = FONE+SG*SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IGP)
+               FHLF = FHLF+SG*SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IING)
+               FONE = FONE+SG*SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IING)
                SG=-SG
             ENDDO
             BHLF=0.0
@@ -807,9 +803,9 @@
                INDB=LL4+ LY*LZ*NPQ*IELEM**2 + LX*LZ*NPQ*IELEM**2 
      >            +    (M-1)*LX*LY*IELEM**2 + (JJ-1)*LX*IELEM**2 
      >            + (II-1)*IELEM**2 + (JE-1)*IELEM + IE
-               BHLF=BHLF + W(M)*FUNHLF(INDB,IGP)*1.0*(ZCODE(5))
-               IF(FUNHLF(IND1,IGP).NE.0.0)
-     >          TOTW=TOTW+(W(M)*FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP))
+               BHLF=BHLF + W(M)*FUNHLF(INDB,IING)*1.0*(ZCODE(5))
+               IF(FUNHLF(IND1,IING).NE.0.0)
+     >          TOTW=TOTW+(W(M)*FUNHLF(INDB,IING)/FUNHLF(IND1,IING))
             ENDIF
             ENDDO
 
@@ -823,14 +819,14 @@
                INDB=LL4+ LY*LZ*NPQ*IELEM**2 + LX*LZ*NPQ*IELEM**2 
      >            +    (M-1)*LX*LY*IELEM**2 + (JJ-1)*LX*IELEM**2 
      >            + (II-1)*IELEM**2 + (JE-1)*IELEM + IE
-               IF(FUNHLF(INDB,IGP).EQ.0.0)THEN
-                  FUNKNO(INDB,IGP)=0.0
+               IF(FUNHLF(INDB,IING).EQ.0.0)THEN
+                  FUNKNO(INDB,IING)=0.0
                ELSE
-                  IF(FUNHLF(IND1,IGP).NE.0.0)THEN
-                     FUNKNO(INDB,IGP)= (BONE/TOTW)*
-     >                FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP)
+                  IF(FUNHLF(IND1,IING).NE.0.0)THEN
+                     FUNKNO(INDB,IING)= (BONE/TOTW)*
+     >                FUNHLF(INDB,IING)/FUNHLF(IND1,IING)
                   ELSE
-                     FUNKNO(INDB,IGP)=FUNHLF(INDB,IGP)
+                     FUNKNO(INDB,IING)=FUNHLF(INDB,IING)
                   ENDIF
                ENDIF
             ENDIF
@@ -846,8 +842,8 @@
             FONE=0.0
             DO KE=1,IELEM
                INDSN=KEYFLX(IR)+(KE-1)*IELEM**2+(JE-1)*IELEM+IE-1
-               FHLF = FHLF+SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IGP)
-               FONE = FONE+SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IGP)
+               FHLF = FHLF+SQRT(REAL(2*IE-1))*FUNHLF(INDSN,IING)
+               FONE = FONE+SQRT(REAL(2*IE-1))*FUNKNO(INDSN,IING)
             ENDDO
             BHLF=0.0
             BONE=0.0
@@ -863,9 +859,9 @@
                INDB=LL4+ LY*LZ*NPQ*IELEM**2 + LX*LZ*NPQ*IELEM**2 
      >            +    (M-1)*LX*LY*IELEM**2 + (JJ-1)*LX*IELEM**2 
      >            + (II-1)*IELEM**2 + (JE-1)*IELEM + IE
-               BHLF=BHLF + W(M)*FUNHLF(INDB,IGP)*1.0*(ZCODE(6))
-               IF(FUNHLF(IND1,IGP).NE.0.0)
-     >          TOTW=TOTW+(W(M)*FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP))
+               BHLF=BHLF + W(M)*FUNHLF(INDB,IING)*1.0*(ZCODE(6))
+               IF(FUNHLF(IND1,IING).NE.0.0)
+     >          TOTW=TOTW+(W(M)*FUNHLF(INDB,IING)/FUNHLF(IND1,IING))
             ENDIF
             ENDDO
 
@@ -879,14 +875,14 @@
                INDB=LL4+ LY*LZ*NPQ*IELEM**2 + LX*LZ*NPQ*IELEM**2 
      >            +    (M-1)*LX*LY*IELEM**2 + (JJ-1)*LX*IELEM**2 
      >            + (II-1)*IELEM**2 + (JE-1)*IELEM + IE
-               IF(FUNHLF(INDB,IGP).EQ.0.0)THEN
-                  FUNKNO(INDB,IGP)=0.0
+               IF(FUNHLF(INDB,IING).EQ.0.0)THEN
+                  FUNKNO(INDB,IING)=0.0
                ELSE
-                  IF(FUNHLF(IND1,IGP).NE.0.0)THEN
-                     FUNKNO(INDB,IGP)= (BONE/TOTW)*
-     >                FUNHLF(INDB,IGP)/FUNHLF(IND1,IGP)
+                  IF(FUNHLF(IND1,IING).NE.0.0)THEN
+                     FUNKNO(INDB,IING)= (BONE/TOTW)*
+     >                FUNHLF(INDB,IING)/FUNHLF(IND1,IING)
                   ELSE
-                     FUNKNO(INDB,IGP)=FUNHLF(INDB,IGP)
+                     FUNKNO(INDB,IING)=FUNHLF(INDB,IING)
                   ENDIF
                ENDIF
             ENDIF
@@ -902,8 +898,8 @@
 * PRINT COMPLETE UNKNOWN VECTOR.
 *--------
       IF(IMPX.GT.4) THEN
-         WRITE(IUNOUT,700) IGP
-         WRITE(IUNOUT,'(1P,4(5X,E15.7))') (FUNKNO(:,IGP))
+         WRITE(IUNOUT,700) IING
+         WRITE(IUNOUT,'(1P,4(5X,E15.7))') (FUNKNO(:,IING))
       ENDIF
 *
   400 CONTINUE

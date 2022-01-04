@@ -96,7 +96,8 @@
 * IEVOLB  flag making an isotope non-depleting:
 *         =0 the isotope is depleting;
 *         =1 to force an isotope to be non-depleting;
-*         =2 to force an isotope to be at saturation
+*         =2 to force an isotope to be depleting;
+*         =3 to force an isotope to be at saturation
 * KFISS   position in chain of the fissile isotopes.
 * KPF     position in chain of the direct fission products (fission
 *         fragments).

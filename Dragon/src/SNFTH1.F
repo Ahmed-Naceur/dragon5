@@ -1,7 +1,7 @@
 *DECK SNFTH1
-      SUBROUTINE SNFTH1(NUN,NGRP,NGEFF,IMPX,INCONV,INGIND,NHEX,IELEM,
-     1 ISPLH,NMAT,NPQ,NSCT,MAT,VOL,TOTAL,QEXT,DU,DE,W,DB,DA,PL,CONNEC,
-     2 IZGLOB,SIDE,CONFROM,FUNKNO)
+      SUBROUTINE SNFTH1(NUN,NGEFF,IMPX,INCONV,NGIND,NHEX,IELEM,ISPLH,
+     1 NMAT,NPQ,NSCT,MAT,VOL,TOTAL,QEXT,DU,DE,W,DB,DA,PL,CONNEC,IZGLOB,
+     2 SIDE,CONFROM,FUNKNO)
 *
 *-----------------------------------------------------------------------
 *
@@ -21,11 +21,10 @@
 *
 *Parameters: input
 * NUN     total number of unknowns in vector FUNKNO.
-* NGRP    number of energy groups.
-* NGEFF   dimension of arrays INCONV and INGIND.
+* NGEFF   number of energy groups processed in parallel.
 * IMPX    print flag (equal to zero for no print).
 * INCONV  energy group convergence flag (set to .FALSE. if converged).
-* INGIND  energy group index assign to 1:NGEFF arrays.
+* NGIND   energy group indices assign to the NGEFF set.
 * NHEX    number of hexagons in X-Y plane.
 * IELEM   measure of order of the spatial approximation polynomial:
 *         =1 constant (classical diamond scheme - default for HODD);
@@ -68,14 +67,14 @@
 *----
 *  SUBROUTINE ARGUMENTS
 *----
-      INTEGER NUN,NGRP,NGEFF,IMPX,INGIND(NGEFF),NHEX,IELEM,ISPLH,NMAT,
+      INTEGER NUN,NGEFF,IMPX,NGIND(NGEFF),NHEX,IELEM,ISPLH,NMAT,
      1 NPQ,NSCT,IZGLOB(NHEX,6),MAT(ISPLH,ISPLH,3,NHEX),
      2 CONNEC(3,(NHEX*3)*2,6),CONFROM(2,3,6)
       LOGICAL INCONV(NGEFF)
-      REAL SIDE,VOL(ISPLH,ISPLH,3,NHEX), TOTAL(0:NMAT,NGRP),
-     1 QEXT(NUN,NGRP), DU(NPQ), DB(ISPLH,ISPLH,3,NHEX,NPQ),
+      REAL SIDE,VOL(ISPLH,ISPLH,3,NHEX), TOTAL(0:NMAT,NGEFF),
+     1 QEXT(NUN,NGEFF), DU(NPQ), DB(ISPLH,ISPLH,3,NHEX,NPQ),
      2 DA(ISPLH,ISPLH,3,NHEX,NPQ), PL(NSCT,NPQ), DE(NPQ), W(NPQ),
-     3 FUNKNO(NUN,NGRP)
+     3 FUNKNO(NUN,NGEFF)
 *----
 *  LOCAL VARIABLES
 *----
@@ -182,17 +181,16 @@
 *$OMP3 PRIVATE(ILOZJ,ISIDEJ,IFROMI,IFROMJ,INDEXI,INDEXJ,MUHTEMP)
 *$OMP4 PRIVATE(ETAHTEMP,MUH,ETAH,I2,I3,J2,J3,C1,ILOZ)
 *$OMP5 SHARED(FUNKNO) REDUCTION(+:FLUX_G) COLLAPSE(2)
-      DO 210 IGEFF=1,NGEFF
+      DO 210 IG=1,NGEFF
       DO 200 IPQD=1,NPQD(IND)
 #if defined(_OPENMP)
         ITID=omp_get_thread_num()
 #else
         ITID=0
 #endif
-      IF(IMPX.GT.5) WRITE(IUNOUT,400) ITID,IGEFF,IPQD
-      IF(.NOT.INCONV(IGEFF)) GO TO 200
+      IF(IMPX.GT.5) WRITE(IUNOUT,400) ITID,NGIND(IG),IPQD
+      IF(.NOT.INCONV(IG)) GO TO 200
       M=INDANG(IPQD,IND)
-      IG=INGIND(IGEFF)
       FLUX(:IELEM**2,:NSCT,:3*ISPLH**2,:NHEX)=0.0D0
       BFLUX(:2,:NHEX*3,:ISPLH,:IELEM)=0.0D0
       IF(W(M).EQ.0.0) GO TO 200
@@ -405,16 +403,15 @@
   170 CONTINUE
   180 CONTINUE
   190 CONTINUE
-      FLUX_G(:,:,:,:,IGEFF)=FLUX_G(:,:,:,:,IGEFF)+FLUX(:,:,:,:)
+      FLUX_G(:,:,:,:,IG)=FLUX_G(:,:,:,:,IG)+FLUX(:,:,:,:)
   200 CONTINUE
   210 CONTINUE
 *$OMP END PARALLEL DO
   220 CONTINUE
-      DO 230 IGEFF=1,NGEFF
-        IF(.NOT.INCONV(IGEFF)) GO TO 230
-        IG=INGIND(IGEFF)
+      DO 230 IG=1,NGEFF
+        IF(.NOT.INCONV(IG)) GO TO 230
         FUNKNO(:L4,IG)=
-     1  RESHAPE(REAL(FLUX_G(:IELEM**2,:NSCT,:3*ISPLH**2,:NHEX,IGEFF)),
+     1  RESHAPE(REAL(FLUX_G(:IELEM**2,:NSCT,:3*ISPLH**2,:NHEX,IG)),
      2  (/ L4 /) )
   230 CONTINUE
 *----

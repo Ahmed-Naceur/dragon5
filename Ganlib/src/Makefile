@@ -15,6 +15,20 @@ DIRNAME = $(shell uname -sm | sed 's/[ ]/_/')
 OS = $(shell uname -s | cut -d"_" -f1)
 opt = -O
 PREPRO = cpp
+ifeq ($(openmp),1)
+  COMP = -fopenmp
+  ccompiler = gcc-11
+  PREPRO = cpp -DOPENMP
+else
+  COMP =
+endif
+
+ifeq ($(intel),1)
+  fcompiler = ifort
+else
+  fcompiler = gfortran
+endif
+
 ifeq ($(mpi),1)
   FMPI = -DMPI
   fcompiler = mpif90
@@ -22,13 +36,6 @@ ifeq ($(mpi),1)
 else
   FMPI =
   ccompiler = gcc
-endif
-ifeq ($(openmp),1)
-  COMP = -fopenmp
-  ccompiler = gcc-11
-  PREPRO = cpp -DOPENMP
-else
-  COMP =
 endif
 
 ifeq ($(OS),AIX)
@@ -43,7 +50,7 @@ ifeq ($(OS),Darwin)
   C = $(ccompiler)
   FLAGS = -DLinux -DUnix
   CFLAGS = -Wall $(nbit) -fPIC
-  FFLAGS = -Wall $(nbit) -fPIC -ffpe-summary=none
+  FFLAGS = -Wno-maybe-uninitialized $(nbit) -fPIC -ffpe-summary=none
   FFLAG77 = -Wall $(nbit) -fPIC -ffpe-summary=none -frecord-marker=4
   LFLAGS = $(nbit)
 else
@@ -52,7 +59,7 @@ ifeq ($(OS),Linux)
   C = $(ccompiler)
   FLAGS = -DLinux -DUnix
   CFLAGS = -Wall $(nbit) -fPIC
-  FFLAGS = -Wall $(nbit) -fPIC
+  FFLAGS = -Wno-maybe-uninitialized $(nbit) -fPIC
   FFLAG77 = -Wall $(nbit) -fPIC -frecord-marker=4
   LFLAGS = $(nbit)
 else
@@ -92,16 +99,24 @@ endif
 endif
 endif
 endif
-lib = ../lib/$(DIRNAME)
-bin = ../bin/$(DIRNAME)
-lib_module = ../lib/$(DIRNAME)/modules
 
 ifeq ($(intel),1)
-  fcompiler = ifort
   FFLAGS = -fPIC
   FFLAG77 = -fPIC
+  lib = ../lib/$(DIRNAME)_intel
+  bin = ../bin/$(DIRNAME)_intel
+  lib_module = ../lib/$(DIRNAME)_intel/modules
 else
-  fcompiler = gfortran
+  lib = ../lib/$(DIRNAME)
+  bin = ../bin/$(DIRNAME)
+  lib_module = ../lib/$(DIRNAME)/modules
+endif
+
+ifeq ($(hdf5),1)
+  CFLAGS += -DHDF5_LIB
+  FLAGS += -DHDF5_LIB -I${HDF5_DIR}/include
+  FFLAGS += -I${HDF5_DIR}/include
+  LFLAGS += -L${HDF5_DIR}/lib -lhdf5
 endif
 
 SRCC = $(shell ls *.c)
@@ -114,6 +129,10 @@ else
 endif
 SRCF90 = $(shell ls *.F90)
 OBJC = $(SRCC:.c=.o)
+OBJ90 = $(SRC90:.f90=.o)
+OBJF90 = $(SRCF90:.F90=.o)
+OBJ77 = $(SRC77:.f=.o)
+OBJF77 = $(SRCF77:.F=.o)
 all : Ganlib
 ifeq ($(mpi),1)
 	@echo 'Ganlib: mpi is defined'
@@ -124,20 +143,19 @@ endif
 ifeq ($(intel),1)
 	@echo 'Ganlib: intel is defined'
 endif
+ifeq ($(hdf5),1)
+	@echo 'Ganlib: hdf5 is defined'
+endif
 %.o : %.c
 	$(C) $(CFLAGS) $(FLAGS) $(opt) $(COMP) -c $< -o $@
-OBJ90 = $(SRC90:.f90=.o)
 %.o : %.f90
 	$(F90) $(FFLAGS) $(opt) $(COMP) -c $< -o $@
-OBJF90 = $(SRCF90:.F90=.o)
 %.o : %.F90
 	$(PREPRO) -P -W -traditional $(FLAGS) $< temp.f90
 	$(F90) $(FFLAGS) $(opt) $(COMP) -c temp.f90 -o $@
 	/bin/rm temp.f90
-OBJ77 = $(SRC77:.f=.o)
 %.o : %.f
 	$(F90) $(FFLAG77) $(opt) $(COMP) -c $< -o $@
-OBJF77 = $(SRCF77:.F=.o)
 %.o : %.F
 	$(PREPRO) -P -W -traditional $(FLAGS) $(FMPI) $< temp.f
 	$(F90) $(FFLAG77) $(opt) $(COMP) -c temp.f -o $@
@@ -154,4 +172,4 @@ Ganlib: libGanlib.a GANMAIN.o $(bin)/
 	$(F90) $(LFLAGS) $(opt) $(COMP) GANMAIN.o $(lib)/libGanlib.a -o Ganlib
 	cp $@ $(bin)/$@
 clean:
-	/bin/rm -f *.o *.mod *.a Ganlib
+	/bin/rm -f *.o *.mod *.a sub-make temp.* Ganlib

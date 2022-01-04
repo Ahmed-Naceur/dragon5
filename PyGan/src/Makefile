@@ -17,7 +17,7 @@ DIRNAME = $(shell uname -sm | sed 's/[ ]/_/')
 OS = $(shell uname -s | cut -d"_" -f1)
 lib = ../lib/$(DIRNAME)
 libGan = ../../Ganlib/lib/$(DIRNAME)
-pylib = lib64
+pylib = lib
 
 all:
 	$(MAKE) donjon
@@ -25,27 +25,39 @@ ganlib: sub-make-ganlib pygan-ganlib
 ifdef openmp
 	@echo 'pygan_ganlib: openmp is defined'
 endif
+ifdef hdf5
+	@echo 'pygan_ganlib: hdf5 is defined'
+endif
 trivac: sub-make-trivac pygan-trivac
 ifdef openmp
 	@echo 'pygan_trivac: openmp is defined'
+endif
+ifdef hdf5
+	@echo 'pygan_trivac: hdf5 is defined'
 endif
 dragon: sub-make-dragon pygan-dragon
 ifdef openmp
 	@echo 'pygan_dragon: openmp is defined'
 endif
+ifdef hdf5
+	@echo 'pygan_dragon: hdf5 is defined'
+endif
 donjon: sub-make-donjon pygan-donjon
 ifdef openmp
 	@echo 'pygan_donjon: openmp is defined'
 endif
+ifdef hdf5
+	@echo 'pygan_donjon: hdf5 is defined'
+endif
 sub-make-ganlib:
 	$(MAKE) openmp=$(openmp) -C ../../Utilib/src
-	$(MAKE) openmp=$(openmp) -C ../../Ganlib/src
+	$(MAKE) openmp=$(openmp) hdf5=$(hdf5) -C ../../Ganlib/src
 sub-make-trivac: sub-make-ganlib
-	$(MAKE) openmp=$(openmp) -C ../../Trivac/src
+	$(MAKE) openmp=$(openmp) hdf5=$(hdf5) -C ../../Trivac/src
 sub-make-dragon: sub-make-trivac
-	$(MAKE) openmp=$(openmp) -C ../../Dragon/src
+	$(MAKE) openmp=$(openmp) hdf5=$(hdf5) -C ../../Dragon/src
 sub-make-donjon: sub-make-dragon
-	$(MAKE) openmp=$(openmp) -C ../../Donjon/src
+	$(MAKE) openmp=$(openmp) hdf5=$(hdf5) -C ../../Donjon/src
 libGanlib.a: $(lib)/ sub-make-ganlib
 	cp $(libGan)/libGanlib.a .
 	ar -d libGanlib.a xabort_c.o
@@ -105,4 +117,5 @@ endif
 	mv $(DIRNAME)/$(pylib)/* $(lib)/
 	/bin/rm -r $(DIRNAME)
 clean:
-	/bin/rm -r ../lib
+	/bin/rm -r -f ../lib
+	/bin/rm -f sub-make*

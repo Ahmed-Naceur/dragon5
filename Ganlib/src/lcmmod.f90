@@ -64,7 +64,7 @@ subroutine LCMPUT_I0(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if((itype.ne.1).and.(itype.ne.3)) call xabort('LCMPUT_I0: type 1 or 3 expected.')
+   if((itype.ne.1).and.(itype.ne.3)) call XABORT('LCMPUT_I0: type 1 or 3 expected.')
    pt_data=c_loc(idata)
    call STRCUT(name13, name)
    call lcmput_c(iplist, name13, ilong, itype, pt_data)
@@ -86,7 +86,7 @@ subroutine LCMPUT_R0(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.2) call xabort('LCMPUT_R0: type 2 expected.')
+   if(itype.ne.2) call XABORT('LCMPUT_R0: type 2 expected.')
    pt_data=c_loc(idata)
    call STRCUT(name13, name)
    call lcmput_c(iplist, name13, ilong, itype, pt_data)
@@ -108,7 +108,7 @@ subroutine LCMPUT_D0(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.4) call xabort('LCMPUT_D0: type 4 expected.')
+   if(itype.ne.4) call XABORT('LCMPUT_D0: type 4 expected.')
    pt_data=c_loc(idata)
    call STRCUT(name13, name)
    call lcmput_c(iplist, name13, ilong, itype, pt_data)
@@ -130,7 +130,7 @@ subroutine LCMPUT_L0(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.5) call xabort('LCMPUT_L0: type 5 expected.')
+   if(itype.ne.5) call XABORT('LCMPUT_L0: type 5 expected.')
    pt_data=c_loc(idata)
    call STRCUT(name13, name)
    call lcmput_c(iplist, name13, ilong, itype, pt_data)
@@ -152,7 +152,7 @@ subroutine LCMPUT_C0(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.6) call xabort('LCMPUT_C0: type 6 expected.')
+   if(itype.ne.6) call XABORT('LCMPUT_C0: type 6 expected.')
    pt_data=c_loc(idata)
    call STRCUT(name13, name)
    call lcmput_c(iplist, name13, ilong, itype, pt_data)
@@ -175,7 +175,7 @@ subroutine LCMPUT_I1(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if((itype.ne.1).and.(itype.ne.3)) call xabort('LCMPUT_I1: type 1 or 3 expected.')
+   if((itype.ne.1).and.(itype.ne.3)) call XABORT('LCMPUT_I1: type 1 or 3 expected.')
    idata_p => idata(1)
    pt_data=c_loc(idata_p)
    call STRCUT(name13, name)
@@ -199,7 +199,7 @@ subroutine LCMPUT_R1(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.2) call xabort('LCMPUT_R1: type 2 expected.')
+   if(itype.ne.2) call XABORT('LCMPUT_R1: type 2 expected.')
    idata_p => idata(1)
    pt_data=c_loc(idata_p)
    call STRCUT(name13, name)
@@ -223,7 +223,7 @@ subroutine LCMPUT_D1(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.4) call xabort('LCMPUT_D1: type 4 expected.')
+   if(itype.ne.4) call XABORT('LCMPUT_D1: type 4 expected.')
    idata_p => idata(1)
    pt_data=c_loc(idata_p)
    call STRCUT(name13, name)
@@ -247,7 +247,7 @@ subroutine LCMPUT_L1(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.5) call xabort('LCMPUT_L1: type 5 expected.')
+   if(itype.ne.5) call XABORT('LCMPUT_L1: type 5 expected.')
    idata_p => idata(1)
    pt_data=c_loc(idata_p)
    call STRCUT(name13, name)
@@ -271,7 +271,7 @@ subroutine LCMPUT_C1(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.6) call xabort('LCMPUT_C1: type 6 expected.')
+   if(itype.ne.6) call XABORT('LCMPUT_C1: type 6 expected.')
    idata_p => idata(1)
    pt_data=c_loc(idata_p)
    call STRCUT(name13, name)
@@ -295,7 +295,7 @@ subroutine LCMPUT_I2(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if((itype.ne.1).and.(itype.ne.3)) call xabort('LCMPUT_I2: type 1 or 3 expected.')
+   if((itype.ne.1).and.(itype.ne.3)) call XABORT('LCMPUT_I2: type 1 or 3 expected.')
    idata_p => idata(1,1)
    pt_data=c_loc(idata_p)
    call STRCUT(name13, name)
@@ -319,7 +319,7 @@ subroutine LCMPUT_R2(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.2) call xabort('LCMPUT_R2: type 2 expected.')
+   if(itype.ne.2) call XABORT('LCMPUT_R2: type 2 expected.')
    idata_p => idata(1,1)
    pt_data=c_loc(idata_p)
    call STRCUT(name13, name)
@@ -343,7 +343,7 @@ subroutine LCMPUT_D2(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.4) call xabort('LCMPUT_D2: type 4 expected.')
+   if(itype.ne.4) call XABORT('LCMPUT_D2: type 4 expected.')
    idata_p => idata(1,1)
    pt_data=c_loc(idata_p)
    call STRCUT(name13, name)
@@ -367,7 +367,7 @@ subroutine LCMPUT_L2(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.5) call xabort('LCMPUT_L2: type 5 expected.')
+   if(itype.ne.5) call XABORT('LCMPUT_L2: type 5 expected.')
    idata_p => idata(1,1)
    pt_data=c_loc(idata_p)
    call STRCUT(name13, name)
@@ -391,7 +391,7 @@ subroutine LCMPUT_C2(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.6) call xabort('LCMPUT_C2: type 6 expected.')
+   if(itype.ne.6) call XABORT('LCMPUT_C2: type 6 expected.')
    idata_p => idata(1,1)
    pt_data=c_loc(idata_p)
    call STRCUT(name13, name)
@@ -415,7 +415,7 @@ subroutine LCMPUT_I3(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if((itype.ne.1).and.(itype.ne.3)) call xabort('LCMPUT_I3: type 1 or 3 expected.')
+   if((itype.ne.1).and.(itype.ne.3)) call XABORT('LCMPUT_I3: type 1 or 3 expected.')
    idata_p => idata(1,1,1)
    pt_data=c_loc(idata_p)
    call STRCUT(name13, name)
@@ -439,7 +439,7 @@ subroutine LCMPUT_R3(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.2) call xabort('LCMPUT_R3: type 2 expected.')
+   if(itype.ne.2) call XABORT('LCMPUT_R3: type 2 expected.')
    idata_p => idata(1,1,1)
    pt_data=c_loc(idata_p)
    call STRCUT(name13, name)
@@ -463,7 +463,7 @@ subroutine LCMPUT_D3(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.4) call xabort('LCMPUT_D3: type 4 expected.')
+   if(itype.ne.4) call XABORT('LCMPUT_D3: type 4 expected.')
    idata_p => idata(1,1,1)
    pt_data=c_loc(idata_p)
    call STRCUT(name13, name)
@@ -487,7 +487,7 @@ subroutine LCMPUT_L3(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.5) call xabort('LCMPUT_L3: type 5 expected.')
+   if(itype.ne.5) call XABORT('LCMPUT_L3: type 5 expected.')
    idata_p => idata(1,1,1)
    pt_data=c_loc(idata_p)
    call STRCUT(name13, name)
@@ -511,7 +511,7 @@ subroutine LCMPUT_C3(iplist, name, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmput_c
    end interface
-   if(itype.ne.6) call xabort('LCMPUT_C3: type 6 expected.')
+   if(itype.ne.6) call XABORT('LCMPUT_C3: type 6 expected.')
    idata_p => idata(1,1,1)
    pt_data=c_loc(idata_p)
    call STRCUT(name13, name)
@@ -941,7 +941,7 @@ subroutine LCMPDL_I0(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if((itype.ne.1).and.(itype.ne.3)) call xabort('LCMPDL_I0: type 1 or 3 expected.')
+   if((itype.ne.1).and.(itype.ne.3)) call XABORT('LCMPDL_I0: type 1 or 3 expected.')
    pt_data=c_loc(idata)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
 end subroutine LCMPDL_I0
@@ -959,7 +959,7 @@ subroutine LCMPDL_R0(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.2) call xabort('LCMPDL_R0: type 2 expected.')
+   if(itype.ne.2) call XABORT('LCMPDL_R0: type 2 expected.')
    pt_data=c_loc(idata)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
 end subroutine LCMPDL_R0
@@ -977,7 +977,7 @@ subroutine LCMPDL_D0(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.4) call xabort('LCMPDL_D0: type 4 expected.')
+   if(itype.ne.4) call XABORT('LCMPDL_D0: type 4 expected.')
    pt_data=c_loc(idata)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
 end subroutine LCMPDL_D0
@@ -995,7 +995,7 @@ subroutine LCMPDL_L0(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.5) call xabort('LCMPDL_L0: type 5 expected.')
+   if(itype.ne.5) call XABORT('LCMPDL_L0: type 5 expected.')
    pt_data=c_loc(idata)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
 end subroutine LCMPDL_L0
@@ -1013,7 +1013,7 @@ subroutine LCMPDL_C0(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.6) call xabort('LCMPDL_C0: type 6 expected.')
+   if(itype.ne.6) call XABORT('LCMPDL_C0: type 6 expected.')
    pt_data=c_loc(idata)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
 end subroutine LCMPDL_C0
@@ -1032,7 +1032,7 @@ subroutine LCMPDL_I1(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if((itype.ne.1).and.(itype.ne.3)) call xabort('LCMPDL_I1: type 1 or 3 expected.')
+   if((itype.ne.1).and.(itype.ne.3)) call XABORT('LCMPDL_I1: type 1 or 3 expected.')
    idata_p => idata(1)
    pt_data=c_loc(idata_p)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
@@ -1052,7 +1052,7 @@ subroutine LCMPDL_R1(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.2) call xabort('LCMPDL_R1: type 2 expected.')
+   if(itype.ne.2) call XABORT('LCMPDL_R1: type 2 expected.')
    idata_p => idata(1)
    pt_data=c_loc(idata_p)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
@@ -1072,7 +1072,7 @@ subroutine LCMPDL_D1(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.4) call xabort('LCMPDL_D1: type 4 expected.')
+   if(itype.ne.4) call XABORT('LCMPDL_D1: type 4 expected.')
    idata_p => idata(1)
    pt_data=c_loc(idata_p)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
@@ -1092,7 +1092,7 @@ subroutine LCMPDL_L1(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.5) call xabort('LCMPDL_L1: type 5 expected.')
+   if(itype.ne.5) call XABORT('LCMPDL_L1: type 5 expected.')
    idata_p => idata(1)
    pt_data=c_loc(idata_p)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
@@ -1112,7 +1112,7 @@ subroutine LCMPDL_C1(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.6) call xabort('LCMPDL_C1: type 6 expected.')
+   if(itype.ne.6) call XABORT('LCMPDL_C1: type 6 expected.')
    idata_p => idata(1)
    pt_data=c_loc(idata_p)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
@@ -1132,7 +1132,7 @@ subroutine LCMPDL_I2(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if((itype.ne.1).and.(itype.ne.3)) call xabort('LCMPDL_I2: type 1 or 3 expected.')
+   if((itype.ne.1).and.(itype.ne.3)) call XABORT('LCMPDL_I2: type 1 or 3 expected.')
    idata_p => idata(1,1)
    pt_data=c_loc(idata_p)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
@@ -1152,7 +1152,7 @@ subroutine LCMPDL_R2(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.2) call xabort('LCMPDL_R2: type 2 expected.')
+   if(itype.ne.2) call XABORT('LCMPDL_R2: type 2 expected.')
    idata_p => idata(1,1)
    pt_data=c_loc(idata_p)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
@@ -1172,7 +1172,7 @@ subroutine LCMPDL_D2(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.4) call xabort('LCMPDL_D2: type 4 expected.')
+   if(itype.ne.4) call XABORT('LCMPDL_D2: type 4 expected.')
    idata_p => idata(1,1)
    pt_data=c_loc(idata_p)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
@@ -1192,7 +1192,7 @@ subroutine LCMPDL_L2(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.5) call xabort('LCMPDL_L2: type 5 expected.')
+   if(itype.ne.5) call XABORT('LCMPDL_L2: type 5 expected.')
    idata_p => idata(1,1)
    pt_data=c_loc(idata_p)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
@@ -1212,7 +1212,7 @@ subroutine LCMPDL_C2(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.6) call xabort('LCMPDL_C2: type 6 expected.')
+   if(itype.ne.6) call XABORT('LCMPDL_C2: type 6 expected.')
    idata_p => idata(1,1)
    pt_data=c_loc(idata_p)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
@@ -1232,7 +1232,7 @@ subroutine LCMPDL_I3(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if((itype.ne.1).and.(itype.ne.3)) call xabort('LCMPDL_I3: type 1 or 3 expected.')
+   if((itype.ne.1).and.(itype.ne.3)) call XABORT('LCMPDL_I3: type 1 or 3 expected.')
    idata_p => idata(1,1,1)
    pt_data=c_loc(idata_p)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
@@ -1252,7 +1252,7 @@ subroutine LCMPDL_R3(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.2) call xabort('LCMPDL_R3: type 2 expected.')
+   if(itype.ne.2) call XABORT('LCMPDL_R3: type 2 expected.')
    idata_p => idata(1,1,1)
    pt_data=c_loc(idata_p)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
@@ -1272,7 +1272,7 @@ subroutine LCMPDL_D3(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.4) call xabort('LCMPDL_D3: type 4 expected.')
+   if(itype.ne.4) call XABORT('LCMPDL_D3: type 4 expected.')
    idata_p => idata(1,1,1)
    pt_data=c_loc(idata_p)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
@@ -1292,7 +1292,7 @@ subroutine LCMPDL_L3(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.5) call xabort('LCMPDL_L3: type 5 expected.')
+   if(itype.ne.5) call XABORT('LCMPDL_L3: type 5 expected.')
    idata_p => idata(1,1,1)
    pt_data=c_loc(idata_p)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)
@@ -1312,7 +1312,7 @@ subroutine LCMPDL_C3(iplist, ipos, ilong, itype, idata)
          type(c_ptr), value :: idata
       end subroutine lcmpdl_c
    end interface
-   if(itype.ne.6) call xabort('LCMPDL_C3: type 6 expected.')
+   if(itype.ne.6) call XABORT('LCMPDL_C3: type 6 expected.')
    idata_p => idata(1,1,1)
    pt_data=c_loc(idata_p)
    call lcmpdl_c(iplist, ipos-1, ilong, itype, pt_data)

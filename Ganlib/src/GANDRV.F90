@@ -85,12 +85,17 @@ integer function GANDRV(hmodul,nentry,hentry,ientry,jentry,kentry)
       call XABORT('GANDRV: requested abort.')
 #if defined(MPI)
    elseif(hmodul == 'DRVMPI:') then
-!     initialize mpi.
+!     initialize MPI.
       call DRVMPI(nentry,hentry,ientry,jentry,kentry)
    elseif(hmodul == 'SNDMPI:') then
 !     export LCM or XSM using mpi.
       call SNDMPI(nentry,hentry,ientry,jentry,kentry)
 #endif /* defined(MPI) */
+#if defined(HDF5_LIB)
+   elseif(hmodul == 'HUTL:') then
+!     HDF5 utility module.
+      call DRVUH5(nentry,hentry,ientry,jentry,kentry)
+#endif /* defined(HDF5_LIB) */
    else
       GANDRV=1
    endif

@@ -1,6 +1,6 @@
 *DECK SNGMRE
-      SUBROUTINE SNGMRE (KPSYS,INGIND,IPTRK,IMPX,NGRP,NGEFF,NREG,NBMIX,
-     1 NUN,NSTART,MAXIT,EPSINR,MAT,VOL,KEYFLX,FUNKNO,SUNKNO)
+      SUBROUTINE SNGMRE (KPSYS,NGIND,IPTRK,IMPX,NGEFF,NREG,NBMIX,NUN,
+     1 NSTART,MAXIT,EPSINR,MAT,VOL,KEYFLX,FUNKNO,SUNKNO)
 *
 *-----------------------------------------------------------------------
 *
@@ -20,11 +20,10 @@
 *Parameters: input
 * KPSYS   pointer to the assembly matrices. KPSYS is an array of
 *         directories.
-* INGIND  energy group index assign to 1:NGEFF arrays.
+* NGIND   energy group indices assign to the NGEFF set.
 * IPTRK   pointer to the tracking (L_TRACK signature).
 * IMPX    print flag (equal to zero for no print).
-* NGRP    number of energy groups.
-* NGEFF   dimension of arrays KPSYS and INGIND.
+* NGEFF   number of energy groups processed in parallel.
 * NREG    total number of regions for which specific values of the
 *         neutron flux and reactions rates are required.
 * NBMIX   number of mixtures.
@@ -47,10 +46,10 @@
 *----
 *  SUBROUTINE ARGUMENTS
 *----
-      INTEGER     NGEFF,INGIND(NGEFF),IMPX,NGRP,NREG,NBMIX,NUN,NSTART,
-     1            MAXIT,MAT(NREG),KEYFLX(NREG)
+      INTEGER     NGEFF,NGIND(NGEFF),IMPX,NREG,NBMIX,NUN,NSTART,MAXIT,
+     1            MAT(NREG),KEYFLX(NREG)
       TYPE(C_PTR) KPSYS(NGEFF),IPTRK
-      REAL        EPSINR,VOL(NREG),FUNKNO(NUN,NGRP),SUNKNO(NUN,NGRP)
+      REAL        EPSINR,VOL(NREG),FUNKNO(NUN,NGEFF),SUNKNO(NUN,NGEFF)
 *----
 *  LOCAL VARIABLES
 *----
@@ -71,13 +70,12 @@
       ALLOCATE(G(NSTART+1,NGEFF),C(NSTART+1,NGEFF),S(NSTART+1,NGEFF),
      1 X(NUN,NGEFF),V(NUN,NSTART+1,NGEFF),H(NSTART+1,NSTART,NGEFF),
      1 EPS1(NGEFF),INCONV(NGEFF),KMAX(NGEFF),RHO(NGEFF))
-      ALLOCATE(RR(NUN,NGRP),QQ(NUN,NGRP))
+      ALLOCATE(RR(NUN,NGEFF),QQ(NUN,NGEFF))
 *----
 *  GLOBAL GMRES ITERATION.
 *----
       DO II=1,NGEFF
-        IG=INGIND(II)
-        EPS1(II)=EPSINR*SQRT(SDOT(NUN,SUNKNO(1,IG),1,SUNKNO(1,IG),1))
+        EPS1(II)=EPSINR*SQRT(SDOT(NUN,SUNKNO(1,II),1,SUNKNO(1,II),1))
         RHO(II)=1.0E10
       ENDDO
       LNCONV=NGEFF
@@ -85,14 +83,13 @@
       ITER=0
       NITER=1
       DO WHILE((LNCONV.GT.0).AND.(ITER.LT.MAXIT))
-        RR(:NUN,:NGRP)=FUNKNO(:NUN,:NGRP)
-        CALL SNFLUX(KPSYS,INCONV,INGIND,IPTRK,IMPX,NGRP,NGEFF,NREG,
-     1  NBMIX,NUN,MAT,VOL,KEYFLX,RR,SUNKNO,NITER)
+        RR(:NUN,:NGEFF)=FUNKNO(:NUN,:NGEFF)
+        CALL SNFLUX(KPSYS,INCONV,NGIND,IPTRK,IMPX,NGEFF,NREG,NBMIX,
+     1  NUN,MAT,VOL,KEYFLX,RR,SUNKNO,NITER)
         NITER=NITER+1
         DO II=1,NGEFF
           IF(.NOT.INCONV(II)) CYCLE
-          IG=INGIND(II)
-          X(:NUN,II)=RR(:NUN,IG)-FUNKNO(:NUN,IG)
+          X(:NUN,II)=RR(:NUN,II)-FUNKNO(:NUN,II)
           RHO(II)=SQRT(DOT_PRODUCT(X(:NUN,II),X(:NUN,II)))
           IF(RHO(II).LT.EPS1(II)) THEN
             LNCONV=LNCONV-1
@@ -112,11 +109,10 @@
         CALL XDISET(KMAX,NGEFF,0)
         DO II=1,NGEFF
           IF(.NOT.INCONV(II)) CYCLE
-          IG=INGIND(II)
           G(1,II)=RHO(II)
           DO I=1,NUN
             V(I,1,II)=X(I,II)/RHO(II)
-            X(I,II)=FUNKNO(I,IG)
+            X(I,II)=FUNKNO(I,II)
           ENDDO
         ENDDO
 *----
@@ -128,20 +124,18 @@
           ITER=ITER+1
           IF(IMPX.GT.2) WRITE(IUNOUT,300) ITER,MAXVAL(RHO(:NGEFF)),
      1    LNCONV
-          RR(:NUN,:NGRP)=0.0
-          QQ(:NUN,:NGRP)=0.0
+          RR(:NUN,:NGEFF)=0.0
+          QQ(:NUN,:NGEFF)=0.0
           DO II=1,NGEFF
             IF(.NOT.INCONV(II)) CYCLE
-            IG=INGIND(II)
-            RR(:NUN,IG)=REAL(V(:NUN,K,II))
+            RR(:NUN,II)=REAL(V(:NUN,K,II))
           ENDDO
-          CALL SNFLUX(KPSYS,INCONV,INGIND,IPTRK,IMPX,NGRP,NGEFF,NREG,
-     1    NBMIX,NUN,MAT,VOL,KEYFLX,RR,QQ,NITER)
+          CALL SNFLUX(KPSYS,INCONV,NGIND,IPTRK,IMPX,NGEFF,NREG,NBMIX,
+     1    NUN,MAT,VOL,KEYFLX,RR,QQ,NITER)
           NITER=NITER+1
           DO II=1,NGEFF
             IF(.NOT.INCONV(II)) CYCLE
-            IG=INGIND(II)
-            V(:NUN,K+1,II)=V(:NUN,K,II)-RR(:NUN,IG)
+            V(:NUN,K+1,II)=V(:NUN,K,II)-RR(:NUN,II)
             KMAX(II)=K
 *----
 *  MODIFIED GRAM-SCHMIDT
@@ -204,7 +198,6 @@
         DO II=1,NGEFF
           K=KMAX(II)
           IF(K.EQ.0) CYCLE
-          IG=INGIND(II)
           G(K,II)=G(K,II)/H(K,K,II)
           DO L=K-1,1,-1
             W1=G(L,II)-DOT_PRODUCT(H(L,L+1:K,II),G(L+1:K,II))
@@ -213,7 +206,7 @@
           DO J=1,K
             X(:,II)=X(:,II)+G(J,II)*V(:,J,II)
           ENDDO
-          FUNKNO(:,IG)=REAL(X(:,II))
+          FUNKNO(:,II)=REAL(X(:,II))
         ENDDO
       ENDDO
 *

@@ -1,0 +1,74 @@
+* Regression test for hdf5 file support
+* A. Hebert
+*
+MODULE HUTL: ABORT: END: ;
+HDF5_FILE AFA_180 :: FILE './AFA_180.h5' ;
+HDF5_FILE NEW_FILE ;
+REAL delta ref_abso_2 ref_real4_2 abso_2 real4_2 ;
+
+HUTL: AFA_180 :: DIR
+ DIR 'input'
+ DIR 'input/SpectralRHOParameters'
+ DIR 'paramtree'
+ DIR 'paramvalues'
+ DIR 'calc       1/miscellaneous'
+ DIR 'explicit'
+ DIR 'physconst'
+ DIR 'explicit/ISONAME'
+ DIR 'physconst/ISOTYP'
+ DIR 'physconst/LAMNAME'
+ INFO NCALS IMPR NCALS
+ INFO ASSNAME IMPR ASSNAME
+ INFO physconst/LAMNAME IMPR physconst/LAMNAME
+ INFO physconst/ISOTYP IMPR physconst/ISOTYP
+ INFO explicit/ISONAME IMPR explicit/ISONAME
+ INFO physconst/FYIELDS
+ DIR '/calc       1/xs/mac/TOTAL'
+ INFO '/calc       1/xs/mac/TOTAL/ABSO'
+ IMPR '/calc       1/xs/mac/TOTAL/ABSO'
+ GREP '/calc       1/xs/mac/TOTAL/ABSO' 2 >>abso_2<<
+;
+ECHO "grep of ABSO(2)=" abso_2 ;
+EVALUATE ref_abso_2 := 6.902077E-02 ;
+EVALUATE delta := abso_2 ref_abso_2 - ref_abso_2 / ABS ;
+IF delta 1.0E-5 < THEN
+   ECHO "TEST SUCCESSFUL; delta=" delta ;
+ELSE
+   ECHO "------------" ;
+   ECHO "test failure" ;
+   ECHO "------------" ;
+   ECHO "REFERENCE=" ref_abso_2 " CALCULATED=" abso_2 ;
+   ABORT: ;
+ENDIF ;
+ 
+NEW_FILE := HUTL: ::
+ CREA my_integer = 12345
+ CREA integer_array 3 = 11111 22222 33333
+ CREA real4_array 4 = 1.1111 2.2222 3.3333 5.0E6
+ CREA single_string = zyxw
+ CREA string_array 4 = abcd efgh ijkl mnop
+ DIR
+ IMPR my_integer
+ IMPR integer_array
+ IMPR real4_array
+ INFO single_string
+ IMPR single_string
+ IMPR string_array
+ GREP real4_array 2 >>real4_2<<
+;
+ECHO "grep of real4_array(2)=" real4_2 ;
+EVALUATE ref_real4_2 := 2.2222 ;
+EVALUATE delta := real4_2 ref_real4_2 - ref_real4_2 / ABS ;
+IF delta 1.0E-5 < THEN
+   ECHO "TEST SUCCESSFUL; delta=" delta ;
+ELSE
+   ECHO "------------" ;
+   ECHO "test failure" ;
+   ECHO "------------" ;
+   ECHO "REFERENCE=" ref_real4_2 " CALCULATED=" real4_2 ;
+   ABORT: ;
+ENDIF ;
+
+ECHO "test testgan4 completed" ;
+END: ;
+QUIT "XREF" .

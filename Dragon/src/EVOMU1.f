@@ -41,7 +41,8 @@
 *         EXPMAX=80.0.
 * IEVOLB  flag making an isotope non-depleting:
 *         =1 to force an isotope to be non-depleting;
-*         =2 to force an isotope to be at saturation.
+*         =2 to force an isotope to be depleting;
+*         =3 to force an isotope to be at saturation.
 *
 *Parameters: output
 * MU1     position of each diagonal element in vector ADPL.
@@ -115,7 +116,7 @@
       INDSAT=0
       DO 70 IS=1,NVAR
       IF(LP(IS).GT.0) THEN
-         LSAT=(IEVOLB(IS).EQ.2).AND.(EXPMAX.GT.0.0)
+         LSAT=(IEVOLB(IS).EQ.3).AND.(EXPMAX.GT.0.0)
          LSAT=LSAT.OR.((EXPMAX.GT.0.0).AND.(DIAG(IS).GT.EXPMAX))
          IF((IPERM(LP(IS)).GE.0).AND.LSAT) THEN
             IPERM(LP(IS))=0

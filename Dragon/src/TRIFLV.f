@@ -1,6 +1,6 @@
 *DECK TRIFLV
-      SUBROUTINE TRIFLV(KPSYS,INCONV,INGIND,IPTRK,IMPX,NGRP,NGEFF,NREG,
-     1 NUN,MAT,VOL,KEYFLX,FUNKNO,SUNKNO)
+      SUBROUTINE TRIFLV(KPSYS,INCONV,NGIND,IPTRK,IMPX,NGEFF,NREG,NUN,
+     1 MAT,VOL,KEYFLX,FUNKNO,SUNKNO)
 *
 *-----------------------------------------------------------------------
 *
@@ -21,11 +21,10 @@
 * KPSYS   pointer to the assembly matrices. KPSYS is an array of
 *         directories.
 * INCONV  energy group convergence flag (set to .FALSE. if converged).
-* INGIND  energy group index assign to 1:NGEFF arrays.
+* NGIND   energy group indices assign to the NGEFF set.
 * IPTRK   pointer to the tracking (L_TRACK signature).
 * IMPX    print flag (equal to zero for no print).
-* NGRP    number of energy groups.
-* NGEFF   dimension of arrays KPSYS and INGIND.
+* NGEFF   number of energy groups processed in parallel.
 * NREG    total number of regions for which specific values of the
 *         neutron flux and reactions rates are required.
 * NUN     total number of unknowns in vectors SUNKNO and FUNKNO.
@@ -44,10 +43,10 @@
 *  SUBROUTINE ARGUMENTS
 *----
       TYPE(C_PTR) KPSYS(NGEFF),IPTRK
-      INTEGER     NGEFF,INGIND(NGEFF),IMPX,NGRP,NREG,NUN,MAT(NREG),
+      INTEGER     NGEFF,NGIND(NGEFF),IMPX,NREG,NUN,MAT(NREG),
      1            KEYFLX(NREG)
       LOGICAL     INCONV(NGEFF)
-      REAL        VOL(NREG),FUNKNO(NUN,NGRP),SUNKNO(NUN,NGRP)
+      REAL        VOL(NREG),FUNKNO(NUN,NGEFF),SUNKNO(NUN,NGEFF)
 *----
 *  LOCAL VARIABLES
 *----
@@ -55,7 +54,6 @@
      1            ICL2=3)
       DOUBLE PRECISION F1,F2,R1,R2,DMU
       INTEGER     IPAR(NSTATE)
-      TYPE(C_PTR) JPSYS
       CHARACTER   NAMP*12
 *----
 *  ALLOCATABLE ARRAYS
@@ -82,17 +80,15 @@
       ALLOCATE(GAR(NUN),OLD1(NUN),OLD2(NUN))
       DO 130 II=1,NGEFF
       IF(.NOT.INCONV(II)) GO TO 130
-      JPSYS=KPSYS(II)
-      IG=INGIND(II)
       IF(IMPX.GT.1) WRITE(IUNOUT,'(/25H TRIFLV: PROCESSING GROUP,I5,
-     1 6H WITH ,A,1H.)') IG,'TRIVAC'
+     1 6H WITH ,A,1H.)') NGIND(II),'TRIVAC'
 *----
 *  MULTIPLICATION OF THE SOURCES BY THE VOLUMES.
 *----
       DO 10 K=1,NREG
       IF(MAT(K).EQ.0) GO TO 10
       JND1=KEYFLX(K)
-      SUNKNO(JND1,IG)=SUNKNO(JND1,IG)*VOL(K)
+      SUNKNO(JND1,II)=SUNKNO(JND1,II)*VOL(K)
    10 CONTINUE
 *----
 *  SOLVE FOR THE FLUXES. USE EQUATION (C.24) IN IGE-281.
@@ -109,15 +105,15 @@
       ENDIF
       DO 30 I=1,NUN
       OLD1(I)=OLD2(I)
-      OLD2(I)=FUNKNO(I,IG)
+      OLD2(I)=FUNKNO(I,II)
    30 CONTINUE
-      CALL MTLDLM(NAMP,IPTRK,JPSYS,LL4,ITY,FUNKNO(1,IG),GAR)
+      CALL MTLDLM(NAMP,IPTRK,KPSYS(II),LL4,ITY,FUNKNO(1,II),GAR)
       DO 40 I=1,NUN
-      GAR(I)=SUNKNO(I,IG)-GAR(I)
+      GAR(I)=SUNKNO(I,II)-GAR(I)
    40 CONTINUE
-      CALL FLDADI(NAMP,IPTRK,JPSYS,LL4,ITY,GAR,NADI)
+      CALL FLDADI(NAMP,IPTRK,KPSYS(II),LL4,ITY,GAR,NADI)
       DO 50 I=1,NUN
-      FUNKNO(I,IG)=FUNKNO(I,IG)+GAR(I)
+      FUNKNO(I,II)=FUNKNO(I,II)+GAR(I)
    50 CONTINUE
 *----
 *  VARIATIONAL ACCELERATION.
@@ -128,14 +124,14 @@
          F2=0.0D0
          DO  80 I=1,NUN
          R1=OLD2(I)-OLD1(I)
-         R2=FUNKNO(I,IG)-OLD2(I)
+         R2=FUNKNO(I,II)-OLD2(I)
          F1=F1+R1*(R2-R1)
          F2=F2+(R2-R1)*(R2-R1)
    80    CONTINUE
          DMU=-F1/F2
          IF(DMU.GT.0.0) THEN
             DO  90 I=1,NUN
-            FUNKNO(I,IG)=OLD2(I)+REAL(DMU)*(FUNKNO(I,IG)-OLD2(I))
+            FUNKNO(I,II)=OLD2(I)+REAL(DMU)*(FUNKNO(I,II)-OLD2(I))
             OLD2(I)=OLD1(I)+REAL(DMU)*(OLD2(I)-OLD1(I))
    90       CONTINUE
          ENDIF
@@ -147,8 +143,8 @@
       BBB=0.0
       DO 100 I=1,NREG
       IF(KEYFLX(I).EQ.0) GO TO 100
-      AAA=MAX(AAA,ABS(FUNKNO(KEYFLX(I),IG)-OLD2(KEYFLX(I))))
-      BBB=MAX(BBB,ABS(FUNKNO(KEYFLX(I),IG)))
+      AAA=MAX(AAA,ABS(FUNKNO(KEYFLX(I),II)-OLD2(KEYFLX(I))))
+      BBB=MAX(BBB,ABS(FUNKNO(KEYFLX(I),II)))
   100 CONTINUE
       IF(IMPX.GT.2) WRITE(IUNOUT,300) ITER,AAA,BBB,DMU
       IF(AAA.LE.EPSINR*BBB) GO TO 110
@@ -165,7 +161,7 @@
   110 DO 120 K=1,NREG
       IF(MAT(K).EQ.0) GO TO 120
       JND1=KEYFLX(K)
-      SUNKNO(JND1,IG)=SUNKNO(JND1,IG)/VOL(K)
+      SUNKNO(JND1,II)=SUNKNO(JND1,II)/VOL(K)
   120 CONTINUE
 *----
 * END OF LOOP OVER ENERGY GROUPS

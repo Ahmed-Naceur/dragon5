@@ -46,7 +46,7 @@
 *         use library value if NIR=0.
 * GIR     Goldstein-Cohen IR parameter of each isotope.
 * MASKI   treat isotope logical.
-* IEVOL   depletion suppression flag (=1 to suppress depletion).
+* IEVOL   depletion suppression flag (=1/2 to suppress/force depletion).
 * ITYP    type of isotope.
 *
 *-----------------------------------------------------------------------

@@ -15,6 +15,9 @@ version 2.1 of the License, or (at your option) any later version.
 */
 
 #include "lcm.h"
+#if defined(HDF5_LIB)
+#include "hdf5.h"
+#endif
 #define nmaskc 3   /* size of maskck and ipacki */
 #define kdisize(object) (sizeof(object)+sizeof(int_32)-1)/sizeof(int_32)
 #if !defined(max)
@@ -31,8 +34,8 @@ typedef struct LIFO {          /* last-in-first-out (lifo) stack */
 
 typedef struct LIFO_NODE {     /* node in last-in-first-out (lifo) stack */
    int_32 type;                /* type of node: 3= lcm object; 4= xsm file; 5= seq binary;
-                                  6= seq ascii; 7= da binary; 11= integer value; 12= real value
-                                  13= character string; 14= double precision value;
+                                  6= seq ascii; 7= da binary; 8= hdf5 file; 11= integer value;
+                                  12= real value; 13= character string; 14= double precision value;
                                   15= logical value */
    int_32 access;              /* 0=creation mode/1=modification mode/2=read-only mode */
    int_32 lparam;              /* record length for DA file objects */
@@ -42,6 +45,9 @@ typedef struct LIFO_NODE {     /* node in last-in-first-out (lifo) stack */
        double dval;            /* double precision value */
        lcm *mylcm;             /* handle towards a LCM object */
        char hval[73];          /* character value */
+#if defined(HDF5_LIB)
+       hid_t myhdf5;           /* handle towards a HDF5 file */
+#endif
    } value;
    struct LIFO_NODE *daughter; /* address of the daughter node in stack */
    char name[13];              /* name of node in the calling script */
@@ -88,3 +94,4 @@ int_32 kdrdxf(lifo **, int_32, char (*)[13]);
 int_32 kdrdsb(lifo **, int_32, char (*)[13]);
 int_32 kdrdsa(lifo **, int_32, char (*)[13]);
 int_32 kdrdda(lifo **, int_32, char (*)[13]);
+int_32 kdrdh5(lifo **, int_32, char (*)[13]);

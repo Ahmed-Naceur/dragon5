@@ -1,0 +1,11 @@
+#----
+#  GIT IGNORE: FILE TO IGNORE FOR COMMIT
+#----
+
+# Ignore .o files
+./**/*.o
+
+# Ignore file in Linux_x86_64
+./Dragon/Linux_x86_64/*
+./Dragon/bin/*
+./Dragon/data/*

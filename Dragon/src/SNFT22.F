@@ -1,7 +1,7 @@
 *DECK SNFT22
-      SUBROUTINE SNFT22(NUN,NGRP,NGEFF,IMPX,INCONV,INGIND,LX,LY,IELEM,
-     1 NMAT,NPQ,NSCT,MAT,VOL,TOTAL,NCODE,ZCODE,QEXT,DU,DE,W,MRM,MRMY,
-     2 DB,DA,PL,FUNKNO)
+      SUBROUTINE SNFT22(NUN,NGEFF,IMPX,INCONV,NGIND,LX,LY,IELEM,NMAT,
+     1 NPQ,NSCT,MAT,VOL,TOTAL,NCODE,ZCODE,QEXT,DU,DE,W,MRM,MRMY,DB,DA,
+     2 PL,FUNKNO)
 *
 *-----------------------------------------------------------------------
 *
@@ -21,11 +21,10 @@
 *
 *Parameters: input
 * NUN     total number of unknowns in vector FUNKNO.
-* NGRP    number of energy groups.
-* NGEFF   dimension of arrays INCONV and INGIND.
+* NGEFF   number of energy groups processed in parallel.
 * IMPX    print flag (equal to zero for no print).
 * INCONV  energy group convergence flag (set to .FALSE. if converged).
-* INGIND  energy group index assign to 1:NGEFF arrays.
+* NGIND   energy group indices assign to the NGEFF set.
 * LX      number of meshes along X axis.
 * LY      number of meshes along Y axis.
 * IELEM   measure of order of the spatial approximation polynomial:
@@ -63,12 +62,12 @@
 *----
 *  SUBROUTINE ARGUMENTS
 *----
-      INTEGER NUN,NGRP,NGEFF,IMPX,INGIND(NGEFF),LX,LY,IELEM,NMAT,NPQ,
-     1 NSCT,MAT(LX,LY),NCODE(4),MRM(NPQ),MRMY(NPQ)
+      INTEGER NUN,NGEFF,IMPX,NGIND(NGEFF),LX,LY,IELEM,NMAT,NPQ,NSCT,
+     1 MAT(LX,LY),NCODE(4),MRM(NPQ),MRMY(NPQ)
       LOGICAL INCONV(NGEFF)
-      REAL VOL(LX,LY),TOTAL(0:NMAT,NGRP),ZCODE(4),QEXT(NUN,NGRP),
+      REAL VOL(LX,LY),TOTAL(0:NMAT,NGEFF),ZCODE(4),QEXT(NUN,NGEFF),
      1 DU(NPQ),DE(NPQ),W(NPQ),DB(LX,NPQ),DA(LX,LY,NPQ),PL(NSCT,NPQ),
-     2 FUNKNO(NUN,NGRP)
+     2 FUNKNO(NUN,NGEFF)
 *----
 *  LOCAL VARIABLES
 *----
@@ -135,11 +134,10 @@
 *$OMP  PARALLEL DO
 *$OMP1 PRIVATE(M,IG,WEIGHT,VU,VE,M1,E1,IOF,JOF,IEL,I,J)
 *$OMP2 SHARED(FUNKNO) COLLAPSE(2)
-      DO 70 IGEFF=1,NGEFF
+      DO 70 IG=1,NGEFF
       DO 60 IPQD=1,NPQD(IND)
-      IF(.NOT.INCONV(IGEFF)) GO TO 60
+      IF(.NOT.INCONV(IG)) GO TO 60
       M=INDANG(IPQD,IND)
-      IG=INGIND(IGEFF)
       WEIGHT=W(M)
       VU=DU(M)
       VE=DE(M)
@@ -201,17 +199,16 @@
 *$OMP1 PRIVATE(ITID,FLUX,M,IG,XNI,XNJ,Q,Q2,IOF,IER,II,JJ,IEL)
 *$OMP2 PRIVATE(JEL,I,J,K,VT) SHARED(FUNKNO) REDUCTION(+:FLUX_G)
 *$OMP3 COLLAPSE(2)
-      DO 180 IGEFF=1,NGEFF
+      DO 180 IG=1,NGEFF
       DO 170 IPQD=1,NPQD(IND)
 #if defined(_OPENMP)
         ITID=omp_get_thread_num()
 #else
         ITID=0
 #endif
-      IF(IMPX.GT.5) WRITE(IUNOUT,400) ITID,IGEFF,IPQD
-      IF(.NOT.INCONV(IGEFF)) GO TO 170
+      IF(IMPX.GT.5) WRITE(IUNOUT,400) ITID,NGIND(IG),IPQD
+      IF(.NOT.INCONV(IG)) GO TO 170
       M=INDANG(IPQD,IND)
-      IG=INGIND(IGEFF)
       FLUX(:IELEM**2,:NSCT,:LX,:LY)=0.0D0
       IF(W(M).EQ.0.0) GO TO 170
 *----
@@ -620,16 +617,15 @@
       FUNKNO(L4+IOF,IG)=REAL(XNI(IEL,J))
   160 CONTINUE
   165 CONTINUE
-      FLUX_G(:,:,:,:,IGEFF)=FLUX_G(:,:,:,:,IGEFF)+FLUX(:,:,:,:)
+      FLUX_G(:,:,:,:,IG)=FLUX_G(:,:,:,:,IG)+FLUX(:,:,:,:)
   170 CONTINUE
   180 CONTINUE
 *$OMP END PARALLEL DO
   190 CONTINUE
-      DO 200 IGEFF=1,NGEFF
-        IF(.NOT.INCONV(IGEFF)) GO TO 200
-        IG=INGIND(IGEFF)
+      DO 200 IG=1,NGEFF
+        IF(.NOT.INCONV(IG)) GO TO 200
         FUNKNO(:L4,IG)=
-     1  RESHAPE(REAL(FLUX_G(:IELEM**2,:NSCT,:LX,:LY,IGEFF)), (/ L4 /) )
+     1  RESHAPE(REAL(FLUX_G(:IELEM**2,:NSCT,:LX,:LY,IG)), (/ L4 /) )
   200 CONTINUE
 *----
 *  SCRATCH STORAGE DEALLOCATION

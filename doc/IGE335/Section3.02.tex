@@ -489,14 +489,14 @@ the physical properties, such as the temperature and density, of a mixture.
 
 \begin{DataStructure}{Structure \dstr{descmix1}}
 \moc{MIX} $[$ \dusa{matnum} $]$ $\{$ \\
-\hskip 1.0cm $[$\dusa{temp} $[$ \dusa{denmix} $]~]~~[$ \moc{NOEV} $]~~[~\{$ \moc{NOGAS}
+\hskip 1.0cm $[$\dusa{temp} $[$ \dusa{denmix} $]~]~~[~\{$ \moc{NOEV} $|$ \moc{EVOL} $\}~]~~[~\{$ \moc{NOGAS}
     $|$ \moc{GAS}$\}~]$\\
 \hskip 2.0cm $[[~[$ \dusa{NAMALI} \moc{=} $]$ \dusa{NAMISO} \dusa{dens} $[~\{$ \dusa{dil} 
     $|$ \moc{INF} $\}~]$\\
 \hskip 2.0cm $[~[$ \moc{CORR} $]$ \dusa{inrs} $]~[$ \moc{DBYE} \dusa{tempd} $]~[$ \moc{SHIB} \dusa{NAMS} $]$ \\
 \hskip 2.0cm $[$ \moc{THER} \dusa{ntfg} \dusa{HINC} $[$ \moc{TCOH} \dusa{HCOH} $]~[$ \moc{RESK} $]~]$ \\
 \hskip 2.0cm $[$ \moc{IRSET} $\{$ \dusa{gir} $|~\{$ \moc{PT} $|$ \moc{PTMC} $|$ \moc{PTSL}$\}~\}~\{$
-\dusa{nir} $|$ \moc{NONE} $\}~]~~[~\{$ \moc{NOEV} $|$ \moc{SAT} $\}~]~]]$ \\
+\dusa{nir} $|$ \moc{NONE} $\}~]~~[~\{$ \moc{NOEV} $|$ \moc{EVOL} $|$ \moc{SAT} $\}~]~]]$ \\
 \hskip 1.0cm $|$ \\
 \hskip 1.0cm \moc{COMB} $[[$ \dusa{mati} \dusa{relvol} $]]~\}$
 \end{DataStructure}
@@ -646,6 +646,9 @@ cases where it is potentially depleting). Note that the mixture or nuclide keeps
 capability to produce energy. By default, the depleting isotopes are
 automatically regognized as depleting.
 
+\item[\moc{EVOL}] keyword to force a mixture or a nuclide to be depleting. By default, only fission products and
+fissile isotopes are depleting.
+
 \item[\moc{NOGAS}] keyword to specify that a mixture has a solid or liquid state (used for stopping power correction).
 This is the default option.
 
@@ -768,7 +771,7 @@ The structure \dstr{descmix2} is used to describe the modifications in the isoto
 
 \begin{DataStructure}{Structure \dstr{descmix2}}
 \moc{MIX}  \dusa{matnum} $[$ \dusa{matold} $]$ $[$ \dusa{relden} $]$
-$[$ \dusa{NAMALI} \dusa{dens} $]~[$ \moc{NOEV} $]$
+$[$ \dusa{NAMALI} \dusa{dens} $]~[~\{$ \moc{NOEV} $|$ \moc{EVOL} $\}~]$
 \end{DataStructure}
 
 \noindent
@@ -798,6 +801,9 @@ isotopic concentration becomes \dusa{dens}$\times$\dusa{relden}.
 \item[\moc{NOEV}] keyword to force a mixture to be non-depleting (even in
 cases where it is potentially depleting). Note that the mixture keeps its
 capability to produce energy.
+
+\item[\moc{EVOL}] keyword to force a mixture to be depleting. By default, only
+mixtures containing fission products and/or fissile isotopes are depleting.
 
 \end{ListeDeDescription}
 \eject

@@ -51,7 +51,7 @@
         IF (ITER > MAXOUT) CALL XABORT('AL1EIG: UNABLE TO CONVERGE.')
         GAR(:)=EVECT(:)
         EVECT(:)=MATMUL(A(:,:),EVECT(:))
-        EVAL=NORM2(EVECT)
+        EVAL=SQRT(DOT_PRODUCT(EVECT(:),EVECT(:)))
         EVECT(:)=EVECT(:)/EVAL
         ERR1=MAXVAL(ABS(EVECT))
         ERR2=MAXVAL(ABS(GAR(:)-EVECT(:)))

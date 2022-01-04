@@ -102,7 +102,7 @@
      2 IAAC,KRYL,NMU,NANGL,NMAX,LC,PACA,ISCR,LPS,ITST(NGEFF),LNCONV,
      3 NLIN,NFUNL,KEYFLX(NREG,NLIN,NFUNL),KEYCUR(NLONG-NREG),STIS,
      4 NPJJM,N2REG,N2SOU,NZP,IDIR
-      REAL V(NLONG),FIMEM(KPN,NG),QFR(KPN,NG),EPSI,CPO(NMU),ZMU(NMU),
+      REAL V(NLONG),FIMEM(KPN,NGEFF),QFR(KPN,NG),EPSI,CPO(NMU),ZMU(NMU),
      1 WZMU(NMU),SIGAL(-6:M,NGEFF),REPS(MAXI,NGEFF),EPS(NGEFF),DELU,
      2 FACSYM
       DOUBLE PRECISION CAZ0(NANGL),CAZ1(NANGL),CAZ2(NANGL)
@@ -117,7 +117,6 @@
 *----
       PARAMETER (IUNOUT=6)
       REAL MAXDIF,MAXFL
-      LOGICAL FORM
 *----
 *  SCRATCH STORAGE ALLOCATION
 *----
@@ -126,9 +125,8 @@
 *---
       IF(IPRINT.GT.5) THEN
          DO II=1,NGEFF
-            IG=NGIND(II)
-            WRITE(6,*) 'GROUP(',IG,')'
-            CALL PRINAM('FI-0  ',FIMEM(1,IG),KPN)
+            WRITE(6,*) 'GROUP(',NGIND(II),')'
+            CALL PRINAM('FI-0  ',FIMEM(1,II),KPN)
          ENDDO
       ENDIF
 *----
@@ -141,7 +139,6 @@
          EPSINT=0.1*EPSI
          MAXINT=200
          ITER=0
-         FORM=.FALSE.
          DO WHILE ((LNCONV.GT.0).AND.(ITER.LT.MAXI))
             ITER=ITER+1
             CALL MCGFL1(SUBFFI,SUBFFA,SUBLDC,SUBSCH,CYCLIC,KPSYS,IPRINT,
@@ -149,7 +146,7 @@
      2           M,NANI,NMU,NMAX,NANGL,NREG,NSOUT,NG,NGEFF,NGIND,SOUR,
      3           IAAC,ISCR,LC,LFORW,PACA,EPSINT,MAXINT,NLIN,NFUNL,
      4           KEYFLX,KEYCUR,QFR,FIMEM,CAZ0,CAZ1,CAZ2,CPO,ZMU,WZMU,V,
-     5           SIGAL,LPS,NCONV,FORM,(MAXI.EQ.1),STIS,NPJJM,REBFLG,
+     5           SIGAL,LPS,NCONV,.TRUE.,(MAXI.EQ.1),STIS,NPJJM,REBFLG,
      6           LPRISM,N2REG,N2SOU,NZP,DELU,FACSYM,IDIR)
 *           residual calculation and update NCONV
             DO II=1,NGEFF
@@ -161,9 +158,8 @@
                      DO I=1,KPN
                         TEMP=REAL(ABS(FLUX(I,II)))
                         MAXFL=MAX(TEMP,MAXFL)
-c                        MAXFL=MAX(ABS(FIMEM(I,IG)),MAXFL)
-                        FIMEM(I,IG)=FIMEM(I,IG)-REAL(FLUX(I,II))
-                        MAXDIF=MAX(ABS(FIMEM(I,IG)),MAXDIF)
+                        FIMEM(I,II)=FIMEM(I,II)-REAL(FLUX(I,II))
+                        MAXDIF=MAX(ABS(FIMEM(I,II)),MAXDIF)
                      ENDDO
                      IF (MAXFL.EQ.0.0) MAXFL=1.0
                      REPS(ITER,II)=MAXDIF/MAXFL
@@ -182,7 +178,7 @@ c                        MAXFL=MAX(ABS(FIMEM(I,IG)),MAXFL)
                      ENDIF
                   ENDIF
                   DO I=1,KPN
-                     FIMEM(I,IG)=REAL(FLUX(I,II))
+                     FIMEM(I,II)=REAL(FLUX(I,II))
                   ENDDO
                ENDIF
             ENDDO

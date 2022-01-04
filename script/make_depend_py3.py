@@ -1,5 +1,5 @@
 #!/bin/env python3
-""" generation of module dependances for a xxx.f90 file """
+""" generation of module dependances for a xxx.f90 or xxx.F90 file """
 
 import string,os
 from subprocess import Popen, PIPE
@@ -43,7 +43,7 @@ def listdir_shell(path):
 #list the file names
 listeClasse= list()
 for x in listdir_shell(os.getcwd()):
-    if x.endswith('.f90'): listeClasse.append(md9(x))
+    if x.endswith('.f90') or x.endswith('.F90'): listeClasse.append(md9(x))
 #sort the file list
 listeRes= []
 while listeClasse:

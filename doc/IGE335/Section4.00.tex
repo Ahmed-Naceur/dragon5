@@ -62,7 +62,7 @@ sequential files is not supported.
 
 \subsection{The UTL: module}\label{sect:UTLData}
 
-The UTL: module is used to perform utility actions on a {\sc lcm} object.
+The {\tt UTL:} module is used to perform utility actions on a {\sc lcm} object.
 The calling specifications are:
 
 \begin{DataStructure}{Structure \dstr{UTL:}}
@@ -185,6 +185,58 @@ the \moc{ADD} and \moc{COPY} operations.
 
 \item[\moc{DUMP}] Dump the active directory of and its
 sub-directories to the printer.
+
+\end{ListeDeDescription}
+
+\clearpage
+
+\subsection{The HUTL: module}\label{sect:HUTLData}
+
+The {\tt HUTL:} module is used to perform utility actions on a {\sc hdf5} file.\cite{hdf5}
+The calling specifications are:
+
+\begin{DataStructure}{Structure \dstr{HUTL:}}
+$[[$ \moc{DIR} $[$ \dusa{BLOCK} $]~]]$ \\
+$[[$ \moc{INFO} \dusa{BLOCK} $]]$ \\
+$[[$ \moc{IMPR} \dusa{BLOCK} $]]$ \\
+$[[$ \moc{CREA} \dusa{BLOCK} $[~[$ \dusa{ilenc1} $]$ \dusa{ilenc2} $]$ \moc{=} $\{$
+(\dusa{valc}(i),i=\dusa{ilenc1},\dusa{ilenc2}) $|$ (\dusa{ivalc}(i),i=\dusa{ilenc1},\dusa{ilenc2}) \\
+$|$ (\dusa{hvalc}(i),i=\dusa{ilenc1},\dusa{ilenc2}) $|$ (\dusa{dvalc}(i),i=\dusa{ilenc1},\dusa{ilenc2}) $\}~]]$ \\
+$[[$ \moc{GREP} \dusa{BLOCK} $[$ \dusa{ilenc1} $]$ {\tt>>}\dusa{value}{\tt <<} $]]$ \moc{;} \\
+\end{DataStructure}
+
+\begin{ListeDeDescription}{mmmmmmmm}
+
+\item[\moc{DIR}] keyword used to print a group table of content. If \dusa{BLOCK} is not set, the table of content of the root group is printed.
+
+\item[\moc{INFO}] keyword used to print information about a dataset.
+
+\item[\moc{IMPR}] keyword to print the complete contents of a dataset.
+
+\item[\moc{CREA}] keyword used to create a dataset. If both \dusa{ilenc1} and \dusa{ilenc2} are missing, a single value is readed.
+
+\item[\dusa{BLOCK}] name of the group or dataset selected. The name of a group can include one or many path separators (character~$\slash$)
+to list different hierarchical levels.
+
+\item[\dusa{ilenc1}] index of the first element included in the block. Can only be set if block
+\dusa{BLOCK} already exists. By default, \dusa{ilenc1} $=1$.
+
+\item[\dusa{ilenc2}] index of the last element included in the block.
+
+\item[\moc{=}] keyword, indicates that the input values will follow.
+
+\item[\dusa{valc}] real vector containing the information to be written in the record \dusa{BLOCK}.
+
+\item[\dusa{ivalc}] integer vector containing the information to be written in the record \dusa{BLOCK}.
+
+\item[\dusa{hvalc}] {\tt character*4} array containing the information to be written in the record \dusa{BLOCK}.
+
+\item[\dusa{dvalc}] double precision array containing the information to be written in the record \dusa{BLOCK}.
+
+\item[\moc{CREA}] keyword used to recover a single component in a dataset of rank 1. If \dusa{ilenc1} is missing, the first value is recovered.
+
+\item[\dusa{value}] {\tt character*12} CLE-2000 variable name in which the recovered value will be placed. This variable should be
+declared integer, real, character or double precision.
 
 \end{ListeDeDescription}
 

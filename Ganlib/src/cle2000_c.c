@@ -18,7 +18,8 @@ int_32 cle2000_c(int_32 ilevel,
    char *nomsub = "cle2000_c";
    int_32 ret_val = 0;
    static char *cdclkw[] = {"PROCEDURE", "MODULE", "LINKED_LIST", "XSM_FILE",
-                            "SEQ_BINARY", "SEQ_ASCII", "DIR_ACCESS", "PARAMETER"};
+                            "SEQ_BINARY", "SEQ_ASCII", "DIR_ACCESS", "HDF5_FILE",
+                            "PARAMETER"};
    int ldatav, lobnew;
    kdi_file *iKDI, *icobj;
    FILE *icinp = NULL, *icout = NULL, *icfile;
@@ -130,7 +131,7 @@ L10:
 /* TREAT FIRST WORD */
    if (ityp == 3) {
       ilogin = 0;
-      for (iloop1 = 0; iloop1 < 8; ++iloop1) {
+      for (iloop1 = 0; iloop1 < 9; ++iloop1) {
          if (strcmp(cdclkw[iloop1], text) == 0) ilogin = iloop1+1;
       }
 /*    OUTSIDE THE DATA SECTION ( *HERE*  ::  ... ) */
@@ -255,6 +256,9 @@ L40:
                   jparam = my_node->access;
                   if (iparam == 3) kparam = my_node->value.mylcm;
                   if (iparam == 7) lparam = my_node->lparam;
+#if defined(HDF5_LIB)
+                  if (iparam == 8) kparam = (lcm*)my_node->value.myhdf5;
+#endif
                   strcpy(hparam, my_node->OSname);
                   strcpy(hparam_c[iloop1], hparam);
 /*                CONSISTENCY TESTS */
@@ -273,7 +277,7 @@ L40:
                         goto L666;
                      } else if (iparam <= 0) {
 /*                      ALLOW ACCESS TO ANY FILE AT MAIN LEVEL */
-                        if (ilevel == 1 && (iparam == -4 || iparam == -5 || iparam == -6 || iparam == -7)) {
+                        if (ilevel == 1 && (iparam == -4 || iparam == -5 || iparam == -6 || iparam == -7 || iparam == -8)) {
                            iparam = -iparam;
                            my_node->type = iparam;
                         } else {
@@ -285,7 +289,7 @@ L40:
                   } else if (jentry[iloop1] == 2) {
                      if (iparam <= 0) {
 /*                      ALLOW ACCESS TO ANY FILE AT MAIN LEVEL */
-                        if (ilevel == 1 && (iparam == -4 || iparam == -5 || iparam == -6 || iparam == -7)) {
+                        if (ilevel == 1 && (iparam == -4 || iparam == -5 || iparam == -6 || iparam == -7 || iparam == -8)) {
                            iparam = -iparam;
                            my_node->type = iparam;
                         } else {
@@ -314,6 +318,33 @@ L40:
                      kparam = kentry[iloop1];
                   } else if (iparam == 5 || iparam == 6 || iparam == 7) {
                      kentry[iloop1] = NULL;
+#if defined(HDF5_LIB)
+                  } else if (iparam == 8) {
+                     if (jdispe > 0) kentry[iloop1] = kparam;
+                     hid_t myhdf5 = 0;
+                     if (jdispe == 0) {
+                       myhdf5 = H5Fcreate(hparam, H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);
+                       if (iprint > 1) {
+                         printf("%s: create HDF5 file at address=%lld\n",nomsub, (long long int)myhdf5);
+                       }
+                     } else if (jdispe == 1) {
+                       myhdf5 = H5Fopen(hparam, H5F_ACC_RDWR, H5P_DEFAULT);
+                       if (iprint > 1) {
+                         printf("%s: open HDF5 file in read-write mode at address=%lld\n",nomsub, (long long int)myhdf5);
+                       }
+                     } else if (jdispe == 2) {
+                       myhdf5 = H5Fopen(hparam, H5F_ACC_RDONLY, H5P_DEFAULT);
+                       if (iprint > 1) {
+                         printf("%s: open HDF5 file in read-only mode at address=%lld\n",nomsub, (long long int)myhdf5);
+                       }
+                     }
+                     if (myhdf5 < 0) {
+                       printf("%s: H5Fopen failure on HDF5 file '%s'.\n",nomsub,hparam);
+                       goto L666;
+                     }
+                     kentry[iloop1] = (lcm*)myhdf5;
+                     kparam = kentry[iloop1];
+#endif
                   } else {
                      printf("%s: USE %s *%s* IS IMPOSSIBLE. INVALID IPARAM (%d)\n", nomsub,
                             cdclkw[iparam-1], hparam, (int)iparam);
@@ -392,6 +423,23 @@ L40:
                         }
                         kparam = 0;
                      }
+#if defined(HDF5_LIB)
+                  } else if (iparam == 6) {
+                     iretcd = H5Fclose((hid_t)kentry[iloop1]);
+                     if (iretcd != 0) {
+                        printf("%s: HDF5 CLOSE FAILURE. file=*%s* iretcd=%d\n", nomsub, hentry[iloop1],
+                        iretcd);
+                        goto L666;
+                     }
+                     if (jdispe == 2) {
+                        iretcd = remove(hentry[iloop1]);
+                        if (iretcd != 0) {
+                           printf("%s: REMOVE FAILURE. file=*%s*\n", nomsub, hentry[iloop1]);
+                           goto L666;
+                        }
+                        kparam = 0;
+                     }
+#endif
                   } else {
                      printf("%s: UNABLE TO CLOSE *%s*\n", nomsub, hentry[iloop1]);
                      goto L666;
@@ -430,6 +478,9 @@ L40:
             } else if (strcmp(cmodul, "DIR_ACCESS") == 0) {
 /*             *DIR_ACCESS  * DECLARATION MODULE */
                iretcd = kdrdda(&my_iptrun, nentry, hentry);
+            } else if (strcmp(cmodul, "HDF5_FILE") == 0) {
+/*             *HDF5_FILE  * DECLARATION MODULE */
+               iretcd = kdrdh5(&my_iptrun, nentry, hentry);
             } else {
 /*             OTHERWISE, DECLARATION MODULE IS NOT AVAILABLE */
                printf("%s: DECLARATION MODULE *%s* NOT AVAILABLE IN THIS CODE\n", nomsub, cmodul);

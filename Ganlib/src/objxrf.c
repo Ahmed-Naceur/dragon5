@@ -9,7 +9,7 @@
 #include <string.h>
 #include "cle2000.h"
 #include "header.h"
-#define ndclkw 8
+#define ndclkw 9
 #define ntotxr 7
 #define nmawrd 36
 
@@ -19,9 +19,9 @@ int_32 objxrf(kdi_file *iunito, FILE *iwrite)
    static char cl2000[] = "CLE2000(V3)";
    static char ctitdb[] = "* GAN-2000 VERS 2.1 * DEBUG (WARNINGS AND ERRORS)";
    static char ctitxr[] = "* GAN-2000 VERS 2.1 * CROSS REFERENCE LISTING";
-   static char *cdclkw[] = {"PROCEDURE", "MODULE", "LINKED_LIST", "XSM_FILE",
-                            "SEQ_BINARY", "SEQ_ASCII", "DIR_ACCESS", "PARAMETER"};
-   static char *ctypes[] = {"PR", "MD", "LL", "XF", "SB", "SA", "DA", "--"};
+   static char *cdclkw[] = {"PROCEDURE", "MODULE", "LINKED_LIST", "XSM_FILE", "SEQ_BINARY",
+                            "SEQ_ASCII", "DIR_ACCESS", "HDF5_FILE", "PARAMETER"};
+   static char *ctypes[] = {"PR", "MD", "LL", "XF", "SB", "SA", "DA", "H5", "--"};
 
 /*     CLE-2000 SYSTEM: R.ROY (11/1999), VERSION 2.1 */
 

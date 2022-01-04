@@ -33,7 +33,8 @@
 * MIX     mix number of each isotope (can be zero).
 * DEN     density of each isotope.
 * IEVOL   non-depleting flag (=1 to force an isotope to be
-*         non-depleting; =2 to force an isotope to at saturation).
+*         non-depleting; =2 to force an isotope to be depleting;
+*         =3: to force an isotope to be at saturation).
 * ISTYP   isotope type (=1 not fissile nor fission product; =2: fissile;
 *         =3: fission product).
 * VX      volume occupied by each mixture.
@@ -245,8 +246,10 @@
             DO 10 J=1,ICOMB
             IF(IBM.EQ.MILVO(J)) GO TO 30
    10       CONTINUE
-            ICOMB=ICOMB+1
-            MILVO(ICOMB)=IBM
+            IF(ISTYP(ISOT).GT.1) THEN
+               ICOMB=ICOMB+1
+               MILVO(ICOMB)=IBM
+            ENDIF
          ENDIF
          GO TO 30
       ENDIF
@@ -421,7 +424,7 @@
            IBM=MILVO(ICMB)
            IF(MIXPWR(IBM).GT.0) THEN
              DO 115 IS=1,NBISO
-             IF((MIX(IS).NE.IBM).OR.(IEVOL(IS).NE.0)) GO TO 115
+             IF((MIX(IS).NE.IBM).OR.(IEVOL(IS).EQ.1)) GO TO 115
              KPLIB=IPISO(IS) ! set IS-th isotope
              IF(C_ASSOCIATED(KPLIB)) THEN
                AWRGAR=0.0
@@ -476,7 +479,7 @@
          DO 150 IBM=1,NBMIX
          ENERG(IBM)=0.0
          DO 140 IS=1,NBISO
-         IF((MIX(IS).NE.IBM).OR.(IEVOL(IS).NE.0)) GO TO 140
+         IF((MIX(IS).NE.IBM).OR.(IEVOL(IS).EQ.1)) GO TO 140
          KPLIB=IPISO(IS) ! set IS-th isotope
          IF(C_ASSOCIATED(KPLIB)) THEN
            AWRGAR=0.0

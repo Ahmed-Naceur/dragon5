@@ -1996,6 +1996,521 @@ xabort_c(hsmg);
 \hline
 \end{tabular}
 
+\clearpage
+
+\section {The ANSI C {\sc hdf5} API}\label{sect:hdf5apiC}
+
+HDF5 is a hierarchical filesystem data format. HDF5 is self-describing, allowing an application to interpret the structure and contents
+of a file with no outside information. A HDF5 file created on a little endian CPU can be read on a big endian CPU, and vice versa. Similarly,
+real(4) datasets can be recovered in real(8) arrays, and vice versa. HDF5 includes two major types of object:
+\begin{itemize}
+\item Datasets, which are multidimensional arrays of a homogeneous type
+\item Groups, which are container structures which can hold datasets and other groups.
+\end{itemize}
+The Ganlib5 implementation of HDF5 relies on the official ANSI C API provided by the HDF Group, a non-profit corporation whose mission
+is to ensure continued development of HDF5 technologies and the continued accessibility of data stored in HDF.\opcite{hdf5} The Ganlib5 kernel
+reimplements simplified ANSI C and Fortran bindings of the legacy HDF5 API to facilitate its use. The compilation and link edition of the
+new bindings require the definition of a UNIX environment variable {\tt HDF5\_DIR} pointing towards a directory containing the official HDF5
+{\tt include} and {\tt lib} sub-directories compatible with your operating system. On a OSX operating system, this variable may be set as
+\begin{verbatim}
+export HDF5_DIR="/usr/local/Cellar/hdf5/1.12.1" # HDF5 directory
+\end{verbatim}
+\noindent On a Linux operating system, the environment variable {\tt LD\_LIBRARY\_PATH} must also be set:
+\begin{verbatim}
+export HDF5_DIR="/usr/local/hdf5" # HDF5 directory
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HDF5_DIR/lib/
+\end{verbatim}
+
+Any ANSI C program using the Ganlib5 HDF5 API implementation should use the following include:
+\begin{verbatim}
+#include "hdf5_aux.h"
+\end{verbatim}
+
+\vskip 0.08cm
+
+\subsection{Opening and closing of HDF5 files}
+
+\subsubsection{hdf5\_open\_file\_c}
+
+Open a HDF5 file. Obtain the address of the HDF5 file if it is created. Note that CLE-2000 is responsible to perform the calls to
+{\tt hdf5\_open\_file\_c} for the HDF5 files that are used as parameters of a CLE-2000 module. The use
+of {\tt hdf5\_open\_file\_c} is generally restricted to the use of temporary HDF5 files created within a CLE-2000 module.
+
+\begin{verbatim}
+
+hdf5_open_file_c(fname, ifile, irdonly);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt fname} & {\it char[1024]} & name of the HDF5 file. \\
+\hline
+{\tt irdonly} & {\it int\_32} & =0 to create a new HDF5 file or to to modify an existing HDF5 file. A file is not created if it does not already exist. 
+				=1 to access an existing HDF5 file in {\bf read-only} mode. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_close\_file\_c}
+
+Close a HDF5 file. Note that CLE-2000 is responsible to perform the calls to
+{\tt hdf5\_close\_file\_c} for the HDF5 files that are used as parameters of a CLE-2000 module. The use
+of {\tt hdf5\_close\_file\_c} is generally restricted to the use of temporary HDF5 files created within a CLE-2000 module.
+
+\begin{verbatim}
+
+hdf5_close_file_c(ifile);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+\end{tabular}
+
+\subsection{Interrogation of HDF5 files}
+
+The data structures in a HDF5 file are self-described. It is therefore possible to
+interrogate them in order to know their characteristics.
+
+\subsubsection{hdf5\_list\_c}
+
+List the root table of contents of a group on the standard output. The name of a group can include one or many path separators (character~$\slash$)
+to list different hierarchical levels.
+
+\begin{verbatim}
+
+hdf5_list_c(ifile, namp);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+{\tt namp} & {\it char[1024]} & name of a group. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_get\_dimensions\_c}
+
+Find the rank (number of dimensions) of a dataset.
+
+\begin{verbatim}
+
+hdf5_get_dimensions_c(ifile, namp, rank);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+{\tt namp} & {\it char[1024]} & name of a dataset. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt rank} & {\it int\_32*} & rank of the dataset. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_get\_num\_group\_c}
+
+Find the number of objects (daughter datasets {\sl and} daughter groups) in a group.
+
+\begin{verbatim}
+
+hdf5_get_num_group_c(ifile, namp, nbobj);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+{\tt namp} & {\it char[1024]} & name of a group. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt nbobj} & {\it int\_32*} & number of objects in group {\tt namp}. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_list\_datasets\_c}
+
+Recover character daughter dataset names in a group.
+
+\begin{verbatim}
+
+hdf5_list_datasets_c(file, namp, ndsets, idata);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+{\tt namp} & {\it char[1024]} & name of a group. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt nbobj} & {\it int\_32*} & number of daughter datasets in group {\tt namp}. \\
+\hline
+{\tt idata} & {\it char*} & list of character names of each daughter dataset. Each name is null terminated. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_list\_groups\_c}
+
+Recover character daughter groups names in a group.
+
+\begin{verbatim}
+
+hdf5_list_groups_c(file, namp, ndsets, idata);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+{\tt namp} & {\it char[1024]} & name of a group. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt nbobj} & {\it int\_32*} & number of daughter groups in group {\tt namp}. \\
+\hline
+{\tt idata} & {\it char*} & list of character names of each daughter group. Each name is null terminated. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_info\_c}
+
+Find dataset information.
+
+\begin{verbatim}
+
+hdf5_info_c(ifile, namp, rank, type, nbyte, dimsr);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+{\tt namp} & {\it char[1024]} & name of a dataset. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt rank} & {\it int\_32*} & rank (number of dimensions) of dataset. \\
+\hline
+{\tt type} & {\it int\_32*} & type of dataset: =1 32-bit integer; 
+                                    =2 32-bit real; =3 character data; 
+				    =4 64-bit real. \\
+\hline
+{\tt nbyte} & {\it int\_32*} & number of bytes in each component of the dataset. \\
+\hline
+{\tt dimsr} & {\it int\_32*} & integer array containing the dimension of dataset. {\tt rank} values are provided. \\
+\hline
+\end{tabular}
+
+\subsection{Management of the array of elementary type}
+
+\subsubsection{hdf5\_read\_data\_int\_c}
+
+Copy an integer dataset from HDF5 file into memory.
+
+\begin{verbatim}
+
+hdf5_read_data_int_c(ifile, namp, idata);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+{\tt namp} & {\it char[1024]} & name of a dataset. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt idata} & {\it int\_32*} & integer array. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_read\_data\_real4\_c}
+
+Copy a real(4) dataset from HDF5 file into memory.
+
+\begin{verbatim}
+
+hdf5_read_data_real4_c(ifile, namp, rdata);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+{\tt namp} & {\it char[1024]} & name of a dataset. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt rdata} & {\it float*} & real(4) array. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_read\_data\_real8\_c}
+
+Copy a real(8) dataset from HDF5 file into memory.
+
+\begin{verbatim}
+
+hdf5_read_data_real8_c(ifile, namp, rdata);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+{\tt namp} & {\it char[1024]} & name of a dataset. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt rdata} & {\it double*} & real(8) array. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_read\_data\_string\_c}
+
+Copy a character dataset from HDF5 file into memory.
+
+\begin{verbatim}
+
+hdf5_read_data_string_c(ifile, namp, idata);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+{\tt namp} & {\it char[1024]} & name of a dataset. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt idata} & {\it char*} & character array. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_write\_data\_int\_c}
+
+Copy an integer array from memory into a HDF5 dataset
+
+\begin{verbatim}
+
+hdf5_write_data_int_c(ifile, namp, rank, dimsr, idata);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+{\tt namp} & {\it char[1024]} & name of a dataset. \\
+\hline
+{\tt rank} & {\it int\_32*} & rank (number of dimensions) of dataset. \\
+\hline
+{\tt dimsr} & {\it int\_32*} & integer array containing the dimension of dataset. {\tt rank} values are provided. \\
+\hline
+{\tt idata} & {\it int\_32*} & integer array. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_write\_data\_real4\_c}
+
+Copy a real(4) array from memory into a HDF5 dataset
+
+\begin{verbatim}
+
+hdf5_write_data_real4_c(ifile, namp, rank, dimsr, rdata);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+{\tt namp} & {\it char[1024]} & name of a dataset. \\
+\hline
+{\tt rank} & {\it int\_32*} & rank (number of dimensions) of dataset. \\
+\hline
+{\tt dimsr} & {\it int\_32*} & integer array containing the dimension of dataset. {\tt rank} values are provided. \\
+\hline
+{\tt rdata} & {\it float*} & real(4) array. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_write\_data\_real8\_c}
+
+Copy a real(8) array from memory into a HDF5 dataset
+
+\begin{verbatim}
+
+hdf5_write_data_real8_c(ifile, namp, rank, dimsr, rdata);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+{\tt namp} & {\it char[1024]} & name of a dataset. \\
+\hline
+{\tt rank} & {\it int\_32*} & rank (number of dimensions) of dataset. \\
+\hline
+{\tt dimsr} & {\it int\_32*} & integer array containing the dimension of dataset. {\tt rank} values are provided. \\
+\hline
+{\tt rdata} & {\it double*} & real(8) array. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_write\_data\_string\_c}
+
+Copy an character array from memory into a HDF5 dataset
+
+\begin{verbatim}
+
+hdf5_write_data_string_c(ifile, namp, rank, dimsr, idata);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+{\tt namp} & {\it char[1024]} & name of a dataset. \\
+\hline
+{\tt rank} & {\it int\_32*} & rank (number of dimensions) of dataset. \\
+\hline
+{\tt len} & {\it int\_32*} & length of a string element in the array (in bytes). \\
+\hline
+{\tt dimsr} & {\it int\_32*} & integer array containing the dimension of dataset. {\tt rank} values are provided. \\
+\hline
+{\tt idata} & {\it char*} & character array. \\
+\hline
+\end{tabular}
+
+\clearpage
+
 \section {The ANSI C CLE-2000 API}\label{sect:cle2000apiC}
 
 \subsection {The main entry point for CLE-2000}
@@ -2071,7 +2586,8 @@ dummod(cmodul, nentry, hentry, ientry, jentry, kentry, hparam);
 {\tt ientry}  & {\it int\_32*} & types of the parameters. $=1$: memory-resident LCM object; $=2$: persistent LCM object (stored in a XSM file); 
 $=3$: sequential binary file;
 $=4$: sequential ascii file;
-$=5$: direct access file. \\
+$=5$: direct access file;
+$=6$: HDF5 file. \\
 \hline
 {\tt jentry}  & {\it int\_32*} & access mode of the parameters. $=0$: the object is created; $=1$: the object is opened for modifications ; $=2$: the object is opened in read-only mode. \\
 \hline
@@ -2398,7 +2914,8 @@ clemod_c(cmodul, filein, nentry, hentry, ientry, jentry, kentry, hparam, dummod)
 {\tt ientry} & {\it int\_32*} & types of each parameter. $=1$: memory-resident LCM object; $=2$: persistent LCM object (stored in a XSM file); 
 $=3$: sequential binary file;
 $=4$: sequential ascii file;
-$=5$: direct access file.
+$=5$: direct access file;
+$=6$: HDF5 file.
 \\
 \hline
 {\tt jentry} & {\it int\_32*} & mode of each parameter. $=0$: the object is created; $=1$: the object is opened for modifications ; $=2$: the object is opened in read-only mode. \\
@@ -2493,8 +3010,8 @@ The specification of a lifo node is:
 \begin{verbatim}
 typedef struct LIFO_NODE {     /* node in last-in-first-out (lifo) stack */
    int_32 type;                /* type of node: 3= lcm object; 4= xsm file; 5= seq binary;
-                                  6= seq ascii; 7= da binary; 11= integer value; 12= real value
-                                  13= character string; 14= double precision value;
+                                  6= seq ascii; 7= da binary; 8= hdf5 file; 11= integer value;
+                                  12= real value; 13= character string; 14= double precision value;
                                   15= logical value */
    int_32 access;              /* 0=creation mode/1=modification mode/2=read-only mode */
    int_32 lparam;              /* record length for DA file objects */
@@ -2504,6 +3021,7 @@ typedef struct LIFO_NODE {     /* node in last-in-first-out (lifo) stack */
        double dval;            /* double precision value */
        lcm *mylcm;             /* handle towards a LCM object */
        char hval[73];          /* character value */
+       hid_t myhdf5;           /* handle towards a HDF5 file */
    } value;
    struct LIFO_NODE *daughter; /* address of the daughter node in stack */
    char name[13];              /* name of node in the calling script */
@@ -2526,6 +3044,7 @@ $=\pm 4$: XSM file;
 $=\pm 5$: sequential binary file;
 $=\pm 6$: sequential ascii file;
 $=\pm 7$: direct access binary file;
+$=\pm 8$: HDF5 file;
 $=\pm 11$: integer CLE-2000 value;
 $=\pm 12$: real CLE-2000 value;
 $=\pm 13$: character string (null-terminated);
@@ -4829,6 +5348,466 @@ CALL XABORT(HSMG)
 
 \clearpage
 
+\section {The ISO Fortran {\sc hdf5} API}
+
+The ISO Fortran {\sc hdf5} API is a set of Fortran-2003 wrapper subroutines or functions programmed around the ANSI-C functions of the {\sc hdf5} API presented in Sect.~\ref{sect:hdf5apiC}. This implementation is using
+the C interoperability capabilities normalized by ISO and available in the Fortran-2003 compilers. All the subroutines and functions presented in this section are ISO-standard and 64-bit clean.
+
+\vskip 0.08cm
+
+Any subroutines or functions using the Fortran {\sc hdf5} API must include a {\tt USE} statement of the form
+\begin{verbatim}
+use hdf5_wrap
+\end{verbatim}
+
+The address of a HDF5 file is a {\tt TYPE(C\_PTR)} variable declared as
+\begin{verbatim}
+      type(c_ptr) :: ifile
+\end{verbatim}
+
+\subsection{Opening and closing of HDF5 files}
+
+\subsubsection{hdf5\_open\_file\index{hdf5OpenFile}}
+
+Open a HDF5 file.
+\begin{verbatim}
+
+call hdf5_open_file(fname, ifile, rdonly)
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt fname} & {\it character*1023} & name of the HDF5 file. \\
+\hline
+{\tt rdonly} & {\it logical} & =.true. to access an existing HDF5 file in {\bf read-only} mode. Optional argument.
+By default, the HDF5 file is accessed in read-write mode. \\ 
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt ifile} & {\it type(c\_ptr)} & address of the HDF5 file. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_close\_file\index{hdf5CloseFile}}
+
+Close a HDF5 file.
+
+\begin{verbatim}
+
+call hdf5_close_file(ifile)
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it type(c\_ptr)} & address of the HDF5 file. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\subsection{Interrogation of HDF5 files}
+
+The data structures in a HDF5 file are self-described. It is therefore possible to
+interrogate them in order to know their characteristics.
+
+\subsubsection{hdf5\_list\index{hdf5List}}
+
+List the root table of contents of a group on the standard output. The name of a group can include one or many path separators (character~$\slash$)
+to list different hierarchical levels.
+
+\begin{verbatim}
+
+call hdf5_list(ifile, name)
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it type(c\_ptr)} & address of the HDF5 file. \\
+\hline
+{\tt name} & {\it character*1023} & name of a group. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_info\index{hdf5Info}}
+
+Find dataset information.
+
+\begin{verbatim}
+
+call hdf5_info(ifile, name, rank, type, nbyte, dimsr)
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it type(c\_ptr)} & address of the HDF5 file. \\
+\hline
+{\tt name} & {\it character*1023} & name of a dataset. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt rank} & {\it integer} & rank (number of dimensions) of dataset. \\
+\hline
+{\tt type} & {\it integer} & type of dataset: =1 32-bit integer; 
+                                    =2 32-bit real; =3 character data; 
+				    =4 64-bit real. \\
+\hline
+{\tt nbyte} & {\it integer} & number of bytes in each component of the dataset. \\
+\hline
+{\tt dimsr} & {\it integer(*)} & integer array containing the dimension of dataset. {\tt rank} values are provided. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_get\_dimensions\index{hdf5GetDimensions}}
+
+Find the rank (number of dimensions) of a dataset.
+
+\begin{verbatim}
+
+rank=hdf5_get_dimensions(ifile, name)
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it type(c\_ptr)} & address of the HDF5 file. \\
+\hline
+{\tt name} & {\it character*1023} & name of a dataset. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt rank} & {\it integer} & rank of the dataset. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_get\_shape\index{hdf5GetShape}}
+
+Find the shape (dimension array) of a dataset.
+
+\begin{verbatim}
+
+call hdf5_get_shape(ifile, name, dimsr)
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it type(c\_ptr)} & address of the HDF5 file. \\
+\hline
+{\tt name} & {\it character*1023} & name of a dataset. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt dimsr} & {\it integer(*)} & integer array containing the dimension of dataset. {\tt rank} values are provided. \\
+\hline
+\end{tabular}
+
+\subsubsection{hdf5\_list\_datasets\index{hdf5ListDatasets}}
+
+Allocate a character array of the correct size and recover character daughter dataset names in a group.
+
+\begin{verbatim}
+
+call hdf5_list_datasets(ifile, name, dsets)
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it type(c\_ptr)} & address of the HDF5 file. \\
+\hline
+{\tt name} & {\it character*1023} & name of a dataset. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{4.5cm}|p{8.5cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt idata} & {\it character*1023(:),allocatable} & list of character names of each daughter dataset.\\
+\hline
+\end{tabular}
+
+\vskip 0.5cm
+
+\noindent Example:
+\begin{verbatim}
+  use hdf5_wrap
+  type(c_ptr) :: ifile
+  character(len=100), allocatable :: list(:)
+  ...
+  call hdf5_list_datasets(ifile, '/', list)
+  write(*,*) 'dataset table of contents:'
+  do i = 1, size(list)
+    write(*,*) trim(list(i))
+  enddo
+  deallocate(list)
+\end{verbatim}
+
+\subsubsection{hdf5\_list\_groups\index{hdf5ListGroups}}
+
+Allocate a character array of the correct size and recover character daughter group names in a group.
+
+\begin{verbatim}
+
+call hdf5_list_groups(ifile, name, dsets)
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it type(c\_ptr)} & address of the HDF5 file. \\
+\hline
+{\tt name} & {\it character*1023} & name of a dataset. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{4.5cm}|p{8.5cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt idata} & {\it character*1023(:),allocatable} & list of character names of each daughter group.\\
+\hline
+\end{tabular}
+
+\vskip 0.5cm
+
+\noindent Example:
+\begin{verbatim}
+  use hdf5_wrap
+  type(c_ptr) :: ifile
+  character(len=100), allocatable :: list(:)
+  ...
+  call hdf5_list_groups(ifile, '/', list)
+  write(*,*) 'group table of contents:'
+  do i = 1, size(list)
+    write(*,*) trim(list(i))
+  enddo
+  deallocate(list)
+\end{verbatim}
+
+\vskip 0.8cm
+
+\subsection{Management of the array of elementary type}
+
+\subsubsection{hdf5\_read\_data\index{hdf5ReadData}}
+
+Allocate an array of the correct type and size and copy a dataset from HDF5 file into memory.
+
+\begin{verbatim}
+
+call hdf5_read_data(ifile, name, data)
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it type(c\_ptr)} & address of the HDF5 file. \\
+\hline
+{\tt name} & {\it character*1023} & name of a dataset. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3.5cm}|p{9.5cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameters:} \\
+\hline
+{\tt data} & {\it class(:),allocatable} & array. Note: if the array is replaced by a single integer, real or characcter variable,
+this variable has not the allocatable status.\\
+\hline
+\end{tabular}
+
+\vskip 0.5cm
+
+\noindent The generic {\it class(:),allocatable} data type is selected among the following options:
+
+\vskip 0.2cm
+\begin{tabular}{|p{10.5cm}|}
+\hline
+{\tt integer  :: data} \\
+{\tt integer, allocatable, dimension(:) :: data} \\
+{\tt integer, allocatable, dimension(:,:) :: data} \\
+{\tt real(4) :: data} \\
+{\tt real(4), allocatable, dimension(:) :: data} \\
+{\tt real(4), allocatable, dimension(:,:) :: data} \\
+{\tt real(4), allocatable, dimension(:,:,:) :: data} \\
+{\tt real(4), allocatable, dimension(:,:,:,:) :: data} \\
+{\tt real(8) :: data} \\
+{\tt real(8), allocatable, dimension(:) :: data} \\
+{\tt real(8), allocatable, dimension(:,:) :: data} \\
+{\tt real(8), allocatable, dimension(:,:,:) :: data} \\
+{\tt real(8), allocatable, dimension(:,:,:,:) :: data} \\
+{\tt character(len=*) :: data} \\
+{\tt character(len=*), allocatable, dimension(:) :: data} \\
+\hline
+\end{tabular}
+
+\vskip 0.4cm
+\goodbreak
+
+\noindent Example 1:
+\begin{verbatim}
+  use hdf5_wrap
+  type(c_ptr) :: ifile
+  integer :: ncalc
+  ...
+  call hdf5_read_data(ifile,"NCALS",ncalc)
+  write(*,*) 'ncalc=',ncalc
+\end{verbatim}
+
+\vskip 0.3cm
+
+\noindent Example 2:
+\begin{verbatim}
+  use hdf5_wrap
+  type(c_ptr) :: ifile
+  character(len=8), allocatable, dimension(:) :: isoname
+  ...
+  call hdf5_read_data(ifile,"/explicit/ISONAME",isoname)
+  write(*,*) 'isotope names:'
+  do i = 1, size(isoname)
+    write(*,*) trim(isoname(i))
+  enddo
+  deallocate(isoname)
+\end{verbatim}
+
+\vskip 0.3cm
+
+\noindent Example 3:
+\begin{verbatim}
+  use hdf5_wrap
+  type(c_ptr) :: ifile
+  real(8), allocatable, dimension(:,:) :: yields_matrix
+  ...
+  call hdf5_read_data(ifile,"/physconst/FYIELDS",yields_matrix)
+  no_fiss=size(yields_matrix,1)
+  no_fp=size(yields_matrix,2)
+  write(*,*) 'no_fiss=',no_fiss,' no_fp=',no_fp
+  deallocate(yields_matrix)
+\end{verbatim}
+
+\subsubsection{hdf5\_write\_data\index{hdf5WriteData}}
+
+Copy an array from memory into a HDF5 dataset
+
+\begin{verbatim}
+
+call hdf5_write_data(ifile, name, idata)
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it type(c\_ptr)} & address of the HDF5 file. \\
+\hline
+{\tt name} & {\it character*1023} & name of a dataset. \\
+\hline
+{\tt data} & {\it class(*)} & array.\\
+\hline
+\end{tabular}
+
+\vskip 0.5cm
+\goodbreak
+
+\noindent The generic {\it class(*)} data type is selected among the following options:
+
+\vskip 0.2cm
+\begin{tabular}{|p{8.5cm}|}
+\hline
+{\tt integer,intent(in) :: data} \\
+{\tt integer,dimension(:) :: data} \\
+{\tt integer,dimension(:,:) :: data} \\
+{\tt real(4) :: data} \\
+{\tt real(4),dimension(:) :: data} \\
+{\tt real(4),dimension(:,:) :: data} \\
+{\tt real(4),dimension(:,:,:) :: data} \\
+{\tt real(4),dimension(:,:,:,:) :: data} \\
+{\tt real(8) :: data} \\
+{\tt real(8),dimension(:) :: data} \\
+{\tt real(8),dimension(:,:) :: data} \\
+{\tt real(8),dimension(:,:,:) :: data} \\
+{\tt real(8),dimension(:,:,:,:) :: data} \\
+{\tt character(len=*) :: data} \\
+{\tt character(len=*), dimension(:) :: data} \\
+\hline
+\end{tabular}
+
+\vskip 0.4cm
+
+\noindent Example:
+\begin{verbatim}
+  use hdf5_wrap
+  type(c_ptr) :: ifile
+  integer, allocatable, dimension(:) :: nitmaV1
+  ...
+  allocate(nitmaV1(10))
+  nitmaV1(:10)=100
+  call hdf5_write_data(ifile, 'my_dummy_record', nitmaV1)
+  deallocate(nitmaV1)
+\end{verbatim}
+
+\clearpage
+
 \section {The ISO Fortran CLE-2000 API}
 
 \subsection {Management of Fortran files outside CLE-2000}
@@ -5608,7 +6587,7 @@ lists and for files created by {\tt lcm.file()}.
 \item [{\tt o.\_type}] Type of the object. $ = 1 $: LCM object in memory
 (similar to a Python dictionary); $ = 2 $: persistent LCM object (of type {\sc xsm} file);
 $ = 3 $: binary sequential file; $ = 4 $: sequential {\sc ascii} file; $=$ 5:
-direct access file.
+direct access file; $=$ 6: HDF5 file.
 \item [{\tt o.\_access}] Access mode of the object. $ = 0 $: closed object (i.e., no
 accessible); $ = 1 $: object in modification mode; $ = 2 $: object in read mode
 (read-only).
@@ -5646,7 +6625,7 @@ o = lcm.new(type, [name], [iact], [lrda], [impx])
 {\tt type} & {\it string} & type of the PyLCM object that will be created. $=$ {\tt LCM}
 object {\sc lcm} in memory; $=$ {\tt XSM} persistent object of type {\sc xsm}; $=$ {\tt BINARY}
 binary sequential file; $=$ {\tt ASCII}; sequential file {\sc ascii};
-$=$ {\tt DA}; direct access file; $=$ {\tt LCM\_IMP}
+$=$ {\tt DA}; direct access file; $=$ {\tt HDF5}; HDF5 file; $=$ {\tt LCM\_IMP}
 object {\sc lcm} in memory built from the file "{\tt \_}"$ + $ {\tt name} containing
 a serialized PyLCM object; $=$ {\tt XSM\_INP} persistent object of type {\sc xsm} built
 from the file "{\tt \_}"$ + $ {\tt name} containing a serialized PyLCM object. \\
@@ -5949,7 +6928,8 @@ o.pushEmpty(OSname, [type])
 \hline
 {\tt OSname} &  {\it string}  & character (len=72) OSname of the empty node. Used to name the PyLCM object. \\
 {\tt type} & {\it string}  & character type of the empty object to push in the stack. The following character types are allowed: ``{\tt I}'': integer variable, ``{\tt S}'': character string, ``{\tt D}'': double precision variable, ``{\tt B}'':
-logical variable, ``{\tt LCM}'': PyLCM object of type {\sc lcm},  ``{\tt XSM}'': PyLCM object of type {\sc xsm},  ``{\tt BINARY}'': PyLCM object containing a sequential binary file,  ``{\tt ASCII}'': PyLCM object containing a sqquential {\sc ascii} file,  ``{\tt DA}'': PyLCM object containing a direct access file. By default, {\tt type} $=$ ``{\tt LCM}''.\\
+logical variable, ``{\tt LCM}'': PyLCM object of type {\sc lcm}, ``{\tt XSM}'': PyLCM object of type {\sc xsm}, ``{\tt BINARY}'': PyLCM object containing a sequential binary file,  ``{\tt ASCII}'': PyLCM object containing a sqquential {\sc ascii} file, 
+``{\tt DA}'': PyLCM object containing a direct access file, ``{\tt HDF5}'': PyLCM object containing a HDF5 file. By default, {\tt type} $=$ ``{\tt LCM}''.\\
 \hline
 \end{tabular}
 

@@ -36,8 +36,8 @@
 * ILLIB   xs library index for each isotope.
 * MIX     mix number of each isotope (can be zero).
 * TN      temperature of each isotope.
-* IEVOL   non-depletion mask (=1 to force an isotope to be
-*         non-depleting).
+* IEVOL   non-depletion mask (=1/2 to suppress/force depletion of an
+*         isotope).
 * ITYP    isotope type:
 *         =1: the isotope is not fissile and not a fission product;
 *         =2: the isotope is fissile; =3: is a fission product.
@@ -78,7 +78,7 @@
       DO 30 ISOT=1,NBISO
       IBM=MIX(ISOT)
       IF(IBM.EQ.0) GO TO 30
-      IF((IEVOL(ISOT).EQ.0).AND.(ITYP(ISOT).GT.1)) THEN
+      IF((IEVOL(ISOT).NE.1).AND.(ITYP(ISOT).GT.1)) THEN
          DO 10 J=1,NCOMB
          IF(IBM.EQ.MILVO(J)) GO TO 30
    10    CONTINUE
@@ -91,6 +91,7 @@
       IF((ISONRF(1,ISOT).EQ.HGAR(1,I)).AND.(ISONRF(2,ISOT).EQ.
      1 HGAR(2,I)).AND.(ISONRF(3,ISOT).EQ.HGAR(3,I))) THEN
          ITYP(ISOT)=1
+         IF(IEVOL(ISOT).EQ.2) ITYP(ISOT)=3
          IF(MOD(IDR(2,I),100).EQ.3) ITYP(ISOT)=2
          IF(MOD(IDR(2,I),100).EQ.4) ITYP(ISOT)=2
          IF(MOD(IDR(2,I),100).EQ.5) ITYP(ISOT)=3

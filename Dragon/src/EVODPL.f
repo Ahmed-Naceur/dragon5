@@ -35,7 +35,8 @@
 *         in the saturating nuclide number densities.
 * IEVOL2  flag making an isotope non-depleting:
 *         =1 to force an isotope to be non-depleting;
-*         =2 to force an isotope to be at saturation.
+*         =2 to force an isotope to be depleting;
+*         =3 to force an isotope to be at saturation.
 * MU1     position of each diagonal element in matrix ADPL.
 * IMA     position of the first non-zero column element in matrix ADPL.
 * MAXA    first dimension of matrix ADPL.
@@ -87,7 +88,7 @@
       INDSAT=0
       DO 30 I=1,NVAR
       IF(IPERM(I).GE.0) THEN
-         LSAT=(IEVOL2(I).EQ.2).AND.(EXPMAX.GT.0.0)
+         LSAT=(IEVOL2(I).EQ.3).AND.(EXPMAX.GT.0.0)
          IF(EXPMAX.GT.0.0) THEN
             LSAT=LSAT.OR.((ABS(ADPL(MU1(I),1)*(XT(2)-XT(1))).GT.EXPMAX)
      >      .AND.(ABS(ADPL(MU1(I),2)*(XT(2)-XT(1))).GT.EXPMAX))
