@@ -198,7 +198,7 @@ INF   : CALC         WGT%         UO2          Isotope 2235     <-   6.2711996E-
 INF   : CALC         WGT%         UO2          Isotope 8238     <-   8.7525810E+01
 INF   : CALC         WGT%         UO2          Isotope 6016     <-   1.1847069E+01
 ->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+-->>MODULE INFO:       : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : INFO:       
 ->@DESCRIPTION  : Information on water, UO2 and ThO2                                      
 ->@CREDITS      : R. Roy                                                                  
@@ -231,7 +231,7 @@ INF   : CALC         WGT%         D2O          Isotope 3001     <-   1.1191514E+
 INF   : CALC         WGT%         D2O          Isotope 3002     <-   0.0000000E+00
 INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808487E+01
 ->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+-->>MODULE INFO:       : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : LIB:        
 ->@DESCRIPTION  : Microscopic xs-library processing                                       
 ->@CREDITS      : A. Hebert, G. Marleau                                                   
@@ -1016,9 +1016,10 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808487E+
        25  'MIXTUREGAS  '        14    INTEGER         
        26  'ISOTOPESLIST'       687    LIST            
        27  'ISOTOPESDENS'       687    REAL            
-       28  'DEPL-CHAIN  '        -1    DIRECTORY       
+       28  'DENMIXTURES '        14    REAL            
+       29  'DEPL-CHAIN  '        -1    DIRECTORY       
 
 
- TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =    113599
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =    113613
 
 LCMGTC: record PARTICLE     not found.
