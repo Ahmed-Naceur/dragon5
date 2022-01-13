@@ -168,7 +168,17 @@
         CALL LCMGDL(KPSOUR,N,BS(1,N))
       ENDDO
 
-      IF(ITYPE.EQ.5) THEN
+      IF(ITYPE.EQ.2) THEN
+        ALLOCATE(ISBSM(NLF,2,NGRP))
+        ISBSM=0
+        DO N=1,NBS
+          IF(BSINFO(3,N).EQ.-1) THEN
+            ISBSM(BSINFO(2,N),1,BSINFO(1,N))=N
+          ELSEIF(BSINFO(3,N).EQ.1) THEN
+            ISBSM(BSINFO(2,N),2,BSINFO(1,N))=N
+          ENDIF
+        ENDDO
+      ELSEIF(ITYPE.EQ.5) THEN
       ALLOCATE(ISBSM(NLF,4,NGRP))
         ISBSM=0
         DO N=1,NBS
@@ -235,15 +245,6 @@
         CALL C_F_POINTER(PL_PTR,PL,(/ NSCT*NLF /))
         CALL LCMGET(IPTRK,'NCODE',NCODE)
         CALL LCMGET(IPTRK,'ZCODE',ZCODE)
-        ALLOCATE(ISBSM(NLF,2,NGRP))
-        ISBSM=0
-        DO N=1,NBS
-          IF(BSINFO(3,N).EQ.-1) THEN
-            ISBSM(BSINFO(2,N),1,BSINFO(1,N))=N
-          ELSEIF(BSINFO(3,N).EQ.1) THEN
-            ISBSM(BSINFO(2,N),2,BSINFO(1,N))=N
-          ENDIF
-        ENDDO
 
         DO 40 II=1,NGEFF
         IF(.NOT.INCONV(II)) GO TO 40
@@ -288,15 +289,6 @@
         CALL C_F_POINTER(PL_PTR,PL,(/ NSCT*NLF /))
         CALL LCMGET(IPTRK,'NCODE',NCODE)
         CALL LCMGET(IPTRK,'ZCODE',ZCODE)
-        ALLOCATE(ISBSM(NLF,2,NGRP))
-        ISBSM=0
-        DO N=1,NBS
-          IF(BSINFO(3,N).EQ.-1) THEN
-            ISBSM(BSINFO(2,N),1,BSINFO(1,N))=N
-          ELSEIF(BSINFO(3,N).EQ.1) THEN
-            ISBSM(BSINFO(2,N),2,BSINFO(1,N))=N
-          ENDIF
-        ENDDO
 
         DO 80 II=1,NGEFF
         IF(.NOT.INCONV(II)) GO TO 80
@@ -953,7 +945,7 @@
 *----
 *  SCRATCH STORAGE DEALLOCATION
 *----
-      DEALLOCATE(DELTAE,IDL,OLD,QEXT)
+      DEALLOCATE(DELTAE,IDL,OLD,QEXT,ISBSM)
       RETURN
 *
   500 FORMAT(//41H SNFLUX: N E U T R O N    S O U R C E S (,I5,3H ):)
