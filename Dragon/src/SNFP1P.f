@@ -455,10 +455,10 @@
          ELSE IF(IELEM.EQ.2) THEN
            Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)
            Q2(1,2)=2.0D0*SQRT(3.0D0)*U(IP)
-           Q2(1,3)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)
+           Q2(1,3)=(FN*FEP(1)+Q(1))*VOL(I)
            Q2(2,1)=Q2(1,2)
            Q2(2,2)=-(FD+TOTAL(IBM))*VOL(I)+6.0D0*U(IP)
-           Q2(2,3)=-FN*FEP(2)*VOL(I)-Q(2)*VOL(I)+2.0D0*SQRT(3.0D0)*
+           Q2(2,3)=(-FN*FEP(2)-Q(2))*VOL(I)+2.0D0*SQRT(3.0D0)*
      1     U(IP)*AFB
          ELSE IF(IELEM.EQ.3) THEN
            Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)-2.0D0*U(IP)
@@ -532,10 +532,10 @@
          ELSE IF(IELEM.EQ.2) THEN
            Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)
            Q2(1,2)=2.0D0*SQRT(3.0D0)*U(NLF-IP+1)
-           Q2(1,3)=FN*FEP(1)*VOL(I)+Q(1)*VOL(I)
+           Q2(1,3)=(FN*FEP(1)+Q(1))*VOL(I)
            Q2(2,1)=Q2(1,2)
            Q2(2,2)=-(FD+TOTAL(IBM))*VOL(I)-6.0D0*U(NLF-IP+1)
-           Q2(2,3)=-FN*FEP(2)*VOL(I)-Q(2)*VOL(I)+2.0D0*SQRT(3.0D0)*
+           Q2(2,3)=(-FN*FEP(2)-Q(2))*VOL(I)+2.0D0*SQRT(3.0D0)*
      1     U(NLF-IP+1)*AFB
          ELSE IF(IELEM.EQ.3) THEN
            Q2(1,1)=(FD+TOTAL(IBM))*VOL(I)+2.0D0*U(NLF-IP+1)

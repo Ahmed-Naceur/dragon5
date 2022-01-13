@@ -1,7 +1,7 @@
-*DECK SNFT22
-      SUBROUTINE SNFT22(NUN,NGRP,NGEFF,IMPX,INCONV,INGIND,LX,LY,IELEM,
-     1 NMAT,NPQ,NSCT,MAT,VOL,TOTAL,NCODE,ZCODE,QEXT,DU,DE,W,MRM,MRMY,
-     2 DB,DA,PL,FUNKNO,ISBS,NBS,ISBSM,BS,MAXL)
+*DECK SNFP22
+      SUBROUTINE SNFP22(NUN,NGRP,NGEFF,IMPX,INCONV,INGIND,LX,LY,IELEM,
+     1 IBFP,NMAT,NPQ,NSCT,MAT,VOL,TOTAL,ESTOPW,NCODE,ZCODE,DELTAE,QEXT,
+     2 DU,DE,W,MRM,MRMY,DB,DA,PL,FUNKNO,DCUTOFF,ISBS,NBS,ISBSM,BS,MAXL)
 *
 *-----------------------------------------------------------------------
 *
@@ -63,43 +63,50 @@
 *----
 *  SUBROUTINE ARGUMENTS
 *----
-      INTEGER NUN,NGRP,NGEFF,IMPX,INGIND(NGEFF),LX,LY,IELEM,NMAT,NPQ,
-     1 NSCT,MAT(LX,LY),NCODE(4),MRM(NPQ),MRMY(NPQ),ISBS,NBS,
+      INTEGER NUN,NGRP,NGEFF,IMPX,INGIND(NGEFF),LX,LY,IELEM,IBFP,NMAT,
+     1 NPQ,NSCT,MAT(LX,LY),NCODE(4),MRM(NPQ),MRMY(NPQ),ISBS,NBS,
      2 ISBSM(NPQ,4,NGRP),MAXL
       LOGICAL INCONV(NGEFF)
-      REAL VOL(LX,LY),TOTAL(0:NMAT,NGRP),ZCODE(4),QEXT(NUN,NGRP),
-     1 DU(NPQ),DE(NPQ),W(NPQ),DB(LX,NPQ),DA(LX,LY,NPQ),PL(NSCT,NPQ),
-     2 FUNKNO(NUN,NGRP),BS(NBS,MAXL)
+      REAL VOL(LX,LY),TOTAL(0:NMAT,NGRP),ESTOPW(0:NMAT,2,NGRP),ZCODE(4),
+     1 DELTAE(NGRP),QEXT(NUN,NGRP),DU(NPQ),DE(NPQ),W(NPQ),DB(LX,NPQ),
+     2 DA(LX,LY,NPQ),PL(NSCT,NPQ),FUNKNO(NUN,NGRP),DCUTOFF(LX,LY),
+     3 BS(NBS,MAXL)
 *----
 *  LOCAL VARIABLES
 *----
       INTEGER NPQD(4),IIND(4)
       DOUBLE PRECISION Q(IELEM**2),Q2(IELEM**2,(IELEM**2)+1),XNJ(IELEM),
-     1 VT
+     1 FEP(IELEM**2),VT,FN,FD,G1,G2
       PARAMETER(IUNOUT=6,PI=3.141592654)
 *----
 *  ALLOCATABLE ARRAYS
 *----
       INTEGER, ALLOCATABLE, DIMENSION(:,:) :: INDANG
-      DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:,:,:) :: FLUX
-      DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:,:,:,:) :: FLUX_G
+      DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:,:,:) :: FLUX,FLUX0
+      DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:,:,:,:) :: FLUX_G,
+     1 FLUX0_G
       DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:) :: XNI
 *----
 *  SCRATCH STORAGE ALLOCATION
 *----
       ALLOCATE(INDANG(NPQ,4))
-      ALLOCATE(XNI(IELEM,LY),FLUX(IELEM**2,NSCT,LX,LY))
-      ALLOCATE(FLUX_G(IELEM**2,NSCT,LX,LY,NGEFF))
+      ALLOCATE(XNI(IELEM,LY),FLUX(IELEM**2,NSCT,LX,LY),
+     1 FLUX0(IELEM**2,NPQ,LX,LY))
+      ALLOCATE(FLUX_G(IELEM**2,NSCT,LX,LY,NGEFF),
+     1 FLUX0_G(IELEM**2,NPQ,LX,LY,NGEFF))
 *----
 *  DEFINITION OF CONSTANTS.
 *----
       L4=IELEM*IELEM*LX*LY*NSCT
+      L6=IELEM*IELEM*LX*LY*NPQ
+      L5=NUN-L6
 *----
 *  PARAMETER VALIDATION.
 *----
       IF((IELEM.LT.1).OR.(IELEM.GT.4)) CALL XABORT('SNFT22: INVALID IE'
      1 //'LEM (DIAM) VALUE. CHECK INPUT DATA FILE.')
       FLUX_G(:IELEM**2,:NSCT,:LX,:LY,:NGEFF)=0.0D0
+      FLUX0_G(:IELEM**2,:NPQ,:LX,:LY,:NGEFF)=0.0D0
 *----
 *  SET OCTANT SWAPPING ORDER.
 *----
@@ -214,6 +221,7 @@
       M=INDANG(IPQD,IND)
       IG=INGIND(IGEFF)
       FLUX(:IELEM**2,:NSCT,:LX,:LY)=0.0D0
+      FLUX(:IELEM**2,:NSCT,:LX,:LY)=0.0D0
       IF(W(M).EQ.0.0) GO TO 170
 *----
 *  LOOP OVER X- AND Y-DIRECTED AXES.
@@ -244,28 +252,49 @@
   105 CONTINUE
 
       IF(ISBS.EQ.1) THEN
-*      IF((IND.EQ.2.OR.IND.EQ.3).AND.ISBSM(M,2,IGEFF).NE.0) THEN
-*         XNI(1,J)=XNI(1,J)+BS(ISBSM(M,2,IGEFF),I)
-*      ELSEIF((IND.EQ.1.OR.IND.EQ.4).AND.ISBSM(M,1,IGEFF).NE.0) THEN
-*         XNI(1,J)=XNI(1,J)+BS(ISBSM(M,1,IGEFF),I)
-*      ENDIF
-*      IF((IND.EQ.3.OR.IND.EQ.4).AND.ISBSM(M,4,IGEFF).NE.0) THEN
-*         XNJ(1)=XNJ(1)+BS(ISBSM(M,4,IGEFF),J)
-*      ELSEIF((IND.EQ.1.OR.IND.EQ.2).AND.ISBSM(M,3,IGEFF).NE.0) THEN
-*         XNJ(1)=XNJ(1)+BS(ISBSM(M,3,IGEFF),J)
-*      ENDIF
+      IF(I.EQ.1.OR.I.EQ.LX) THEN
+      IF((IND.EQ.2.OR.IND.EQ.3).AND.ISBSM(M,2,IG).NE.0) THEN
+*         XNI(1,J)=XNI(1,J)+BS(ISBSM(M,2,IG),I)
+      ELSEIF((IND.EQ.1.OR.IND.EQ.4).AND.ISBSM(M,1,IG).NE.0) THEN
+         IF(I.EQ.1.AND.IG.EQ.1) THEN
+         XNI(1,J)=XNI(1,J)+BS(J,ISBSM(M,1,IG))/30.0
+* x 1/30 (x deltax) ou 1/60?
+         ENDIF
+      ENDIF
+      ELSE IF(J.EQ.1.OR.J.EQ.LY) THEN
+      IF((IND.EQ.3.OR.IND.EQ.4).AND.ISBSM(M,4,IG).NE.0) THEN
+*         XNJ(1)=XNJ(1)+BS(ISBSM(M,4,IG),I)
+      ELSEIF((IND.EQ.1.OR.IND.EQ.2).AND.ISBSM(M,3,IG).NE.0) THEN
+*         XNJ(1)=XNJ(1)+BS(ISBSM(M,3,IG),I)
+      ENDIF
+      ENDIF
       ENDIF
 
-      IF(MAT(I,J).EQ.0) GO TO 140
+      IBM=MAT(I,J)
+      IF(IBM.EQ.0) GO TO 140
       DO 115 IEL=1,IELEM**2
       Q(IEL)=0.0D0
       DO 110 K=1,NSCT
       IOF=((J-1)*LX*NSCT+(I-1)*NSCT+(K-1))*IELEM*IELEM+IEL
       Q(IEL)=Q(IEL)+QEXT(IOF,IG)*PL(K,M)/(4.0D0*PI)
   110 CONTINUE
+      IOF=((J-1)*LX*NPQ+(I-1)*NPQ+(M-1))*IELEM*IELEM+IEL
+      FEP(IEL)=QEXT(L5+IOF,IG)
   115 CONTINUE
-
-      VT=VOL(I,J)*TOTAL(MAT(I,J),IG)
+      IF(IBFP.EQ.1) THEN
+*       Galerkin type
+        FN=2.0D0*ESTOPW(IBM,1,IG)/DELTAE(IG)
+        FD=(ESTOPW(IBM,1,IG)+ESTOPW(IBM,2,IG))/DELTAE(IG)
+        G1=ESTOPW(IBM,1,IG)/ESTOPW(IBM,2,IG)
+        G2=(ESTOPW(IBM,1,IG)+ESTOPW(IBM,2,IG))/ESTOPW(IBM,2,IG)
+      ELSE
+*       Przybylski and Ligou type
+        FN=(ESTOPW(IBM,1,IG)+ESTOPW(IBM,2,IG))/DELTAE(IG)
+        FD=2.0D0*ESTOPW(IBM,2,IG)/DELTAE(IG)
+        G1=1.0D0
+        G2=2.0D0
+      ENDIF
+      VT=VOL(I,J)*(FD+TOTAL(IBM,IG))
       CALL XDDSET(Q2,(IELEM**2)*((IELEM**2)+1),0.0D0)
 *----------
 * BUILD MATRIX FOR THE RELEVANT ORDER
@@ -274,7 +303,7 @@
 * more efficient to assign values than to sweep over the half matrix.
       IF(IELEM.EQ.1) THEN
       Q2(1,1) = VT + ABS(DB(I,M)) + ABS(DA(I,J,M)) 
-      Q2(1,2) = Q(1)*VOL(I,J) 
+      Q2(1,2) = (FN*FEP(1)+Q(1))*VOL(I,J) 
 
       Q2(1,2) = Q2(1,2) + DB(I,M)*SIGN(1.0,DE(M))*XNJ(1) + 
      >   DA(I,J,M)*SIGN(1.0,DU(M))*XNI(1,J) 
@@ -296,10 +325,10 @@
       Q2(4,3) = -3**(0.5D0)*DA(I,J,M) 
       Q2(4,4) = VT + 3*ABS(DB(I,M)) + 3*ABS(DA(I,J,M)) 
 *     source
-      Q2(1,5) = Q(1)*VOL(I,J)
-      Q2(2,5) = Q(2)*VOL(I,J)
-      Q2(3,5) = Q(3)*VOL(I,J)
-      Q2(4,5) = Q(4)*VOL(I,J)
+      Q2(1,5) = (FN*FEP(1)+Q(1))*VOL(I,J)
+      Q2(2,5) = (FN*FEP(2)+Q(2))*VOL(I,J)
+      Q2(3,5) = (FN*FEP(3)+Q(3))*VOL(I,J)
+      Q2(4,5) = (FN*FEP(4)+Q(4))*VOL(I,J)
 *     jump terms (dependent on direction)
       Q2(1,5) = Q2(1,5) + DB(I,M)*SIGN(1.0,DE(M))*XNJ(1) + DA(I,J
      >   ,M)*SIGN(1.0,DU(M))*XNI(1,J) 
@@ -358,15 +387,15 @@
       Q2(9,7) = 5**(0.5D0)*ABS(DA(I,J,M)) 
       Q2(9,8) = -15**(0.5D0)*DA(I,J,M) 
       Q2(9,9) = VT + 5*ABS(DB(I,M)) + 5*ABS(DA(I,J,M)) 
-      Q2(1,10) = Q(1)*VOL(I,J) 
-      Q2(2,10) = Q(2)*VOL(I,J) 
-      Q2(3,10) = Q(3)*VOL(I,J) 
-      Q2(4,10) = Q(4)*VOL(I,J) 
-      Q2(5,10) = Q(5)*VOL(I,J) 
-      Q2(6,10) = Q(6)*VOL(I,J) 
-      Q2(7,10) = Q(7)*VOL(I,J) 
-      Q2(8,10) = Q(8)*VOL(I,J) 
-      Q2(9,10) = Q(9)*VOL(I,J) 
+      Q2(1,10) = (FN*FEP(1)+Q(1))*VOL(I,J) 
+      Q2(2,10) = (FN*FEP(2)+Q(2))*VOL(I,J) 
+      Q2(3,10) = (FN*FEP(3)+Q(3))*VOL(I,J) 
+      Q2(4,10) = (FN*FEP(4)+Q(4))*VOL(I,J) 
+      Q2(5,10) = (FN*FEP(5)+Q(5))*VOL(I,J) 
+      Q2(6,10) = (FN*FEP(6)+Q(6))*VOL(I,J) 
+      Q2(7,10) = (FN*FEP(7)+Q(7))*VOL(I,J) 
+      Q2(8,10) = (FN*FEP(8)+Q(8))*VOL(I,J) 
+      Q2(9,10) = (FN*FEP(9)+Q(9))*VOL(I,J) 
       Q2(1,10) = Q2(1,10) + DB(I,M)*XNJ(1)*SIGN(1.0,DE(M)) + DA(I
      >   ,J,M)*XNI(1,J)*SIGN(1.0,DU(M)) 
       Q2(2,10) = Q2(2,10) + DB(I,M)*XNJ(2)*SIGN(1.0,DE(M)) - 3**(
@@ -521,22 +550,22 @@
       Q2(16,15) = -35**(0.5D0)*DA(I,J,M) 
       Q2(16,16) = VT + 7*ABS(DB(I,M)) + 7*ABS(DA(I,J,M)) 
 
-      Q2(1,17)  =  Q(1)*VOL(I,J) 
-      Q2(2,17)  =  Q(2)*VOL(I,J) 
-      Q2(3,17)  =  Q(3)*VOL(I,J) 
-      Q2(4,17)  =  Q(4)*VOL(I,J) 
-      Q2(5,17)  =  Q(5)*VOL(I,J) 
-      Q2(6,17)  =  Q(6)*VOL(I,J) 
-      Q2(7,17)  =  Q(7)*VOL(I,J) 
-      Q2(8,17)  =  Q(8)*VOL(I,J) 
-      Q2(9,17)  =  Q(9)*VOL(I,J) 
-      Q2(10,17) = Q(10)*VOL(I,J) 
-      Q2(11,17) = Q(11)*VOL(I,J) 
-      Q2(12,17) = Q(12)*VOL(I,J) 
-      Q2(13,17) = Q(13)*VOL(I,J) 
-      Q2(14,17) = Q(14)*VOL(I,J) 
-      Q2(15,17) = Q(15)*VOL(I,J) 
-      Q2(16,17) = Q(16)*VOL(I,J) 
+      Q2(1,17)  = (FN*FEP(1)+Q(1))*VOL(I,J) 
+      Q2(2,17)  = (FN*FEP(2)+Q(2))*VOL(I,J) 
+      Q2(3,17)  = (FN*FEP(3)+Q(3))*VOL(I,J) 
+      Q2(4,17)  = (FN*FEP(4)+Q(4))*VOL(I,J) 
+      Q2(5,17)  = (FN*FEP(5)+Q(5))*VOL(I,J) 
+      Q2(6,17)  = (FN*FEP(6)+Q(6))*VOL(I,J) 
+      Q2(7,17)  = (FN*FEP(7)+Q(7))*VOL(I,J) 
+      Q2(8,17)  = (FN*FEP(8)+Q(8))*VOL(I,J) 
+      Q2(9,17)  = (FN*FEP(9)+Q(9))*VOL(I,J) 
+      Q2(10,17) = (FN*FEP(10)+Q(10))*VOL(I,J) 
+      Q2(11,17) = (FN*FEP(11)+Q(11))*VOL(I,J) 
+      Q2(12,17) = (FN*FEP(12)+Q(12))*VOL(I,J) 
+      Q2(13,17) = (FN*FEP(13)+Q(13))*VOL(I,J) 
+      Q2(14,17) = (FN*FEP(14)+Q(14))*VOL(I,J) 
+      Q2(15,17) = (FN*FEP(15)+Q(15))*VOL(I,J) 
+      Q2(16,17) = (FN*FEP(16)+Q(16))*VOL(I,J) 
 
       Q2(1,17) = Q2(1,17) + DB(I,M)*XNJ(1)*SIGN(1.0,DE(M)) + 
      >   DA(I,J,M)*XNI(1,J)*SIGN(1.0,DU(M))  
@@ -615,6 +644,12 @@
      >    (5**(0.5D0))*Q2(12,17)+SIGN(1.0,DE(M))*(7**(0.5D0))*Q2(16,17)
       ENDIF
 *
+      FEP(:IELEM**2)=G2*Q2(:IELEM**2,IELEM**2+1)-G1*FEP(:IELEM**2)
+      FLUX0(:IELEM**2,M,I,J)=FEP(:IELEM**2)/DELTAE(IG)
+      IF(IG.EQ.NGRP) THEN
+      DCUTOFF(I,J)=DCUTOFF(I,J)+2.0*W(M)*REAL(FLUX0(1,M,I,J))*PL(1,M)
+      ENDIF
+*
       DO 135 K=1,NSCT
       DO 130 IEL=1,IELEM**2
       FLUX(IEL,K,I,J)=FLUX(IEL,K,I,J)+2.0D0*W(M)*Q2(IEL,IELEM**2+1)*
@@ -636,6 +671,7 @@
   160 CONTINUE
   165 CONTINUE
       FLUX_G(:,:,:,:,IGEFF)=FLUX_G(:,:,:,:,IGEFF)+FLUX(:,:,:,:)
+      FLUX0_G(:,:,:,:,IGEFF)=FLUX0_G(:,:,:,:,IGEFF)+FLUX0(:,:,:,:)
   170 CONTINUE
   180 CONTINUE
 *$OMP END PARALLEL DO
@@ -645,6 +681,8 @@
         IG=INGIND(IGEFF)
         FUNKNO(:L4,IG)=
      1  RESHAPE(REAL(FLUX_G(:IELEM**2,:NSCT,:LX,:LY,IGEFF)), (/ L4 /) )
+        FUNKNO(L5+1:L5+L6,IG)=
+     1  RESHAPE(REAL(FLUX0_G(:IELEM**2,:NPQ,:LX,:LY,IGEFF)), (/ L6 /) )
   200 CONTINUE
 *----
 *  SCRATCH STORAGE DEALLOCATION
