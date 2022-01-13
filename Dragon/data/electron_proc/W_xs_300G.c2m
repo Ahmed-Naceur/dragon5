@@ -64,9 +64,6 @@ REAL qsour := 1.E10 2.0 / $Pi_R / ; ! [cm-3 s-1]
 MACRO := MAC: MACRO ::
      READ INPUT
      MIX 1 FIXE
-! --  2 groups     
-!     <<qsour>> 0.0 
-!     ;
 ! -- 300 groups
      <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0

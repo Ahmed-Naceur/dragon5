@@ -475,6 +475,7 @@
          !DO I=1,NGRO
          !   PRINT *,"I=",I,"VECT(I)=",VECT(I)
          !ENDDO
+         !CALL XABORT('AHMED,LIBTR2.f')
          GO TO 270
       ELSE IF(HVPS(2:).EQ.'CHAR') THEN
          VECT(:NGRO+1)=0.0

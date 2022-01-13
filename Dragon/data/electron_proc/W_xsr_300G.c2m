@@ -7,10 +7,10 @@
 * --- Define STRUCTURES and MODULES used
 
 MODULE       GEO: LIB: MAC: SNT: ASM: FLU: HEAT: OUT: DELETE: 
-             UTL: END: EDI: ;
+             UTL: END: EDI: STAT: ;
 PROCEDURE    assertS ;
 LINKED_LIST   MACRO DEPOS MICRO OLDMACRO GEOM TRACK SYSTEM FLUX 
-              EEDIT EDITION EEDITcopy ;
+              EEDIT EDITION EEDITcopy DIFFRES ;
 
           
 SEQ_ASCII    edep_xsr.txt   :: FILE 'edep_xsr.txt' ;
@@ -21,6 +21,8 @@ SEQ_ASCII    flux_xsr.txt   :: FILE 'flux_xsr.txt' ;
 SEQ_ASCII    syst_xsr.txt   :: FILE 'syst_xsr.txt' ;
 SEQ_ASCII    geom_xsr.txt   :: FILE 'geom_xsr.txt' ;
 SEQ_ASCII    trac_xsr.txt   :: FILE 'trac_xsr.txt' ;
+
+SEQ_ASCII    FMACF :: FILE './macro_xs_no_stern.txt' ;
 
 * --- Geometry 
 
@@ -62,6 +64,7 @@ OLDMACRO := MACRO ;
 MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;
 OLDMACRO := DELETE: OLDMACRO ;
 
+*DIFFRES := STAT: MACRO OLDMACRO :: ;
 
 * --- Specify fixed particle source density   
 

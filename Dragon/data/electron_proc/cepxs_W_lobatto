@@ -377,5 +377,5 @@ echo "**********************************************************"
 #sed  -i "/#--- CEPXS-BFP/a  ln -s \$1/data/cepxs-dragon/$fmac_file_name_ascii ." $file_access_dragon 
 
 
-cd /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/
-./rdragon electron.x2m
+#cd /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/
+#./rdragon electron.x2m
