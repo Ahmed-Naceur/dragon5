@@ -64,6 +64,8 @@ OLDMACRO := MACRO ;
 MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;
 OLDMACRO := DELETE: OLDMACRO ;
 
+END: ; QUIT "LIST" .
+
 *DIFFRES := STAT: MACRO OLDMACRO :: ;
 
 * --- Specify fixed particle source density   
@@ -129,8 +131,6 @@ flux_xsr.txt   := FLUX  ;
 EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM := DELETE: 
   EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM ; 
 
-END: ;
-
-QUIT "LIST" .
+END: ; QUIT "LIST" .
 
 
