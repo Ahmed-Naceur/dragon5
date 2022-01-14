@@ -1,11 +1,11 @@
 *DECK LIBSDC
       SUBROUTINE LIBSDC(NBMIX,NGROUP,NBISO,ISONRF,MIX,DEN,MASK,ENER,
-     1 KGAS,ESTOP)
+     1 KGAS,DENMAT)
 *
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* Apply Sternheimer density correction to collision stopping power.
+* Apply Sternheimer density correction to the collision stopping power.
 *
 *Copyright:
 * Copyright (C) 2021 Ecole Polytechnique de Montreal
@@ -14,7 +14,7 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert
+*Author(s): A. Hebert and A. Naceur
 *
 *Parameters: input
 * NBMIX   number of mixtures present in the calculation domain.
@@ -28,15 +28,17 @@
 * KGAS    state of each mixture (=0: solid/liquid; =1: gas).
 *
 *Parameters: input/output
-* ESTOP   collision stopping powers.
+* DENMAT  Sterheimer density correction (delta).
 *
-*Reference:
-* L. J. Lorence Jr., J. E. Morel, and G. D. Valdez, "Physics guide
-* to CEPXS: A multigroup coupled electron-photon cross section
-* generating code," Technical report SAND89-1685, Sandia National
-* Laboratories, Albuquerque, New Mexico 87185 and Livermore,
-* California 94550.
+*References:
+* [1]. L. J. Lorence Jr., J. E. Morel, and G. D. Valdez, "Physics guide
+*      to CEPXS: A multigroup coupled electron-photon cross section
+*      generating code," Technical report SAND89-1685, Sandia National
+*      Laboratories, Albuquerque, New Mexico 87185 and Livermore,
+*      California 94550.
 *
+* [2]. Sternheimer, R. M. (1956). Density effect for the ionization
+*      loss in various materials. Physical Review, 103(3), 511.
 *-----------------------------------------------------------------------
 *
       IMPLICIT DOUBLE PRECISION(A-H,O-Z)
@@ -45,7 +47,8 @@
 *----
       INTEGER :: NBMIX,NGROUP,NBISO,MIX(NBISO),KGAS(NBMIX)
       CHARACTER(LEN=12) :: ISONRF(NBISO)
-      REAL :: DEN(NBISO),ENER(NGROUP+1),ESTOP(NBMIX,NGROUP+1)
+      REAL :: DEN(NBISO),ENER(NGROUP+1) !,ESTOP(NBMIX,NGROUP+1)
+      REAL :: DENMAT(NBMIX,NGROUP+1)
       LOGICAL :: MASK(NBMIX)
 *----
 *  LOCAL VARIABLES
@@ -55,7 +58,7 @@
       CHARACTER(LEN=2) :: ELEMNT(100)
       CHARACTER(LEN=131) :: HSMG
       DOUBLE PRECISION, PARAMETER :: DM=3.0D0 ! Sternheimer exponent
-      DOUBLE PRECISION, PARAMETER :: CEMASS=0.510976D0
+      DOUBLE PRECISION, PARAMETER :: CEMASS=0.510976D0 !Electron mass MeV
       DOUBLE PRECISION, PARAMETER :: C2=0.249467D0 ! 3/8 Thomson xs
       DOUBLE PRECISION :: XDRCST
 *----
@@ -117,9 +120,9 @@
             EION=EION+WAZ*LOG(PIT)
             ZZA=ZZA+WAZ
           ENDDO
-          EION = EXP(EION/ZZA)
+          EION = EXP(EION/ZZA)  
 *----
-*  EVALUATE PLANCK'S CONSTANT TIMES THE PLASMA FREQUENCY
+*  EVALUATE PLANCK'S CONSTANT TIMES THE PLASMA FREQUENCY IN EV
 *----
           HNUP = 28.8D0*SQRT(ZZA)
 *----
@@ -192,8 +195,9 @@
               DS = 4.606D0*X+C
             ENDIF
             IF(DS.LT.0.0) DS=0.0D0
-            DENMAT = CONV*DS/BSQ
-            ESTOP(IBM,LLL)=ESTOP(IBM,LLL)-REAL(DENMAT)
+            DENMAT(IBM,LLL)= REAL(CONV*DS/BSQ)
+            !PRINT *,DENMAT(IBM,LLL)
+            !ESTOP(IBM,LLL) = ESTOP(IBM,LLL)-DENMAT(IBM,LLL)
           ENDDO
         ENDIF
       ENDDO
