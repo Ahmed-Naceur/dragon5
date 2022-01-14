@@ -271,7 +271,7 @@
 *         XNI(1,J)=XNI(1,J)+BS(ISBSM(M,2,IG),I)
       ELSEIF((IND.EQ.1.OR.IND.EQ.4).AND.ISBSM(M,1,IG).NE.0) THEN
          IF(I.EQ.1.AND.IG.EQ.1) THEN
-         XNI(1,J)=XNI(1,J)+BS(J,ISBSM(M,1,IG))/30.0
+         XNI(1,J)=XNI(1,J)+BS(J,ISBSM(M,1,IG))/25.0D0
 * x 1/30 (x deltax) ou 1/60?
          ENDIF
       ENDIF
@@ -327,7 +327,7 @@
         Q2(1,5)=FN*FEP(1)*VOL(I,J)+Q(1)*VOL(I,J)
         Q2(2,5)=-FN*FEP(2)*VOL(I,J)-Q(2)*VOL(I,J)+CONST0*DA(I,J,M)*
      1  XNI(1,J)
-        Q2(3,5)=-FN*FEP(3)-VOL(I,J)+Q(3)*VOL(I,J)+CONST0*DB(I,M)*XNJ(1)
+        Q2(3,5)=-FN*FEP(3)*VOL(I,J)-Q(3)*VOL(I,J)+CONST0*DB(I,M)*XNJ(1)
         Q2(4,5)=FN*FEP(4)*VOL(I,J)+Q(4)*VOL(I,J)-CONST0*DA(I,J,M)*
      1  XNI(2,J)-CONST0*DB(I,M)*XNJ(2)
       ELSE IF(IELEM.EQ.3) THEN
