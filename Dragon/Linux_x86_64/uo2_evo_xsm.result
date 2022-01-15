@@ -384,7 +384,7 @@ QUIT "LIST" .                                                              0313
 
  CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE TUBE 1-D        .
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
 <|TRACK := SYBILT: GEOM ::                                                |<0049
 <|TITLE 'UO2 ROWLAND S BENCHMARK'                                         |<0050
 <|MAXR 20 QUA1 5 ;                                                        |<0051
@@ -680,8 +680,8 @@ QUIT "LIST" .                                                              0313
 
  LIBSUB: PROCESSING ISOTOPE/MATERIAL 'Zr96    0007'.
 
- LIBSUB: CPU TIME IN LIBLIB=      1.16 SECONDS.
-         CPU TIME IN LIBPTW=      0.70 SECONDS.
+ LIBSUB: CPU TIME IN LIBLIB=      1.17 SECONDS.
+         CPU TIME IN LIBPTW=      0.74 SECONDS.
 
  OPTIONS
  -------
@@ -1609,7 +1609,7 @@ QUIT "LIST" .                                                              0313
    882  Cd111   0001  Cd111         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
    883  Cd110   0001  Cd110         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        2.173 MEMORY USAGE= 8.528E+04
+-->>MODULE LIB:        : TIME SPENT=        2.239 MEMORY USAGE= 8.529E+04
 <|LIBRARY2 := USS: LIBRARY TRACK :: EDIT 1 TRAN PASS 2 GRMAX 93 ;         |<0257
 ->@BEGIN MODULE : USS:        
 ->@DESCRIPTION  : Self-shielding by subgroup method                                       
@@ -2235,7 +2235,7 @@ QUIT "LIST" .                                                              0313
 
  USSIN1: PROCESSING ISOTOPE 'Zr96    0007'.
 ->@END MODULE   : USS:        
--->>MODULE USS:        : TIME SPENT=        0.360 MEMORY USAGE= 4.416E+03
+-->>MODULE USS:        : TIME SPENT=        0.378 MEMORY USAGE= 4.476E+03
 <|CP := ASM: LIBRARY2 TRACK :: EDIT 1 PIJ ;                               |<0258
 ->@BEGIN MODULE : ASM:        
 ->@DESCRIPTION  : To built system matrices (CP and IC)                                    
@@ -2356,7 +2356,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   8 TIMES FINAL KINF= 1.379431E+00 FINAL KEFF= 1.000000E+00 B2= 1.01124E-02 PRECISION= 4.96E-07
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1856
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.412 MEMORY USAGE= 2.640E+02
+-->>MODULE FLU:        : TIME SPENT=        0.448 MEMORY USAGE= 2.640E+02
 <|assertS CALC :: K-INFINITY 1 1.379434 ;                                 |<0260
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -2655,7 +2655,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.616 MEMORY USAGE= 1.082E+04
+-->>MODULE EVO:        : TIME SPENT=        0.753 MEMORY USAGE= 1.082E+04
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -2699,7 +2699,7 @@ QUIT "LIST" .                                                              0313
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (SYBIL       )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
+-->>MODULE ASM:        : TIME SPENT=        0.023 MEMORY USAGE= 0.000E+00
 <|CALC := FLU: CALC TRACK LIBRARY CP ::                                   |<0303
 <|TYPE B B1 SIGS                                                          |<0304
 <|;                                                                       |<0305
@@ -2787,7 +2787,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.115466E+00 FINAL KEFF= 1.000000E+00 B2= 3.37369E-03 PRECISION= 2.04E-07
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1686
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.339 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.370 MEMORY USAGE= 1.200E+01
 >|Output of FLU: at burnup:  9.375000e+00                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -2828,7 +2828,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.005 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListBU' <<istep>> >>step2<< ;                 |<0264
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -3110,7 +3110,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.645 MEMORY USAGE= 2.112E+03
+-->>MODULE EVO:        : TIME SPENT=        0.727 MEMORY USAGE= 2.256E+03
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -3242,7 +3242,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.104183E+00 FINAL KEFF= 1.000000E+00 B2= 3.04929E-03 PRECISION= 1.30E-07
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1686
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.339 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.371 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  1.875000e+01                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -3290,7 +3290,7 @@ QUIT "LIST" .                                                              0313
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module GREP:       : time spent=        0.001 memory usage= 0.000E+00
+-->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
 ->@END MODULE   : GREP:       
 >|BURNUP step 3 between  4.839584e-01 and  9.679168e-01 day:              |>0267
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0275
@@ -3565,7 +3565,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.626 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.755 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -3697,7 +3697,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.092972E+00 FINAL KEFF= 1.000000E+00 B2= 2.72576E-03 PRECISION= 1.11E-07
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1686
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.340 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.374 MEMORY USAGE= 5.600E+01
 >|Output of FLU: at burnup:  3.750000e+01                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -4020,7 +4020,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.632 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.776 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -4152,7 +4152,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.087945E+00 FINAL KEFF= 1.000000E+00 B2= 2.58031E-03 PRECISION= 1.03E-07
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1686
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.339 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.368 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  7.500000e+01                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -4475,7 +4475,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.618 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.662 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -4607,7 +4607,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.086729E+00 FINAL KEFF= 1.000000E+00 B2= 2.54507E-03 PRECISION= 9.54E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1686
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.338 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.370 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  1.125000e+02                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -4648,7 +4648,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.005 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListBU' <<istep>> >>step2<< ;                 |<0264
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -4930,7 +4930,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.610 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.737 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -5062,7 +5062,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.085781E+00 FINAL KEFF= 1.000000E+00 B2= 2.51760E-03 PRECISION= 9.43E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1686
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.337 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.369 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  1.500000e+02                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -5385,14 +5385,14 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.618 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.752 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
+-->>module GREP:       : time spent=        0.001 memory usage= 0.000E+00
 ->@END MODULE   : GREP:       
 >|step2=  3.250000e+02 evoend=  8.388612e+00                              |>0297
 <|CP := DELETE: CP ;                                                      |<0298
@@ -5517,7 +5517,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.081612E+00 FINAL KEFF= 1.000000E+00 B2= 2.39685E-03 PRECISION= 9.71E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1686
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.335 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.367 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  3.250000e+02                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -5558,7 +5558,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.005 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListBU' <<istep>> >>step2<< ;                 |<0264
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -5840,7 +5840,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.617 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.644 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -5884,7 +5884,7 @@ QUIT "LIST" .                                                              0313
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (SYBIL       )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
+-->>MODULE ASM:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
 <|CALC := FLU: CALC TRACK LIBRARY CP ::                                   |<0303
 <|TYPE B B1 SIGS                                                          |<0304
 <|;                                                                       |<0305
@@ -5972,7 +5972,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.079455E+00 FINAL KEFF= 1.000000E+00 B2= 2.33437E-03 PRECISION= 8.71E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1686
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.335 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.357 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  5.000000e+02                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -6295,7 +6295,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.621 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.771 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -6427,7 +6427,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.077327E+00 FINAL KEFF= 1.000000E+00 B2= 2.27278E-03 PRECISION= 8.12E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1686
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.334 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.362 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  7.500000e+02                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -6750,7 +6750,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.620 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.749 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -6882,7 +6882,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.075746E+00 FINAL KEFF= 1.000000E+00 B2= 2.22705E-03 PRECISION= 8.49E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1686
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.333 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.362 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  1.000000e+03                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -6923,7 +6923,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.005 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListBU' <<istep>> >>step2<< ;                 |<0264
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -7205,14 +7205,14 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.624 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.712 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
+-->>module GREP:       : time spent=        0.001 memory usage= 0.000E+00
 ->@END MODULE   : GREP:       
 >|step2=  1.500000e+03 evoend=  3.871667e+01                              |>0297
 <|CP := DELETE: CP ;                                                      |<0298
@@ -7249,7 +7249,7 @@ QUIT "LIST" .                                                              0313
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (SYBIL       )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
+-->>MODULE ASM:        : TIME SPENT=        0.023 MEMORY USAGE= 0.000E+00
 <|CALC := FLU: CALC TRACK LIBRARY CP ::                                   |<0303
 <|TYPE B B1 SIGS                                                          |<0304
 <|;                                                                       |<0305
@@ -7338,7 +7338,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.072716E+00 FINAL KEFF= 1.000000E+00 B2= 2.13934E-03 PRECISION= 9.05E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1684
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.332 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.354 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  1.500000e+03                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -7379,7 +7379,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.005 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListBU' <<istep>> >>step2<< ;                 |<0264
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -7661,7 +7661,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.621 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.725 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -7794,7 +7794,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.069553E+00 FINAL KEFF= 1.000000E+00 B2= 2.04763E-03 PRECISION= 7.55E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1684
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.334 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.362 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  2.000000e+03                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -7835,7 +7835,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.005 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListBU' <<istep>> >>step2<< ;                 |<0264
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -8117,7 +8117,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.620 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.739 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -8250,7 +8250,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.066086E+00 FINAL KEFF= 1.000000E+00 B2= 1.94693E-03 PRECISION= 7.42E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1684
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.333 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.364 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  2.500000e+03                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -8573,7 +8573,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.616 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.726 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -8706,7 +8706,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.062546E+00 FINAL KEFF= 1.000000E+00 B2= 1.84395E-03 PRECISION= 7.38E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1683
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.334 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.357 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  3.000000e+03                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -9029,7 +9029,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.653 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.716 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -9657,7 +9657,7 @@ QUIT "LIST" .                                                              0313
 
  USSIN1: PROCESSING ISOTOPE 'Zr96    0007'.
 ->@END MODULE   : USS:        
--->>MODULE USS:        : TIME SPENT=        0.357 MEMORY USAGE= 2.376E+03
+-->>MODULE USS:        : TIME SPENT=        0.379 MEMORY USAGE= 2.312E+03
 >|step2=  4.000000e+03 evoend=  1.032445e+02                              |>0297
 <|CP := DELETE: CP ;                                                      |<0298
 <|CP := ASM: LIBRARY TRACK ::                                             |<0299
@@ -9693,7 +9693,7 @@ QUIT "LIST" .                                                              0313
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (SYBIL       )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.025 MEMORY USAGE= 0.000E+00
+-->>MODULE ASM:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
 <|CALC := FLU: CALC TRACK LIBRARY CP ::                                   |<0303
 <|TYPE B B1 SIGS                                                          |<0304
 <|;                                                                       |<0305
@@ -9782,7 +9782,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.055225E+00 FINAL KEFF= 1.000000E+00 B2= 1.63045E-03 PRECISION= 7.19E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1495
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.320 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.348 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  4.000000e+03                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -9823,7 +9823,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.005 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListBU' <<istep>> >>step2<< ;                 |<0264
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -10105,7 +10105,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.649 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.790 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -10238,7 +10238,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.047419E+00 FINAL KEFF= 1.000000E+00 B2= 1.40205E-03 PRECISION= 4.72E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1493
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.321 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.351 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  5.000000e+03                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -10279,7 +10279,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.005 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListBU' <<istep>> >>step2<< ;                 |<0264
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -10561,7 +10561,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.647 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.747 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -10605,7 +10605,7 @@ QUIT "LIST" .                                                              0313
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (SYBIL       )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
+-->>MODULE ASM:        : TIME SPENT=        0.023 MEMORY USAGE= 0.000E+00
 <|CALC := FLU: CALC TRACK LIBRARY CP ::                                   |<0303
 <|TYPE B B1 SIGS                                                          |<0304
 <|;                                                                       |<0305
@@ -10694,7 +10694,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.040452E+00 FINAL KEFF= 1.000000E+00 B2= 1.19762E-03 PRECISION= 3.63E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1493
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.319 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.341 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  6.000000e+03                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -11017,7 +11017,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.646 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.757 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -11150,7 +11150,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.033424E+00 FINAL KEFF= 1.000000E+00 B2= 9.90840E-04 PRECISION= 3.53E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1484
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.319 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.348 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  7.000000e+03                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -11473,7 +11473,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.643 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.762 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -12101,7 +12101,7 @@ QUIT "LIST" .                                                              0313
 
  USSIN1: PROCESSING ISOTOPE 'Zr96    0007'.
 ->@END MODULE   : USS:        
--->>MODULE USS:        : TIME SPENT=        0.358 MEMORY USAGE= 0.000E+00
+-->>MODULE USS:        : TIME SPENT=        0.374 MEMORY USAGE= 0.000E+00
 >|step2=  8.000000e+03 evoend=  2.064889e+02                              |>0297
 <|CP := DELETE: CP ;                                                      |<0298
 <|CP := ASM: LIBRARY TRACK ::                                             |<0299
@@ -12226,7 +12226,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.026693E+00 FINAL KEFF= 1.000000E+00 B2= 7.92255E-04 PRECISION= 2.55E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1484
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.297 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.326 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  8.000000e+03                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -12267,7 +12267,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.005 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListBU' <<istep>> >>step2<< ;                 |<0264
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -12549,7 +12549,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.710 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.767 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -12593,7 +12593,7 @@ QUIT "LIST" .                                                              0313
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (SYBIL       )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.024 MEMORY USAGE= 0.000E+00
+-->>MODULE ASM:        : TIME SPENT=        0.023 MEMORY USAGE= 0.000E+00
 <|CALC := FLU: CALC TRACK LIBRARY CP ::                                   |<0303
 <|TYPE B B1 SIGS                                                          |<0304
 <|;                                                                       |<0305
@@ -12682,7 +12682,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.014232E+00 FINAL KEFF= 1.000000E+00 B2= 4.23346E-04 PRECISION= 2.82E-09
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1484
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.299 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.319 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  1.000000e+04                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -13005,7 +13005,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.709 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.854 MEMORY USAGE= 0.000E+00
 <|GREP: StepList :: GETVAL 'ListAutop' <<iauto>> >>stepauto<< ;           |<0284
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -13633,7 +13633,7 @@ QUIT "LIST" .                                                              0313
 
  USSIN1: PROCESSING ISOTOPE 'Zr96    0007'.
 ->@END MODULE   : USS:        
--->>MODULE USS:        : TIME SPENT=        0.357 MEMORY USAGE= 0.000E+00
+-->>MODULE USS:        : TIME SPENT=        0.364 MEMORY USAGE= 0.000E+00
 >|step2=  1.200000e+04 evoend=  3.097334e+02                              |>0297
 <|CP := DELETE: CP ;                                                      |<0298
 <|CP := ASM: LIBRARY TRACK ::                                             |<0299
@@ -13758,7 +13758,7 @@ QUIT "LIST" .                                                              0313
  ++ TRACKING CALLED=   6 TIMES FINAL KINF= 1.002618E+00 FINAL KEFF= 1.000000E+00 B2= 7.80465E-05 PRECISION= 1.54E-08
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1492
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.300 MEMORY USAGE= 0.000E+00
+-->>MODULE FLU:        : TIME SPENT=        0.330 MEMORY USAGE= 0.000E+00
 >|Output of FLU: at burnup:  1.200000e+04                                 |>0306
 <|BURNUP LIBRARY := EVO: BURNUP LIBRARY CALC TRACK :: EDIT 2              |<0307
 <|SAVE <<evoend>> DAY POWR <<Norm_f2>> ;                                  |<0308
@@ -13799,7 +13799,7 @@ QUIT "LIST" .                                                              0313
  IFLMAC     0   (0/1/2=RECOVER FLUX FROM L_FLUX/L_MACROLIB/L_POWER)
  IYLMIX     0   (0/1=RECOVER FISSION YIELD DATA FROM DEPL-CHAIN/PYIELD DATA)
 ->@END MODULE   : EVO:        
--->>MODULE EVO:        : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
+-->>MODULE EVO:        : TIME SPENT=        0.005 MEMORY USAGE= 0.000E+00
 <|assertS CALC :: K-INFINITY 1 1.002618 ;                                 |<0311
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                

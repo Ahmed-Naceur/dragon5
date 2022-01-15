@@ -220,7 +220,7 @@ INF   : CALC         WGT%         D2O          Isotope 3001     <-   8.9534158E-
 INF   : CALC         WGT%         D2O          Isotope 3002     <-   2.0101673E+01
 INF   : CALC         WGT%         D2O          Isotope 6016     <-   7.9889374E+01
 ->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+-->>MODULE INFO:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : INFO:       
 ->@DESCRIPTION  : Information on water, UO2 and ThO2                                      
 ->@CREDITS      : R. Roy                                                                  
@@ -984,7 +984,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808487E+
    686  9233    0006  9233          WIMSD4     1    13  0.0000E+00  9.413E+02  1.000E+10   0             0                         
    687  952     0006  952           WIMSD4     1    13  0.0000E+00  9.413E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.174 MEMORY USAGE= 2.768E+03
+-->>MODULE LIB:        : TIME SPENT=        0.162 MEMORY USAGE= 2.772E+03
 . ------------------------------------------------------------------------ .
 <|Geometry := GeoLZCM ::                                                  |<0052
 <|<<PrtLev>> <<Proj>> <<Mesh>>                                            |<0053
@@ -1111,7 +1111,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808487E+
 
  CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'Geometry    ' WITH TYPE CARTESIAN 2-D   .
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
 <|::  <<NbAngles>> <<Density>>          ;                                 |<1018
 <|END: ;                                                                  |<1019
 <|IntLine VolTrk  := NXT: Geometry ::                                     |<0056
@@ -1183,7 +1183,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808487E+
  ITRACK        1   (-1=MONTE-CARLO/0=DESACTIVATES TRACKING FILE BUILD/1=ACTIVATES TRACKING FILE BUILD)
  IBIHET        0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
 ->@END MODULE   : NXT:        
--->>MODULE NXT:        : TIME SPENT=        0.417 MEMORY USAGE= 5.200E+02
+-->>MODULE NXT:        : TIME SPENT=        0.396 MEMORY USAGE= 5.200E+02
 <|MicLib := SHI: MicLib VolTrk IntLine :: EDIT 0 NOLJ ;                   |<0058
 ->@BEGIN MODULE : SHI:        
 ->@DESCRIPTION  : Self-shielding by improved Stammler method                              
@@ -1191,7 +1191,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808487E+
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : SHI:        
--->>MODULE SHI:        : TIME SPENT=       10.738 MEMORY USAGE= 1.580E+03
+-->>MODULE SHI:        : TIME SPENT=       11.317 MEMORY USAGE= 1.720E+03
 <|Geometry IntLine VolTrk := DELETE: Geometry IntLine VolTrk ;            |<0059
 <|MicNO := MicLib ;                                                       |<0067
 ->@BEGIN MODULE : EQU:        
@@ -1199,7 +1199,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808487E+
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module EQU:        : time spent=        0.053 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.042 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
 <|MicNO := MicWULZC MicNO :: <<PrtLev>> <<Position>> <<Type>> ;           |<0068
 ->@BEGIN MODULE : INFO:       
@@ -1223,7 +1223,7 @@ INF   : CALC         WGT%         D2O          Isotope 3001     <-   1.1191402E+
 INF   : CALC         WGT%         D2O          Isotope 3002     <-   2.0117768E-04
 INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+01
 ->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+-->>MODULE INFO:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : LIB:        
 ->@DESCRIPTION  : Microscopic xs-library processing                                       
 ->@CREDITS      : A. Hebert, G. Marleau                                                   
@@ -2026,7 +2026,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
    752  D2      0005  3002          WIMSD4     1    36  6.5085E-02  3.457E+02  1.000E+10   0             0                         
    753  O16     0005  6016          WIMSD4     1    36  3.2571E-02  3.457E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.138 MEMORY USAGE= 1.308E+03
+-->>MODULE LIB:        : TIME SPENT=        0.122 MEMORY USAGE= 1.444E+03
 . ------------------------------------------------------------------------ .
 <|MicOU32 := MicLib ;                                                     |<0071
 ->@BEGIN MODULE : EQU:        
@@ -2034,7 +2034,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module EQU:        : time spent=        0.052 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.042 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
 <|MicOU32 := MicWULZC MicOU32 :: <<PrtLev>> <<Position>> <<Type>> ;       |<0072
 ->@BEGIN MODULE : INFO:       
@@ -2882,7 +2882,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
    773  B10     0004  10            WIMSD4     1    36  4.6367E-08  3.457E+02  1.000E+10   0             0                         
    774  B11     0004  11            WIMSD4     1    36  4.2171E-08  3.457E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.161 MEMORY USAGE= 1.440E+02
+-->>MODULE LIB:        : TIME SPENT=        0.148 MEMORY USAGE= 0.000E+00
 . ------------------------------------------------------------------------ .
 <|MicOU21 := MicLib ;                                                     |<0074
 ->@BEGIN MODULE : EQU:        
@@ -2890,7 +2890,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module EQU:        : time spent=        0.053 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.042 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
 <|MicOU21 := MicWULZC MicOU21 :: <<PrtLev>> <<Position>> <<Type>> ;       |<0075
 ->@BEGIN MODULE : INFO:       
@@ -2914,7 +2914,7 @@ INF   : CALC         WGT%         D2O          Isotope 3001     <-   1.1191402E+
 INF   : CALC         WGT%         D2O          Isotope 3002     <-   2.0117768E-04
 INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+01
 ->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+-->>MODULE INFO:       : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : LIB:        
 ->@DESCRIPTION  : Microscopic xs-library processing                                       
 ->@CREDITS      : A. Hebert, G. Marleau                                                   
@@ -3714,7 +3714,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
    749  HE4     0003  4             WIMSD4     1    35  2.1064E-04  3.457E+02  1.000E+10   0             0                         
    750  HE4     0003  4             WIMSD4     1    36  2.1064E-04  3.457E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.148 MEMORY USAGE= 0.000E+00
+-->>MODULE LIB:        : TIME SPENT=        0.136 MEMORY USAGE= 8.000E+00
 . ------------------------------------------------------------------------ .
 <|MicOU10 := MicLib ;                                                     |<0077
 ->@BEGIN MODULE : EQU:        
@@ -3722,7 +3722,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module EQU:        : time spent=        0.053 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.042 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
 <|MicOU10 := MicWULZC MicOU10 :: <<PrtLev>> <<Position>> <<Type>> ;       |<0078
 ->@BEGIN MODULE : INFO:       
@@ -4522,7 +4522,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
    725  HE4     0003  4             WIMSD4     1    35  2.1064E-04  3.457E+02  1.000E+10   0             0                         
    726  HE4     0003  4             WIMSD4     1    36  2.1064E-04  3.457E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.135 MEMORY USAGE= 0.000E+00
+-->>MODULE LIB:        : TIME SPENT=        0.124 MEMORY USAGE= 0.000E+00
 . ------------------------------------------------------------------------ .
 <|MicIN32 := MicLib ;                                                     |<0081
 ->@BEGIN MODULE : EQU:        
@@ -4530,7 +4530,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module EQU:        : time spent=        0.052 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.041 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
 <|MicIN32 := MicWULZC MicIN32 :: <<PrtLev>> <<Position>> <<Type>> ;       |<0082
 ->@BEGIN MODULE : INFO:       
@@ -4554,7 +4554,7 @@ INF   : CALC         WGT%         D2O          Isotope 3001     <-   1.1191402E+
 INF   : CALC         WGT%         D2O          Isotope 3002     <-   2.0117768E-04
 INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+01
 ->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+-->>MODULE INFO:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : LIB:        
 ->@DESCRIPTION  : Microscopic xs-library processing                                       
 ->@CREDITS      : A. Hebert, G. Marleau                                                   
@@ -5380,7 +5380,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
    775  B10     0004  10            WIMSD4     1    36  4.6367E-08  3.457E+02  1.000E+10   0             0                         
    776  B11     0004  11            WIMSD4     1    36  4.2171E-08  3.457E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.162 MEMORY USAGE= 0.000E+00
+-->>MODULE LIB:        : TIME SPENT=        0.150 MEMORY USAGE= 0.000E+00
 . ------------------------------------------------------------------------ .
 <|MicIN21 := MicLib ;                                                     |<0084
 ->@BEGIN MODULE : EQU:        
@@ -5388,7 +5388,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module EQU:        : time spent=        0.053 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.041 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
 <|MicIN21 := MicWULZC MicIN21 :: <<PrtLev>> <<Position>> <<Type>> ;       |<0085
 ->@BEGIN MODULE : INFO:       
@@ -5401,7 +5401,7 @@ INF   : CALC         WGT%         D2O          Isotope 3001     <-   8.9534158E-
 INF   : CALC         WGT%         D2O          Isotope 3002     <-   2.0101673E+01
 INF   : CALC         WGT%         D2O          Isotope 6016     <-   7.9889374E+01
 ->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+-->>MODULE INFO:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : INFO:       
 ->@DESCRIPTION  : Information on water, UO2 and ThO2                                      
 ->@CREDITS      : R. Roy                                                                  
@@ -5412,7 +5412,7 @@ INF   : CALC         WGT%         D2O          Isotope 3001     <-   1.1191402E+
 INF   : CALC         WGT%         D2O          Isotope 3002     <-   2.0117768E-04
 INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+01
 ->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
+-->>MODULE INFO:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
 ->@BEGIN MODULE : LIB:        
 ->@DESCRIPTION  : Microscopic xs-library processing                                       
 ->@CREDITS      : A. Hebert, G. Marleau                                                   
@@ -6230,7 +6230,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
    767  D2      0005  3002          WIMSD4     1    36  5.8728E-07  3.457E+02  1.000E+10   0             0                         
    768  O16     0005  6016          WIMSD4     1    36  3.2645E-02  3.457E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.154 MEMORY USAGE= 0.000E+00
+-->>MODULE LIB:        : TIME SPENT=        0.138 MEMORY USAGE= 0.000E+00
 . ------------------------------------------------------------------------ .
 <|MicIN10 := MicLib ;                                                     |<0087
 ->@BEGIN MODULE : EQU:        
@@ -6238,7 +6238,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module EQU:        : time spent=        0.052 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.042 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
 <|MicIN10 := MicWULZC MicIN10 :: <<PrtLev>> <<Position>> <<Type>> ;       |<0088
 ->@BEGIN MODULE : INFO:       
@@ -7072,7 +7072,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
    759  D2      0005  3002          WIMSD4     1    36  5.8728E-07  3.457E+02  1.000E+10   0             0                         
    760  O16     0005  6016          WIMSD4     1    36  3.2645E-02  3.457E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.145 MEMORY USAGE= 0.000E+00
+-->>MODULE LIB:        : TIME SPENT=        0.128 MEMORY USAGE= 0.000E+00
 . ------------------------------------------------------------------------ .
 <|MicLib := DELETE: MicLib ;                                              |<0089
 <|Geometry := GeoLZCM ::                                                  |<0097
@@ -7248,7 +7248,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
 
  CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'Geometry    ' WITH TYPE CARTESIAN 3-D   .
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
 <|::  <<NbAngles>> <<Density>>          ;                                 |<1018
 <|END: ;                                                                  |<1019
 <|IntLine VolTrk  := NXT: Geometry ::                                     |<0101
@@ -7321,7 +7321,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
  ITRACK        1   (-1=MONTE-CARLO/0=DESACTIVATES TRACKING FILE BUILD/1=ACTIVATES TRACKING FILE BUILD)
  IBIHET        0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
 ->@END MODULE   : NXT:        
--->>MODULE NXT:        : TIME SPENT=       92.706 MEMORY USAGE= 0.000E+00
+-->>MODULE NXT:        : TIME SPENT=       85.360 MEMORY USAGE= 0.000E+00
 <|Temp := VolTrk ;                                                        |<0103
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
@@ -7336,7 +7336,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module EQU:        : time spent=        0.055 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.042 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
 <|VolTrk := MCCGT: VolTrk IntLine Geometry ::                             |<0110
 <|EDIT 1                                                                  |<0111
@@ -7349,7 +7349,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : MCCGT:      
--->>MODULE MCCGT:      : TIME SPENT=        2.131 MEMORY USAGE= 0.000E+00
+-->>MODULE MCCGT:      : TIME SPENT=        2.490 MEMORY USAGE= 0.000E+00
 <|Pij := ASM: MicLib VolTrk IntLine  :: ARM ;                             |<0115
 ->@BEGIN MODULE : ASM:        
 ->@DESCRIPTION  : To built system matrices (CP and IC)                                    
@@ -7362,8 +7362,8 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
 
 
  USE TRANSPORT CORRECTED CROSS-SECTIONS (ITRANC=   2 )
-   -->>TIME SPENT IN: SUMMATION UPON THE TRACKING FOR ACA/SCR :       96.751 s.
-   -->>TIME SPENT IN: CALCULATION OF ACA PRECONDITIONER       :        0.000 s.
+   -->>TIME SPENT IN: SUMMATION UPON THE TRACKING FOR ACA/SCR :       80.968 s.
+   -->>TIME SPENT IN: CALCULATION OF ACA PRECONDITIONER       :        0.001 s.
 
  OPTIONS
  -------
@@ -7382,7 +7382,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
  IBFP         0   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (MCCG        )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=       96.754 MEMORY USAGE= 0.000E+00
+-->>MODULE ASM:        : TIME SPENT=       80.970 MEMORY USAGE= 0.000E+00
 <|Flux := FLU: Pij MicLib VolTrk IntLine ::                               |<0116
 <|EDIT 2 TYPE K THER 5 5E-5 ;                                             |<0117
 ->@BEGIN MODULE : FLU:        
@@ -7467,7 +7467,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
  ++ TRACKING CALLED=  11 TIMES FINAL KINF= 1.114261E+00 FINAL KEFF= 1.114261E+00 B2= 0.00000E+00 PRECISION= 5.72E-07
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=       599
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        0.436 MEMORY USAGE= 6.780E+03
+-->>MODULE FLU:        : TIME SPENT=        0.377 MEMORY USAGE= 6.864E+03
 <|assertS Flux :: 'K-EFFECTIVE' 1 1.114261 ;                              |<0118
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -7612,7 +7612,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
  TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =       230
 
 ->@END MODULE   : EDI:        
--->>MODULE EDI:        : TIME SPENT=        0.017 MEMORY USAGE= 0.000E+00
+-->>MODULE EDI:        : TIME SPENT=        0.014 MEMORY USAGE= 0.000E+00
 <|Edit VolTrk := DELETE: Edit VolTrk ;                                    |<0124
 <|VolTrk := Temp ;                                                        |<0126
 ->@BEGIN MODULE : EQU:        
@@ -7633,7 +7633,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : MCCGT:      
--->>MODULE MCCGT:      : TIME SPENT=        2.134 MEMORY USAGE= 0.000E+00
+-->>MODULE MCCGT:      : TIME SPENT=        2.468 MEMORY USAGE= 0.000E+00
 <|Flux := FLU: Flux Pij MicLib VolTrk IntLine ::                          |<0132
 <|EDIT 2 TYPE K THER 5 5E-5 ;                                             |<0133
 ->@BEGIN MODULE : FLU:        
@@ -7668,113 +7668,113 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
  USE TRANSPORT CORRECTED CROSS-SECTIONS
  OUT(  0) EIG: PRC= 1.00E+00 TAR= 1.00E-05 KEFF= 1.114260E+00 BUCK= 0.00000E+00
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.34E-06 (  47 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.330
-   -->>TIME SPENT IN  ACCELERATION           :        0.117
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.261
+   -->>TIME SPENT IN  ACCELERATION           :        0.116
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  1) FLX: PRC= 5.69E-01 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.55E-06 (  49 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.326
-   -->>TIME SPENT IN  ACCELERATION           :        0.124
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.397
+   -->>TIME SPENT IN  ACCELERATION           :        0.119
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  2) FLX: PRC= 1.89E-01 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.43E-06 (  49 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.747
-   -->>TIME SPENT IN  ACCELERATION           :        0.122
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.397
+   -->>TIME SPENT IN  ACCELERATION           :        0.120
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  3) FLX: PRC= 1.04E-01 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.71E-06 (  47 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.406
-   -->>TIME SPENT IN  ACCELERATION           :        0.118
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.351
+   -->>TIME SPENT IN  ACCELERATION           :        0.115
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  4) FLX: PRC= 2.95E-02 TAR= 5.00E-05 IGDEB=            1 ACCE=     2.12595
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.87E-07 (  45 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.418
-   -->>TIME SPENT IN  ACCELERATION           :        0.114
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.339
+   -->>TIME SPENT IN  ACCELERATION           :        0.109
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  5) FLX: PRC= 7.38E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.76235
  FLU2DR: NO LEAKAGE-> REBALANCING ON
- FLU2DR: CPU TIME=      193. INTERNAL CONVERGENCE *NOT* REACHED AFTER     5 ITERATIONS.
+ FLU2DR: CPU TIME=      172. INTERNAL CONVERGENCE *NOT* REACHED AFTER     5 ITERATIONS.
  OUT(  1) EIG: PRC= 1.13E-02 TAR= 1.00E-05 KEFF= 1.127042E+00 BUCK= 0.00000E+00
  OUT(  1) FLX:                             FNOR= 8.872787E-01 ACCE=     1.00000
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.35E-06 (  43 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.407
-   -->>TIME SPENT IN  ACCELERATION           :        0.110
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.297
+   -->>TIME SPENT IN  ACCELERATION           :        0.114
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  1) FLX: PRC= 8.61E-02 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.84E-06 (  43 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.396
-   -->>TIME SPENT IN  ACCELERATION           :        0.111
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.328
+   -->>TIME SPENT IN  ACCELERATION           :        0.115
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  2) FLX: PRC= 1.84E-02 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.23E-06 (  43 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.354
-   -->>TIME SPENT IN  ACCELERATION           :        0.111
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.254
+   -->>TIME SPENT IN  ACCELERATION           :        0.115
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  3) FLX: PRC= 8.23E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.63E-06 (  41 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.344
-   -->>TIME SPENT IN  ACCELERATION           :        0.106
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.247
+   -->>TIME SPENT IN  ACCELERATION           :        0.111
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  4) FLX: PRC= 2.49E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     2.08369
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.71E-06 (  43 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.347
-   -->>TIME SPENT IN  ACCELERATION           :        0.112
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.266
+   -->>TIME SPENT IN  ACCELERATION           :        0.113
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  5) FLX: PRC= 5.83E-04 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.60711
  FLU2DR: NO LEAKAGE-> REBALANCING ON
- FLU2DR: CPU TIME=      192. INTERNAL CONVERGENCE *NOT* REACHED AFTER     5 ITERATIONS.
+ FLU2DR: CPU TIME=      172. INTERNAL CONVERGENCE *NOT* REACHED AFTER     5 ITERATIONS.
  OUT(  2) EIG: PRC= 2.85E-04 TAR= 1.00E-05 KEFF= 1.126721E+00 BUCK= 0.00000E+00
  OUT(  2) FLX:                             FNOR= 8.875314E-01 ACCE=     1.00000
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.93E-06 (  53 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.363
-   -->>TIME SPENT IN  ACCELERATION           :        0.137
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.281
+   -->>TIME SPENT IN  ACCELERATION           :        0.138
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  1) FLX: PRC= 2.06E-03 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.40E-06 (  41 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.675
-   -->>TIME SPENT IN  ACCELERATION           :        0.108
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.358
+   -->>TIME SPENT IN  ACCELERATION           :        0.107
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  2) FLX: PRC= 4.63E-04 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.90E-06 (  41 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.451
-   -->>TIME SPENT IN  ACCELERATION           :        0.107
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.336
+   -->>TIME SPENT IN  ACCELERATION           :        0.103
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  3) FLX: PRC= 1.81E-04 TAR= 5.00E-05 IGDEB=            4 ACCE=     1.00000
                   FIRST UNCONVERGED GROUP PRC= 0.64E-04
  FLU2DR: NO LEAKAGE-> REBALANCING ON
- FLU2DR: CPU TIME=      116. INTERNAL CONVERGENCE *NOT* REACHED AFTER     3 ITERATIONS.
+ FLU2DR: CPU TIME=      103. INTERNAL CONVERGENCE *NOT* REACHED AFTER     3 ITERATIONS.
  OUT(  3) EIG: PRC= 2.46E-06 TAR= 1.00E-05 KEFF= 1.126718E+00 BUCK= 0.00000E+00
  OUT(  3) FLX: PRC= 2.20E-03 TAR= 5.00E-05 FNOR= 8.875336E-01 ACCE=     1.00000
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.29E-06 (  51 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.446
-   -->>TIME SPENT IN  ACCELERATION           :        0.133
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.269
+   -->>TIME SPENT IN  ACCELERATION           :        0.132
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  1) FLX: PRC= 9.77E-05 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.11E-06 (  49 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.403
-   -->>TIME SPENT IN  ACCELERATION           :        0.128
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.307
+   -->>TIME SPENT IN  ACCELERATION           :        0.135
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  2) FLX: PRC= 5.11E-05 TAR= 5.00E-05 IGDEB=            8 ACCE=     1.00000
                   FIRST UNCONVERGED GROUP PRC= 0.51E-04
  FLU2DR: NO LEAKAGE-> REBALANCING ON
- FLU2DR: CPU TIME=       77. INTERNAL CONVERGENCE *NOT* REACHED AFTER     2 ITERATIONS.
+ FLU2DR: CPU TIME=       69. INTERNAL CONVERGENCE *NOT* REACHED AFTER     2 ITERATIONS.
  OUT(  4) EIG: PRC= 1.30E-06 TAR= 1.00E-05 KEFF= 1.126719E+00 BUCK= 0.00000E+00
  OUT(  4) FLX: PRC= 2.44E-04 TAR= 5.00E-05 FNOR= 8.875324E-01 ACCE=     1.14551
           ACA: UP-SCATTE. GROUPS: MULTIGROUP BICGSTAB: PRC 0.49E-06 (  55 ITERATIONS)
-   -->>TIME SPENT IN  FLUX INTEGRATION       :       38.372
-   -->>TIME SPENT IN  ACCELERATION           :        0.143
+   -->>TIME SPENT IN  FLUX INTEGRATION       :       34.344
+   -->>TIME SPENT IN  ACCELERATION           :        0.149
           M O C PARAMETERS:  NON CYCLIC - STIS 1 - SC SCHEME - TABULATED EXP                         
           IN(  1) FLX: PRC= 2.33E-05 TAR= 5.00E-05 IGDEB=           70 ACCE=     1.00000
  FLU2DR: NO LEAKAGE-> REBALANCING ON
- FLU2DR: CPU TIME=       39. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+ FLU2DR: CPU TIME=       34. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
  OUT(  5) EIG: PRC= 4.86E-10 TAR= 1.00E-05 KEFF= 1.126719E+00 BUCK= 0.00000E+00
  OUT(  5) FLX: PRC= 3.69E-05 TAR= 5.00E-05 FNOR= 8.875324E-01 ACCE=     1.16140
- FLU2DR: CPU TIME=      617. EXTERNAL CONVERGENCE       REACHED AFTER     5 ITERATIONS.
+ FLU2DR: CPU TIME=      551. EXTERNAL CONVERGENCE       REACHED AFTER     5 ITERATIONS.
 
  ++ TRACKING CALLED=  16 TIMES FINAL KINF= 1.126719E+00 FINAL KEFF= 1.126719E+00 B2= 0.00000E+00 PRECISION= 4.86E-10
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=      1104
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=      616.782 MEMORY USAGE= 2.272E+03
+-->>MODULE FLU:        : TIME SPENT=      551.035 MEMORY USAGE= 2.360E+03
 <|assertS Flux :: 'K-EFFECTIVE' 1 1.126719 ;                              |<0134
 ->@BEGIN MODULE : GREP:       
 ->@DESCRIPTION  : No description available for this module                                
@@ -7859,7 +7859,7 @@ INF   : CALC         WGT%         D2O          Isotope 6016     <-   8.8808395E+
  REGION      VOLUME       FISSION       CAPTURE         TOTAL
     180885.52343750    0.00001236    0.00000000    0.00001236
 ->@END MODULE   : EDI:        
--->>MODULE EDI:        : TIME SPENT=        0.017 MEMORY USAGE= 0.000E+00
+-->>MODULE EDI:        : TIME SPENT=        0.014 MEMORY USAGE= 0.000E+00
 <|Pij Flux Edit Temp := DELETE: Pij Flux Edit Temp ;                      |<0137
 <|MicLib := DELETE: MicLib ;                                              |<0138
 <|IntLine VolTrk Geometry := DELETE: IntLine VolTrk Geometry ;            |<0142
