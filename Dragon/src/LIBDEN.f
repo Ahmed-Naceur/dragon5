@@ -530,11 +530,11 @@
             !POSITRON. REASON: SOFT INLEASTIC HEAT DEPOSITION IN CEPXSR
             !AND ELECTR CONTAINS A COLLISONNAL DENSITY CORRECTION WHICH 
             !HAS NOT BEEN CORRECTED IN NJOY (SEE NJOY MANUAL, EQ.433)
-            IF (HPRT1.EQ.'B'.OR.HPRT1.EQ.'C') THEN 
-               GAF(IBM,LLL,7)=GAF(IBM,LLL,7)-DENMAT(IBM,LLL)
-            print *, "LLL=", LLL
-            PRINT *, "HEAT=",GAF(IBM,LLL,7)
-            ENDIF
+            !IF (HPRT1.EQ.'B'.OR.HPRT1.EQ.'C') THEN 
+            !   GAF(IBM,LLL,7)=GAF(IBM,LLL,7)-DENMAT(IBM,LLL)
+            !print *, "LLL=", LLL
+            !PRINT *, "HEAT=",GAF(IBM,LLL,7)
+            !ENDIF
   290       CONTINUE
          ENDIF
          CALL LCMLEN(JPLIB,'C-FACTOR'//NORD(IXSPER),ILONG,ITYLCM)

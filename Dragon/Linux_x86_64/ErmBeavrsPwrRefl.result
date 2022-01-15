@@ -548,7 +548,7 @@ QUIT "LIST" .                                                              0443
 <|1. 2. 3. ;                                                              |<0288
 
  DRVUTL: LEAVING WITH ACTIVE DIRECTORY '/           '.
--->>module UTL:        : time spent=        0.001 memory usage= 0.000E+00
+-->>module UTL:        : time spent=        0.000 memory usage= 0.000E+00
 ->@END MODULE   : UTL:        
 >|Attention : pas de teneur_I rensignée                                  |>0352
 >|=> valeurs enrichissements non definies                                 |>0353
@@ -746,7 +746,7 @@ QUIT "LIST" .                                                              0443
 <|;                                                                       |<0210
 
  DRVUTL: LEAVING WITH ACTIVE DIRECTORY '/           '.
--->>module UTL:        : time spent=        0.000 memory usage= 0.000E+00
+-->>module UTL:        : time spent=        0.001 memory usage= 0.000E+00
 ->@END MODULE   : UTL:        
 <|StepList := UTL: StepList ::                                            |<0213
 ->@BEGIN MODULE : UTL:        
@@ -985,7 +985,7 @@ DeplParam
 <|'Si0 ' '    ' 'FALS' 'E   ' 'FALS' 'E   ' 'FALS' 'E   ' ;               |<0097
 
  DRVUTL: LEAVING WITH ACTIVE DIRECTORY '/           '.
--->>module UTL:        : time spent=        0.001 memory usage= 0.000E+00
+-->>module UTL:        : time spent=        0.000 memory usage= 0.000E+00
 ->@END MODULE   : UTL:        
 <|ListeIsot := UTL: ListeIsot ::  CREA 'Si28 ' <<NbBibli>> =              |<0098
 ->@BEGIN MODULE : UTL:        
@@ -1225,7 +1225,7 @@ DeplParam
 <|'Ni58' '    ' 'Ni58' '    ' 'Ni58' '    ' 'Ni58' '    ' ;               |<0157
 
  DRVUTL: LEAVING WITH ACTIVE DIRECTORY '/           '.
--->>module UTL:        : time spent=        0.000 memory usage= 0.000E+00
+-->>module UTL:        : time spent=        0.001 memory usage= 0.000E+00
 ->@END MODULE   : UTL:        
 <|ListeIsot := UTL: ListeIsot ::  CREA 'Ni60 ' <<NbBibli>> =              |<0158
 ->@BEGIN MODULE : UTL:        
@@ -1333,7 +1333,7 @@ DeplParam
 <|'FALS' 'E   ' 'Zr93' '    ' 'Zr93' '    ' 'Zr93' '    ' ;               |<0184
 
  DRVUTL: LEAVING WITH ACTIVE DIRECTORY '/           '.
--->>module UTL:        : time spent=        0.001 memory usage= 0.000E+00
+-->>module UTL:        : time spent=        0.000 memory usage= 0.000E+00
 ->@END MODULE   : UTL:        
 <|ListeIsot := UTL: ListeIsot ::  CREA 'Zr94 ' <<NbBibli>> =              |<0185
 ->@BEGIN MODULE : UTL:        
@@ -1405,7 +1405,7 @@ DeplParam
 <|'Ag10' '7   ' 'Ag10' '7   ' 'Ag10' '7   ' 'Ag10' '7   ' ;               |<0202
 
  DRVUTL: LEAVING WITH ACTIVE DIRECTORY '/           '.
--->>module UTL:        : time spent=        0.000 memory usage= 0.000E+00
+-->>module UTL:        : time spent=        0.001 memory usage= 0.000E+00
 ->@END MODULE   : UTL:        
 <|ListeIsot := UTL: ListeIsot ::  CREA 'Ag109' <<NbBibli>> =              |<0203
 ->@BEGIN MODULE : UTL:        
@@ -1765,7 +1765,7 @@ DeplParam
 <|'U235' '    ' 'U235' '    ' 'U235' '    ' 'U235' '    ' ;               |<0292
 
  DRVUTL: LEAVING WITH ACTIVE DIRECTORY '/           '.
--->>module UTL:        : time spent=        0.000 memory usage= 0.000E+00
+-->>module UTL:        : time spent=        0.001 memory usage= 0.000E+00
 ->@END MODULE   : UTL:        
 <|ListeIsot := UTL: ListeIsot ::  CREA 'U236 ' <<NbBibli>> =              |<0293
 ->@BEGIN MODULE : UTL:        
@@ -1945,7 +1945,7 @@ DeplParam
 <|'S33 ' '    ' 'S33 ' '    ' 'S33 ' '    ' 'S33 ' '    ' ;               |<0337
 
  DRVUTL: LEAVING WITH ACTIVE DIRECTORY '/           '.
--->>module UTL:        : time spent=        0.000 memory usage= 0.000E+00
+-->>module UTL:        : time spent=        0.001 memory usage= 0.000E+00
 ->@END MODULE   : UTL:        
 <|ListeIsot := UTL: ListeIsot ::  CREA 'S34  ' <<NbBibli>> =              |<0338
 ->@BEGIN MODULE : UTL:        
@@ -2005,7 +2005,7 @@ DeplParam
 <|'Hf17' '8   ' 'Hf17' '8   ' 'Hf17' '8   ' 'Hf17' '8   ' ;               |<0353
 
  DRVUTL: LEAVING WITH ACTIVE DIRECTORY '/           '.
--->>module UTL:        : time spent=        0.001 memory usage= 0.000E+00
+-->>module UTL:        : time spent=        0.000 memory usage= 0.000E+00
 ->@END MODULE   : UTL:        
 <|ListeIsot := UTL: ListeIsot ::  CREA 'Hf179' <<NbBibli>> =              |<0354
 ->@BEGIN MODULE : UTL:        
@@ -2139,7 +2139,7 @@ DeplParam
 <|'GD16' '0SS_' '4   '  ;                                                 |<0380
 
  DRVUTL: LEAVING WITH ACTIVE DIRECTORY '/           '.
--->>module UTL:        : time spent=        0.000 memory usage= 0.000E+00
+-->>module UTL:        : time spent=        0.001 memory usage= 0.000E+00
 ->@END MODULE   : UTL:        
 <|ListeAutop := UTL: ListeAutop ::  CREA 'U235 ' 3 =                      |<0381
 ->@BEGIN MODULE : UTL:        
@@ -2796,7 +2796,7 @@ Hf180   Hf180   Hf180   Hf180   Hf180   Hf180   Hf180
 ->      -1       0       0       0                                 <-   
 
  DRVUTL: LEAVING WITH ACTIVE DIRECTORY '/           '.
--->>module UTL:        : time spent=        0.001 memory usage= 0.000E+00
+-->>module UTL:        : time spent=        0.002 memory usage= 0.000E+00
 ->@END MODULE   : UTL:        
 <|GREP: ListeIsot :: GETVAL 'H2O  ' <<LibId>> NVAL 8 >>NomH2O<< ;         |<0082
 ->@BEGIN MODULE : GREP:       
@@ -2916,7 +2916,7 @@ Hf180   Hf180   Hf180   Hf180   Hf180   Hf180   Hf180
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
+-->>module GREP:       : time spent=        0.001 memory usage= 0.000E+00
 ->@END MODULE   : GREP:       
 <|GREP: ListeIsot :: GETVAL 'Fe58 ' <<LibId>> NVAL 8 >>NomFe58<<  ;       |<0097
 ->@BEGIN MODULE : GREP:       
@@ -3036,7 +3036,7 @@ Hf180   Hf180   Hf180   Hf180   Hf180   Hf180   Hf180
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
+-->>module GREP:       : time spent=        0.001 memory usage= 0.000E+00
 ->@END MODULE   : GREP:       
 <|GREP: ListeIsot :: GETVAL 'Si28 ' <<LibId>> NVAL 8 >>NomSi28<<  ;       |<0112
 ->@BEGIN MODULE : GREP:       
@@ -3164,7 +3164,7 @@ Hf180   Hf180   Hf180   Hf180   Hf180   Hf180   Hf180
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module GREP:       : time spent=        0.001 memory usage= 0.000E+00
+-->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
 ->@END MODULE   : GREP:       
 <|GREP: ListeIsot :: GETVAL 'Ti48 ' <<LibId>> NVAL 8 >>NomTi48<<  ;       |<0128
 ->@BEGIN MODULE : GREP:       
@@ -3500,7 +3500,7 @@ Hf180   Hf180   Hf180   Hf180   Hf180   Hf180   Hf180
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module GREP:       : time spent=        0.001 memory usage= 0.000E+00
+-->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
 ->@END MODULE   : GREP:       
 <|GREP: ListeIsot :: GETVAL 'S34  ' <<LibId>> NVAL 8 >>NomS34<< ;         |<0170
 ->@BEGIN MODULE : GREP:       
@@ -3514,11 +3514,558 @@ Hf180   Hf180   Hf180   Hf180   Hf180   Hf180   Hf180
 <|ANIS 2                                                                  |<0247
 <|NMIX <<N_iso>>                                                          |<0248
 <|MIXS LIB: <<LibGenre>> FIL: <<NuclData>>                                |<0249
+<|MIX 2 <<mixtemp>> 1.    H1_H2O  = <<NomH1>>  1.                         |<0251
+<|MIX 3 <<mixtemp>> 1.    B10     = <<NomB10>> 1.                         |<0252
+<|MIX 4 <<mixtemp>> 1.    B10B  = <<NomB10>> 1.                           |<0253
+<|MIX 5 <<mixtemp>> 1.    B11   = <<NomB11>> 1.                           |<0254
+<|MIX 6 <<mixtemp>> 1.    B11B  = <<NomB11>> 1.                           |<0255
+<|MIX 7 <<mixtemp>> 1.    CNat  = <<NomCNat>> 1.                          |<0256
+<|MIX 8 <<mixtemp>> 1.    O16   = <<NomO16>> 1.                           |<0257
+<|MIX 9 <<mixtemp>> 1.    Al27  = <<NomAl27>> 1.                          |<0258
+<|MIX 10 <<mixtemp>> 1.   SiNat = <<NomSiNat>> 1.                         |<0259
+<|MIX 14 <<mixtemp>> 1.   TiNat = <<NomTiNat>> 1.                         |<0263
+<|MIX 20 <<mixtemp>> 1.   Cr50  = <<NomCr50>> 1.                          |<0269
+<|MIX 21 <<mixtemp>> 1.   Cr52  = <<NomCr52>> 1.                          |<0270
+<|MIX 22 <<mixtemp>> 1.   Cr53  = <<NomCr53>> 1.                          |<0271
+<|MIX 23 <<mixtemp>> 1.   Cr54  = <<NomCr54>> 1.                          |<0272
+<|MIX 24 <<mixtemp>> 1.   Mn55  = <<NomMn55>> 1.                          |<0273
+<|MIX 25 <<mixtemp>> 1.   Fe54  = <<NomFe54>> 1.                          |<0274
+<|MIX 26 <<mixtemp>> 1.   Fe56  = <<NomFe56>> 1.                          |<0275
+<|MIX 27 <<mixtemp>> 1.   Fe57  = <<NomFe57>> 1.                          |<0276
+<|MIX 28 <<mixtemp>> 1.   Fe58  = <<NomFe58>> 1.                          |<0277
+<|MIX 29 <<mixtemp>> 1.   Co59  = <<NomCo59>> 1.                          |<0278
+<|MIX 30 <<mixtemp>> 1.   Ni58  = <<NomNi58>> 1.                          |<0279
+<|MIX 31 <<mixtemp>> 1.   Ni60  = <<NomNi60>> 1.                          |<0280
+<|MIX 32 <<mixtemp>> 1.   Ni61  = <<NomNi61>> 1.                          |<0281
+<|MIX 33 <<mixtemp>> 1.   Ni62  = <<NomNi62>> 1.                          |<0282
+<|MIX 34 <<mixtemp>> 1.   Ni64  = <<NomNi64>> 1.                          |<0283
+<|MIX 35 <<mixtemp>> 1.   ZrNat = <<NomZrNat>> 1.                         |<0284
+<|MIX 43 <<mixtemp>> 1.   Nb93  = <<NomNb93>> 1.                          |<0292
+<|MIX 44 <<mixtemp>> 1.   Mo95  = <<NomMo95>> 1.                          |<0293
+<|MIX 45 <<mixtemp>> 1.   Ag107 = <<NomAg107>> 1.                         |<0294
+<|MIX 46 <<mixtemp>> 1.   Ag109 = <<NomAg109>> 1.                         |<0295
+<|MIX 49 <<mixtemp>> 1.   Cd110 = <<NomCd110>> 1.                         |<0298
+<|MIX 50 <<mixtemp>> 1.   Cd111 = <<NomCd111>> 1.                         |<0299
+<|MIX 51 <<mixtemp>> 1.   Cd112 = <<NomCd112>> 1.                         |<0300
+<|MIX 52 <<mixtemp>> 1.   Cd113 = <<NomCd113>> 1.                         |<0301
+<|MIX 53 <<mixtemp>> 1.   Cd114 = <<NomCd114>> 1.                         |<0302
+<|MIX 54 <<mixtemp>> 1.   Cd116 = <<NomCd116>> 1.                         |<0303
+<|MIX 55 <<mixtemp>> 1.   In115 = <<NomIn115>> 1.                         |<0304
+<|MIX 59 <<mixtemp>> 1.   Sn115 = <<NomSn115>> 1.                         |<0308
+<|MIX 60 <<mixtemp>> 1.   Sn116 = <<NomSn116>> 1.                         |<0309
+<|MIX 61 <<mixtemp>> 1.   Sn117 = <<NomSn117>> 1.                         |<0310
+<|MIX 62 <<mixtemp>> 1.   Sn118 = <<NomSn118>> 1.                         |<0311
+<|MIX 63 <<mixtemp>> 1.   Sn119 = <<NomSn119>> 1.                         |<0312
+<|MIX 64 <<mixtemp>> 1.   Sn120 = <<NomSn120>> 1.                         |<0313
+<|MIX 65 <<mixtemp>> 1.   Sn122 = <<NomSn122>> 1.                         |<0314
+<|MIX 66 <<mixtemp>> 1.   Sn124 = <<NomSn124>> 1.                         |<0315
+<|MIX 67 <<mixtemp>> 1.   Gd154 = <<NomGd154>> 1.                         |<0316
+<|MIX 68 <<mixtemp>> 1.   Gd155 = <<NomGd155>> 1.                         |<0317
+<|MIX 69 <<mixtemp>> 1.   Gd156 = <<NomGd156>> 1.                         |<0318
+<|MIX 70 <<mixtemp>> 1.   Gd157 = <<NomGd157>> 1.                         |<0319
+<|MIX 71 <<mixtemp>> 1.   Gd158 = <<NomGd158>> 1.                         |<0320
+<|MIX 72 <<mixtemp>> 1.   Gd160 = <<NomGd160>> 1.                         |<0321
+<|MIX 73 <<mixtemp>> 1.   U234  = <<NomU234>> 1.                          |<0322
+<|MIX 74 <<mixtemp>> 1.   U235  = <<NomU235>> 1.                          |<0323
+<|MIX 75 <<mixtemp>> 1.   U236  = <<NomU236>> 1.                          |<0324
+<|MIX 76 <<mixtemp>> 1.   U238  = <<NomU238>> 1.                          |<0325
+<|MIX 77 <<mixtemp>> 1.   Pu238 = <<NomPu238>> 1.                         |<0326
+<|MIX 78 <<mixtemp>> 1.   Pu239 = <<NomPu239>> 1.                         |<0327
+<|MIX 79 <<mixtemp>> 1.   Pu240 = <<NomPu240>> 1.                         |<0328
+<|MIX 80 <<mixtemp>> 1.   Pu241 = <<NomPu241>> 1.                         |<0329
+<|MIX 81 <<mixtemp>> 1.   Pu242 = <<NomPu242>> 1.                         |<0330
+<|MIX 82 <<mixtemp>> 1.   Am241 = <<NomAm241>> 1.                         |<0331
+<|MIX 83 <<mixtemp>> 1.   KNat  = <<NomKnat>> 1.                          |<0332
+<|MIX 87 <<mixtemp>> 1.   Na23  = <<NomNa23>> 1.                          |<0336
+<|MIX 88 <<mixtemp>> 1.   S32   = <<NomS32>> 1.                           |<0337
+<|MIX 89 <<mixtemp>> 1.   S33   = <<NomS33>> 1.                           |<0338
+<|MIX 90 <<mixtemp>> 1.   S34   = <<NomS34>> 1.                           |<0339
+<|;                                                                       |<0340
 ->@BEGIN MODULE : LIB:        
 ->@DESCRIPTION  : Microscopic xs-library processing                                       
 ->@CREDITS      : A. Hebert, G. Marleau                                                   
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
-           1
-           0
-AHMED
+
+ PROCESSING DRAGON LIBRARY NAMED D172JEF22   .
+
+ X-SECTION LIBRARY INFO:
+ draglib from Jef2.2 at Mon Jul 10 10:27:40 2006                                 
+
+ PROCESSING ISOTOPE/MATERIAL 'H1_H2O  0002' (HNISOR='H1_H2O      ').
+
+ ISOTOPE/MATERIAL INFO:
+ H1_H2O from Jef2.2 (125) at Mon Jul 10 10:27:40 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'B10     0003' (HNISOR='B10         ').
+
+ ISOTOPE/MATERIAL INFO:
+ B10 from Jef2.2 (525) at Mon Jul 10 10:53:47 2006                               
+
+ PROCESSING ISOTOPE/MATERIAL 'B10B    0004' (HNISOR='B10         ').
+
+ ISOTOPE/MATERIAL INFO:
+ B10 from Jef2.2 (525) at Mon Jul 10 10:53:47 2006                               
+
+ PROCESSING ISOTOPE/MATERIAL 'B11     0005' (HNISOR='B11         ').
+
+ ISOTOPE/MATERIAL INFO:
+ B11 from Jef2.2 (528) at Mon Jul 10 10:56:20 2006                               
+
+ PROCESSING ISOTOPE/MATERIAL 'B11B    0006' (HNISOR='B11         ').
+
+ ISOTOPE/MATERIAL INFO:
+ B11 from Jef2.2 (528) at Mon Jul 10 10:56:20 2006                               
+
+ PROCESSING ISOTOPE/MATERIAL 'CNat    0007' (HNISOR='C0          ').
+
+ ISOTOPE/MATERIAL INFO:
+ C0 from Jef2.2 (600) at Mon Jul 10 10:58:32 2006                                
+
+ PROCESSING ISOTOPE/MATERIAL 'O16     0008' (HNISOR='O16         ').
+
+ ISOTOPE/MATERIAL INFO:
+ O16 from Jef2.2 (825) at Mon Jul 10 11:05:45 2006                               
+
+ PROCESSING ISOTOPE/MATERIAL 'Al27    0009' (HNISOR='Al27        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Al27 from Jef2.2 (1325) at Mon Jul 10 11:19:06 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'SiNat   0010' (HNISOR='Si0         ').
+
+ ISOTOPE/MATERIAL INFO:
+ Si0 from Jef2.2 (1400) at Mon Jul 10 11:21:40 2006                              
+
+ PROCESSING ISOTOPE/MATERIAL 'TiNat   0014' (HNISOR='Ti0         ').
+
+ ISOTOPE/MATERIAL INFO:
+ Ti0 from Jef2.2 (2200) at Mon Jul 10 11:46:00 2006                              
+
+ PROCESSING ISOTOPE/MATERIAL 'Cr50    0020' (HNISOR='Cr50        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Cr50 from Jef2.2 (2425) at Mon Jul 10 11:51:02 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Cr52    0021' (HNISOR='Cr52        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Cr52 from Jef2.2 (2431) at Mon Jul 10 11:53:46 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Cr53    0022' (HNISOR='Cr53        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Cr53 from Jef2.2 (2434) at Mon Jul 10 11:56:23 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Cr54    0023' (HNISOR='Cr54        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Cr54 from Jef2.2 (2437) at Mon Jul 10 11:58:52 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Mn55    0024' (HNISOR='Mn55        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Mn55 from Jef2.2 (2525) at Mon Jul 10 12:01:22 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Fe54    0025' (HNISOR='Fe54        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Fe54 from Jef2.2 (2625) at Mon Jul 10 12:04:26 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Fe56    0026' (HNISOR='Fe56        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Fe56 from Jef2.2 (2631) at Mon Jul 10 12:07:56 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Fe57    0027' (HNISOR='Fe57        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Fe57 from Jef2.2 (2634) at Mon Jul 10 12:10:49 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Fe58    0028' (HNISOR='Fe58        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Fe58 from Jef2.2 (2637) at Mon Jul 10 12:13:39 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Co59    0029' (HNISOR='Co59        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Co59 from Jef2.2 (2725) at Mon Jul 10 12:16:38 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Ni58    0030' (HNISOR='Ni58        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Ni58 from Jef2.2 (2825) at Mon Jul 10 12:20:35 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Ni60    0031' (HNISOR='Ni60        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Ni60 from Jef2.2 (2831) at Mon Jul 10 12:24:00 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Ni61    0032' (HNISOR='Ni61        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Ni61 from Jef2.2 (2834) at Mon Jul 10 12:26:42 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Ni62    0033' (HNISOR='Ni62        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Ni62 from Jef2.2 (2837) at Mon Jul 10 12:29:21 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Ni64    0034' (HNISOR='Ni64        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Ni64 from Jef2.2 (2843) at Mon Jul 10 12:31:59 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'ZrNat   0035' (HNISOR='Zr0         ').
+
+ ISOTOPE/MATERIAL INFO:
+ Zr0 from Jef2.2 (4000) at Mon Jul 10 12:41:13 2006                              
+
+ PROCESSING ISOTOPE/MATERIAL 'Nb93    0043' (HNISOR='Nb93        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Nb93 from Jef2.2 (4125) at Tue Jul 11 07:56:30 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Mo95    0044' (HNISOR='Mo95        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Mo95 from Jef2.2 (4234) at Tue Jul 11 08:11:10 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Ag107   0045' (HNISOR='Ag107       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Ag107 from /tmp/Jef2.2_Ag (4725) at Fri Nov  5 14:06:26 2021                    
+
+ PROCESSING ISOTOPE/MATERIAL 'Ag109   0046' (HNISOR='Ag109       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Ag109 from /tmp/Jef2.2_Ag (4731) at Fri Nov  5 14:07:24 2021                    
+
+ PROCESSING ISOTOPE/MATERIAL 'Cd110   0049' (HNISOR='Cd110       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Cd110 from Jef2.2 (4837) at Tue Jul 11 09:46:24 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Cd111   0050' (HNISOR='Cd111       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Cd111 from Jef2.2 (4840) at Tue Jul 11 09:51:53 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Cd112   0051' (HNISOR='Cd112       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Cd112 from Jef2.2 (4843) at Tue Jul 11 09:56:05 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Cd113   0052' (HNISOR='Cd113       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Cd113 from Jef2.2 (4846) at Tue Jul 11 09:59:26 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Cd114   0053' (HNISOR='Cd114       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Cd114 from Jef2.2 (4849) at Tue Jul 11 10:03:10 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Cd116   0054' (HNISOR='Cd116       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Cd116 from Jef2.2 (4855) at Tue Jul 11 10:09:56 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'In115   0055' (HNISOR='In115       ').
+
+ ISOTOPE/MATERIAL INFO:
+ In115 from /tmp/Jef2.2_In (4931) at Fri Nov  5 16:14:35 2021                    
+
+ PROCESSING ISOTOPE/MATERIAL 'Sn115   0059' (HNISOR='Sn115       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Sn115 from Jef2.2 (5034) at Tue Jul 11 10:21:53 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Sn116   0060' (HNISOR='Sn116       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Sn116 from Jef2.2 (5037) at Tue Jul 11 10:25:12 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Sn117   0061' (HNISOR='Sn117       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Sn117 from Jef2.2 (5040) at Tue Jul 11 10:28:36 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Sn118   0062' (HNISOR='Sn118       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Sn118 from Jef2.2 (5043) at Tue Jul 11 10:31:53 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Sn119   0063' (HNISOR='Sn119       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Sn119 from Jef2.2 (5046) at Tue Jul 11 10:35:14 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Sn120   0064' (HNISOR='Sn120       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Sn120 from Jef2.2 (5049) at Tue Jul 11 10:39:02 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Sn122   0065' (HNISOR='Sn122       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Sn122 from Jef2.2 (5055) at Tue Jul 11 10:43:45 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Sn124   0066' (HNISOR='Sn124       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Sn124 from Jef2.2 (5061) at Tue Jul 11 10:51:51 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Gd154   0067' (HNISOR='Gd154       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Gd154 from Jef2.2 (6431) at Tue Jul 11 16:15:01 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Gd155   0068' (HNISOR='Gd155       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Gd155 from Jef2.2 (6434) at Tue Jul 11 16:51:29 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Gd156   0069' (HNISOR='Gd156       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Gd156 from Jef2.2 (6437) at Tue Jul 11 17:00:03 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Gd157   0070' (HNISOR='Gd157       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Gd157 from Jef2.2 (6440) at Tue Jul 11 17:04:08 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Gd158   0071' (HNISOR='Gd158       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Gd158 from Jef2.2 (6443) at Tue Jul 11 17:08:33 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Gd160   0072' (HNISOR='Gd160       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Gd160 from Jef2.2 (6449) at Tue Jul 11 17:12:16 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'U234    0073' (HNISOR='U234        ').
+
+ ISOTOPE/MATERIAL INFO:
+ U234 from Jef2.2 (9225) at Mon Jul 10 13:55:53 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'U235    0074' (HNISOR='U235        ').
+
+ ISOTOPE/MATERIAL INFO:
+ U235 from Jef2.2 (9228) at Mon Jul 10 15:35:19 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'U236    0075' (HNISOR='U236        ').
+
+ ISOTOPE/MATERIAL INFO:
+ U236 from Jef2.2 (9231) at Mon Jul 10 15:46:30 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'U238    0076' (HNISOR='U238        ').
+
+ ISOTOPE/MATERIAL INFO:
+ U238 from Jef2.2 (9237) at Mon Jul 10 17:13:20 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'Pu238   0077' (HNISOR='Pu238       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Pu238 from Jef2.2 (9434) at Mon Jul 10 17:44:26 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Pu239   0078' (HNISOR='Pu239       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Pu239 from Jef2.2 (9437) at Mon Jul 10 19:55:17 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Pu240   0079' (HNISOR='Pu240       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Pu240 from Jef2.2 (9440) at Mon Jul 10 20:33:16 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Pu241   0080' (HNISOR='Pu241       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Pu241 from Jef2.2 (9443) at Tue Jul 11 00:26:19 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Pu242   0081' (HNISOR='Pu242       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Pu242 from Jef2.2 (9446) at Tue Jul 11 00:36:24 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'Am241   0082' (HNISOR='Am241       ').
+
+ ISOTOPE/MATERIAL INFO:
+ Am241 from Jef2.2 (9543) at Tue Jul 11 00:55:30 2006                            
+
+ PROCESSING ISOTOPE/MATERIAL 'KNat    0083' (HNISOR='K0          ').
+
+ ISOTOPE/MATERIAL INFO:
+ K0 from Jef2.2 (1900) at Mon Jul 10 11:40:48 2006                               
+
+ PROCESSING ISOTOPE/MATERIAL 'Na23    0087' (HNISOR='Na23        ').
+
+ ISOTOPE/MATERIAL INFO:
+ Na23 from Jef2.2 (1125) at Mon Jul 10 11:14:10 2006                             
+
+ PROCESSING ISOTOPE/MATERIAL 'S32     0088' (HNISOR='S32         ').
+
+ ISOTOPE/MATERIAL INFO:
+ S32 from Jef2.2 (1625) at Mon Jul 10 11:26:42 2006                              
+
+ PROCESSING ISOTOPE/MATERIAL 'S33     0089' (HNISOR='S33         ').
+
+ ISOTOPE/MATERIAL INFO:
+ S33 from Jef2.2 (1628) at Mon Jul 10 11:29:54 2006                              
+
+ PROCESSING ISOTOPE/MATERIAL 'S34     0090' (HNISOR='S34         ').
+
+ ISOTOPE/MATERIAL INFO:
+ S34 from Jef2.2 (1631) at Mon Jul 10 11:32:50 2006                              
+
+ OPTIONS
+ -------
+ IMPX       1   (0=NO PRINT/1=SHORT/2=MORE)
+ IPROB      0   (0=DIRECT/1=ADJOINT)
+ ITIME      1   (1=STEADY-STATE/2=PROMPT)
+ NLIB       1   (NUMBER OF SETS OF LIBRARIES)
+ NGF       32   (NUMBER OF FAST GROUP WITHOUT SELF-SHIELDING)
+ IGRMAX    95   (LAST GROUP INDEX WITH SELF-SHIELDING)
+ NBISO     66   (NUMBER OF ISOTOPES OR MATERIALS)
+ NBMIX     90   (NUMBER OF MIXTURES)
+ NRES       0   (NUMBER OF SETS OF RESONANT MIXTURES)
+ NCOMB      0   (NUMBER OF DEPLETING MIXTURES)
+ NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
+ NGRO     172   (NUMBER OF ENERGY GROUPS)
+ NL         2   (NUMBER OF LEGENDRE ORDERS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/3=WIMS-D TYPE/4=LEAKAGE CORRECTION)
+ NBESP      0   (NUMBER OF ENERGY-DEPENDENT FISSION SPECTRA)
+ IPROC      0   (-1=SKIP LIBRARY PROCESSING/0=DILUTION INTERPOLATION/1=USE PHYSICAL TABLES/2=BUILD A DRAGLIB/3=COMPUTE CALENDF TABLES/4=SLOWING-DOWN TABLES/5=ALL CALENDF)
+ IMAC       1   (0=DO NOT/1=DO BUILD AN EMBEDDED MACROLIB)
+ NDEL       6   (NUMBER OF PRECURSOR GROUPS)
+ NDEPL      0   (NUMBER OF DEPLETING ISOTOPES)
+ NFISS      0   (NUMBER OF FISSILE ISOTOPES WITH PYIELD DATA)
+ NPART      0   (NUMBER OF COMPANION PARTICLES)
+ ISOADD     0   (0=COMPLETE BURNUP CHAIN/1=DO NOT)
+ MAXISM   300   (MAX. NUMBER OF ISOTOPES PER MIXTURE)
+ IPRECI     4   (CALENDF ACCURACY FLAG:1/2/3/4)
+
+ CROSS SECTION EDIT NAME (LCM DIRECTORY NAME)
+ --------------------------------------------
+   1  NFTOT        2  NG           3  N2N   
+   4  N3N          5  N4N          6  NA    
+   7  NP           8  N2A          9  NNP   
+  10  ND          11  NT          12  TRANC 
+  13  BSTC        14  BSTR        15  CSTC  
+  16  CSTR  
+
+ AVAILABLE CROSS-SECTION LIBRARIES:
+    1 -- D172JEF22                                                       
+
+                                                        NUMBER
+ SPEC   LOCAL NAME    ISOTOPE       FROM LIBRARY  MIX   DENSITY     TEMP(K)    SIGZERO    SELF-SHIEL  THERMAL CORRECTION
+ -----  ------------  ------------  ------------  ----  ----------  ---------  ---------  ----------  ------------------
+     1  H1_H2O  0002  H1_H2O        DRAGON     1     2  5.9754E-01  2.932E+02  1.000E+10   0             0                         
+     2  B10     0003  B10           DRAGON     1     3  6.0144E-02  2.932E+02  1.000E+10   0             0                         
+     3  B10B    0004  B10           DRAGON     1     4  6.0144E-02  2.932E+02  1.000E+10   0             0                         
+     4  B11     0005  B11           DRAGON     1     5  5.4701E-02  2.932E+02  1.000E+10   0             0                         
+     5  B11B    0006  B11           DRAGON     1     6  5.4701E-02  2.932E+02  1.000E+10   0             0                         
+     6  CNat    0007  C0            DRAGON     1     7  5.0138E-02  2.932E+02  1.000E+10   0             0                         
+     7  O16     0008  O16           DRAGON     1     8  3.7661E-02  2.932E+02  1.000E+10   0             0                         
+     8  Al27    0009  Al27          DRAGON     1     9  2.2319E-02  2.932E+02  1.000E+10   0             0                         
+     9  SiNat   0010  Si0           DRAGON     1    10  2.1442E-02  2.932E+02  1.000E+10   0             0                         
+    10  TiNat   0014  Ti0           DRAGON     1    14  1.2581E-02  2.932E+02  1.000E+10   0             0                         
+    11  Cr50    0020  Cr50          DRAGON     1    20  1.2057E-02  2.932E+02  1.000E+10   0             0                         
+    12  Cr52    0021  Cr52          DRAGON     1    21  1.1594E-02  2.932E+02  1.000E+10   0             0                         
+    13  Cr53    0022  Cr53          DRAGON     1    22  1.1375E-02  2.932E+02  1.000E+10   0             0                         
+    14  Cr54    0023  Cr54          DRAGON     1    23  1.1165E-02  2.932E+02  1.000E+10   0             0                         
+    15  Mn55    0024  Mn55          DRAGON     1    24  1.0962E-02  2.932E+02  1.000E+10   0             0                         
+    16  Fe54    0025  Fe54          DRAGON     1    25  1.1165E-02  2.932E+02  1.000E+10   0             0                         
+    17  Fe56    0026  Fe56          DRAGON     1    26  1.0766E-02  2.932E+02  1.000E+10   0             0                         
+    18  Fe57    0027  Fe57          DRAGON     1    27  1.0577E-02  2.932E+02  1.000E+10   0             0                         
+    19  Fe58    0028  Fe58          DRAGON     1    28  1.0395E-02  2.932E+02  1.000E+10   0             0                         
+    20  Co59    0029  Co59          DRAGON     1    29  1.0219E-02  2.932E+02  1.000E+10   0             0                         
+    21  Ni58    0030  Ni58          DRAGON     1    30  1.0395E-02  2.932E+02  1.000E+10   0             0                         
+    22  Ni60    0031  Ni60          DRAGON     1    31  1.0048E-02  2.932E+02  1.000E+10   0             0                         
+    23  Ni61    0032  Ni61          DRAGON     1    32  9.8835E-03  2.932E+02  1.000E+10   0             0                         
+    24  Ni62    0033  Ni62          DRAGON     1    33  9.7244E-03  2.932E+02  1.000E+10   0             0                         
+    25  Ni64    0034  Ni64          DRAGON     1    34  9.4202E-03  2.932E+02  1.000E+10   0             0                         
+    26  ZrNat   0035  Zr0           DRAGON     1    35  6.6015E-03  2.932E+02  1.000E+10   0             0                         
+    27  Nb93    0043  Nb93          DRAGON     1    43  6.4822E-03  2.932E+02  1.000E+10   0             0                         
+    28  Mo95    0044  Mo95          DRAGON     1    44  6.3451E-03  2.932E+02  1.000E+10   0             0                         
+    29  Ag107   0045  Ag107         DRAGON     1    45  5.6332E-03  2.932E+02  1.000E+10   0             0                         
+    30  Ag109   0046  Ag109         DRAGON     1    46  5.5297E-03  2.932E+02  1.000E+10   0             0                         
+    31  Cd110   0049  Cd110         DRAGON     1    49  5.4795E-03  2.932E+02  1.000E+10   0             0                         
+    32  Cd111   0050  Cd111         DRAGON     1    50  5.4300E-03  2.932E+02  1.000E+10   0             0                         
+    33  Cd112   0051  Cd112         DRAGON     1    51  5.3816E-03  2.932E+02  1.000E+10   0             0                         
+    34  Cd113   0052  Cd113         DRAGON     1    52  5.3341E-03  2.932E+02  1.000E+10   0             0                         
+    35  Cd114   0053  Cd114         DRAGON     1    53  5.2871E-03  2.932E+02  1.000E+10   0             0                         
+    36  Cd116   0054  Cd116         DRAGON     1    54  5.1958E-03  2.932E+02  1.000E+10   0             0                         
+    37  In115   0055  In115         DRAGON     1    55  5.2410E-03  2.932E+02  1.000E+10   0             0                         
+    38  Sn115   0059  Sn115         DRAGON     1    59  5.2411E-03  2.932E+02  1.000E+10   0             0                         
+    39  Sn116   0060  Sn116         DRAGON     1    60  5.1959E-03  2.932E+02  1.000E+10   0             0                         
+    40  Sn117   0061  Sn117         DRAGON     1    61  5.1514E-03  2.932E+02  1.000E+10   0             0                         
+    41  Sn118   0062  Sn118         DRAGON     1    62  5.1078E-03  2.932E+02  1.000E+10   0             0                         
+    42  Sn119   0063  Sn119         DRAGON     1    63  5.0647E-03  2.932E+02  1.000E+10   0             0                         
+    43  Sn120   0064  Sn120         DRAGON     1    64  5.0226E-03  2.932E+02  1.000E+10   0             0                         
+    44  Sn122   0065  Sn122         DRAGON     1    65  4.9401E-03  2.932E+02  1.000E+10   0             0                         
+    45  Sn124   0066  Sn124         DRAGON     1    66  4.8603E-03  2.932E+02  1.000E+10   0             0                         
+    46  Gd154   0067  Gd154         DRAGON     1    67  3.9125E-03  2.932E+02  1.000E+10   0             0                         
+    47  Gd155   0068  Gd155         DRAGON     1    68  3.8872E-03  2.932E+02  1.000E+10   0             0                         
+    48  Gd156   0069  Gd156         DRAGON     1    69  3.8623E-03  2.932E+02  1.000E+10   0             0                         
+    49  Gd157   0070  Gd157         DRAGON     1    70  3.8376E-03  2.932E+02  1.000E+10   0             0                         
+    50  Gd158   0071  Gd158         DRAGON     1    71  3.8133E-03  2.932E+02  1.000E+10   0             0                         
+    51  Gd160   0072  Gd160         DRAGON     1    72  3.7656E-03  2.932E+02  1.000E+10   0             0                         
+    52  U234    0073  U234          DRAGON     1    73  2.5731E-03  2.932E+02  1.000E+10   0             0                         
+    53  U235    0074  U235          DRAGON     1    74  2.5621E-03  2.932E+02  1.000E+10   0             0                         
+    54  U236    0075  U236          DRAGON     1    75  2.5513E-03  2.932E+02  1.000E+10   0             0                         
+    55  U238    0076  U238          DRAGON     1    76  2.5298E-03  2.932E+02  1.000E+10   0             0                         
+    56  Pu238   0077  Pu238         DRAGON     1    77  2.5298E-03  2.932E+02  1.000E+10   0             0                         
+    57  Pu239   0078  Pu239         DRAGON     1    78  2.5192E-03  2.932E+02  1.000E+10   0             0                         
+    58  Pu240   0079  Pu240         DRAGON     1    79  2.5087E-03  2.932E+02  1.000E+10   0             0                         
+    59  Pu241   0080  Pu241         DRAGON     1    80  2.4982E-03  2.932E+02  1.000E+10   0             0                         
+    60  Pu242   0081  Pu242         DRAGON     1    81  2.4879E-03  2.932E+02  1.000E+10   0             0                         
+    61  Am241   0082  Am241         DRAGON     1    82  2.4982E-03  2.932E+02  1.000E+10   0             0                         
+    62  KNat    0083  K0            DRAGON     1    83  1.5401E-02  2.932E+02  1.000E+10   0             0                         
+    63  Na23    0087  Na23          DRAGON     1    87  2.6195E-02  2.932E+02  1.000E+10   0             0                         
+    64  S32     0088  S32           DRAGON     1    88  1.8836E-02  2.932E+02  1.000E+10   0             0                         
+    65  S33     0089  S33           DRAGON     1    89  1.8265E-02  2.932E+02  1.000E+10   0             0                         
+    66  S34     0090  S34           DRAGON     1    90  1.7729E-02  2.932E+02  1.000E+10   0             0                         
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'Library     ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'ENERGY      '       173    REAL            
+        2  'DELTAU      '       172    REAL            
+        3  'ILIBRARYNAME'        16    CHARACTER       
+        4  'SIGNATURE   '         3    CHARACTER       ='L_LIBRARY   '
+        5  'STATE-VECTOR'        40    INTEGER         
+        6  'ISOTOPESUSED'       198    CHARACTER       
+        7  'ISOTOPERNAME'       198    CHARACTER       
+        8  'ISOTOPESMIX '        66    INTEGER         
+        9  'ISOTOPESTODO'        66    INTEGER         
+       10  'ISOTOPESTYPE'        66    INTEGER         
+       11  'ILIBRARYTYPE'       132    CHARACTER       
+       12  'ILIBRARYINDX'        66    INTEGER         
+       13  'ISOTOPESCOH '       132    CHARACTER       
+       14  'ISOTOPESINC '       132    CHARACTER       
+       15  'ISOTOPESRESK'       132    CHARACTER       
+       16  'ISOTOPESNTFG'        66    INTEGER         
+       17  'ISOTOPESHIN '       198    CHARACTER       
+       18  'ISOTOPESSHI '        66    INTEGER         
+       19  'ISOTOPESDSN '     11352    REAL            
+       20  'ISOTOPESDSB '     11352    REAL            
+       21  'ISOTOPESGIR '        66    REAL            
+       22  'ISOTOPESNIR '        66    INTEGER         
+       23  'ISOTOPESTEMP'        66    REAL            
+       24  'ADDXSNAME-P0'        32    CHARACTER       
+       25  'MIXTUREGAS  '        90    INTEGER         
+       26  'ISOTOPESLIST'        66    LIST            
+       27  'ISOTOPESDENS'        66    REAL            
+       28  'DENMIXTURES '        90    REAL            
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =     25102
+
+LCMGTC: record PARTICLE     not found.

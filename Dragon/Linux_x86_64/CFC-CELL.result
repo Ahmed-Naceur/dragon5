@@ -309,7 +309,7 @@ QUIT .                                                                     0245
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 2.800E+01
+-->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 2.760E+02
 ->@BEGIN MODULE : NXT:        
 ->@DESCRIPTION  : New excell tracking in 2- and 3-D                                       
 ->@CREDITS      : G. Marleau                                                              
@@ -318,7 +318,7 @@ QUIT .                                                                     0245
 (* Output from --NXTTPO-- follows 
 (* Output from --NXTBRT-- follows 
 ->@END MODULE   : NXT:        
--->>MODULE NXT:        : TIME SPENT=        0.440 MEMORY USAGE= 7.880E+02
+-->>MODULE NXT:        : TIME SPENT=        0.474 MEMORY USAGE= 7.880E+02
 ->@BEGIN MODULE : NXT:        
 ->@DESCRIPTION  : New excell tracking in 2- and 3-D                                       
 ->@CREDITS      : G. Marleau                                                              
@@ -327,7 +327,7 @@ QUIT .                                                                     0245
 (* Output from --NXTTPO-- follows 
 (* Output from --NXTBRT-- follows 
 ->@END MODULE   : NXT:        
--->>MODULE NXT:        : TIME SPENT=        1.220 MEMORY USAGE= 2.640E+02
+-->>MODULE NXT:        : TIME SPENT=        1.328 MEMORY USAGE= 2.640E+02
 >|GEOMETRY CREATION FINISHED                                              |>0337
 >|CALCULATION  1  STARTED, Creep =  0                                     |>0093
 >|LIBRY PROCEDURE                                                         |>0029
@@ -339,21 +339,21 @@ QUIT .                                                                     0245
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
-->@BEGIN MODULE : INFO:       
-->@DESCRIPTION  : Information on water, UO2 and ThO2                                      
-->@CREDITS      : R. Roy                                                                  
-->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
-                  GNU LESSER GENERAL PUBLIC LICENSE
-->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
-->@BEGIN MODULE : INFO:       
-->@DESCRIPTION  : Information on water, UO2 and ThO2                                      
-->@CREDITS      : R. Roy                                                                  
-->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
-                  GNU LESSER GENERAL PUBLIC LICENSE
-->@END MODULE   : INFO:       
 -->>MODULE INFO:       : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : INFO:       
+->@DESCRIPTION  : Information on water, UO2 and ThO2                                      
+->@CREDITS      : R. Roy                                                                  
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+->@END MODULE   : INFO:       
+-->>MODULE INFO:       : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+->@BEGIN MODULE : INFO:       
+->@DESCRIPTION  : Information on water, UO2 and ThO2                                      
+->@CREDITS      : R. Roy                                                                  
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+->@END MODULE   : INFO:       
+-->>MODULE INFO:       : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
 >|PARAMETERS USED                                                         |>0091
 >| 6.267865e-01  8.752883e+01  1.184438e+01                               |>0092
 >| 1.462190e-01  1.985934e+01  7.999445e+01                               |>0093
@@ -407,8 +407,9 @@ QUIT .                                                                     0245
        26  'MIXTUREGAS  '        10    INTEGER         
        27  'ISOTOPESLIST'       352    LIST            
        28  'ISOTOPESDENS'       352    REAL            
+       29  'DENMIXTURES '        10    REAL            
 
 
- TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =     72440
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =     72450
 
 LCMGTC: record PARTICLE     not found.

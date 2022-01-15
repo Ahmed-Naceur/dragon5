@@ -158,7 +158,7 @@ QUIT "LIST" .                                                              0117
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : INFO:       
--->>MODULE INFO:       : TIME SPENT=        0.058 MEMORY USAGE= 0.000E+00
+-->>MODULE INFO:       : TIME SPENT=        0.017 MEMORY USAGE= 2.520E+02
 ->@BEGIN MODULE : INFO:       
 ->@DESCRIPTION  : Information on water, UO2 and ThO2                                      
 ->@CREDITS      : R. Roy                                                                  
@@ -713,9 +713,10 @@ QUIT "LIST" .                                                              0117
        25  'MIXTUREGAS  '        13    INTEGER         
        26  'ISOTOPESLIST'       456    LIST            
        27  'ISOTOPESDENS'       456    REAL            
-       28  'DEPL-CHAIN  '        -1    DIRECTORY       
+       28  'DENMIXTURES '        13    REAL            
+       29  'DEPL-CHAIN  '        -1    DIRECTORY       
 
 
- TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =     93763
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =     93776
 
 LCMGTC: record PARTICLE     not found.

@@ -53,6 +53,8 @@ MACRO    := FMAC: FMAC_M :: EDIT 99 PARTICLE B ;
 
 macro_xs.txt  := MACRO ;
 
+END: ; QUIT "LIST" .
+
 OLDMACRO := MACRO ;
 
 MACRO    := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;

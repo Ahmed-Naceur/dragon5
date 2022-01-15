@@ -146,7 +146,7 @@ QUIT "LIST" .                                                              0022
  IBIHET     0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
  EPSJ  5.00E-06 (FLUX-CURRENT ITERATION EPSILON)
 ->@END MODULE   : SYBILT:     
--->>MODULE SYBILT:     : TIME SPENT=        0.001 MEMORY USAGE= 5.280E+02
+-->>MODULE SYBILT:     : TIME SPENT=        0.002 MEMORY USAGE= 7.800E+02
 <|UOX_TBH := G2S: GEOM ;                                                  |<0048
 ->@BEGIN MODULE : G2S:        
 ->@DESCRIPTION  : Generate a surfacic file in SALOME format from a DRAGON geometry        
@@ -159,7 +159,7 @@ QUIT "LIST" .                                                              0022
                 9 nodes
                 4 boundary conditions other than default
 ->@END MODULE   : G2S:        
--->>MODULE G2S:        : TIME SPENT=        0.016 MEMORY USAGE= 2.620E+04
+-->>MODULE G2S:        : TIME SPENT=        0.024 MEMORY USAGE= 2.608E+04
 <|TRACK TF_EXC := SALT: UOX_TBH ::                                        |<0049
 <|EDIT 3                                                                  |<0050
 <|ALLG                                                                    |<0051
@@ -279,7 +279,7 @@ QUIT "LIST" .                                                              0022
  ITRACK        1   (-1=MONTE-CARLO/0=DESACTIVATES TRACKING FILE BUILD/1=ACTIVATES TRACKING FILE BUILD)
  IBIHET        0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
 ->@END MODULE   : SALT:       
--->>MODULE SALT:       : TIME SPENT=        0.005 MEMORY USAGE= 0.000E+00
+-->>MODULE SALT:       : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
 <|LIBRARY := LIB: ::                                                      |<0056
 <|EDIT 1                                                                  |<0057
 <|NMIX 8                                                                  |<0058
@@ -753,8 +753,8 @@ QUIT "LIST" .                                                              0022
 
  LIBFQD: THE ELEMENTARY LETHARGY WIDTH OF ISOTOPE 'Zr92    0007' IS SET TO 5.0000E-04. ERR= 3.223E-04
 
- LIBSUB: CPU TIME IN LIBLIB=      6.38 SECONDS.
-         CPU TIME IN LIBPTW=      3.50 SECONDS.
+ LIBSUB: CPU TIME IN LIBLIB=      6.04 SECONDS.
+         CPU TIME IN LIBPTW=      3.98 SECONDS.
 
  OPTIONS
  -------
@@ -824,7 +824,7 @@ QUIT "LIST" .                                                              0022
     24  H1      0008  H1_H2O        DRAGON     1     8  6.6988E-02  3.000E+02  1.000E+10   0             0                         
     25  O16     0001  O16           DRAGON     1     8  3.3494E-02  3.000E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=       12.978 MEMORY USAGE= 2.016E+04
+-->>MODULE LIB:        : TIME SPENT=       12.858 MEMORY USAGE= 2.028E+04
 <|LIBRARY2 := USS: LIBRARY TRACK_SS :: EDIT 1 TRAN PASS 3 GRMIN 52 ;      |<0084
 ->@BEGIN MODULE : USS:        
 ->@DESCRIPTION  : Self-shielding by subgroup method                                       

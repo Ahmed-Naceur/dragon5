@@ -367,7 +367,7 @@ QUIT "LIST" .                                                              0313
 <|4000.    8000.   12000. ;                                               |<0038
 
  DRVUTL: LEAVING WITH ACTIVE DIRECTORY '/           '.
--->>module UTL:        : time spent=        0.000 memory usage= 0.000E+00
+-->>module UTL:        : time spent=        0.001 memory usage= 0.000E+00
 ->@END MODULE   : UTL:        
 <|GEOM := GEO: :: TUBE 9                                                  |<0042
 <|R+ REFL                                                                 |<0043
@@ -680,8 +680,8 @@ QUIT "LIST" .                                                              0313
 
  LIBSUB: PROCESSING ISOTOPE/MATERIAL 'Zr96    0007'.
 
- LIBSUB: CPU TIME IN LIBLIB=     51.50 SECONDS.
-         CPU TIME IN LIBPTW=      0.59 SECONDS.
+ LIBSUB: CPU TIME IN LIBLIB=     49.46 SECONDS.
+         CPU TIME IN LIBPTW=      0.86 SECONDS.
 
  OPTIONS
  -------
@@ -1609,7 +1609,7 @@ QUIT "LIST" .                                                              0313
    882  Cd111   0001  Cd111         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
    883  Cd110   0001  Cd110         APXSM      1     7  0.0000E+00  2.930E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=       61.503 MEMORY USAGE= 8.532E+04
+-->>MODULE LIB:        : TIME SPENT=       54.327 MEMORY USAGE= 8.529E+04
 <|LIBRARY2 := USS: LIBRARY TRACK :: EDIT 1 TRAN PASS 2 GRMAX 93 ;         |<0257
 ->@BEGIN MODULE : USS:        
 ->@DESCRIPTION  : Self-shielding by subgroup method                                       
