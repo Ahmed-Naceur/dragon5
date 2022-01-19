@@ -860,8 +860,7 @@
 
 *----
 *  STORE MIXTURES DENSITIES
-*----  
-      !AHMED
+*----
       CALL LCMPUT(IPLIB,'DENMIXTURES',NBMIX,2,DENMIX)
 
 *----

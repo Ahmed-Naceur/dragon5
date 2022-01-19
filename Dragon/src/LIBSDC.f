@@ -196,8 +196,6 @@
             ENDIF
             IF(DS.LT.0.0) DS=0.0D0
             DENMAT(IBM,LLL)= REAL(CONV*DS/BSQ)
-            !PRINT *,DENMAT(IBM,LLL)
-            !ESTOP(IBM,LLL) = ESTOP(IBM,LLL)-DENMAT(IBM,LLL)
           ENDDO
         ENDIF
       ENDDO
