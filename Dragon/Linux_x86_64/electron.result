@@ -88,7 +88,7 @@ QUIT "LIST" .                                                              0017
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : SNT:        
--->>MODULE SNT:        : TIME SPENT=        0.001 MEMORY USAGE= 2.520E+02
+-->>MODULE SNT:        : TIME SPENT=        0.000 MEMORY USAGE= 2.520E+02
 <|MICRO  := LIB: ::                                                       |<0035
 <|EDIT 99                                                                 |<0036
 <|NMIX 1                                                                  |<0037
@@ -224,606 +224,6 @@ QUIT "LIST" .                                                              0017
  SPEC   LOCAL NAME    ISOTOPE       FROM LIBRARY  MIX   DENSITY     TEMP(K)    SIGZERO    SELF-SHIEL  THERMAL CORRECTION
  -----  ------------  ------------  ------------  ----  ----------  ---------  ---------  ----------  ------------------
      1  Wnat    0001  w             MATXS2     1     1  3.2756E-03  3.000E+02  1.000E+10   0             0                         
- LLL=           1
- HEAT=   1.26359630    
- LLL=           2
- HEAT=   1.25909531    
- LLL=           3
- HEAT=   1.25451922    
- LLL=           4
- HEAT=   1.24989402    
- LLL=           5
- HEAT=   1.24525583    
- LLL=           6
- HEAT=   1.24054134    
- LLL=           7
- HEAT=   1.23580599    
- LLL=           8
- HEAT=   1.23100352    
- LLL=           9
- HEAT=   1.22614694    
- LLL=          10
- HEAT=   1.22127795    
- LLL=          11
- HEAT=   1.21633148    
- LLL=          12
- HEAT=   1.21133912    
- LLL=          13
- HEAT=   1.20633030    
- LLL=          14
- HEAT=   1.20124590    
- LLL=          15
- HEAT=   1.19614422    
- LLL=          16
- HEAT=   1.19096935    
- LLL=          17
- HEAT=   1.18574750    
- LLL=          18
- HEAT=   1.18051064    
- LLL=          19
- HEAT=   1.17519641    
- LLL=          20
- HEAT=   1.16984069    
- LLL=          21
- HEAT=   1.16446936    
- LLL=          22
- HEAT=   1.15901971    
- LLL=          23
- HEAT=   1.15356064    
- LLL=          24
- HEAT=   1.14802599    
- LLL=          25
- HEAT=   1.14245176    
- LLL=          26
- HEAT=   1.13686061    
- LLL=          27
- HEAT=   1.13119996    
- LLL=          28
- HEAT=   1.12553060    
- LLL=          29
- HEAT=   1.11984742    
- LLL=          30
- HEAT=   1.11418402    
- LLL=          31
- HEAT=   1.10856974    
- LLL=          32
- HEAT=   1.10294878    
- LLL=          33
- HEAT=   1.09735417    
- LLL=          34
- HEAT=   1.09180534    
- LLL=          35
- HEAT=   1.08625650    
- LLL=          36
- HEAT=   1.08076024    
- LLL=          37
- HEAT=   1.07526708    
- LLL=          38
- HEAT=   1.06980336    
- LLL=          39
- HEAT=   1.06439221    
- LLL=          40
- HEAT=   1.05898750    
- LLL=          41
- HEAT=   1.05363524    
- LLL=          42
- HEAT=   1.04830253    
- LLL=          43
- HEAT=   1.04299939    
- LLL=          44
- HEAT=   1.03775203    
- LLL=          45
- HEAT=   1.03252745    
- LLL=          46
- HEAT=   1.02734220    
- LLL=          47
- HEAT=   1.02221262    
- LLL=          48
- HEAT=   1.01711261    
- LLL=          49
- HEAT=   1.01206827    
- LLL=          50
- HEAT=   1.00706315    
- LLL=          51
- HEAT=   1.00210404    
- LLL=          52
- HEAT=  0.997203767    
- LLL=          53
- HEAT=  0.992349267    
- LLL=          54
- HEAT=  0.987547398    
- LLL=          55
- HEAT=  0.982810855    
- LLL=          56
- HEAT=  0.978126824    
- LLL=          57
- HEAT=  0.973504961    
- LLL=          58
- HEAT=  0.968948662    
- LLL=          59
- HEAT=  0.964457870    
- LLL=          60
- HEAT=  0.960032523    
- LLL=          61
- HEAT=  0.955679357    
- LLL=          62
- HEAT=  0.951398194    
- LLL=          63
- HEAT=  0.947195649    
- LLL=          64
- HEAT=  0.943074942    
- LLL=          65
- HEAT=  0.939026356    
- LLL=          66
- HEAT=  0.935069442    
- LLL=          67
- HEAT=  0.931204319    
- LLL=          68
- HEAT=  0.927414536    
- LLL=          69
- HEAT=  0.923736036    
- LLL=          70
- HEAT=  0.920132875    
- LLL=          71
- HEAT=  0.916650951    
- LLL=          72
- HEAT=  0.913270533    
- LLL=          73
- HEAT=  0.909975410    
- LLL=          74
- HEAT=  0.906814456    
- LLL=          75
- HEAT=  0.903768122    
- LLL=          76
- HEAT=  0.900810361    
- LLL=          77
- HEAT=  0.898006499    
- LLL=          78
- HEAT=  0.895291030    
- LLL=          79
- HEAT=  0.892736077    
- LLL=          80
- HEAT=  0.890318692    
- LLL=          81
- HEAT=  0.887993038    
- LLL=          82
- HEAT=  0.885854065    
- LLL=          83
- HEAT=  0.883810163    
- LLL=          84
- HEAT=  0.881959438    
- LLL=          85
- HEAT=  0.880265951    
- LLL=          86
- HEAT=  0.878674090    
- LLL=          87
- HEAT=  0.877298295    
- LLL=          88
- HEAT=  0.876086354    
- LLL=          89
- HEAT=  0.874985754    
- LLL=          90
- HEAT=  0.874124289    
- LLL=          91
- HEAT=  0.873370886    
- LLL=          92
- HEAT=  0.872863173    
- LLL=          93
- HEAT=  0.872555256    
- LLL=          94
- HEAT=  0.872355461    
- LLL=          95
- HEAT=  0.872434139    
- LLL=          96
- HEAT=  0.872640431    
- LLL=          97
- HEAT=  0.873115361    
- LLL=          98
- HEAT=  0.873819709    
- LLL=          99
- HEAT=  0.874645114    
- LLL=         100
- HEAT=  0.875781775    
- LLL=         101
- HEAT=  0.877154171    
- LLL=         102
- HEAT=  0.878647864    
- LLL=         103
- HEAT=  0.880491972    
- LLL=         104
- HEAT=  0.882467151    
- LLL=         105
- HEAT=  0.884789586    
- LLL=         106
- HEAT=  0.887380481    
- LLL=         107
- HEAT=  0.890099287    
- LLL=         108
- HEAT=  0.893211007    
- LLL=         109
- HEAT=  0.896591425    
- LLL=         110
- HEAT=  0.900112629    
- LLL=         111
- HEAT=  0.904059708    
- LLL=         112
- HEAT=  0.908144295    
- LLL=         113
- HEAT=  0.912658095    
- LLL=         114
- HEAT=  0.917489588    
- LLL=         115
- HEAT=  0.922451973    
- LLL=         116
- HEAT=  0.927899241    
- LLL=         117
- HEAT=  0.933507025    
- LLL=         118
- HEAT=  0.939570129    
- LLL=         119
- HEAT=  0.945996702    
- LLL=         120
- HEAT=  0.952564240    
- LLL=         121
- HEAT=  0.959662497    
- LLL=         122
- HEAT=  0.967120886    
- LLL=         123
- HEAT=  0.974726796    
- LLL=         124
- HEAT=  0.982912421    
- LLL=         125
- HEAT=  0.991258562    
- LLL=         126
- HEAT=   1.00017130    
- LLL=         127
- HEAT=   1.00950027    
- LLL=         128
- HEAT=   1.01897645    
- LLL=         129
- HEAT=   1.02909470    
- LLL=         130
- HEAT=   1.03962231    
- LLL=         131
- HEAT=   1.05031049    
- LLL=         132
- HEAT=   1.06169641    
- LLL=         133
- HEAT=   1.07323945    
- LLL=         134
- HEAT=   1.08547688    
- LLL=         135
- HEAT=   1.09818614    
- LLL=         136
- HEAT=   1.11104596    
- LLL=         137
- HEAT=   1.12468541    
- LLL=         138
- HEAT=   1.13851166    
- LLL=         139
- HEAT=   1.15306497    
- LLL=         140
- HEAT=   1.16816866    
- LLL=         141
- HEAT=   1.18342292    
- LLL=         142
- HEAT=   1.19952571    
- LLL=         143
- HEAT=   1.21615899    
- LLL=         144
- HEAT=   1.23295605    
- LLL=         145
- HEAT=   1.25067687    
- LLL=         146
- HEAT=   1.26856804    
- LLL=         147
- HEAT=   1.28735995    
- LLL=         148
- HEAT=   1.30676770    
- LLL=         149
- HEAT=   1.32632613    
- LLL=         150
- HEAT=   1.34689999    
- LLL=         151
- HEAT=   1.36806345    
- LLL=         152
- HEAT=   1.38941348    
- LLL=         153
- HEAT=   1.41184783    
- LLL=         154
- HEAT=   1.43443620    
- LLL=         155
- HEAT=   1.45811522    
- LLL=         156
- HEAT=   1.48247898    
- LLL=         157
- HEAT=   1.50699329    
- LLL=         158
- HEAT=   1.53271306    
- LLL=         159
- HEAT=   1.55862272    
- LLL=         160
- HEAT=   1.58566260    
- LLL=         161
- HEAT=   1.61349833    
- LLL=         162
- HEAT=   1.64146507    
- LLL=         163
- HEAT=   1.67073882    
- LLL=         164
- HEAT=   1.70076263    
- LLL=         165
- HEAT=   1.73093724    
- LLL=         166
- HEAT=   1.76251698    
- LLL=         167
- HEAT=   1.79424405    
- LLL=         168
- HEAT=   1.82733381    
- LLL=         169
- HEAT=   1.86129165    
- LLL=         170
- HEAT=   1.89535761    
- LLL=         171
- HEAT=   1.93095315    
- LLL=         172
- HEAT=   1.96674526    
- LLL=         173
- HEAT=   2.00390983    
- LLL=         174
- HEAT=   2.04207349    
- LLL=         175
- HEAT=   2.08032227    
- LLL=         176
- HEAT=   2.12018251    
- LLL=         177
- HEAT=   2.16096997    
- LLL=         178
- HEAT=   2.20182610    
- LLL=         179
- HEAT=   2.24444127    
- LLL=         180
- HEAT=   2.28715777    
- LLL=         181
- HEAT=   2.33151245    
- LLL=         182
- HEAT=   2.37691832    
- LLL=         183
- HEAT=   2.42232728    
- LLL=         184
- HEAT=   2.46960044    
- LLL=         185
- HEAT=   2.51782012    
- LLL=         186
- HEAT=   2.56606579    
- LLL=         187
- HEAT=   2.61627388    
- LLL=         188
- HEAT=   2.66645551    
- LLL=         189
- HEAT=   2.71852708    
- LLL=         190
- HEAT=   2.77166677    
- LLL=         191
- HEAT=   2.82469797    
- LLL=         192
- HEAT=   2.87980962    
- LLL=         193
- HEAT=   2.93491435    
- LLL=         194
- HEAT=   2.99183726    
- LLL=         195
- HEAT=   3.04994559    
- LLL=         196
- HEAT=   3.10784459    
- LLL=         197
- HEAT=   3.16785312    
- LLL=         198
- HEAT=   3.22887039    
- LLL=         199
- HEAT=   3.28961873    
- LLL=         200
- HEAT=   3.35260820    
- LLL=         201
- HEAT=   3.41533542    
- LLL=         202
- HEAT=   3.48009300    
- LLL=         203
- HEAT=   3.54589939    
- LLL=         204
- HEAT=   3.61127949    
- LLL=         205
- HEAT=   3.67888737    
- LLL=         206
- HEAT=   3.74731398    
- LLL=         207
- HEAT=   3.81531477    
- LLL=         208
- HEAT=   3.88554263    
- LLL=         209
- HEAT=   3.95514846    
- LLL=         210
- HEAT=   4.02685070    
- LLL=         211
- HEAT=   4.09937191    
- LLL=         212
- HEAT=   4.17110682    
- LLL=         213
- HEAT=   4.24506903    
- LLL=         214
- HEAT=   4.31824493    
- LLL=         215
- HEAT=   4.39318991    
- LLL=         216
- HEAT=   4.46892118    
- LLL=         217
- HEAT=   4.54353857    
- LLL=         218
- HEAT=   4.62012148    
- LLL=         219
- HEAT=   4.69709730    
- LLL=         220
- HEAT=   4.77276278    
- LLL=         221
- HEAT=   4.85032845    
- LLL=         222
- HEAT=   4.92648506    
- LLL=         223
- HEAT=   5.00414848    
- LLL=         224
- HEAT=   5.08194351    
- LLL=         225
- HEAT=   5.15793705    
- LLL=         226
- HEAT=   5.23543644    
- LLL=         227
- HEAT=   5.31254339    
- LLL=         228
- HEAT=   5.38768530    
- LLL=         229
- HEAT=   5.46397257    
- LLL=         230
- HEAT=   5.53685427    
- LLL=         231
- HEAT=   5.61235619    
- LLL=         232
- HEAT=   5.68815279    
- LLL=         233
- HEAT=   5.76178741    
- LLL=         234
- HEAT=   5.83784580    
- LLL=         235
- HEAT=   5.91171026    
- LLL=         236
- HEAT=   5.98747396    
- LLL=         237
- HEAT=   6.06356525    
- LLL=         238
- HEAT=   6.13690519    
- LLL=         239
- HEAT=   6.21260357    
- LLL=         240
- HEAT=   6.28804016    
- LLL=         241
- HEAT=   6.36056089    
- LLL=         242
- HEAT=   6.43547297    
- LLL=         243
- HEAT=   6.50714254    
- LLL=         244
- HEAT=   6.58084249    
- LLL=         245
- HEAT=   6.65418243    
- LLL=         246
- HEAT=   6.72378826    
- LLL=         247
- HEAT=   6.79568720    
- LLL=         248
- HEAT=   6.86395025    
- LLL=         249
- HEAT=   6.93352318    
- LLL=         250
- HEAT=   7.00267076    
- LLL=         251
- HEAT=   7.06726456    
- LLL=         252
- HEAT=   7.13375902    
- LLL=         253
- HEAT=   7.19900799    
- LLL=         254
- HEAT=   7.25921249    
- LLL=         255
- HEAT=   7.32141542    
- LLL=         256
- HEAT=   7.37837791    
- LLL=         257
- HEAT=   7.43648672    
- LLL=         258
- HEAT=   7.49302292    
- LLL=         259
- HEAT=   7.54336786    
- LLL=         260
- HEAT=   7.59525299    
- LLL=         261
- HEAT=   7.64458323    
- LLL=         262
- HEAT=   7.68723154    
- LLL=         263
- HEAT=   7.73125458    
- LLL=         264
- HEAT=   7.76790810    
- LLL=         265
- HEAT=   7.80525017    
- LLL=         266
- HEAT=   7.83947945    
- LLL=         267
- HEAT=   7.86535645    
- LLL=         268
- HEAT=   7.89205265    
- LLL=         269
- HEAT=   7.91032982    
- LLL=         270
- HEAT=   7.92785454    
- LLL=         271
- HEAT=   7.94157887    
- LLL=         272
- HEAT=   7.94528055    
- LLL=         273
- HEAT=   7.94875193    
- LLL=         274
- HEAT=   7.94691849    
- LLL=         275
- HEAT=   7.93401194    
- LLL=         276
- HEAT=   7.92064810    
- LLL=         277
- HEAT=   7.89545870    
- LLL=         278
- HEAT=   7.86843491    
- LLL=         279
- HEAT=   7.83502436    
- LLL=         280
- HEAT=   7.78808546    
- LLL=         281
- HEAT=   7.73941088    
- LLL=         282
- HEAT=   7.68238354    
- LLL=         283
- HEAT=   7.61077929    
- LLL=         284
- HEAT=   7.53665352    
- LLL=         285
- HEAT=   7.44641161    
- LLL=         286
- HEAT=   7.35243511    
- LLL=         287
- HEAT=   7.24850130    
- LLL=         288
- HEAT=   7.12658501    
- LLL=         289
- HEAT=   7.00050831    
- LLL=         290
- HEAT=   6.85576105    
- LLL=         291
- HEAT=   6.70429897    
- LLL=         292
- HEAT=   6.54094648    
- LLL=         293
- HEAT=   6.35594273    
- LLL=         294
- HEAT=   6.16432190    
- LLL=         295
- HEAT=   5.95782995    
- LLL=         296
- HEAT=   5.72762299    
- LLL=         297
- HEAT=   5.48958778    
- LLL=         298
- HEAT=   5.22610092    
- LLL=         299
- HEAT=   4.95236206    
- LLL=         300
- HEAT=   0.00000000    
 
 
  LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'MICRO       ':
@@ -868,7 +268,7 @@ QUIT "LIST" .                                                              0017
  TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =      1325
 
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.256 MEMORY USAGE= 3.020E+03
+-->>MODULE LIB:        : TIME SPENT=        0.261 MEMORY USAGE= 3.024E+03
 <|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0044
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
@@ -887,7 +287,7 @@ QUIT "LIST" .                                                              0017
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MICRO       ' WAS EXPORTED TO FILE 'micr_xsr.txt'.
--->>module EQU:        : time spent=        0.143 memory usage= 2.320E+02
+-->>module EQU:        : time spent=        0.135 memory usage= 2.240E+02
 ->@END MODULE   : EQU:        
 <|macr_xsr.txt   := MACRO ;                                               |<0046
 ->@BEGIN MODULE : EQU:        
@@ -897,7 +297,7 @@ QUIT "LIST" .                                                              0017
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macr_xsr.txt'.
--->>module EQU:        : time spent=        0.066 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.064 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
 <|OLDMACRO := MACRO ;                                                     |<0048
 ->@BEGIN MODULE : EQU:        
@@ -905,7 +305,7 @@ QUIT "LIST" .                                                              0017
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module EQU:        : time spent=        0.003 memory usage= 1.580E+03
+-->>module EQU:        : time spent=        0.002 memory usage= 1.580E+03
 ->@END MODULE   : EQU:        
 <|MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;                          |<0049
 ->@BEGIN MODULE : MAC:        
@@ -930,7 +330,7 @@ QUIT "LIST" .                                                              0017
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.027 MEMORY USAGE= 7.920E+02
+-->>MODULE MAC:        : TIME SPENT=        0.019 MEMORY USAGE= 7.920E+02
 <|OLDMACRO := DELETE: OLDMACRO ;                                          |<0050
 <|MACRO := MAC: MACRO ::                                                  |<0054
 <|READ INPUT                                                              |<0055
@@ -982,7 +382,7 @@ QUIT "LIST" .                                                              0017
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.005 MEMORY USAGE= 0.000E+00
+-->>MODULE MAC:        : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
 <|SYSTEM := ASM: MACRO TRACK :: EDIT 2 ARM ;                              |<0084
 ->@BEGIN MODULE : ASM:        
 ->@DESCRIPTION  : To built system matrices (CP and IC)                                    
@@ -1050,7 +450,7 @@ QUIT "LIST" .                                                              0017
  IBFP         2   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
  DOOR             (SN          )
 ->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
+-->>MODULE ASM:        : TIME SPENT=        0.002 MEMORY USAGE= 0.000E+00
 <|FLUX  := FLU: MACRO TRACK SYSTEM :: EDIT 2 TYPE S EXTE 100 ;            |<0085
 ->@BEGIN MODULE : FLU:        
 ->@DESCRIPTION  : Solve the flux equations                                                
@@ -12245,7 +11645,7 @@ QUIT "LIST" .                                                              0017
  ++ TRACKING CALLED=   3 TIMES PRECISION= 0.00E+00
  ++ TOTAL NUMBER OF FLUX CALCULATIONS=       900
 ->@END MODULE   : FLU:        
--->>MODULE FLU:        : TIME SPENT=        4.748 MEMORY USAGE= 1.547E+05
+-->>MODULE FLU:        : TIME SPENT=        4.640 MEMORY USAGE= 1.547E+05
 <|EEDIT := OUT: FLUX TRACK MACRO GEOM  :: EDIT 2 COND INTG NONE ;         |<0088
 ->@BEGIN MODULE : OUT:        
 ->@DESCRIPTION  : No description available for this module                                
@@ -12390,8 +11790,8 @@ QUIT "LIST" .                                                              0017
 
   SUM   2.00000E+00   3.78482E+07   6.36610E+10   6.65930E+10   0.00000E+00   0.00000E+00   4.86348E+07   0.00000E+00
 
- OUTDRV: CPU TIME FOR REACTION RATE CALCULATION =  0.115
--->>MODULE OUT:        : TIME SPENT=        0.115 MEMORY USAGE= 0.000E+00
+ OUTDRV: CPU TIME FOR REACTION RATE CALCULATION =  0.117
+-->>MODULE OUT:        : TIME SPENT=        0.117 MEMORY USAGE= 0.000E+00
 ->@END MODULE   : OUT:        
 <|EEDITcopy := EEDIT ;                                                    |<0090
 ->@BEGIN MODULE : EQU:        
@@ -12533,7 +11933,7 @@ QUIT "LIST" .                                                              0017
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'TRACK       ' WAS EXPORTED TO FILE 'trac_xsr.txt'.
--->>module EQU:        : time spent=        0.001 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
 <|geom_xsr.txt   := GEOM ;                                                |<0094
 ->@BEGIN MODULE : EQU:        
@@ -12563,7 +11963,7 @@ QUIT "LIST" .                                                              0017
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'FLUX        ' WAS EXPORTED TO FILE 'flux_xsr.txt'.
--->>module EQU:        : time spent=        3.732 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        3.948 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
 <|EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM := DELETE:                     |<0098
 <|EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM ;                              |<0099
