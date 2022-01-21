@@ -1,0 +1,388 @@
+#!/bin/sh
+#shopt -s expand_aliases
+#source ~/.profile
+
+# -- TUNGSTEN MATERIAL
+# Execution ./cepxs_W_lobatto 20.00 0 300 2 no-coupling no-csda
+
+#Your_Path_To_Cepxs="/home/ahnac/cepxs-radiotherapy/CSD/";
+Your_Path_To_Cepxs="/home/ahnac/cepxs-radiotherapy/CEPXS-BFP-LOBATTO/data/";
+Your_Path_To_Arves="/home/ahnac/cepxs-radiotherapy/ARVES/";
+Your_Path_To_Katrin="/home/ahnac/katrin-radiotherapy/";
+
+Your_Path_To_Dragon_Cepxs="/home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/";
+
+cd /home/ahnac/cepxs-radiotherapy/CEPXS-BFP-LOBATTO/;
+cd src; 
+./compile ;
+cd .. ;
+cp CEPXS ./data/ ;
+
+#--------------------------------------------------------
+# Main execution variables definition
+#--------------------------------------------------------
+
+energy=$1;  #7.00
+nb_groups_gamma=$2;  #24
+nb_groups_electron=$3; #36
+legender_order=$4; #5 (P5)
+
+resolution_method=sn-csd; #"sn-csd" ;
+coupling_type=$5; #"full-coupling";
+
+csda_approximation=$6; #no-csda or csda
+
+
+
+energy_string=$( printf $energy );
+energy_string_title="${energy_string}MeV";
+
+
+
+#---------------------------------------------
+# Options by coupling level
+#---------------------------------------------
+
+
+ngs=$( printf $nb_groups_gamma );
+nes=$( printf $nb_groups_electron );
+ls=$( printf $legender_order ); 
+resol_title=$(echo ${resolution_method^^} | cut -c4-6) ;
+
+# _Sop_ : Source Dimensions Optimized
+file_cepxs_name="e_W_lobatto_${energy_string_title}_${ngs}g_${nes}e_P${ls}";
+
+if [[ $coupling_type == 'no-coupling' ]] ; then
+    
+  electron_keyword="electrons" ; 
+	electron_card_in_cepxs="log $nb_groups_electron" ;
+
+	photon_keyword="*" ;  
+	photon_card_in_cepxs="*" ; 
+
+  positron_card_in_cepxs="*" ; #"PEQE" ; 
+
+
+	file_cepxs_name="${file_cepxs_name}_NC" ;
+	groups_total_number=`expr $nb_groups_electron` ;
+	nps=$( printf $nb_groups_gamma ); #POSITRONS GROUP NUMBER
+else 
+  photon_keyword="photons" ;  
+	photon_card_in_cepxs="log $nb_groups_gamma" ; 
+	electron_keyword="electrons" ; 
+	electron_card_in_cepxs="log $nb_groups_electron" ;
+	positron_card_in_cepxs="*"; #"positrons" ; 
+
+	file_cepxs_name="${file_cepxs_name}_FC" ;
+	groups_total_number=`expr $nb_groups_gamma + $nb_groups_electron + $nb_groups_electron` ;
+	nps=$( printf $nb_groups_electron );
+fi
+
+#---------------------------------------------
+# CSDA activation or desactivation
+#---------------------------------------------
+
+if [[ $csda_approximation == 'no-csda' ]] ; then
+	csda_option="*" ;
+elif [[ $csda_approximation == 'csda' ]] ; then
+	csda_option="csda" ;
+else 
+	echo "ERROR IN CSDA CHOICE" ;
+fi
+
+echo "Note that the total group number is $groups_total_number."
+
+
+
+
+
+
+echo "-------------------------------------------------------------------------";
+echo "                  Assumed a TUNGSTEN SLAB                                   "; 
+echo "-------------------------------------------------------------------------";
+echo "                 Electron source of $energy_string_title                 ";
+#echo "    dx=dy=dz=$dimension, Meshx=$meshx, Meshy=$meshy, Meshz=$meshz        ";                                   
+echo "    N_gamma=${ngs}, N_electron=${nes}, N_positron=${nps}, Pl=P${ls}      ";
+#echo "With a <<${coupling_type}>> and <<${resolution_method}>> dicretization option";
+echo "-------------------------------------------------------------------------";
+
+#file_cepxs_library="xslib_${file_cepxs_name}.txt";
+
+file_cepxs_library="xslib_${file_cepxs_name}.txt";
+
+cd $Your_Path_To_Cepxs
+
+echo "**********************************************************"
+echo "                   Cepxs is operating                     "
+echo "**********************************************************"
+
+
+cat > $file_cepxs_name <<EOF
+*-----------------------------------------------------------------------------------
+*                            CEPXS-BFP : Input file   
+*-----------------------------------------------------------------------------------
+
+*-----------------------------------------------------------------------------------
+*                                    Title
+*-----------------------------------------------------------------------------------
+title 
+$energy_string_title monoenergetic electron-source on TUNGSTEN Slab
+
+*-----------------------------------------------------------------------------------
+*                                    Energy
+*-----------------------------------------------------------------------------------
+* Energy: Midpoint energy of highest-energy group to generate (in MeV)
+* Cutoff: Lower boundary of lowest-energy group to generate (in MeV) [here, 1keV]
+* Electrons: Define the number of energy group N for electrons (linear N or log N)
+* Photons:   Define the number of energy group N for photons (linear N or log N)
+*-----------------------------------------------------------------------------------
+cutoff 0.00100000001
+energy $energy 
+$electron_keyword
+ $electron_card_in_cepxs
+$photon_keyword 
+$photon_card_in_cepxs
+*
+*-----------------------------------------------------------------------------------
+*                          Legendre order of cross section
+*-----------------------------------------------------------------------------------
+legendre $legender_order
+
+*-----------------------------------------------------------------------------------
+*                                     Source
+*-----------------------------------------------------------------------------------
+* Type of source: photon-source or electron-source
+* Options: No-coupling (Photon don't generate electron)
+*          Partial-coupling (Photon generate e-, but e- don't generate photons)
+*          Full-coupling (Photons generate electrons and vice-versa)
+*-----------------------------------------------------------------------------------
+electron-source
+ $coupling_type
+
+*-----------------------------------------------------------------------------------
+*                             Materials definition
+*-----------------------------------------------------------------------------------
+*Nomenclature: material [symbol Element] (mass fraction)
+*              Note: For composition, reapeat these values for each component
+*              Note: Symbol are given in the Input CEPXS guide
+*Parameter: density [value]  <-- Define density of composition in g/cm^3
+*           gas              <-- Add if the composition is a gas
+* Note: material line cannot be too long, use " - " to continue on another line
+* Here: Air/TUNGSTEN/Bone/Lung/TUNGSTEN
+*-----------------------------------------------------------------------------------
+
+* --- TUNGSTEN --- * 
+material W 1.0
+ density 1.0
+
+*-----------------------------------------------------------------------------------
+*                             Forcing positron consideration
+*-----------------------------------------------------------------------------------
+$positron_card_in_cepxs
+
+*-----------------------------------------------------------------------------------
+*                             Resolution method
+*-----------------------------------------------------------------------------------
+* Sn-CSD: CSD operator treated "directly" and continuous-sctt. oper. ind. with P_l
+* Sn-BFP: CSD operator and continuous scattering operator are both treated directly 
+* Sn-indirect: standard option used in ONEDANT-1D
+*-----------------------------------------------------------------------------------
+$resolution_method
+
+*-----------------------------------------------------------------------------------
+*                             Non-restricted CSDA
+*-----------------------------------------------------------------------------------
+* CSDA: all electron energy loss is decribed by the Fokker Planck CS operator
+*-----------------------------------------------------------------------------------
+$csda_option
+
+*-----------------------------------------------------------------------------------
+*                             Printing CEPXS-BFP Library
+*-----------------------------------------------------------------------------------
+print
+ rows
+
+EOF
+
+
+#run_cepxs is supposed to be in $Your_Path_To_Cepxs.
+
+./run_cepxs.sh $file_cepxs_name ;
+
+
+
+
+cd $Your_Path_To_Arves ;  
+
+echo "**********************************************************"
+echo "                  Arves is operating                      "
+echo "**********************************************************"
+
+fmac_file_name="FMAC_${file_cepxs_name}.bin" ; 
+fmac_file_name_ascii="FMAC_${file_cepxs_name}.txt" ; 
+#---------------------------------------------
+# Arves Kard
+#---------------------------------------------
+
+if [[ $resolution_method == 'sn-indirect' ]]; then
+  arves_kpriz=11;
+
+  arves_m4_card=0;
+
+  arves_m1_file="bxslib_${file_cepxs_name}.txt" ; 
+  arves_m2_file=$fmac_file_name;
+  arves_m3_file="frab.bin";
+  arves_m4_file="!";
+else
+  arves_kpriz=12;
+  arves_m4_card=7;
+
+  arves_m1_file="anisn.bin";
+  arves_m2_file=$fmac_file_name;
+  arves_m3_file="frab.bin";
+  arves_m4_file="xslib_${file_cepxs_name}.txt" ;
+fi
+
+file_input_arves_name="arv_${file_cepxs_name}.inp";
+file_output_arves_name="arv_${file_cepxs_name}.out";
+
+cd $Your_Path_To_Arves;
+
+cat > $file_input_arves_name <<EOF
+!-----------------------------------------------------------------------------------
+!                       ARVES-2.5 : Input file for RM-BENCHMARK                    |
+!-----------------------------------------------------------------------------------
+
+!-----------------------------------------------------------------------------------
+!                             Operational format type                              |
+!-----------------------------------------------------------------------------------
+
+!------------------------------------
+! In the case of "Sn-BFP" or "SN-CSD"
+! KPRIZ=12 - call of AMPXFM:  (ARVES module) to convert ASCII format CEPXS-BFP 
+! library to the -> format FMAC-M
+!------
+
+!------------------------------------
+! In the case of "Sn-indirect"
+! KPRIZ=11 - call of AMPXFM: (ARVES module) to convert binary format CEPXS-BFP 
+! library to the -> format FMAC-M
+!------
+
+   $arves_kpriz
+
+!-----------------------------------------------------------------------------------
+!                            Configuration of files names                          |
+!-----------------------------------------------------------------------------------
+
+!  M1   M2   M3   M4  - input/output units
+
+    3    2    4    $arves_m4_card
+!------------------------------------------------------------   
+! binary input cross-section library in format ANISN/GIP (M1)
+!------------------------------------------------------------ 
+$arves_m1_file
+!------------------------------------------------------------ 
+! binary output cross-section library in format FMAC-M (M2)
+!------------------------------------------------------------ 
+$arves_m2_file
+!------------------------------------------------------------ 
+! binary working cross-section library (M3)
+!------------------------------------------------------------ 
+$arves_m3_file
+!------------------------------------------------------------ 
+! ASCII input cross-section library  in format ANISN (M4)
+!------------------------------------------------------------ 
+$arves_m4_file
+
+
+!-----------------------------------------------------------------------------------
+!                             Performing tests on FMAC format                      |
+!-----------------------------------------------------------------------------------
+
+!----------------------------------------
+! KPRIZ=1 - call of PCONST - performing listing and testing of binary file 
+! in format  FMAC-M
+!----------
+
+    1
+
+! PCONST: utility 
+
+!   M1 IPRINT ITYPE NQBEG NQFIN
+    2    2      0     1    6
+!-----------------------------------------------------------------------    
+! Where,
+! M1 - binary output cross-section library in format FMAC-M.
+! IPRINT = 0 - only 1-4 logical records are printed;
+!          1 - all upper records (except scattering cross-sections) are
+!              printed;
+!          2 - all upper records + scattering cross-sections for energy
+!              band (NQBEG, NQFIN) are printed;
+! ITYPE = 0 - not used.
+! NQBEG .ge.0  - upper boundary of energy band.
+! NQFIN .le.NG - lower boundary of energy band, NQBEG.le.NQFIN.
+!----------------------------------------------------------------------- 
+!
+! M1: binary output cross-section library in format FMAC-M 
+!
+$fmac_file_name
+
+! !!
+! ! AFMACM: adjoint FMAC-M cross section file
+!    0  0  0
+! 
+! ! PACKFM: collapsing cross sections in FMAC-M
+!    0  0  0
+!    0  0  0  0  0  0
+! 
+! ! AMPXFM: coverting ANISN to FMAC format
+!    0  0  0  0
+! 
+! ! OPTIM: converting by particle type organization to by energy type one
+!    0  0  0
+! 
+! ! CUT: deleting unused groups
+!    0  0
+!
+
+!  KPRIZ-14: call of BINTXT
+    14 
+! BINTXT: transforming binary FMAC-M format to ASCII format (for DRAGON)
+     2  9
+$fmac_file_name
+$fmac_file_name_ascii
+!-----------------------------------------------------------------------------------
+!                             Exit from Arves-2.5                                   |
+!-----------------------------------------------------------------------------------   
+
+! KPRIZ=0 - exit from ARVES
+     
+     0
+
+EOF
+
+./arves <$file_input_arves_name> $file_output_arves_name ;
+
+
+cp $fmac_file_name_ascii $Your_Path_To_Dragon_Cepxs
+
+
+echo "**********************************************************"
+echo "           Dragon .access file updating                   "
+echo "**********************************************************"
+
+
+#file_access_dragon='/home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron.access' 
+#sed  -i "/#--- CEPXS-BFP/a  ln -s \$1/data/cepxs-dragon/$fmac_file_name_ascii ." $file_access_dragon 
+
+
+#cd /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/
+#./rdragon electron.x2m
+
+echo "--------------------------------------------------";
+echo "      Execute DRAGON                              ";
+echo "--------------------------------------------------";
+
+#cd /home/ahnac/Compiler/dragon5_ev2148_2/Dragon
+#./rdragon electron.x2m

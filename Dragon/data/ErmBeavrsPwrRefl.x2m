@@ -477,7 +477,7 @@ WHILE IndexCB 2 <= DO
     !----------------------------------------------------------
     !  Multicompo creation
     !----------------------------------------------------------
-    Edition := EDI: MacrRefl :: EDIT 3 ADFM SAVE ;
+    Edition := EDI: MacrRefl :: EDIT 1 ADFM SAVE ;
     GeomRefl MacrRefl := DELETE: GeomRefl MacrRefl ;
 
     MlticompTous := COMPO: MlticompTous Edition :: EDIT 1
