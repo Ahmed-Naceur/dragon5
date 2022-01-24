@@ -58,7 +58,7 @@ iprint=1;
 cat>./input <<EOF
 cepxsr
 30 0 33 40 
-7400 1 0 2 10 1
+7400 1 0 2 2 1
 $Title/
 300 / # of groups boundaries
 1.0000000547034879e+03
