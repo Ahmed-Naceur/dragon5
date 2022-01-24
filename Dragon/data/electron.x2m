@@ -14,7 +14,7 @@ PROCEDURE wat_xs_80G wat_xsr_80G wat_xsr_2G
 *W_xs_80G ;
 *W_xsr_80G ;
 W_xsr_300G ;
-W_xs_300G ;
+*W_xs_300G ;
 
 
 QUIT "LIST" .

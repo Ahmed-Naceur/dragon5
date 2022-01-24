@@ -14,7 +14,7 @@ W_xs_300G W_xsr_300G W_xso_300G  ;                                         0006
 *W_xs_80G ;                                                                0013
 *W_xsr_80G ;                                                               0014
 W_xsr_300G ;                                                               0015
-W_xs_300G ;                                                                0016
+*W_xs_300G ;                                                               0016
 QUIT "LIST" .                                                              0017
  
 <|PROCEDURE wat_xs_80G wat_xsr_80G wat_xsr_2G                             |<0004
@@ -22,25 +22,19 @@ QUIT "LIST" .                                                              0017
 <|W_xs_300G W_xsr_300G W_xso_300G  ;                                      |<0006
 <|W_xsr_300G ;                                                            |<0015
 <|MODULE       GEO: LIB: MAC: SNT: ASM: FLU: HEAT: OUT: DELETE:           |<0007
-<|UTL: END: EDI: STAT: ;                                                  |<0008
+<|UTL: END: EDI: ;                                                        |<0008
 <|PROCEDURE    assertS ;                                                  |<0009
 <|LINKED_LIST   MACRO DEPOS MICRO OLDMACRO GEOM TRACK SYSTEM FLUX         |<0010
-<|EEDIT EDITION EEDITcopy DIFFRES ;                                       |<0011
+<|EEDIT EDITION EEDITcopy ;                                               |<0011
 <|SEQ_ASCII    edep_xsr.txt   :: FILE 'edep_xsr.txt' ;                    |<0012
 <|SEQ_ASCII    edit_xsr.txt   :: FILE 'edit_xsr.txt' ;                    |<0013
 <|SEQ_ASCII    micr_xsr.txt   :: FILE 'micr_xsr.txt' ;                    |<0014
 <|SEQ_ASCII    macr_xsr.txt   :: FILE 'macr_xsr.txt' ;                    |<0015
-<|SEQ_ASCII    flux_xsr.txt   :: FILE 'flux_xsr.txt' ;                    |<0016
-<|SEQ_ASCII    syst_xsr.txt   :: FILE 'syst_xsr.txt' ;                    |<0017
-<|SEQ_ASCII    geom_xsr.txt   :: FILE 'geom_xsr.txt' ;                    |<0018
-<|SEQ_ASCII    trac_xsr.txt   :: FILE 'trac_xsr.txt' ;                    |<0019
-<|SEQ_ASCII    FMACF :: FILE './macro_xs_no_stern.txt' ;                  |<0020
-<|GEOM := GEO: :: CAR1D 2                                                 |<0022
-<|X- VOID  X+ VOID                                                        |<0023
-<|MIX  1 2                                                                |<0024
-<|MESHX 0.0 0.01 2.0                                                      |<0025
-<|SPLITX 30 70                                                            |<0026
-<|;                                                                       |<0027
+<|GEOM := GEO: :: CAR1D 2                                                 |<0017
+<|X- VOID  X+ VOID                                                        |<0018
+<|MIX  1 2                                                                |<0019
+<|MESHX 0.0 0.1 2.0                                                       |<0020
+<|SPLITX 30 100 ;                                                         |<0021
  DDDDDD   RRRRRR     AAA     GGGGG    OOOOO   NN     NN
  DDDDDDD  RRRRRRR   AAAAA   GGGGGGG  OOOOOOO  NNN    NN
  DD   DD  RR   RR  AA   AA  GG       OO   OO  NNNN   NN
@@ -77,11 +71,10 @@ QUIT "LIST" .                                                              0017
  CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE CARTESIAN 1-D   .
 ->@END MODULE   : GEO:        
 -->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
-<|TRACK := SNT: GEOM ::                                                   |<0029
-<|TITLE 'Water-Slab:Cepxsr-Dragon'                                        |<0030
-<|EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2                              |<0031
-<|EPSI 1.E-5                                                              |<0032
-<|QUAD 1 MAXI 300 BFPL ;                                                  |<0033
+<|TRACK := SNT: GEOM ::                                                   |<0023
+<|TITLE 'Water-Slab:Cepxsr-Dragon'                                        |<0024
+<|EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 10                             |<0025
+<|EPSI 1.E-5 QUAD 1 MAXI 300 BFPL ;                                       |<0026
 ->@BEGIN MODULE : SNT:        
 ->@DESCRIPTION  : Discrete ordinates tracking                                             
 ->@CREDITS      : A. Hebert                                                               
@@ -89,14 +82,14 @@ QUIT "LIST" .                                                              0017
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : SNT:        
 -->>MODULE SNT:        : TIME SPENT=        0.000 MEMORY USAGE= 2.520E+02
-<|MICRO  := LIB: ::                                                       |<0035
-<|EDIT 99                                                                 |<0036
-<|NMIX 1                                                                  |<0037
-<|ANIS 2                                                                  |<0038
-<|MIXS LIB: MATXS2 FIL: _W300g_20MeV                                      |<0039
-<|MIX  1  300.0  1.0 NOGAS                                                |<0040
-<|Wnat = w 1.0                                                            |<0041
-<|;                                                                       |<0042
+<|MICRO  := LIB: ::                                                       |<0028
+<|EDIT 99                                                                 |<0029
+<|NMIX 1                                                                  |<0030
+<|ANIS 10                                                                 |<0031
+<|MIXS LIB: MATXS2 FIL: _W300g_20MeV                                      |<0032
+<|MIX  1  300.0  1.0 NOGAS                                                |<0033
+<|Wnat = w 1.0                                                            |<0034
+<|;                                                                       |<0035
 ->@BEGIN MODULE : LIB:        
 ->@DESCRIPTION  : Microscopic xs-library processing                                       
 ->@CREDITS      : A. Hebert, G. Marleau                                                   
@@ -109,7 +102,7 @@ QUIT "LIST" .                                                              0017
 
  PROCESSING MATXS2 LIBRARY NAMED _W300g_2.
 
- MATXS2 FILE ID:   matxs test             VERS  1
+ MATXS2 FILE ID:   matxs W-20MeV-300Group VERS  1
  test                                                                    
 
  LIBTR2: PROCESSING SUBMATERIAL    1     INCIDENT PARTICLE=B-->B     DATA TYPE=BSCAT      MATERIAL=w     
@@ -195,7 +188,7 @@ QUIT "LIST" .                                                              0017
  NCOMB      0   (NUMBER OF DEPLETING MIXTURES)
  NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
  NGRO     300   (NUMBER OF ENERGY GROUPS)
- NL         2   (NUMBER OF LEGENDRE ORDERS)
+ NL        10   (NUMBER OF LEGENDRE ORDERS)
  ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/3=WIMS-D TYPE/4=LEAKAGE CORRECTION)
  NBESP      0   (NUMBER OF ENERGY-DEPENDENT FISSION SPECTRA)
  IPROC      0   (-1=SKIP LIBRARY PROCESSING/0=DILUTION INTERPOLATION/1=USE PHYSICAL TABLES/2=BUILD A DRAGLIB/3=COMPUTE CALENDF TABLES/4=SLOWING-DOWN TABLES/5=ALL CALENDF)
@@ -224,307 +217,6 @@ QUIT "LIST" .                                                              0017
  SPEC   LOCAL NAME    ISOTOPE       FROM LIBRARY  MIX   DENSITY     TEMP(K)    SIGZERO    SELF-SHIEL  THERMAL CORRECTION
  -----  ------------  ------------  ------------  ----  ----------  ---------  ---------  ----------  ------------------
      1  Wnat    0001  w             MATXS2     1     1  3.2756E-03  3.000E+02  1.000E+10   0             0                         
-   20333400.0    
-   19672000.0    
-   19032200.0    
-   18413200.0    
-   17814200.0    
-   17234800.0    
-   16674200.0    
-   16131900.0    
-   15607200.0    
-   15099600.0    
-   14608400.0    
-   14133300.0    
-   13673600.0    
-   13228800.0    
-   12798500.0    
-   12382300.0    
-   11979500.0    
-   11589900.0    
-   11212900.0    
-   10848200.0    
-   10495300.0    
-   10154000.0    
-   9823700.00    
-   9504170.00    
-   9195040.00    
-   8895960.00    
-   8606610.00    
-   8326670.00    
-   8055840.00    
-   7793810.00    
-   7540310.00    
-   7295060.00    
-   7057780.00    
-   6828220.00    
-   6606120.00    
-   6391250.00    
-   6183370.00    
-   5982250.00    
-   5787670.00    
-   5599420.00    
-   5417290.00    
-   5241090.00    
-   5070620.00    
-   4905690.00    
-   4746130.00    
-   4591760.00    
-   4442400.00    
-   4297910.00    
-   4158120.00    
-   4022870.00    
-   3892020.00    
-   3765430.00    
-   3642960.00    
-   3524460.00    
-   3409830.00    
-   3298920.00    
-   3191620.00    
-   3087810.00    
-   2987370.00    
-   2890210.00    
-   2796200.00    
-   2705250.00    
-   2617260.00    
-   2532130.00    
-   2449770.00    
-   2370090.00    
-   2293000.00    
-   2218420.00    
-   2146260.00    
-   2076450.00    
-   2008910.00    
-   1943570.00    
-   1880360.00    
-   1819190.00    
-   1760020.00    
-   1702780.00    
-   1647390.00    
-   1593810.00    
-   1541970.00    
-   1491820.00    
-   1443290.00    
-   1396350.00    
-   1350930.00    
-   1306990.00    
-   1264480.00    
-   1223350.00    
-   1183560.00    
-   1145060.00    
-   1107820.00    
-   1071790.00    
-   1036920.00    
-   1003200.00    
-   970568.000    
-   938999.000    
-   908457.000    
-   878909.000    
-   850321.000    
-   822664.000    
-   795906.000    
-   770018.000    
-   744972.000    
-   720742.000    
-   697299.000    
-   674618.000    
-   652676.000    
-   631447.000    
-   610908.000    
-   591038.000    
-   571814.000    
-   553215.000    
-   535221.000    
-   517812.000    
-   500970.000    
-   484676.000    
-   468911.000    
-   453659.000    
-   438903.000    
-   424628.000    
-   410816.000    
-   397454.000    
-   384526.000    
-   372019.000    
-   359919.000    
-   348212.000    
-   336886.000    
-   325929.000    
-   315328.000    
-   305071.000    
-   295149.000    
-   285549.000    
-   276261.000    
-   267275.000    
-   258582.000    
-   250171.000    
-   242034.000    
-   234162.000    
-   226545.000    
-   219177.000    
-   212048.000    
-   205151.000    
-   198478.000    
-   192022.000    
-   185776.000    
-   179734.000    
-   173888.000    
-   168232.000    
-   162760.000    
-   157466.000    
-   152344.000    
-   147389.000    
-   142595.000    
-   137957.000    
-   133470.000    
-   129129.000    
-   124929.000    
-   120865.000    
-   116934.000    
-   113131.000    
-   109451.000    
-   105891.000    
-   102447.000    
-   99114.6016    
-   95890.7969    
-   92771.7969    
-   89754.2969    
-   86835.0000    
-   84010.6016    
-   81278.0000    
-   78634.3984    
-   76076.7031    
-   73602.2969    
-   71208.2969    
-   68892.2031    
-   66651.3984    
-   64483.5000    
-   62386.1016    
-   60356.8984    
-   58393.6992    
-   56494.3984    
-   54656.8984    
-   52879.1016    
-   51159.1992    
-   49495.1992    
-   47885.3008    
-   46327.8008    
-   44820.8984    
-   43363.1016    
-   41952.6016    
-   40588.1016    
-   39267.8984    
-   37990.6992    
-   36755.0000    
-   35559.5000    
-   34402.8984    
-   33283.8984    
-   32201.3008    
-   31153.9004    
-   30140.5996    
-   29160.3008    
-   28211.8008    
-   27294.1992    
-   26406.4004    
-   25547.5000    
-   24716.5996    
-   23912.5996    
-   23134.8008    
-   22382.4004    
-   21654.4004    
-   20950.0000    
-   20268.5996    
-   19609.3008    
-   18971.5000    
-   18354.5000    
-   17757.5000    
-   17179.9004    
-   16621.0996    
-   16080.5000    
-   15557.4004    
-   15051.4004    
-   14561.9004    
-   14088.2002    
-   13630.0000    
-   13186.7002    
-   12757.7002    
-   12342.7998    
-   11941.2998    
-   11552.9004    
-   11177.2002    
-   10813.5996    
-   10461.9004    
-   10121.5996    
-   9792.37988    
-   9473.87988    
-   9165.73047    
-   8867.59961    
-   8579.17969    
-   8300.12988    
-   8030.16016    
-   7768.97021    
-   7516.27979    
-   7271.79980    
-   7035.27979    
-   6806.45020    
-   6585.06006    
-   6370.87988    
-   6163.66016    
-   5963.18018    
-   5769.22021    
-   5581.56982    
-   5400.02002    
-   5224.37988    
-   5054.45996    
-   4890.04980    
-   4731.00000    
-   4577.12012    
-   4428.24023    
-   4284.20996    
-   4144.85986    
-   4010.05005    
-   3879.62012    
-   3753.42993    
-   3631.34009    
-   3513.22998    
-   3398.95996    
-   3288.39990    
-   3181.44995    
-   3077.96997    
-   2977.85010    
-   2880.98999    
-   2787.29004    
-   2696.62988    
-   2608.91992    
-   2524.06006    
-   2441.95996    
-   2362.53003    
-   2285.68994    
-   2211.35010    
-   2139.41992    
-   2069.83008    
-   2002.51001    
-   1937.38000    
-   1874.35999    
-   1813.40002    
-   1754.41003    
-   1697.34998    
-   1642.14001    
-   1588.72998    
-   1537.05005    
-   1487.06006    
-   1438.68994    
-   1391.90002    
-   1346.62000    
-   1302.81995    
-   1260.44995    
-   1219.44995    
-   1179.79004    
-   1141.41003    
-   110.429001    
-   106.836998    
-   103.362000    
-   100.000000    
 
 
  LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'MICRO       ':
@@ -569,8 +261,8 @@ QUIT "LIST" .                                                              0017
  TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =      1325
 
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.261 MEMORY USAGE= 3.012E+03
-<|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0044
+-->>MODULE LIB:        : TIME SPENT=        0.791 MEMORY USAGE= 9.588E+03
+<|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0037
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -578,9 +270,9 @@ QUIT "LIST" .                                                              0017
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: STEP UP TO LEVEL 'MACROLIB    '.
--->>module EQU:        : time spent=        0.002 memory usage= 1.848E+03
+-->>module EQU:        : time spent=        0.005 memory usage= 2.316E+03
 ->@END MODULE   : EQU:        
-<|micr_xsr.txt   := MICRO ;                                               |<0045
+<|micr_xsr.txt   := MICRO ;                                               |<0038
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -588,9 +280,9 @@ QUIT "LIST" .                                                              0017
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MICRO       ' WAS EXPORTED TO FILE 'micr_xsr.txt'.
--->>module EQU:        : time spent=        0.125 memory usage= 2.240E+02
+-->>module EQU:        : time spent=        0.687 memory usage= 4.440E+02
 ->@END MODULE   : EQU:        
-<|macr_xsr.txt   := MACRO ;                                               |<0046
+<|macr_xsr.txt   := MACRO ;                                               |<0039
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -598,17 +290,17 @@ QUIT "LIST" .                                                              0017
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macr_xsr.txt'.
--->>module EQU:        : time spent=        0.057 memory usage= 4.000E+00
+-->>module EQU:        : time spent=        0.352 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
-<|OLDMACRO := MACRO ;                                                     |<0048
+<|OLDMACRO := MACRO ;                                                     |<0040
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module EQU:        : time spent=        0.002 memory usage= 1.580E+03
+-->>module EQU:        : time spent=        0.006 memory usage= 4.484E+03
 ->@END MODULE   : EQU:        
-<|MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;                          |<0049
+<|MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;                          |<0041
 ->@BEGIN MODULE : MAC:        
 ->@DESCRIPTION  : Macroscopic xs processor                                                
 ->@CREDITS      : G. Marleau                                                              
@@ -620,7 +312,7 @@ QUIT "LIST" .                                                              0017
  IPRINT     1   (0=NO PRINT/1=SHORT/2=MORE)
  NGROUP   300   (NUMBER OF ENERGY GROUPS)
  NBMIX      2   (NUMBER OF MIXTURES IN THE MACROLIB)
- NANISO     2   (MAXIMUM SCATTERING ANISOTROPY)
+ NANISO    10   (MAXIMUM SCATTERING ANISOTROPY)
  NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
  NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
  ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
@@ -631,232 +323,742 @@ QUIT "LIST" .                                                              0017
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.017 MEMORY USAGE= 7.920E+02
-<|OLDMACRO := DELETE: OLDMACRO ;                                          |<0050
-<|END: ;                                                                  |<0051
-<|W_xs_300G ;                                                             |<0016
-<|MODULE       GEO: FMAC: MAC: SNT: ASM: FLU: OUT: HEAT: DELETE: UTL:     |<0007
-<|END: ;                                                                  |<0008
-<|PROCEDURE    assertS ;                                                  |<0009
-<|LINKED_LIST  MACRO OLDMACRO GEOM TRACK SYSTEM FLUX DEPOS EEDIT GWT0     |<0010
-<|GEDIT ;                                                                 |<0011
-<|SEQ_ASCII    FMAC_M :: FILE                                             |<0012
-<|'./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt' ;                       |<0020
-<|SEQ_ASCII    edep_xs.txt     :: FILE 'edep_xs.txt' ;                    |<0022
-<|SEQ_ASCII    edit_xs.txt     :: FILE 'edit_xs.txt' ;                    |<0023
-<|SEQ_ASCII    macro_xs.txt    :: FILE 'macro_xs.txt' ;                   |<0024
-<|SEQ_ASCII    flux_xs.txt     :: FILE 'flux_xs.txt' ;                    |<0025
-<|SEQ_ASCII    syst_xs.txt     :: FILE 'syst_xs.txt' ;                    |<0026
-<|SEQ_ASCII    geom_xs.txt     :: FILE 'geom_xs.txt' ;                    |<0027
-<|SEQ_ASCII    track_xs.txt    :: FILE 'track_xs.txt' ;                   |<0028
-<|GEOM := GEO: :: CAR1D 2                                                 |<0030
-<|X- VOID  X+ VOID                                                        |<0031
-<|MIX  1 2                                                                |<0032
-<|MESHX 0.0 0.01 2.0                                                      |<0033
-<|SPLITX 30 70                                                            |<0034
-<|;                                                                       |<0035
-->@BEGIN MODULE : GEO:        
-->@DESCRIPTION  : Geometry definition                                                     
-->@CREDITS      : A. Hebert                                                               
+-->>MODULE MAC:        : TIME SPENT=        0.052 MEMORY USAGE= 3.168E+03
+<|OLDMACRO := DELETE: OLDMACRO ;                                          |<0042
+<|MACRO := MAC: MACRO ::                                                  |<0045
+<|READ INPUT                                                              |<0046
+<|MIX 1 FIXE                                                              |<0047
+<|<<qsour>>  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0              |<0049
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0050
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0051
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0052
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0053
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0054
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0055
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0056
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0057
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0058
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0059
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0060
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0061
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0062
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0063
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0064
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0065
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0066
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0067
+<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0068
+<|0.0 0.0 ;                                                               |<0069
+->@BEGIN MODULE : MAC:        
+->@DESCRIPTION  : Macroscopic xs processor                                                
+->@CREDITS      : G. Marleau                                                              
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
-
- CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE CARTESIAN 1-D   .
-->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
-<|TRACK := SNT: GEOM ::                                                   |<0037
-<|TITLE 'TUNGSTEN-Slab: CEPXS-BFP-DRAGON'                                 |<0038
-<|EDIT 2 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2                              |<0039
-<|EPSI 1.E-5                                                              |<0040
-<|QUAD 1 MAXI 300 BFPL ;                                                  |<0041
-->@BEGIN MODULE : SNT:        
-->@DESCRIPTION  : Discrete ordinates tracking                                             
-->@CREDITS      : A. Hebert                                                               
-->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
-                  GNU LESSER GENERAL PUBLIC LICENSE
-1 SSSSS  NN      NN ***********************************************************************************************
- SSSSSSS NNN     NN ********************************************************* MULTIGROUP VERSION.  A. HEBERT (2005)
- SS   SS NNNN    NN
-  SS     NN NN   NN
-    SS   NN  NN  NN
- SS   SS NN   NN NN
- SSSSSSS NN    NNNN
-  SSSSS  NN     NNN
-
- TUNGSTEN-Slab: CEPXS-BFP-DRAGON                                         
-
-
-
- 1-D SLAB GEOMETRY.
-+                          BASED ON GEOMETRY GEOM        .
-
-
- NUMBER OF MESH INTERVALS ALONG THE X AXIS =  100     AVAILABLE STORAGE MAXX =   1000
-                          ALONG THE Y AXIS =    1     AVAILABLE STORAGE MAXY =   1000
-                          ALONG THE Z AXIS =    1     AVAILABLE STORAGE MAXZ =   1000
- NUMBER OF DISTINCT MIXTURES =      2
-
-
-
- THE QUADRATURE COSINES FOLLOW
-
-  -0.999305E+00 -0.996340E+00 -0.991013E+00 -0.983336E+00 -0.973327E+00
-  -0.961009E+00 -0.946411E+00 -0.929569E+00 -0.910522E+00 -0.889315E+00
-  -0.865999E+00 -0.840629E+00 -0.813265E+00 -0.783972E+00 -0.752820E+00
-  -0.719882E+00 -0.685236E+00 -0.648965E+00 -0.611155E+00 -0.571896E+00
-  -0.531279E+00 -0.489403E+00 -0.446366E+00 -0.402270E+00 -0.357220E+00
-  -0.311323E+00 -0.264687E+00 -0.217424E+00 -0.169644E+00 -0.121463E+00
-  -0.729931E-01 -0.243503E-01  0.243503E-01  0.729931E-01  0.121463E+00
-   0.169644E+00  0.217424E+00  0.264687E+00  0.311323E+00  0.357220E+00
-   0.402270E+00  0.446366E+00  0.489403E+00  0.531279E+00  0.571896E+00
-   0.611155E+00  0.648965E+00  0.685236E+00  0.719882E+00  0.752820E+00
-   0.783972E+00  0.813265E+00  0.840629E+00  0.865999E+00  0.889315E+00
-   0.910522E+00  0.929569E+00  0.946411E+00  0.961009E+00  0.973327E+00
-   0.983336E+00  0.991013E+00  0.996340E+00  0.999305E+00
-
-
- THE CORRESPONDING QUADRATURE WEIGHTS FOLLOW
-
-   0.178328E-02  0.414703E-02  0.650446E-02  0.884676E-02  0.111681E-01
-   0.134630E-01  0.157260E-01  0.179517E-01  0.201348E-01  0.222702E-01
-   0.243527E-01  0.263775E-01  0.283397E-01  0.302347E-01  0.320579E-01
-   0.338052E-01  0.354722E-01  0.370551E-01  0.385502E-01  0.399537E-01
-   0.412626E-01  0.424735E-01  0.435837E-01  0.445906E-01  0.454916E-01
-   0.462848E-01  0.469682E-01  0.475402E-01  0.479994E-01  0.483448E-01
-   0.485755E-01  0.486910E-01  0.486910E-01  0.485755E-01  0.483448E-01
-   0.479994E-01  0.475402E-01  0.469682E-01  0.462848E-01  0.454916E-01
-   0.445906E-01  0.435837E-01  0.424735E-01  0.412626E-01  0.399537E-01
-   0.385502E-01  0.370551E-01  0.354722E-01  0.338052E-01  0.320579E-01
-   0.302347E-01  0.283397E-01  0.263775E-01  0.243527E-01  0.222702E-01
-   0.201348E-01  0.179517E-01  0.157260E-01  0.134630E-01  0.111681E-01
-   0.884676E-02  0.650446E-02  0.414703E-02  0.178328E-02
-
- SNTRK: ORDER OF LINEAR SYSTEMS =    400
-        NUMBER OF UNKNOWNS PER ENERGY GROUP =  13200
-
- STATE VECTOR:
- NREG       100   (NUMBER OF REGIONS)
- NUN      13200   (NUMBER OF UNKNOWNS)
- ILK          0   (0=LEAKAGE PRESENT/1=LEAKAGE ABSENT)
- NBMIX        2   (MAXIMUM NUMBER OF MIXTURES USED)
- NSURF        1   (NUMBER OF OUTER SURFACES)
- ITYPE        2   (TYPE OF GEOMETRY)
- NFUNL        2   (NUMBER OF SPHERICAL HARMONICS COMPONENTS)
- IELEM        2   (ORDER OF POLYNOMIAL USED IN SPATIAL APPROX./1=DIAMOND SCHEME/2=LINEAR/3=PARABOLIC/3=CUBIC)
- NDIM         1   (NUMBER OF GEOMETRIC DIMENSIONS)
- ISCHM        1   (METHOD OF SPATIAL DISCRETISATION/1=HODD/2=DG)
- LL4        400   (ORDER OF THE MATRICES PER GROUP)
- LX         100   (NUMBER OF MESHES ALONG THE X AXIS)
- LY           1   (NUMBER OF MESHES ALONG THE Y AXIS)
- LZ           1   (NUMBER OF MESHES ALONG THE Z AXIS)
- NLF         64   (SN ORDER)
- ISCAT        2   (1=ISOTROPIC SOURCE/2=LINEARLY ANISOTROPIC SOURCE)
- IQUAD        1   (<4=LEVEL-SYMMETRIC OF TYPE IQUAD/4=LEGENDRE-CHEBYSHEV/5=SYMMETRIC LEGENDRE-CHEBYSHEV/6=QR/>9=PRODUCT)
- IFIX         0   (0/1: NEGATIVE FLUX FIXUP)
- IDSA         0   (0/1: SYNTHETIC ACCELERATION)
- NSTART       0   (NUMBER OF RESTARTS IN GMRES)
- NSDSA       10   (NUMBER OF ITERATIONS BEFORE ENABLING DSA)
- MAXIT      300   (MAXIMUM NUMBER OF INNER ITERATIONS)
- LIVO         0   (0/1: LIVOLANT ACCELERATION OFF/ON)
- ICL1         3   (NUMBER OF FREE ITERATIONS IN LIVO.)
- ICL2         3   (NUMBER OF ACCELERATED ITERATIONS IN LIVO.)
- ISPLH        0   (DEGREE OF LOZENGE SPLITTING FOR HEXAGONAL GEOMETRY)
- INSB         0   (0/1: GROUP VECTORIZATION OFF/ON)
- IOMP         0   (0/1: DOMINO MULTITHREADING OFF/ON)
- IGAV         0   (CONDITION AT AXIAL AXIS FOR CYL./SPH. 1D)
- LSHOOT       1   (0/1: SHOOTING METHOD IN 1D OFF/ON)
- IBFP         2   (0/1/2: BFP SOLUTION OFF/GALERKIN/LIGOU)
- IBIHET       0   (0/1: DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
- EPSI      0.1E-04  (CONVERGENCE CRITERION ON INNER ITERATIONS)
-->@END MODULE   : SNT:        
--->>MODULE SNT:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
-<|MACRO    := FMAC: FMAC_M :: EDIT 99 PARTICLE B ;                        |<0043
-->@BEGIN MODULE : FMAC:       
-->@DESCRIPTION  : Recover information from a FMAC-M interface file                        
-->@CREDITS      : A. Hebert                                                               
-->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
-                  GNU LESSER GENERAL PUBLIC LICENSE
- FMAC-M            
- FMAC:  Format FMAC-M version = 5
- NG    =300   number of energy groups;
- NPART =  1   number of particle types;
- NGXI  =  0   number of groups with non-zero fission spectrum;
- NGXIF =  0   number of the first group with non-zero fission spectrum;
- NGRET =  0   number of delayed neutron groups;
- NGXIR =  0   number of groups with non-zero fission spectrum for delayed neutrons;
- NGXIFR=  0   number of the first group with non-zero fission spectrum for delayed neutrons;
- NEDIT =  0   number of additional edit cross-sections;
- MAXGS =  0   not used;
- KLEIN =  0   not used;
- NGHIGH=  0   total number of groups of cascade region;
- IADJ  =  0   0/1 - regular/adjoint cross-section file;
- NUCL  =  0   number of nuclides;
- NUCLF =  0   number of fission nuclides;
- MIX   =  1   number of materials (compositions);
- NUFIS =  0   number of fission materials;
- MAS   = 38   length of integer control array LL(MAS);
- KIN= 45149   total number of scattering transitions (not used);
- MX    =  3   maximal length of transition array (not used);
- MNW   =  3   order of PL approximation used +1;
- MPOINT=  0   order of discrete approximation of scattering indicatrix (number of angular scattering cosine points used);
- NUMD(I)=  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 not used
-
- FMAC01: 20.00MeV monoenergetic electron-source on TUNGSTEN Slab                 
-
- FMAC01:                         
-
-
- LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'MACRO       ':
-
-     BLOCK NAME----------    LENGTH    TYPE
-
-        1  'SIGNATURE   '         3    CHARACTER       ='L_MACROLIB  '
-        2  'PARTICLE    '         1    CHARACTER       
-        3  'PARTICLE-NGR'         1    INTEGER         
-        4  'PARTICLE-NAM'         1    CHARACTER       
-        5  'PARTICLE-MC2'         1    REAL            
-        6  'GROUP       '       300    LIST            
-        7  'ENERGY      '       301    REAL            
-        8  'STATE-VECTOR'        40    INTEGER         
-
-
- TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =       348
-
+ CROSS SECTION TYPE     NTOT0      NUSIGF     FIXE       CHI        SCAT (NL=  1, 10)        TRANC      DIFF       H-FACTOR   NFTOT      FLUX-INTG  FLUX-INTG-P1
+ MATERIAL     1                               READ                                                                                                        
+ MATERIAL     2                                                                                                                                           
 
  OPTIONS
  -------
- IMPX      99   (0=NO PRINT/1=SHORT/2=MORE)
+ IPRINT     1   (0=NO PRINT/1=SHORT/2=MORE)
  NGROUP   300   (NUMBER OF ENERGY GROUPS)
- NBMIX      1   (NUMBER OF MIXTURES IN THE MACROLIB)
- NANISO     3   (MAXIMUM SCATTERING ANISOTROPY)
+ NBMIX      2   (NUMBER OF MIXTURES IN THE MACROLIB)
+ NANISO    10   (MAXIMUM SCATTERING ANISOTROPY)
  NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
- NEDMAC     0   (NUMBER OF CROSS SECTION EDITS)
+ NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
  ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
  NLG        0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ NALB       0   (NUMBER OF PHYSICAL ALBEDOS)
  ILEAK      0   (1=DIFF AVAILABLE; 2=DIFFX AVAILABLE)
  NSTEP      0   (NUMBER OF PERTURBATION DIRECTORIES)
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
- IADJ       0   (=0/1 DIRECT/ADJOINT MACROLIB)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
- HPART      B   (MACROLIB PARTICLE)
+->@END MODULE   : MAC:        
+-->>MODULE MAC:        : TIME SPENT=        0.017 MEMORY USAGE= 7.128E+03
+<|SYSTEM := ASM: MACRO TRACK :: EDIT 1 ARM ;                              |<0071
+->@BEGIN MODULE : ASM:        
+->@DESCRIPTION  : To built system matrices (CP and IC)                                    
+->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
 
-       PARTICLE NAMES:       B
- NB. OF ENERGY GROUPS:     300
-->@END MODULE   : FMAC:       
--->>MODULE FMAC:       : TIME SPENT=        0.107 MEMORY USAGE= 0.000E+00
-<|macro_xs.txt  := MACRO ;                                                |<0044
-->@BEGIN MODULE : EQU:        
+
+ COMPUTATION OF DRAGON RESPONSE MATRICES BY DOOR =   SN          
+
+ OPTIONS
+ -------
+ IMPX         1   (0=NO PRINT/1=SHORT/2=MORE)
+ ITPIJ        1   (1=WIJ/2=PIJ/3=WIJK/4=PIJK)
+ LNORM        1   (0=NORMALIZE PIJ TO 1/1=DO NOT)
+ LALBS        1   (0=RECOVER AND SAVE WIS/1=DO NOT)
+ IPHASE       1   (1=GENERAL FLUX SOLUTION/2=PIJ APPROACH)
+ ISTRM        1   (1=HOMO BN OR NO LEAKAGE/2=ECCO/3=TIBERE)
+ KNORM        4   (0=NO/1=GELBARD/2=DIAGONAL/3=NON-LINEAR/4=HELIOS)
+ NGRP       300   (NUMBER OF GROUPS)
+ NUN      19240   (NUMBER OF UNKNOWNS)
+ NBMIX        2   (NUMBER OF MIXTURES)
+ NANI        10   (NUMBER OF LEGENDRE ORDERS SCATTERING XS)
+ IDIFF        0   (0/1: DIFFUSION COEFFICIENTS ABSENT/PRESENT)
+ IBFP         2   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
+ DOOR             (SN          )
+->@END MODULE   : ASM:        
+-->>MODULE ASM:        : TIME SPENT=        0.004 MEMORY USAGE= 0.000E+00
+<|FLUX   := FLU: MACRO TRACK SYSTEM :: EDIT 1 TYPE S EXTE 100 ;           |<0072
+->@BEGIN MODULE : FLU:        
+->@DESCRIPTION  : Solve the flux equations                                                
+->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+
+
+ P. I. M.    SOLUTION TO TRANSPORT EQUATION
+
+ CALCULATION TYPE            =    SOURCE
+ FORWARD/BACKWARD OPTION     =    DIRECT
+ (AN)ISOTROPY OPTION         =ANISOTROPI
+ FLUX SOLUTION DOOR          =    SN    
+ NB. OF GROUPS               =       300
+ NB. OF REGIONS              =       130
+ NB. OF UNKNOWNS PER GROUP   =     19240
+ MAX. OUTER ITERATIONS       =       100
+ MAX. THERMAL ITERATIONS     =       600
+ ACCELERATION SCHEME         =( 3 FREE, 3 ACCELERATED)
+ REBALANCING OPTION          = ON 
+ SELF-SCATTERING REDUCTION   = ON 
+ FUNDAMENTAL MODE            = OFF
+ EIGENVALUE TOLERANCE        =  1.000E-05
+ UNKNOWN OUTER TOLERANCE     =  5.000E-05
+ UNKNOWN INNER TOLERANCE     =  5.000E-05
+
+ OUT(  0) EIG: PRC= 1.00E+00 TAR= 1.00E-05 KEFF= 1.000000E+00 BUCK= 0.00000E+00
+          IN(  1) FLX: PRC= 1.00E+00 TAR= 5.00E-05 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 3.12E-05 TAR= 5.00E-05 IGDEB=          301 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=      432. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  1) EIG: PRC= 0.00E+00 TAR= 1.00E-05 KEFF= 1.000000E+00 BUCK= 0.00000E+00
+ OUT(  1) FLX: PRC= 1.00E+00 TAR= 5.00E-05 FNOR= 1.000000E+00 ACCE=     1.00000
+          IN(  1) FLX: PRC= 1.89E-05 TAR= 5.00E-05 IGDEB=          301 ACCE=     1.00000
+ FLU2DR:    LEAKAGE-> REBALANCING OFF
+ FLU2DR: CPU TIME=       18. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+ OUT(  2) EIG: PRC= 0.00E+00 TAR= 1.00E-05 KEFF= 1.000000E+00 BUCK= 0.00000E+00
+ OUT(  2) FLX: PRC= 1.89E-05 TAR= 5.00E-05 FNOR= 1.000000E+00 ACCE=     1.00000
+ FLU2DR: CPU TIME=      450. EXTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+
+ ++ TRACKING CALLED=   3 TIMES PRECISION= 0.00E+00
+ ++ TOTAL NUMBER OF FLUX CALCULATIONS=       900
+->@END MODULE   : FLU:        
+-->>MODULE FLU:        : TIME SPENT=      450.110 MEMORY USAGE= 2.379E+05
+<|EEDIT := OUT: FLUX TRACK MACRO GEOM  :: EDIT 2 COND INTG NONE ;         |<0074
+->@BEGIN MODULE : OUT:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 
- DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macro_xs.txt'.
--->>module EQU:        : time spent=        0.079 memory usage= 0.000E+00
-->@END MODULE   : EQU:        
-<|END: ;                                                                  |<0045
-. ------------------------------------------------------------------------ .
 
- normal end of execution for dragon 5  Version 5.0.7 ($Revision: 2060 $)               
- check for warning in listing
- before assuming your run was successful
+ EXEC: OUT:         BY A. HEBERT
+
+ OUTFLX: RECOVER THE DIRECT FLUX.
+ IGR=           1
+ EVECT=   31885246.0    
+ IGR=           2
+ EVECT=   29892584.0    
+ IGR=           3
+ EVECT=   1181215.12    
+ IGR=           4
+ EVECT=   3946623.25    
+ IGR=           5
+ EVECT=   2014951.62    
+ IGR=           6
+ EVECT=   1370503.88    
+ IGR=           7
+ EVECT=   1636541.62    
+ IGR=           8
+ EVECT=   777739.625    
+ IGR=           9
+ EVECT=   1194109.38    
+ IGR=          10
+ EVECT=   651045.312    
+ IGR=          11
+ EVECT=   833371.250    
+ IGR=          12
+ EVECT=   623640.750    
+ IGR=          13
+ EVECT=   590160.000    
+ IGR=          14
+ EVECT=   594248.375    
+ IGR=          15
+ EVECT=   441390.094    
+ IGR=          16
+ EVECT=   545760.375    
+ IGR=          17
+ EVECT=   361924.875    
+ IGR=          18
+ EVECT=   479612.938    
+ IGR=          19
+ EVECT=   324996.031    
+ IGR=          20
+ EVECT=   409811.219    
+ IGR=          21
+ EVECT=   307364.469    
+ IGR=          22
+ EVECT=   346516.000    
+ IGR=          23
+ EVECT=   296291.031    
+ IGR=          24
+ EVECT=   294407.688    
+ IGR=          25
+ EVECT=   284039.156    
+ IGR=          26
+ EVECT=   255986.469    
+ IGR=          27
+ EVECT=   266950.844    
+ IGR=          28
+ EVECT=   230587.281    
+ IGR=          29
+ EVECT=   245260.250    
+ IGR=          30
+ EVECT=   214643.078    
+ IGR=          31
+ EVECT=   221389.375    
+ IGR=          32
+ EVECT=   204162.172    
+ IGR=          33
+ EVECT=   198220.922    
+ IGR=          34
+ EVECT=   195665.312    
+ IGR=          35
+ EVECT=   178024.797    
+ IGR=          36
+ EVECT=   186582.047    
+ IGR=          37
+ EVECT=   162196.297    
+ IGR=          38
+ EVECT=   175694.531    
+ IGR=          39
+ EVECT=   150824.625    
+ IGR=          40
+ EVECT=   162987.609    
+ IGR=          41
+ EVECT=   142920.969    
+ IGR=          42
+ EVECT=   149532.156    
+ IGR=          43
+ EVECT=   136934.500    
+ IGR=          44
+ EVECT=   136649.406    
+ IGR=          45
+ EVECT=   131307.672    
+ IGR=          46
+ EVECT=   125374.906    
+ IGR=          47
+ EVECT=   124765.758    
+ IGR=          48
+ EVECT=   116480.289    
+ IGR=          49
+ EVECT=   117507.578    
+ IGR=          50
+ EVECT=   109908.000    
+ IGR=          51
+ EVECT=   109443.727    
+ IGR=          52
+ EVECT=   104775.453    
+ IGR=          53
+ EVECT=   101371.641    
+ IGR=          54
+ EVECT=   100178.273    
+ IGR=          55
+ EVECT=   94085.7031    
+ IGR=          56
+ EVECT=   95354.3125    
+ IGR=          57
+ EVECT=   88139.4531    
+ IGR=          58
+ EVECT=   89953.6406    
+ IGR=          59
+ EVECT=   83504.6016    
+ IGR=          60
+ EVECT=   84048.6797    
+ IGR=          61
+ EVECT=   79810.3281    
+ IGR=          62
+ EVECT=   78308.5391    
+ IGR=          63
+ EVECT=   76477.4922    
+ IGR=          64
+ EVECT=   73300.9766    
+ IGR=          65
+ EVECT=   72946.3984    
+ IGR=          66
+ EVECT=   69326.7109    
+ IGR=          67
+ EVECT=   69039.7969    
+ IGR=          68
+ EVECT=   66277.8516    
+ IGR=          69
+ EVECT=   65022.2578    
+ IGR=          70
+ EVECT=   63713.0312    
+ IGR=          71
+ EVECT=   61363.5625    
+ IGR=          72
+ EVECT=   61134.8555    
+ IGR=          73
+ EVECT=   58439.6562    
+ IGR=          74
+ EVECT=   58331.9531    
+ IGR=          75
+ EVECT=   56215.5000    
+ IGR=          76
+ EVECT=   55447.8359    
+ IGR=          77
+ EVECT=   54410.1172    
+ IGR=          78
+ EVECT=   52864.9961    
+ IGR=          79
+ EVECT=   52603.2305    
+ IGR=          80
+ EVECT=   50885.3164    
+ IGR=          81
+ EVECT=   50628.3945    
+ IGR=          82
+ EVECT=   49419.3359    
+ IGR=          83
+ EVECT=   48681.6758    
+ IGR=          84
+ EVECT=   48166.5156    
+ IGR=          85
+ EVECT=   47071.1133    
+ IGR=          86
+ EVECT=   46841.5391    
+ IGR=          87
+ EVECT=   45918.9062    
+ IGR=          88
+ EVECT=   45430.1992    
+ IGR=          89
+ EVECT=   44978.1719    
+ IGR=          90
+ EVECT=   44195.2617    
+ IGR=          91
+ EVECT=   44021.8906    
+ IGR=          92
+ EVECT=   43272.6289    
+ IGR=          93
+ EVECT=   43002.8125    
+ IGR=          94
+ EVECT=   42555.9414    
+ IGR=          95
+ EVECT=   42073.0938    
+ IGR=          96
+ EVECT=   41852.7539    
+ IGR=          97
+ EVECT=   41398.9375    
+ IGR=          98
+ EVECT=   41113.0391    
+ IGR=          99
+ EVECT=   40871.8242    
+ IGR=         100
+ EVECT=   40474.3555    
+ IGR=         101
+ EVECT=   40335.8281    
+ IGR=         102
+ EVECT=   40012.7578    
+ IGR=         103
+ EVECT=   39792.3594    
+ IGR=         104
+ EVECT=   39595.7891    
+ IGR=         105
+ EVECT=   39335.1562    
+ IGR=         106
+ EVECT=   39156.2539    
+ IGR=         107
+ EVECT=   38959.1680    
+ IGR=         108
+ EVECT=   38721.4453    
+ IGR=         109
+ EVECT=   38562.7812    
+ IGR=         110
+ EVECT=   38348.5625    
+ IGR=         111
+ EVECT=   38159.2109    
+ IGR=         112
+ EVECT=   37989.9219    
+ IGR=         113
+ EVECT=   37796.9102    
+ IGR=         114
+ EVECT=   37624.2070    
+ IGR=         115
+ EVECT=   37459.2969    
+ IGR=         116
+ EVECT=   37275.4414    
+ IGR=         117
+ EVECT=   37107.1133    
+ IGR=         118
+ EVECT=   36940.8711    
+ IGR=         119
+ EVECT=   36758.3398    
+ IGR=         120
+ EVECT=   36589.6328    
+ IGR=         121
+ EVECT=   36412.5859    
+ IGR=         122
+ EVECT=   36226.7773    
+ IGR=         123
+ EVECT=   36045.0156    
+ IGR=         124
+ EVECT=   35857.5078    
+ IGR=         125
+ EVECT=   35670.9258    
+ IGR=         126
+ EVECT=   35489.3867    
+ IGR=         127
+ EVECT=   35309.5195    
+ IGR=         128
+ EVECT=   35121.5547    
+ IGR=         129
+ EVECT=   34938.2148    
+ IGR=         130
+ EVECT=   34757.6953    
+ IGR=         131
+ EVECT=   34576.5703    
+ IGR=         132
+ EVECT=   34389.2422    
+ IGR=         133
+ EVECT=   34218.2695    
+ IGR=         134
+ EVECT=   34048.8398    
+ IGR=         135
+ EVECT=   33874.3281    
+ IGR=         136
+ EVECT=   33697.6406    
+ IGR=         137
+ EVECT=   33505.5859    
+ IGR=         138
+ EVECT=   33327.1445    
+ IGR=         139
+ EVECT=   33145.3203    
+ IGR=         140
+ EVECT=   32963.2344    
+ IGR=         141
+ EVECT=   32786.7969    
+ IGR=         142
+ EVECT=   32612.0176    
+ IGR=         143
+ EVECT=   32436.1758    
+ IGR=         144
+ EVECT=   32271.2871    
+ IGR=         145
+ EVECT=   32104.4590    
+ IGR=         146
+ EVECT=   31945.3145    
+ IGR=         147
+ EVECT=   31788.3574    
+ IGR=         148
+ EVECT=   31635.5391    
+ IGR=         149
+ EVECT=   31483.9785    
+ IGR=         150
+ EVECT=   31337.4453    
+ IGR=         151
+ EVECT=   31199.1582    
+ IGR=         152
+ EVECT=   31065.2363    
+ IGR=         153
+ EVECT=   30931.2383    
+ IGR=         154
+ EVECT=   30809.3828    
+ IGR=         155
+ EVECT=   30694.5918    
+ IGR=         156
+ EVECT=   30572.9648    
+ IGR=         157
+ EVECT=   30463.5020    
+ IGR=         158
+ EVECT=   30360.1172    
+ IGR=         159
+ EVECT=   30256.8438    
+ IGR=         160
+ EVECT=   30158.7793    
+ IGR=         161
+ EVECT=   30069.8789    
+ IGR=         162
+ EVECT=   29979.6211    
+ IGR=         163
+ EVECT=   29890.2285    
+ IGR=         164
+ EVECT=   29808.7207    
+ IGR=         165
+ EVECT=   29730.3301    
+ IGR=         166
+ EVECT=   29650.6895    
+ IGR=         167
+ EVECT=   29579.3809    
+ IGR=         168
+ EVECT=   29507.9609    
+ IGR=         169
+ EVECT=   29440.3770    
+ IGR=         170
+ EVECT=   29372.0078    
+ IGR=         171
+ EVECT=   29302.2969    
+ IGR=         172
+ EVECT=   29237.3164    
+ IGR=         173
+ EVECT=   29172.7812    
+ IGR=         174
+ EVECT=   29108.4355    
+ IGR=         175
+ EVECT=   29047.5723    
+ IGR=         176
+ EVECT=   28977.0078    
+ IGR=         177
+ EVECT=   28908.4492    
+ IGR=         178
+ EVECT=   28854.1504    
+ IGR=         179
+ EVECT=   28804.2871    
+ IGR=         180
+ EVECT=   28737.0078    
+ IGR=         181
+ EVECT=   28645.4453    
+ IGR=         182
+ EVECT=   28553.9355    
+ IGR=         183
+ EVECT=   28468.7402    
+ IGR=         184
+ EVECT=   28397.2070    
+ IGR=         185
+ EVECT=   28333.1914    
+ IGR=         186
+ EVECT=   28232.4902    
+ IGR=         187
+ EVECT=   28108.2656    
+ IGR=         188
+ EVECT=   27982.4727    
+ IGR=         189
+ EVECT=   27856.9863    
+ IGR=         190
+ EVECT=   27723.3516    
+ IGR=         191
+ EVECT=   27587.5195    
+ IGR=         192
+ EVECT=   27440.4199    
+ IGR=         193
+ EVECT=   27292.5996    
+ IGR=         194
+ EVECT=   27139.4473    
+ IGR=         195
+ EVECT=   26975.0820    
+ IGR=         196
+ EVECT=   26810.8730    
+ IGR=         197
+ EVECT=   26638.8438    
+ IGR=         198
+ EVECT=   26460.5547    
+ IGR=         199
+ EVECT=   26280.2324    
+ IGR=         200
+ EVECT=   26085.8965    
+ IGR=         201
+ EVECT=   25894.0000    
+ IGR=         202
+ EVECT=   25693.8223    
+ IGR=         203
+ EVECT=   25487.1387    
+ IGR=         204
+ EVECT=   25283.2148    
+ IGR=         205
+ EVECT=   25064.3477    
+ IGR=         206
+ EVECT=   24843.9766    
+ IGR=         207
+ EVECT=   24624.4668    
+ IGR=         208
+ EVECT=   24396.0801    
+ IGR=         209
+ EVECT=   24163.8750    
+ IGR=         210
+ EVECT=   23934.1992    
+ IGR=         211
+ EVECT=   23696.4395    
+ IGR=         212
+ EVECT=   23455.9355    
+ IGR=         213
+ EVECT=   23214.0840    
+ IGR=         214
+ EVECT=   22972.0547    
+ IGR=         215
+ EVECT=   22726.8555    
+ IGR=         216
+ EVECT=   22475.7793    
+ IGR=         217
+ EVECT=   22232.4336    
+ IGR=         218
+ EVECT=   21980.6094    
+ IGR=         219
+ EVECT=   21730.4512    
+ IGR=         220
+ EVECT=   21487.3711    
+ IGR=         221
+ EVECT=   21230.6113    
+ IGR=         222
+ EVECT=   20982.7480    
+ IGR=         223
+ EVECT=   20740.2520    
+ IGR=         224
+ EVECT=   20484.9258    
+ IGR=         225
+ EVECT=   20270.3984    
+ IGR=         226
+ EVECT=   20041.4316    
+ IGR=         227
+ EVECT=   19837.0605    
+ IGR=         228
+ EVECT=   19636.0977    
+ IGR=         229
+ EVECT=   19370.6094    
+ IGR=         230
+ EVECT=   19250.2637    
+ IGR=         231
+ EVECT=   19210.3184    
+ IGR=         232
+ EVECT=   19223.0195    
+ IGR=         233
+ EVECT=   19086.4082    
+ IGR=         234
+ EVECT=   18738.3535    
+ IGR=         235
+ EVECT=   18434.6406    
+ IGR=         236
+ EVECT=   18154.5391    
+ IGR=         237
+ EVECT=   18585.7793    
+ IGR=         238
+ EVECT=   18849.5801    
+ IGR=         239
+ EVECT=   18344.1992    
+ IGR=         240
+ EVECT=   18354.6387    
+ IGR=         241
+ EVECT=   18324.8145    
+ IGR=         242
+ EVECT=   17871.4941    
+ IGR=         243
+ EVECT=   17497.7773    
+ IGR=         244
+ EVECT=   17168.1133    
+ IGR=         245
+ EVECT=   16856.8379    
+ IGR=         246
+ EVECT=   17437.2305    
+ IGR=         247
+ EVECT=   17778.9160    
+ IGR=         248
+ EVECT=   17160.9668    
+ IGR=         249
+ EVECT=   16710.7637    
+ IGR=         250
+ EVECT=   16350.2119    
+ IGR=         251
+ EVECT=   16020.5771    
+ IGR=         252
+ EVECT=   15707.3779    
+ IGR=         253
+ EVECT=   15403.4746    
+ IGR=         254
+ EVECT=   15112.2715    
+ IGR=         255
+ EVECT=   14827.4160    
+ IGR=         256
+ EVECT=   14553.7568    
+ IGR=         257
+ EVECT=   14288.6553    
+ IGR=         258
+ EVECT=   14029.0547    
+ IGR=         259
+ EVECT=   13778.1006    
+ IGR=         260
+ EVECT=   13530.2930    
+ IGR=         261
+ EVECT=   13292.2197    
+ IGR=         262
+ EVECT=   13058.4932    
+ IGR=         263
+ EVECT=   12828.4336    
+ IGR=         264
+ EVECT=   12608.1094    
+ IGR=         265
+ EVECT=   12390.0459    
+ IGR=         266
+ EVECT=   12179.4736    
+ IGR=         267
+ EVECT=   11973.3711    
+ IGR=         268
+ EVECT=   11768.0059    
+ IGR=         269
+ EVECT=   11570.6475    
+ IGR=         270
+ EVECT=   11379.3477    
+ IGR=         271
+ EVECT=   11187.6826    
+ IGR=         272
+ EVECT=   11004.7656    
+ IGR=         273
+ EVECT=   10824.7412    
+ IGR=         274
+ EVECT=   10648.4795    
+ IGR=         275
+ EVECT=   10475.5166    
+ IGR=         276
+ EVECT=   10304.3027    
+ IGR=         277
+ EVECT=   10141.6660    
+ IGR=         278
+ EVECT=   9980.17969    
+ IGR=         279
+ EVECT=   21024.7266    
+ IGR=         280
+ EVECT=   26248.3965    
+ IGR=         281
+ EVECT=   19113.4004    
+ IGR=         282
+ EVECT=   17401.2207    
+ IGR=         283
+ EVECT=   17068.2656    
+ IGR=         284
+ EVECT=   16311.6455    
+ IGR=         285
+ EVECT=   15602.9551    
+ IGR=         286
+ EVECT=   15028.5830    
+ IGR=         287
+ EVECT=   14507.5352    
+ IGR=         288
+ EVECT=   14016.2734    
+ IGR=         289
+ EVECT=   13560.4355    
+ IGR=         290
+ EVECT=   13138.8896    
+ IGR=         291
+ EVECT=   12744.7764    
+ IGR=         292
+ EVECT=   12378.2744    
+ IGR=         293
+ EVECT=   12031.4512    
+ IGR=         294
+ EVECT=   11686.7451    
+ IGR=         295
+ EVECT=   11367.4180    
+ IGR=         296
+ EVECT=   11068.7324    
+ IGR=         297
+ EVECT=   22627.5996    
+ IGR=         298
+ EVECT=   29.6077633    
+ IGR=         299
+ EVECT=   918.241943    
+ IGR=         300
+ EVECT=   752.235046    
+AHMED,OUTFLX.f
