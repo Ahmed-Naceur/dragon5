@@ -38,13 +38,12 @@ GEOM := GEO: :: CAR1D 2
 TRACK := SNT: GEOM ::
              TITLE 'Water-Slab:Cepxsr-Dragon'
              EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2
-             EPSI 1.E-5
-             QUAD 1 MAXI 300 BFPL ;
+             EPSI 1.E-5 QUAD 1 MAXI 300 BFPL ;
 
 * --- Library access
 
 MICRO  := LIB: :: 
-          EDIT 99
+          EDIT 2
           NMIX 1 
           ANIS 2
           MIXS LIB: MATXS2 FIL: _W300g_20MeV
@@ -59,11 +58,11 @@ MACRO := MICRO :: STEP UP MACROLIB ;
 micr_xsr.txt   := MICRO ;
 macr_xsr.txt   := MACRO ;
 
-* UTL: MACRO :: STEP UP GROUP STEP AT 1 DIR IMPR ESTOPW ;
 OLDMACRO := MACRO ;
 MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;
 OLDMACRO := DELETE: OLDMACRO ;
 
+END: ; QUIT "LIST" .
 
 *DIFFRES := STAT: MACRO OLDMACRO :: ;
 
@@ -73,44 +72,40 @@ REAL qsour :=  1.E10 2.0 / $Pi_R / ; ! [cm-3 s-1]
 MACRO := MAC: MACRO ::
       READ INPUT
       MIX 1 FIXE
-! --  2 groups      
-!     <<qsour>> 0.0
-!     ;
 ! -- 300 groups
-     <<qsour>> 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+     <<qsour>>  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0    
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
-    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
-     ;
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+    0.0 0.0 ;
 
 
 
 * ---- Electron flux
 
-SYSTEM := ASM: MACRO TRACK :: EDIT 2 ARM ;
-FLUX  := FLU: MACRO TRACK SYSTEM :: EDIT 2 TYPE S EXTE 100 ;
+SYSTEM := ASM: MACRO TRACK :: EDIT 1 ARM ;
+FLUX  := FLU: MACRO TRACK SYSTEM :: EDIT 1 TYPE S EXTE 100 ;
 
 * --- Recover flux and reaction rates
 
 * add MICRO to access density,
-EEDIT := OUT: FLUX TRACK MACRO GEOM  :: EDIT 2 COND INTG NONE ;
+EEDIT := OUT: FLUX TRACK MACRO GEOM  :: EDIT 1 COND INTG NONE ;
 
 
 * ---- Energy deposition
