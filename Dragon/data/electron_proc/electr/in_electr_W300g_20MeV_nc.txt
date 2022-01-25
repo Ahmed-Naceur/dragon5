@@ -1,0 +1,25 @@
+ reconr
+ 30 31
+ 'pendf tape for electron interaction cross sections from EPICS2017'/
+ 7400 1 0
+ .001/
+ 'tungsten'/
+ 0/
+ electr
+ 30 31 38 39 0 33
+ 7400 3 0 2 2 1
+ W-electr:non-coupled/
+ -1 0/
+ 0/
+-- matxsr
+-- 0  0 35  0  0  0  0  0  0 33/ 
+-- 1 'test'/                     
+-- 1 1 1 1 /                   
+-- 'test'/
+-- 'b'/
+-- 300/
+-- 'bscat'/
+-- 1
+-- 1
+-- 'w' 7400 7400  
+stop

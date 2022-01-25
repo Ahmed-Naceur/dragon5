@@ -1,0 +1,32 @@
+*
+* Assert procedure for non-regression testing
+* Recover a value from a list of real arrays
+* Author: A. Hebert
+*
+PARAMETER LCMNAM :: ::: LINKED_LIST LCMNAM ; ;
+CHARACTER KEY ;
+INTEGER ISET IPOS ;
+REAL REFVALUE ;
+:: >>KEY<< >>ISET<< >>IPOS<< >>REFVALUE<< ;
+INTEGER ITYLCM ;
+REAL VALUE DELTA ;
+MODULE GREP: ABORT: END: ;
+*
+GREP: LCMNAM :: TYPE <<KEY>> >>ITYLCM<< ;
+IF ITYLCM 10 = THEN
+  GREP: LCMNAM :: STEP UP <<KEY>> GETVAL <<ISET>> <<IPOS>> >>VALUE<< ;
+ELSE
+  PRINT "assertV: INVALID TYPE=" ITYLCM ;
+  ABORT: ;
+ENDIF ;
+EVALUATE DELTA := VALUE REFVALUE - REFVALUE / ABS ;
+IF DELTA 1.0E-4 < THEN
+  PRINT "TEST SUCCESSFUL; DELTA=" DELTA ;
+ELSE
+  PRINT "------------" ;
+  PRINT "TEST FAILURE" ;
+  PRINT "------------" ;
+  PRINT "REFERENCE=" REFVALUE " CALCULATED=" VALUE ;
+  ABORT: ;
+ENDIF ;
+END: ;
