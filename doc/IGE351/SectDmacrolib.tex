@@ -84,8 +84,9 @@ I_{\rm df} = \left\{
 \begin{array}{ll}
 0 & \textrm{no discontinuity factor information}\\
 1 & \textrm{multigroup boundary current information is available}\\
-2 & \textrm{discontinuity factor information (see \Sect{macroADF}) is available}\\
-3 & \textrm{matrix ($G \times G$) discontinuity factor information (see \Sect{macroADF}) is available.}
+2 & \textrm{boundary flux information (see \Sect{macroADF}) is available}\\
+3 & \textrm{discontinuity factor information (see \Sect{macroADF}) is available}\\
+4 & \textrm{matrix ($G \times G$) discontinuity factor information (see \Sect{macroADF}) is available.}
 \end{array} \right.
 \end{displaymath}
 \item Adjoint macrolib flag $I_{\rm adj}=\mathcal{S}^{M}_{13}$:
@@ -163,13 +164,10 @@ directory:
   {Multigroup and surface ordered physical albedos. The dimension is R$(N_{A},G,G)$ in case where matrix albedos are used.}
 \OptRealEnr
   {VOLUME\blank{6}}{$N_{m}$}{$\mathcal{M}\ge 2$}{cm$^{3}$~~}
-  {Volume of region containing this mixture $V_{m}$}
+  {Volume of region containing each mixture $V_{m}$}
 \OptRealEnr
-  {VOLUME\blank{6}}{$N_{m}$}{$\mathcal{M}\ge 2$}{cm$^{3}$~~}
-  {Volume of region containing this mixture $V_{m}$}  
-\OptRealEnr
-  {DENMIXTURES\blank{1}}{$N_{m}$}{$\mathcal{M}=1$}{g/cm$^{3}$~~}
-  {Volumetric mass density of this mixture $\rho_{m}$}  
+  {MIXTURESDENS}{$N_{m}$}{$\mathcal{M}=1$}{g/cm$^{3}$~~}
+  {Volumetric mass density of each mixture $\rho_{m}$}  
 \OptRealEnr
   {FLUXDISAFACT}{$G$}{$\mathcal{M}=2$}{}
   {Ratio of the flux in the fuel to the flux in the cell $F_{g}$ after homogenization}
@@ -561,16 +559,17 @@ group directory.
 
 \subsection{The \moc{/ADF/} sub-directory in \dir{macrolib}}\label{sect:macroADF}
 
-Sub-directory containing ADF-type boundary flux edition information. This information can be used to compute
-discontinuity factors or to perform Selengut-type normalization with the {\sl superhomog\'en\'eisation} (SPH) method.
+Sub-directory containing boundary-related edition information. This information can be boundary fluxes, discontinuity factors or
+assembly discontinuity factors (ADF). Boundary fluxes can be used to compute discontinuity factors or to perform Selengut-type
+normalization with the {\sl superhomog\'en\'eisation} (SPH) method.
 
 \begin{DescriptionEnregistrement}{Records in the \moc{/ADF/} sub-directory}{7.5cm}
 \OptIntEnr
   {NTYPE\blank{7}}{$1$}{$I_{\rm df} \ge 2$}
-  {Number of ADF-type boundary flux edits.}
+  {Number of ADF-type boundary edits.}
 \OptCharEnr
   {HADF\blank{8}}{({\tt NTYPE})$*8$}{$I_{\rm df} \ge 2$}
-  {Name of each ADF-type boundary flux edit. Any name can be used, but some
+  {Name of each ADF-type boundary flux or discontinuity factor edit. Any name can be used, but some
   names are standard. Standard names are: $=$ \moc{FD\_C}:
   corner flux edition; $=$ \moc{FD\_B}: surface (assembly gap) flux edition; $=$ \moc{FD\_H}:
   row flux edition (these are the first row of surrounding cells in the assembly).}
@@ -579,10 +578,11 @@ discontinuity factors or to perform Selengut-type normalization with the {\sl su
   {Multigroup boundary currents $J^{g}_{\rm out}$ and $J^{g}_{\rm in}$. These values correspond to surfaces where
   a \moc{VOID} or \moc{ALBE} boundary condition is set in DRAGON.}
 \OptRealVar
-  {\listedir{type}}{$N_{m},G$}{$I_{\rm df} = 2$}{}
-  {Averaged fluxes in boundary regions or discontinuity factors in a material mixture. Name {\sl type} is a component of {\tt HADF} array.}
+  {\listedir{type}}{$N_{m},G$}{$I_{\rm df} = 2,\, 3$}{}
+  {Averaged fluxes ($I_{\rm df} = 2$) or discontinuity factors ($I_{\rm df} = 3$) in a material mixture. Name {\sl type} is a component of
+  {\tt HADF} array.}
 \OptRealVar
-  {\listedir{type}}{$N_{m},G,G$}{$I_{\rm df} = 3$}{}
+  {\listedir{type}}{$N_{m},G,G$}{$I_{\rm df} = 4$}{}
   {Matrix discontinuity factors in a material mixture. Name {\sl type} is a component of {\tt HADF} array.}
 \end{DescriptionEnregistrement}
 

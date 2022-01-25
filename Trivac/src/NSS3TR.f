@@ -17,6 +17,10 @@
 *
 *Parameters: input
 * ITRIAL  type of base (=1: polynomial; =2: hyperbolic)
+* NEL     number of nodes
+* NMIX    number of mixtures
+* MAT     node mixtures
+* XX      node widths
 * DIFF    diffusion coefficients.
 * SIGR    macroscopic removal cross section.
 * SIGT    fission cross section.
@@ -39,7 +43,7 @@
         B11(NUM1+1,NUM1+1)=SIGG
         B11(NUM1+2,NUM1+2)=SIGG/12.0
         B11(NUM1+3,NUM1+3)=SIGG/180.0
-        IF (ITRIAL(IBM) == 1) THEN
+        IF(ITRIAL(IBM) == 1) THEN
           B11(NUM1+2,NUM1+4)=-SIGG/120.0
           B11(NUM1+3,NUM1+5)=-SIGG/2100.0
         ELSE

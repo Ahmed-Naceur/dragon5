@@ -26,6 +26,7 @@ HUTL: AFA_180 :: DIR
  DIR '/calc       1/xs/mac/TOTAL'
  INFO '/calc       1/xs/mac/TOTAL/ABSO'
  IMPR '/calc       1/xs/mac/TOTAL/ABSO'
+ INFO '/calc       1/xs/mic/f.p./ABSO'
  GREP '/calc       1/xs/mac/TOTAL/ABSO' 2 >>abso_2<<
 ;
 ECHO "grep of ABSO(2)=" abso_2 ;

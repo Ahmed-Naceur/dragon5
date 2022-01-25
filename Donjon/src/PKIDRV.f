@@ -52,7 +52,7 @@
 *  Local variables
 *----
       PARAMETER(NRKMIN=100,NRKMAX=100000)
-      DOUBLE PRECISION DH,DP,P0,T1,BETA,MAXI,RHO(3)
+      DOUBLE PRECISION DH,DPP,P0,T1,BETA,MAXI,RHO(3)
       DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:) :: YSAV,YSUM,Y1,Y2,
      1 Y3,Y4
       DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:) :: A
@@ -64,7 +64,7 @@
 *----
 *   Runge-Kutta and calcul parameters initialisation
 *----
-      DP=1.D0
+      DPP=1.D0
       NRK=NRKMIN
       P0=-1.D0
 *----
@@ -88,7 +88,7 @@
 *  Runge-Kutta convergence loop
 *----
       CALL XDDSET(RHO,3,0.0D0)
-      DO WHILE ((DP.GE.EPSILON).AND.(NRK.LE.NRKMAX))
+      DO WHILE ((DPP.GE.EPSILON).AND.(NRK.LE.NRKMAX))
 *       time and time-step initialisation
         DH=DT/REAL(NRK)
         T1=T
@@ -160,14 +160,14 @@
         ENDDO
 * 
 *       convergence test
- 100    IF(P0.NE.-1.D0) DP=ABS(Y(1)-P0)/ABS(P0)
+ 100    IF(P0.NE.-1.D0) DPP=ABS(Y(1)-P0)/ABS(P0)
         P0=Y(1)
 *
 *       reinitialisation of the number of Runge-Kutta time-steps
         NRK=2*NRK
 *
 *       reinitialisation of the working vector if not converged
-        IF((DP.GE.EPSILON).AND.(NRK.LE.NRKMAX)) THEN
+        IF((DPP.GE.EPSILON).AND.(NRK.LE.NRKMAX)) THEN
           DO I=1,NGROUP+1
              Y(I)=YSAV(I)
           ENDDO

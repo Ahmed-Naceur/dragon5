@@ -1,0 +1,10 @@
+#!/bin/sh
+if [ $# = 0 ]
+   then
+   echo "usage: AFA_180_310_type1_dual.access directory" 1>&2
+   exit 1
+fi
+ln -s "$1"/../Ganlib/data/testgan4_proc/AFA_180.h5 .
+ln -s "$1"/../Ganlib/data/testgan4_proc/AFA_310.h5 .
+ls -l
+echo "AFA_180_310_type1_dual access script terminated"

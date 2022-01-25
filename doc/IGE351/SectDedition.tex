@@ -40,10 +40,13 @@ assembly discontinuity factors (ADF) or to perform some types of {\sl superhomog
 I_{\rm adf} = \left\{
 \begin{array}{ll}
 0 & \textrm{no boundary flux editions;} \\
-1 & \textrm{use boundary fluxes obtained using the \moc{ALBS} keyword in DRAGON;} \\
-2 & \textrm{use boundary fluxes obtained from informations located in {\tt REF:ADF} directory;} \\
-3 & \textrm{use boundary fluxes obtained from the current iteration method in Eurydice;} \\
-4 & \textrm{use boundary flux information recovered from the {\tt MACROLIB/ADF} directory.} \\
+1 & \textrm{use boundary currents obtained using the \moc{ALBS} keyword in DRAGON;} \\
+2 & \textrm{recover boundary fluxes from informations located in the {\tt REF:ADF} directory;} \\
+-2 & \textrm{compute assembly discontinuity factors (ADF) from informations located in} \\
+  & \textrm{the {\tt REF:ADF} directory;} \\
+3 & \textrm{use boundary currents obtained from the current iteration method in Eurydice;} \\
+4 & \textrm{recover boundary fluxes or discontinuity factors from the {\tt MACROLIB/ADF}} \\
+  & \textrm{directory.} \\
 \end{array} \right.
 \end{displaymath}
 \item Editing flag to indicate the type of tracking to be performed on a macro-geometry built by module {\tt EDI:}.
@@ -202,7 +205,7 @@ Sub-directory containing input data for ADF-type boundary flux edition.
   {NADF\blank{8}}{\tt NTYPE}
   {$N^{\rm adf}_i$: number of regions included in each ADF-type boundary flux edit.}
 \CharEnr
-  {HADF\blank{8}}{({\tt NTYPE})$*4$}
+  {HADF\blank{8}}{({\tt NTYPE})$*8$}
   {Name of each ADF-type boundary flux edit. Standard names are: $=$ \moc{FD\_C}:
 corner flux edition; $=$ \moc{FD\_B}: surface (assembly gap) flux edition; $=$ \moc{FD\_H}:
 row flux edition. These are the first row of surrounding cells in the assembly.}

@@ -28,7 +28,7 @@
 * EPSOUT  convergence epsilon for the power method.
 * MAXOUT  maximum number of iterations for the power method.
 * LNODF   flag set to .true. to force discontinuity factors to one.
-* BB2     imposed leakege used in non-regression tests.
+* BB2     imposed leakage used in non-regression tests.
 * IPRINT  edition flag.
 *
 *-----------------------------------------------------------------------
@@ -54,7 +54,7 @@
 *  ALLOCATABLE ARRAYS
 *----
       INTEGER, ALLOCATABLE, DIMENSION(:) :: MAT,IJJ,NJJ,IPOS
-      INTEGER, ALLOCATABLE, DIMENSION(:,:) :: KN,IQFR
+      INTEGER, ALLOCATABLE, DIMENSION(:,:) :: IQFR
       REAL, ALLOCATABLE, DIMENSION(:) :: XX,VOL,WORK,EVECT
       REAL, ALLOCATABLE, DIMENSION(:,:) :: BETA,DIFF,SIGR,CHI,SIGF,A,B,
      1 AI,A11,QFR,QFR2,COUR
@@ -67,8 +67,7 @@
 *----
       ALLOCATE(DIFF(NMIX,NG),SIGR(NMIX,NG),CHI(NMIX,NG),SIGF(NMIX,NG),
      1 SCAT(NMIX,NG,NG),BETA(NG,NG),FD(NMIX,2,NG,NG),COUR(LX1+1,NG))
-      ALLOCATE(MAT(LX1),VOL(LX1),XX(LX1),KN(6,LX1),QFR(6,LX1),
-     1 IQFR(6,LX1))
+      ALLOCATE(MAT(LX1),VOL(LX1),XX(LX1),QFR(6,LX1),IQFR(6,LX1))
 *----
 *  RECOVER TRACKING INFORMATION
 *----
@@ -84,7 +83,6 @@
       CALL LCMGET(IPTRK,'MATCOD',MAT)
       CALL LCMGET(IPTRK,'VOLUME',VOL)
       CALL LCMGET(IPTRK,'XX',XX)
-      CALL LCMGET(IPTRK,'KN',KN)
       CALL LCMGET(IPTRK,'QFR',QFR)
       CALL LCMGET(IPTRK,'IQFR',IQFR)
 *----
@@ -146,9 +144,7 @@
             FD(IBM,2,IGR,IGR)=1.0
           ENDDO
         ENDDO
-      ELSE IF(ISTATE(12).EQ.1) THEN
-        CALL XABORT('NSSDRV: CURRENT INFORMATION NOT SUPPORTED.')
-      ELSE IF(ISTATE(12).EQ.2) THEN
+      ELSE IF(ISTATE(12).EQ.3) THEN
         CALL LCMSIX(IPMAC,'ADF',1)
           CALL LCMGTC(IPMAC,'HADF',8,1,HADF(1))
           CALL LCMGET(IPMAC,HADF(1),WORK)
@@ -159,7 +155,7 @@
             FD(IBM,2,IGR,IGR)=WORK((IGR-1)*NMIX+IBM)
           ENDDO
         ENDDO
-      ELSE IF(ISTATE(12).EQ.3) THEN
+      ELSE IF(ISTATE(12).EQ.4) THEN
         CALL LCMSIX(IPMAC,'ADF',1)
           CALL LCMGTC(IPMAC,'HADF',8,2,HADF)
           CALL LCMGET(IPMAC,HADF(1),FDXM)
@@ -171,6 +167,8 @@
             FD(:NMIX,2,IGR,JGR)=FDXP(:NMIX,IGR,JGR)
           ENDDO
         ENDDO
+      ELSE
+        CALL XABORT('NSSDRV: FLUX/CURRENT INFORMATION NOT SUPPORTED.')
       ENDIF
       DEALLOCATE(FDXP,FDXM,IPOS,NJJ,IJJ,WORK)
 *----
@@ -195,7 +193,7 @@
             DO IQW=1,2
               DO IEL=1,LX1
                 IALB=IQFR(IQW,IEL)
-                IF(IALB.NE.0) QFR2(IQW,IEL)=QFR(IQW,IEL)*ALB(BETA(I,J))
+                IF(IALB.GT.0) QFR2(IQW,IEL)=QFR(IQW,IEL)*ALB(BETA(I,J))
               ENDDO
             ENDDO
           ELSE
@@ -210,11 +208,11 @@
           ENDDO
           IOF2=(I-1)*5*LX1
           IF(I == J) THEN
-            CALL NSS1TR(ITRIAL(1,J),LX1,NMIX,MAT,XX,KN,QFR2,DIFF(:,I),
+            CALL NSS1TR(ITRIAL(1,J),LX1,NMIX,MAT,XX,IQFR,QFR2,DIFF(:,I),
      1      SIGR(:,I),FD(:,:,I,J),A11)
             A(IOF1+1:IOF1+LX1*5,IOF2+1:IOF2+LX1*5)=A11(:,:)
           ELSE
-            CALL NSS2TR(ITRIAL(1,J),LX1,NMIX,MAT,XX,KN,QFR2,DIFF(:,J),
+            CALL NSS2TR(ITRIAL(1,J),LX1,NMIX,MAT,XX,IQFR,QFR2,DIFF(:,J),
      1      SIGR(:,J),SCAT(:,I,J),FD(:,:,I,J),A11)
             A(IOF2+1:IOF2+LX1*5,IOF1+1:IOF1+LX1*5)=-A11(:,:)
           ENDIF
@@ -292,8 +290,8 @@
 *  SCRATCH STORAGE DEALLOCATION
 *----
       DEALLOCATE(EVECT,B,A)
-      DEALLOCATE(COUR,FD,BETA,SCAT,SIGF,CHI,SIGR,DIFF,MAT,XX,VOL,KN,
-     1 QFR,IQFR)
+      DEALLOCATE(COUR,FD,BETA,SCAT,SIGF,CHI,SIGR,DIFF,MAT,XX,VOL,QFR,
+     1 IQFR)
       RETURN
    10 FORMAT(14H NSSDRV: KEFF=,F11.8,12H OBTAINED IN,I5,11H ITERATIONS)
       END

@@ -342,7 +342,7 @@ void hdf5_info_c(hid_t *ifile, const char *namp, int_32 *rank, int_32 *type, int
       sprintf(AbortString,"%s: H5Sget_simple_extent_dims failure on object '%.72s'.",nomsub,namp);
       xabort_c(AbortString);
   }
-  for(i=0; i<*rank; i++) dimsr[i] = (int_32)dimsr_t[i];
+  for(i=0; i<*rank; i++) dimsr[i] = (int_32)dimsr_t[(*rank)-i-1];
   
   H5Tclose(htype);
   H5Dclose(dataset);
@@ -652,7 +652,7 @@ herr_t print_info(hid_t loc_id, const char *name, void *opdata) {
          } else if (rank == 2) {
            printf(" '%-72s' %-16s   %-10d %d  %d\n", name,ctype[type],nbyte,dimsr[0],dimsr[1]);
          } else if (rank == 3) {
-           printf(" '%-72s' %-16s   %-10d %d  %d  %d\n", name,ctype[type],nbyte,dimsr[0],dimsr[1],dimsr[3]);
+           printf(" '%-72s' %-16s   %-10d %d  %d  %d\n", name,ctype[type],nbyte,dimsr[0],dimsr[1],dimsr[2]);
          } else if (rank == 4) {
            printf(" '%-72s' %-16s   %-10d %d  %d  %d  %d\n", name,ctype[type],nbyte,dimsr[0],dimsr[1],
            dimsr[2],dimsr[3]);

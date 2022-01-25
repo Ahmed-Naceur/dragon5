@@ -174,6 +174,7 @@ subroutine hdf5_info(ifile, name, rank, type, nbyte, dimsr)
    end interface
    pt_dimsr=c_loc(dimsr)
    call STRCUT(name1024, name)
+   dimsr(:5)=0
    call hdf5_info_c(ifile, name1024, rank, type, nbyte, pt_dimsr)
 end subroutine hdf5_info
 !
@@ -933,8 +934,8 @@ subroutine hdf5_write_data_2d_int4(ifile, name, idata)
          type(c_ptr), value :: dimsf, idata
       end subroutine hdf5_write_data_int_c
    end interface
-   dimsr(1)=size(idata,1)
-   dimsr(2)=size(idata,2)
+   dimsr(2)=size(idata,1)
+   dimsr(1)=size(idata,2)
    idata_p => idata(1,1)
    pt_dimsr=c_loc(dimsr)
    pt_data=c_loc(idata_p)
@@ -1013,8 +1014,8 @@ subroutine hdf5_write_data_2d_real4(ifile, name, rdata)
          type(c_ptr), value :: dimsf, rdata
       end subroutine hdf5_write_data_real4_c
    end interface
-   dimsr(1)=size(rdata,1)
-   dimsr(2)=size(rdata,2)
+   dimsr(2)=size(rdata,1)
+   dimsr(1)=size(rdata,2)
    rdata_p => rdata(1,1)
    pt_dimsr=c_loc(dimsr)
    pt_data=c_loc(rdata_p)
@@ -1041,9 +1042,9 @@ subroutine hdf5_write_data_3d_real4(ifile, name, rdata)
          type(c_ptr), value :: dimsf, rdata
       end subroutine hdf5_write_data_real4_c
    end interface
-   dimsr(1)=size(rdata,1)
+   dimsr(3)=size(rdata,1)
    dimsr(2)=size(rdata,2)
-   dimsr(3)=size(rdata,3)
+   dimsr(1)=size(rdata,3)
    rdata_p => rdata(1,1,1)
    pt_dimsr=c_loc(dimsr)
    pt_data=c_loc(rdata_p)
@@ -1070,10 +1071,10 @@ subroutine hdf5_write_data_4d_real4(ifile, name, rdata)
          type(c_ptr), value :: dimsf, rdata
       end subroutine hdf5_write_data_real4_c
    end interface
-   dimsr(1)=size(rdata,1)
-   dimsr(2)=size(rdata,2)
-   dimsr(3)=size(rdata,3)
-   dimsr(4)=size(rdata,4)
+   dimsr(4)=size(rdata,1)
+   dimsr(3)=size(rdata,2)
+   dimsr(2)=size(rdata,3)
+   dimsr(1)=size(rdata,4)
    rdata_p => rdata(1,1,1,1)
    pt_dimsr=c_loc(dimsr)
    pt_data=c_loc(rdata_p)
@@ -1152,8 +1153,8 @@ subroutine hdf5_write_data_2d_real8(ifile, name, rdata)
          type(c_ptr), value :: dimsf, rdata
       end subroutine hdf5_write_data_real8_c
    end interface
-   dimsr(1)=size(rdata,1)
-   dimsr(2)=size(rdata,2)
+   dimsr(2)=size(rdata,1)
+   dimsr(1)=size(rdata,2)
    rdata_p => rdata(1,1)
    pt_dimsr=c_loc(dimsr)
    pt_data=c_loc(rdata_p)
@@ -1180,9 +1181,9 @@ subroutine hdf5_write_data_3d_real8(ifile, name, rdata)
          type(c_ptr), value :: dimsf, rdata
       end subroutine hdf5_write_data_real8_c
    end interface
-   dimsr(1)=size(rdata,1)
+   dimsr(3)=size(rdata,1)
    dimsr(2)=size(rdata,2)
-   dimsr(3)=size(rdata,3)
+   dimsr(1)=size(rdata,3)
    rdata_p => rdata(1,1,1)
    pt_dimsr=c_loc(dimsr)
    pt_data=c_loc(rdata_p)
@@ -1209,10 +1210,10 @@ subroutine hdf5_write_data_4d_real8(ifile, name, rdata)
          type(c_ptr), value :: dimsf, rdata
       end subroutine hdf5_write_data_real8_c
    end interface
-   dimsr(1)=size(rdata,1)
-   dimsr(2)=size(rdata,2)
-   dimsr(3)=size(rdata,3)
-   dimsr(4)=size(rdata,4)
+   dimsr(4)=size(rdata,1)
+   dimsr(3)=size(rdata,2)
+   dimsr(2)=size(rdata,3)
+   dimsr(1)=size(rdata,4)
    rdata_p => rdata(1,1,1,1)
    pt_dimsr=c_loc(dimsr)
    pt_data=c_loc(rdata_p)

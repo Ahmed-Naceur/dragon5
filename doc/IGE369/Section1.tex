@@ -2234,6 +2234,7 @@ L\_GEOM}) containing the geometry.
 \begin{DataStructure}{Structure \dstr{NSST\_data}}
 $[$ \moc{EDIT} \dusa{iprint} $]$ \\
 $[$ \moc{TITL} \dusa{TITLE} $]$ \\
+$[$ \moc{MAXR} \dusa{maxpts} $]$ \\
 $[$ \moc{HYPE} \dusa{igmax} $]$ \\
 $[$ \moc{LUMP} $]$ \\
 ;
@@ -2252,6 +2253,13 @@ values produce increasing amounts of output.
 
 \item[\dusa{TITLE}] the title associated with a nodal expansion method run. This
 title may contain up to 72 characters. The default when \moc{TITL} is not specified is no title.
+
+\item[\moc{MAXR}] keyword which permits the maximum number of regions to be considered during a nodal run to be specified.
+
+\item[\dusa{maxpts}] maximum dimensions of the problem to be considered.  The
+default value is set to the number of regions previously computed by the {\tt
+GEO:} module but this value is insufficient if symmetries or mesh-splitting
+are specified.
 
 \item[\moc{HYPE}] keyword used to specify the type of nodal expansion base functions used to represent the transverse integrated flux.
 methods. By default, the polynomial base~(\ref{eq:nem1}) is used.

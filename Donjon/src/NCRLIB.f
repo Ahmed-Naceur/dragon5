@@ -27,7 +27,7 @@
 * NGRP    number of energy groups.
 * NGFF    number of group form factors per energy group.
 * NALBP   number of physical albedos per energy group.
-* IDF     ADF type, 0 = none, 1 = Albedo, 2 = FD_B/FD_C/...
+* IDF     ADF type, 0 = none, 1 = Albedo, 2 = FD_B/FD_C/..., 3 = ADF.
 * IMPX    print parameter (equal to zero for no print).
 * NCAL    number of elementary calculations in the multicompo.
 * TERP    interpolation factors.
@@ -537,7 +537,7 @@
       NTYPE=0
       IF(IDF.EQ.1) THEN
         NTYPE=2
-      ELSE IF(IDF.EQ.2) THEN
+      ELSE IF(IDF.GE.2) THEN
         CALL LCMSIX(MPCPO,'MACROLIB',1)
         CALL LCMLEN(MPCPO,'ADF',ILONG,ITYLCM)
         IF(ILONG.EQ.0) CALL XABORT('NCRLIB: MISSING ADF DIRECTORY I'

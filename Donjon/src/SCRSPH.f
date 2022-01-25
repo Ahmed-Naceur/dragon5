@@ -598,7 +598,7 @@
                 DO JGR=NGROUP,1,-1
                   IOF=NMIL*NGROUP*NGROUP*(IL-1)+NMIL*NGROUP*(JGR-1)+
      1                NMIL*(IGR-1)
-                  IF(SS2D(IOF+1).NE.0.0) THEN
+                  IF(SS2D(IOF+IBM).NE.0.0) THEN
                     IGMIN=MIN(IGMIN,JGR)
                     IGMAX=MAX(IGMAX,JGR)
                   ENDIF

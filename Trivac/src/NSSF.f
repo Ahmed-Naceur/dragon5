@@ -74,12 +74,14 @@
      1      '. L_TRACK EXPECTED.')
           ENDIF
           IPTRK=KENTRY(2)
+          CALL LCMPTC(IPFLX,'LINK.TRACK',12,1,HENTRY(2))
         ELSE IF(IEN.EQ.3) THEN
           IF(HSIGN.NE.'L_MACROLIB') THEN
             CALL XABORT('NSSF: SIGNATURE OF '//TEXT12//' IS '//HSIGN//
      1      '. L_MACROLIB EXPECTED.')
           ENDIF
           IPMAC=KENTRY(3)
+          CALL LCMPTC(IPFLX,'LINK.MACRO',12,1,HENTRY(3))
         ENDIF
       ENDDO
       CALL LCMGTC(IPTRK,'TRACK-TYPE',12,1,TEXT12)
