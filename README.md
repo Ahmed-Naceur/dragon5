@@ -2,7 +2,7 @@
 # A Three-Dimensional Discrete Ordinates Neutron, Photon, Electron and Positron Transport Code
 
 The computer code DRAGON contains a collection of models which can simulate a nuclear reactor 
-fuel assembly neutronic behaviour. It includes all of the functions that characterize a 
+fuel assembly neutronic, photonic, electronic and positronic behaviour. It includes all of the functions that characterize a 
 lattice cell code, namely: the interpolation of microscopic cross sections which are supplied by means of
 standard libraries; resonance self-shielding calculations in multidimensional
 geometries; multigroup and multidimensional neutron flux calculations which can
