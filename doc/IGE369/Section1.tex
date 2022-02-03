@@ -2177,7 +2177,7 @@ will produce increasing amounts of output.
 \subsection{The {\tt NSST:} module}
 
 The {\tt NSST:} module is used to perform a {\sc tracking} for the nodal
-expansion method (NEM).\cite{brisingr}
+expansion method (NEM).\cite{nestle}
 
 \vskip 0.08cm
 
@@ -2186,7 +2186,7 @@ over the $(-0.5,0.5)$ interval:
 \begin{eqnarray}
 \nonumber P_0(u)\negthinspace &=&\negthinspace 1\\
 \nonumber P_1(u)\negthinspace &=&\negthinspace u\\
-\nonumber P_2(u)\negthinspace &=&\negthinspace u^2-{1\over 12}\\
+\nonumber P_2(u)\negthinspace &=&\negthinspace 3u^2-{1\over 4}\\
 \nonumber P_3(u)\negthinspace &=&\negthinspace \left( u^2-{1\over 4}\right)u\\
 P_4(u)\negthinspace &=&\negthinspace \left( u^2-{1\over 4}\right)\left( u^2-{1\over 20}\right)
 \label{eq:nem1}
@@ -2234,8 +2234,9 @@ L\_GEOM}) containing the geometry.
 \begin{DataStructure}{Structure \dstr{NSST\_data}}
 $[$ \moc{EDIT} \dusa{iprint} $]$ \\
 $[$ \moc{TITL} \dusa{TITLE} $]$ \\
+$[$ \moc{MAXR} \dusa{maxpts} $]$ \\
 $[$ \moc{HYPE} \dusa{igmax} $]$ \\
-$[$ \moc{LUMP} $]$ \\
+$[$ \moc{CMFD} $]~[$ \moc{LUMP} $]$ \\
 ;
 \end{DataStructure}
 
@@ -2253,10 +2254,20 @@ values produce increasing amounts of output.
 \item[\dusa{TITLE}] the title associated with a nodal expansion method run. This
 title may contain up to 72 characters. The default when \moc{TITL} is not specified is no title.
 
+\item[\moc{MAXR}] keyword which permits the maximum number of regions to be considered during a nodal run to be specified.
+
+\item[\dusa{maxpts}] maximum dimensions of the problem to be considered.  The
+default value is set to the number of regions previously computed by the {\tt
+GEO:} module but this value is insufficient if symmetries or mesh-splitting
+are specified.
+
 \item[\moc{HYPE}] keyword used to specify the type of nodal expansion base functions used to represent the transverse integrated flux.
 methods. By default, the polynomial base~(\ref{eq:nem1}) is used.
 
 \item[\dusa{igmax}] hyperbolic base functions~(\ref{eq:nem2}) are used for energy groups with indices $\ge$ \dusa{igmax}.
+
+\item[\moc{CMFD}] keyword used to impose the coarse mesh finite difference method. Only polynomials $p_0(u)$ to $p_2(u)$ are used to expand the flux. By default,
+the nodal expansion method is used.
 
 \item[\moc{LUMP}] keyword used to include only the averaged nodal fluxes in the unknown vector. By default, the nodal expansion coefficients are included.
 

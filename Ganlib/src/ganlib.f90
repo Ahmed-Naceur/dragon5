@@ -24,6 +24,7 @@ module GANLIB
    use OPNMOD
    use XDRMOD
    use, intrinsic :: iso_c_binding
+   integer, parameter :: dp = kind(0.0d0)
    interface
       subroutine CUT(name1, name2, ilong)
          use, intrinsic :: iso_c_binding

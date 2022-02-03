@@ -45,7 +45,7 @@ integer(c_int) function trimod(cmodul, nentry, hentry, ientry, jentry, &
    call STRFIL(hmodul, cmodul)
    do i=1,nentry
       call STRFIL(hentry_f(i), hentry(1,i))
-      if(ientry(i) >= 3) then
+      if((ientry(i) >= 3).and.(ientry(i) <= 5)) then
 !        open a Fortran file.
          call STRFIL(hparam, hparam_c(1,i))
          my_file_array(i)%my_file=>FILOPN(hparam,jentry(i),ientry(i)-1,0)
@@ -65,7 +65,7 @@ integer(c_int) function trimod(cmodul, nentry, hentry, ientry, jentry, &
          if(ientry(i) <= 2) then
             call LCMCL(kentry(i),2)
             kentry(i)=c_null_ptr
-         else if(ientry(i) >= 3) then
+         else if((ientry(i) >= 3).and.(ientry(i) <= 5)) then
             ier=FILCLS(my_file_array(i)%my_file,2)
             if(ier < 0) then
                write(hsmg,'(32htrimod: unable to destroy file '',a12,2h''.)') hentry_f(i)
@@ -75,7 +75,7 @@ integer(c_int) function trimod(cmodul, nentry, hentry, ientry, jentry, &
          endif
       else
 !        close a Fortran file.
-         if(ientry(i) >= 3) then
+         if((ientry(i) >= 3).and.(ientry(i) <= 5)) then
             ier=FILCLS(my_file_array(i)%my_file,1)
             if(ier < 0) then
                write(hsmg,'(30htrimod: unable to close file '',a12,2h''.)') hentry_f(i)

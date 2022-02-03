@@ -81,7 +81,7 @@ $[$ \moc{MAXR} \dusa{maxpts} $]$ \\
 $[~\{$ \moc{DIRE} $|$ \moc{PROD} $\}~]$ \\
 $[$ \moc{MGEO} \dusa{MACGEO} $]$ \\
 $[~\{$ \moc{NADF} $|$ \moc{ALBS} $|$ \moc{JOUT} $|$ \moc{ADFM} $|$\\
-~~~~~~~$[[$ \moc{ADF} \dusa{TYPE} $\{$ \moc{REGI} (\dusa{ireg}(ii),ii=1,iimax) \moc{ENDR} $|$ \moc{MIX} (\dusa{imix}(ii),ii=1,iimax)  \moc{ENDM} $\}~]]~\}~]$ \\
+~~~~~~~$[[$ \moc{ADF} $[$ \moc{*} $]$ \dusa{TYPE} $\{$ \moc{REGI} (\dusa{ireg}(ii),ii=1,iimax) \moc{ENDR} $|$ \moc{MIX} (\dusa{imix}(ii),ii=1,iimax) \moc{ENDM} $\}~]]~\}~]$ \\
 $[$~\moc{LEAK}~\dusa{b2}~$]$
 \end{DataStructure}
 
@@ -431,7 +431,10 @@ be defined as explained in Sect.~\ref{sect:descxs} of module {\tt MAC:} and reco
 \item[\moc{ADF}] keyword to specify that boundary editions are required. Averaged fluxes are
 computed over boundary regions.
 
-\item[\dusa{TYPE}] {\tt character*4} name of the boundary edit corresponding to
+\item[\moc{*}] keyword to specify that boundary fluxes are divided by average assembly fluxes so as to produce {\sl assembly discontinuity factors}
+(ADF). By default, boundary fluxes are recovered and saved in the boundary edit without further treatment.
+
+\item[\dusa{TYPE}] {\tt character*8} name of the boundary edit corresponding to
 regions \dusa{ireg} or mixtures \dusa{imix}. Any user-defined name can be used, but some
 standard names are recognized by module \moc{SPH} (see \Sect{descsph}). Standard names are: $=$ \moc{FD\_C}:
 corner flux edition; $=$ \moc{FD\_B}: surface (assembly gap) flux edition; $=$ \moc{FD\_H}:

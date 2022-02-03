@@ -117,6 +117,8 @@ else
 endif
 
 ifeq ($(hdf5),1)
+  FLAGS += -DHDF5_LIB -I${HDF5_DIR}/include
+  FFLAGS += -I${HDF5_DIR}/include
   LFLAGS += -L${HDF5_DIR}/lib -lhdf5
 endif
 

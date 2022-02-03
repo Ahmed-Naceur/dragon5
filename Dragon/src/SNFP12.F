@@ -1,7 +1,7 @@
 *DECK SNFP12
       SUBROUTINE SNFP12(NUN,NGEFF,IMPX,INCONV,NGIND,LX,LY,IELEM,IBFP,
      1 NMAT,NPQ,NSCT,MAT,VOL,TOTAL,ESTOPW,NCODE,ZCODE,DELTAE,QEXT,
-     1 LFIXUP,DU,DE,W,MRM,MRMY,DB,DA,PL,FUNKNO)
+     1 LFIXUP,DU,DE,W,MRM,MRMY,DB,DA,PL,FUNKNO,FLUXC)
 *
 *-----------------------------------------------------------------------
 *
@@ -59,6 +59,7 @@
 *
 *Parameters: input/output
 * FUNKNO  Legendre components of the flux and boundary fluxes.
+* FLUXC   flux at the cutoff energy.
 *
 *-----------------------------------------------------------------------
 *
@@ -73,7 +74,8 @@
       LOGICAL INCONV(NGEFF)
       REAL VOL(LX,LY),TOTAL(0:NMAT,NGEFF),ESTOPW(0:NMAT,2,NGEFF),
      1 ZCODE(4),DELTAE(NGEFF),QEXT(NUN,NGEFF),DU(NPQ),DE(NPQ),W(NPQ),
-     2 DB(LX,NPQ),DA(LX,LY,NPQ),PL(NSCT,NPQ),FUNKNO(NUN,NGEFF)
+     2 DB(LX,NPQ),DA(LX,LY,NPQ),PL(NSCT,NPQ),FUNKNO(NUN,NGEFF),
+     3 FLUXC(LX,LY)
       LOGICAL LFIXUP
 *----
 *  LOCAL VARIABLES
@@ -285,7 +287,7 @@
       IF(IELEM.EQ.1) THEN
         Q2(1,1)=2.0D0*ABS(DA(I,J,M))+2.0D0*ABS(DB(I,M))+VT
         Q2(1,2)=2.0D0*ABS(DA(I,J,M))*XNI(1,J)+2.0D0*ABS(DB(I,M))
-     1          *XNJ(1)+FN*FEP(1)*VOL(I,J)+Q(1)*VOL(I,J)
+     1          *XNJ(1)+(FN*FEP(1)+Q(1))*VOL(I,J)
       ELSE IF(IELEM.EQ.2) THEN
         Q2(1,1)=VT
         Q2(2,1)=CONST0*DA(I,J,M)
@@ -296,11 +298,11 @@
         Q2(4,3)=-CONST0*DA(I,J,M)
         Q2(4,4)=VT+6.0D0*ABS(DA(I,J,M))+6.0D0*ABS(DB(I,M))
 *        ------
-        Q2(1,5)=FN*FEP(1)*VOL(I,J)+Q(1)*VOL(I,J)
-        Q2(2,5)=-FN*FEP(2)*VOL(I,J)-Q(2)*VOL(I,J)+CONST0*DA(I,J,M)*
+        Q2(1,5)=(FN*FEP(1)+Q(1))*VOL(I,J)
+        Q2(2,5)=-(FN*FEP(2)+Q(2))*VOL(I,J)+CONST0*DA(I,J,M)*
      1  XNI(1,J)
-        Q2(3,5)=-FN*FEP(3)-VOL(I,J)+Q(3)*VOL(I,J)+CONST0*DB(I,M)*XNJ(1)
-        Q2(4,5)=FN*FEP(4)*VOL(I,J)+Q(4)*VOL(I,J)-CONST0*DA(I,J,M)*
+        Q2(3,5)=-(FN*FEP(3)+Q(3))*VOL(I,J)+CONST0*DB(I,M)*XNJ(1)
+        Q2(4,5)=(FN*FEP(4)+Q(4))*VOL(I,J)-CONST0*DA(I,J,M)*
      1  XNI(2,J)-CONST0*DB(I,M)*XNJ(2)
       ELSE IF(IELEM.EQ.3) THEN
         Q2(1,1)=VT+2.0D0*ABS(DA(I,J,M))+2.0D0*ABS(DB(I,M))
@@ -325,22 +327,22 @@
         Q2(9,8)=-CONST2*DA(I,J,M)
         Q2(9,9)=VT+1.0D1*ABS(DA(I,J,M))+1.0D1*ABS(DB(I,M))
 *       ------
-        Q2(1,10)=FN*FEP(1)*VOL(I,J)+Q(1)*VOL(I,J)+2.0D0*ABS(DA(I,J,M))*
+        Q2(1,10)=(FN*FEP(1)+Q(1))*VOL(I,J)+2.0D0*ABS(DA(I,J,M))*
      1           XNI(1,J)+2.0D0*ABS(DB(I,M))*XNJ(1)
-        Q2(2,10)=-FN*FEP(2)*VOL(I,J)-Q(2)*VOL(I,J)-2.0D0*ABS(DB(I,M))*
+        Q2(2,10)=-(FN*FEP(2)+Q(2))*VOL(I,J)-2.0D0*ABS(DB(I,M))*
      1  XNJ(2)
-        Q2(3,10)=FN*FEP(3)*VOL(I,J)+Q(3)*VOL(I,J)+CONST1*ABS(DA(I,J,M))*
+        Q2(3,10)=(FN*FEP(3)+Q(3))*VOL(I,J)+CONST1*ABS(DA(I,J,M))*
      1  XNI(1,J)+2.0D0*ABS(DB(I,M))*XNJ(3)
-        Q2(4,10)=-FN*FEP(4)*VOL(I,J)-Q(4)*VOL(I,J)-2.0D0*ABS(DA(I,J,M))*
+        Q2(4,10)=-(FN*FEP(4)+Q(4))*VOL(I,J)-2.0D0*ABS(DA(I,J,M))*
      1  XNI(2,J)
-        Q2(5,10)=FN*FEP(5)*VOL(I,J)+Q(5)*VOL(I,J)
-        Q2(6,10)=-FN*FEP(6)*VOL(I,J)-Q(6)*VOL(I,J)-
+        Q2(5,10)=(FN*FEP(5)+Q(5))*VOL(I,J)
+        Q2(6,10)=-(FN*FEP(6)+Q(6))*VOL(I,J)-
      1  CONST1*ABS(DA(I,J,M))*XNI(2,J)
-        Q2(7,10)=FN*FEP(7)*VOL(I,J)+Q(7)*VOL(I,J)+2.0D0*ABS(DA(I,J,M))*
+        Q2(7,10)=(FN*FEP(7)+Q(7))*VOL(I,J)+2.0D0*ABS(DA(I,J,M))*
      1  XNI(3,J)+CONST1*ABS(DB(I,M))*XNJ(1)
-        Q2(8,10)=-FN*FEP(8)*VOL(I,J)-Q(8)*VOL(I,J)-CONST1*ABS(DB(I,M))*
+        Q2(8,10)=-(FN*FEP(8)+Q(8))*VOL(I,J)-CONST1*ABS(DB(I,M))*
      1  XNJ(2)
-        Q2(9,10)=FN*FEP(9)*VOL(I,J)+Q(9)*VOL(I,J)+CONST1*ABS(DA(I,J,M))*
+        Q2(9,10)=(FN*FEP(9)+Q(9))*VOL(I,J)+CONST1*ABS(DA(I,J,M))*
      1  XNI(3,J)+CONST1*ABS(DB(I,M))*XNJ(3)
       ENDIF
       DO 125 IEL=1,IELEM**2
@@ -371,6 +373,9 @@
       ENDIF
       FEP(:IELEM**2)=G2*Q2(:IELEM**2,IELEM**2+1)-G1*FEP(:IELEM**2)
       FLUX0(:IELEM**2,M,I,J)=FEP(:IELEM**2)/DELTAE(IG)
+      IF(IG.EQ.NGEFF) THEN
+      FLUXC(I,J)=FLUXC(I,J)+2.0*W(M)*REAL(FLUX0(1,M,I,J))*PL(1,M)
+      ENDIF
       DO 135 K=1,NSCT
       DO 130 IEL=1,IELEM**2
       FLUX(IEL,K,I,J)=FLUX(IEL,K,I,J)+2.0D0*W(M)*Q2(IEL,IELEM**2+1)*

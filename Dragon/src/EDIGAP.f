@@ -1,6 +1,6 @@
 *DECK EDIGAP
-      SUBROUTINE EDIGAP(IPADF,TEXT4,NGROUP,NGCOND,NREGIO,VOLUME,IGCOND,
-     1 FLUXES,IPRINT,COURIN)
+      SUBROUTINE EDIGAP(IPADF,TEXT8,NGROUP,NGCOND,NREGIO,VOLUME,IGCOND,
+     1 FLUXES,FLUHOM,IPRINT,COURIN)
 *
 *-----------------------------------------------------------------------
 *
@@ -18,13 +18,15 @@
 *
 *Parameters: input
 * IPADF   pointer to the LCM directory containing ADF-related options.
-* TEXT4   equal to 'FD_B' 'FD_C'or 'FD_H'.
+* TEXT8   name of the boundary fluxes used to compute ADF ('FD_B',
+*         'FD_C' or 'FD_H').
 * NGROUP  number of energy groups in the reference calculation.
 * NGCOND  number of condensed groups.
 * NREGIO  number of regions in the reference calculation.
 * VOLUME  volume of regions.
 * IGCOND  limit of condensed groups.
-* FLUXES  fluxes.
+* FLUXES  heterogeneous gap fluxes.
+* FLUHOM  homogeneous fluxes.
 * IPRINT  print flag.
 *
 *Parameters: output
@@ -38,17 +40,18 @@
 *----
       TYPE(C_PTR) IPADF
       INTEGER NGROUP,NGCOND,NREGIO,IGCOND(NGCOND),IPRINT
-      CHARACTER TEXT4*(*)
-      REAL VOLUME(NREGIO),FLUXES(NREGIO,NGROUP),COURIN(NGCOND)
+      CHARACTER TEXT8*(*)
+      REAL VOLUME(NREGIO),FLUXES(NREGIO,NGROUP),FLUHOM(NGROUP),
+     1 COURIN(NGCOND)
 *----
 *  LOCAL VARIABLES
 *----
       DOUBLE PRECISION SUM,SUD
       INTEGER, ALLOCATABLE, DIMENSION(:) :: IFGAP
 *
-      CALL LCMLEN(IPADF,TEXT4,NGAP,ITYLCM)
+      CALL LCMLEN(IPADF,TEXT8,NGAP,ITYLCM)
       ALLOCATE(IFGAP(NGAP))
-      CALL LCMGET(IPADF,TEXT4,IFGAP)
+      CALL LCMGET(IPADF,TEXT8,IFGAP)
       IGRFIN=0
       DO 25 IGRCD=1,NGCOND
       COURIN(IGRCD)=0.0
@@ -64,11 +67,12 @@
    10 CONTINUE
       COURIN(IGRCD)=COURIN(IGRCD)+REAL(SUM/SUD)
    20 CONTINUE
+      COURIN(IGRCD)=COURIN(IGRCD)/FLUHOM(IGRCD)
    25 CONTINUE
       DEALLOCATE(IFGAP)
       IF(IPRINT.GT.3) THEN
-         WRITE(6,'(/19H EDIGAP: VALUES OF ,A,22H FLUXES PER MACRO-GROU,
-     1   6HPS ARE)') TEXT4
+         WRITE(6,'(/19H EDIGAP: VALUES OF ,A,22H FLUXES OR ADF PER MAC,
+     1   13HRO-GROUPS ARE)') TEXT8
          WRITE(6,'(1X,1P,10E13.5)') (COURIN(IGRCD),IGRCD=1,NGCOND)
       ENDIF
       RETURN

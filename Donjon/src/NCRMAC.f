@@ -25,7 +25,7 @@
 * NGRP    number of energy groups.
 * NGFF    number of group form factors per energy group.
 * NALBP   number of physical albedos per energy group.
-* IDF     ADF type, 0 = none, 1 = Albedo, 2 = FD_B/FD_C/...
+* IDF     ADF type, 0 = none, 1 = Albedo, 2 = FD_B/FD_C/..., 3 = ADF.
 * IMPX    print parameter (equal to zero for no print).
 * NCAL    number of elementary calculations in the multicompo.
 * TERP    interpolation factors.
@@ -170,7 +170,7 @@
          ENDIF
          IF(IDF.EQ.1) THEN
            NTYPE=2
-         ELSE IF(IDF.EQ.2) THEN
+         ELSE IF(IDF.GE.2) THEN
            CALL LCMSIX(MPCPO,'MACROLIB',1)
            CALL LCMLEN(MPCPO,'ADF',ILONG,ITYLCM)
            IF(ILONG.EQ.0) CALL XABORT('NCRMAC: MISSING ADF DIRECTORY I'
@@ -221,7 +221,7 @@
          IF(NED.GT.0) CALL LCMGTC(IPMAC,'ADDXSNAME-P0',8,NED,HVECT)
          IF(IDF.EQ.1) THEN
            NTYPE=2
-         ELSE IF((IDF.EQ.2).AND.(IACCOLD.NE.0)) THEN
+         ELSE IF((IDF.GE.2).AND.(IACCOLD.NE.0)) THEN
            CALL LCMSIX(IPMAC,'ADF',1)
            CALL LCMGET(IPMAC,'NTYPE',NTYPE)
            CALL LCMSIX(IPMAC,' ',2)
@@ -460,7 +460,7 @@
          CALL XABORT('NCRMAC: INVALID NUMBER OF ENERGY GROUPS(3).')
       ELSE IF(ISTATE(2).NE.1)THEN
          CALL XABORT('NCRMAC: INVALID NUMBER OF MIXTURES(3).')
-      ELSE IF(ISTATE(3).NE.NL) THEN
+      ELSE IF(ISTATE(3).GT.NL) THEN
          CALL XABORT('NCRMAC: INVALID NUMBER OF LEGENDRE ORDERS(3).')
       ELSE IF((ISTATE(4).NE.0).AND.(ISTATE(4).NE.NF)) THEN
          CALL XABORT('NCRMAC: INVALID NUMBER OF FISSILE ISOTOPES(3).')

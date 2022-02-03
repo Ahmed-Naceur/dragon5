@@ -422,6 +422,12 @@
           ENDIF
         ELSE
           IF(ICHX.EQ.4) THEN
+*           Coarse mesh finite differences
+            KPMAC=LCMGIL(JPMAC,IG)
+            ITRIAL=0
+            CALL VALU5C(KPMAC,NXD,L4,NMIX,MXI,MXD,FLXD,MAT,NXI,ITRIAL,
+     1      FXYZ(1,IG))
+          ELSE IF(ICHX.EQ.5) THEN
 *           Nodal expansion method (NEM)
             KPMAC=LCMGIL(JPMAC,IG)
             ITRIAL=1

@@ -71,3 +71,6 @@ tests :
 	./rdonjon testNAPhet.x2m $(fcompiler) -quiet
 	./rdonjon test_channBWR.x2m $(fcompiler) -quiet
 	./rdonjon vver_test.x2m $(fcompiler) -quiet
+ifeq ($(hdf5),1)
+	./rdonjon AFA_180_310_type1_dual.x2m $(fcompiler) -quiet
+endif

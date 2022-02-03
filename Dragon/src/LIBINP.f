@@ -136,7 +136,8 @@
 *   ILLIB   xs library index for each isotope (.le.NLIB)
 *   IEVOL   flag making an isotope non-depleting:
 *           =1 to force an isotope to be non-depleting;
-*           =2 to force an isotope to be at saturation
+*           =2 to force an isotope to be depleting;
+*           =3 to force an isotope to be at saturation
 *   ITYP    isotopic type:
 *           =1: the isotope is not fissile and not a fission product;
 *           =2: the isotope is fissile; =3: is a fission product
@@ -394,19 +395,24 @@
              IF(INDIC.NE.3) CALL XABORT('LIBINP: CHARACTER DATA EXPE'//
      >       'CTED(4).')
              KEVOL=1
+           ELSE IF(TEXT12.EQ.'EVOL') THEN
+             CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DBLINP)
+             IF(INDIC.NE.3) CALL XABORT('LIBINP: CHARACTER DATA EXPE'//
+     >       'CTED(5).')
+             KEVOL=2
            ELSE
              KEVOL=0
            ENDIF
            IF(TEXT12.EQ.'NOGAS') THEN
              CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DBLINP)
              IF(INDIC.NE.3) CALL XABORT('LIBINP: CHARACTER DATA EXPE'//
-     >       'CTED(5).')
+     >       'CTED(6).')
              KGAS(NNMIX)=0
            ENDIF
            IF(TEXT12.EQ.'GAS') THEN
              CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DBLINP)
              IF(INDIC.NE.3) CALL XABORT('LIBINP: CHARACTER DATA EXPE'//
-     >       'CTED(6).')
+     >       'CTED(7).')
              KGAS(NNMIX)=1
            ENDIF
            IF((TEXT12.EQ.'MIX').OR.(TEXT12.EQ.'MIXS').OR.
@@ -471,7 +477,7 @@
 *        USE THE VALUES ALREADY THERE.
          CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DBLINP)
          IF(INDIC.NE.3) CALL XABORT('LIBINP: CHARACTER DATA EXPECTED'//
-     >   '(7).')
+     >   '(8).')
          GO TO 60
       ELSE IF(INDIC.NE.2) THEN
         CALL XABORT('LIBINP: ISOTOPIC DENSITY OR WEIGHT PERCENT EXPECT'
@@ -506,7 +512,7 @@
       ELSE IF(TEXT12.EQ.'SHIB') THEN
          CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DBLINP)
          IF(INDIC.NE.3) CALL XABORT('LIBINP: CHARACTER DATA EXPECTED'//
-     >   '(8).')
+     >   '(9).')
          READ(TEXT12,'(3A4)') (ISHINA(I0,NEWISO),I0=1,3)
       ELSE IF(TEXT12.EQ.'THER') THEN
          CALL REDGET(INDIC,NTFG(NEWISO),FLOTT,TEXT12,DBLINP)
@@ -514,12 +520,12 @@
      >   'GROUPS REQUIRED.')
          CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DBLINP)
          IF(INDIC.NE.3) CALL XABORT('LIBINP: CHARACTER DATA EXPECTED'//
-     >   '(9).')
+     >   '(10).')
          READ(TEXT12,'(2A4)') IHLIB(1,NEWISO,3),IHLIB(2,NEWISO,3)
       ELSE IF(TEXT12.EQ.'TCOH') THEN
          CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DBLINP)
          IF(INDIC.NE.3) CALL XABORT('LIBINP: CHARACTER DATA EXPECTED'//
-     >   '(10).')
+     >   '(11).')
          READ(TEXT12,'(2A4)') IHLIB(1,NEWISO,2),IHLIB(2,NEWISO,2)
       ELSE IF(TEXT12.EQ.'RESK') THEN
          TEXT12='RESK'
@@ -557,7 +563,7 @@
                CALL XABORT('LIBINP: PT, PTSL OR PTMC EXPECTED.')
             ENDIF
          ELSE
-            CALL XABORT('LIBINP: REAL OR CHARACTER DATA EXPECTED(11).')
+            CALL XABORT('LIBINP: REAL OR CHARACTER DATA EXPECTED.')
          ENDIF
          CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DBLINP)
          IF(INDIC.EQ.1) THEN
@@ -571,8 +577,10 @@
          ENDIF
       ELSE IF(TEXT12.EQ.'NOEV') THEN
          IEVOL(NEWISO)=1
-      ELSE IF(TEXT12.EQ.'SAT') THEN
+      ELSE IF(TEXT12.EQ.'EVOL') THEN
          IEVOL(NEWISO)=2
+      ELSE IF(TEXT12.EQ.'SAT') THEN
+         IEVOL(NEWISO)=3
       ELSE
          IF(INDIC.NE.3) CALL XABORT('LIBINP: CHARACTER DATA EXPECTED'//
      >   '(12).')
@@ -857,12 +865,10 @@
   280    CONTINUE
       ENDIF
       CALL LCMPUT(IPLIB,'ISOTOPESDENS',NBISO,2,DENISO)
-
 *----
 *  STORE MIXTURES DENSITIES
 *----
-      CALL LCMPUT(IPLIB,'DENMIXTURES',NBMIX,2,DENMIX)
-
+      CALL LCMPUT(IPLIB,'MIXTURESDENS',NBMIX,2,DENMIX)
 *----
 *  COMPUTE THE MACROSCOPIC X-SECTIONS.
 *----

@@ -236,7 +236,7 @@
          TEMP2(NISO2)=TEMP2(NISO2-1)
       ENDIF
 *----
-*  COPY DISCONTINUITY FACTOR INFORMATION
+*  COPY DISCONTINUITY FACTOR INFORMATION AND PERFORM NORMALIZATION
 *----
       IF(IDF.NE.0) THEN
          CALL LCMSIX(IPEDIT,'MACROLIB',1)
@@ -272,27 +272,6 @@
                  ENDDO
                ENDDO
                CALL LCMPUT(MPCPO,HADF(ITYPE),NMIL*NG,2,ADF)
-             ENDDO
-             DEALLOCATE(HADF,ADF)
-           ENDIF
-         ELSEIF(IDF.EQ.3)THEN
-           IF(IMPX.GT.5) CALL LCMLIB(MPCPO)
-           CALL LCMLEN(MPCPO,'HADF',NTYPE,ITYLCM)
-           NTYPE=NTYPE/2
-           IF(NTYPE.GT.0) THEN
-             ALLOCATE(ADF(NMIL,NG*NG),HADF(NTYPE))
-             CALL LCMGTC(MPCPO,'HADF',8,NTYPE,HADF)
-             DO ITYPE=1,NTYPE
-               CALL LCMLEN(MPCPO,HADF(ITYPE),ILONG,ITYLCM)
-               IF(ILONG.NE.NMIL*NG*NG) CALL XABORT('COMMIC: ADF OVERFL'
-     1         //'OW.')
-               CALL LCMGET(MPCPO,HADF(ITYPE),ADF)
-               DO IG=1,NG
-                 DO IBM=1,NMIL
-                   ADF(IBM,IG)=ADF(IBM,IG)*FNORM
-                 ENDDO
-               ENDDO
-               CALL LCMPUT(MPCPO,HADF(ITYPE),NMIL*NG*NG,2,ADF)
              ENDDO
              DEALLOCATE(HADF,ADF)
            ENDIF

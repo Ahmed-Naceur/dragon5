@@ -28,10 +28,10 @@
 * TERP    interpolation factors.
 * MIXC    mixture index in the multicompo corresponding to each macrolib
 *         mixture. Equal to zero if a macrolib mixture is not updated.
-* IDF     ADF type, 0 = none, 1 = Albedo, 2 = FD_B/FD_C/...
-* NTYPE   number of ADF
+* IDF     ADF type, 0 = none, 1 = Albedo, 2 = FD_B/FD_C/..., 3 = ADF.
+* NTYPE   number of ADF.
 * NFINF   number of 'enriched' flux (for pin power reconstruction in
-*         NAP:)
+*         NAP:).
 *
 *-----------------------------------------------------------------------
 *
@@ -53,7 +53,7 @@
       REAL WEIGHT,FACTOR,ZZZ
       CHARACTER FINFN*8
       TYPE(C_PTR) JPCPO,KPCPO,LPCPO,MPCPO
-      INTEGER IKEFF,IKINF,I,IBM,IBMOLD,ICAL,IGR,IGFF,ILONG,ITYLCM,
+      INTEGER IKEFF,IKINF,I,IBM,IBMOLD,ICAL,IGR,JGR,IGFF,ILONG,ITYLCM,
      1 ITYPE,IAL
       INTEGER ISTATE(NSTATE)
       DOUBLE PRECISION GAR1,GAR2
@@ -61,17 +61,17 @@
 *  ALLOCATABLE ARRAYS
 *----
       REAL, ALLOCATABLE, DIMENSION(:) :: GAR4,VOL,ZKINF,ZKEFF
-      REAL, ALLOCATABLE, DIMENSION(:,:) :: ALBP,GAR6
+      REAL, ALLOCATABLE, DIMENSION(:,:) :: GAR6,ALBP
       REAL, ALLOCATABLE, DIMENSION(:,:,:) :: GAR5,ADF2,ALBP2
-      REAL, ALLOCATABLE, DIMENSION(:,:,:,:) :: GFF
+      REAL, ALLOCATABLE, DIMENSION(:,:,:,:) :: GFF,ADF2M
       CHARACTER(LEN=8), ALLOCATABLE, DIMENSION(:) :: HADF
 *----
 *  SCRATCH STORAGE ALLOCATION
 *----
-      ALLOCATE(ADF2(NMIX,NGRP,NTYPE),GAR4(NMIX*NGRP))
-      ALLOCATE(GFF(NMIX,NGFF,NGRP,2+NFINF),GAR5(NGFF,NGRP,2+MAXIFX),
-     1 ALBP(NALBP,NGRP),ALBP2(NMIX,NALBP,NGRP),ZKINF(NMIX),ZKEFF(NMIX),
-     2 GAR6(NGRP,2))
+      ALLOCATE(GAR4(NGRP*NGRP),GAR6(NGRP,2),GFF(NMIX,NGFF,NGRP,2+NFINF),
+     1 GAR5(NGFF,NGRP,2+MAXIFX),ALBP(NALBP,NGRP),ALBP2(NMIX,NALBP,NGRP),
+     2 ZKINF(NMIX),ZKEFF(NMIX),ADF2(NMIX,NGRP,NTYPE),
+     3 ADF2M(NMIX,NGRP,NGRP,NTYPE))
 *----
 *  OVERALL MULTICOMPO MIXTURE LOOP
 *----
@@ -101,23 +101,36 @@
           CALL LCMSIX(MPCPO,'ADF',1)
           CALL LCMEQU(MPCPO,IPMAC)
           IF(IDF.EQ.1) THEN
-            CALL LCMLEN(IPMAC,'NCR-ALBS00',ILONG,ITYLCM)
-            IF(ILONG.GT.0) CALL LCMDEL(IPMAC,'NCR-ALBS00')
-          ELSE IF(IDF.EQ.2) THEN
+            CALL LCMLEN(IPMAC,'ALBS00',ILONG,ITYLCM)
+            IF(ILONG.GT.0) CALL LCMDEL(IPMAC,'ALBS00')
+            ADF2(:NMIX,:NGRP,:NTYPE)=0.0
+          ELSE IF((IDF.EQ.2).OR.(IDF.EQ.3)) THEN
             CALL LCMGET(MPCPO,'NTYPE',NTYPE)
             IF(NTYPE.GT.0) THEN
               ALLOCATE(HADF(NTYPE))
               CALL LCMGTC(MPCPO,'HADF',8,NTYPE,HADF)
               DO ITYPE=1,NTYPE
-                CALL LCMLEN(IPMAC,'NCR-'//HADF(ITYPE),ILONG,ITYLCM)
-                IF(ILONG.GT.0) CALL LCMDEL(IPMAC,'NCR-'//HADF(ITYPE))
+                CALL LCMLEN(IPMAC,HADF(ITYPE),ILONG,ITYLCM)
+                IF(ILONG.GT.0) CALL LCMDEL(IPMAC,HADF(ITYPE))
               ENDDO
               DEALLOCATE(HADF)
             ENDIF
+            ADF2(:NMIX,:NGRP,:NTYPE)=0.0
+          ELSE IF(IDF.EQ.4) THEN
+            CALL LCMGET(MPCPO,'NTYPE',NTYPE)
+            IF(NTYPE.GT.0) THEN
+              ALLOCATE(HADF(NTYPE))
+              CALL LCMGTC(MPCPO,'HADF',8,NTYPE,HADF)
+              DO ITYPE=1,NTYPE
+                CALL LCMLEN(IPMAC,HADF(ITYPE),ILONG,ITYLCM)
+                IF(ILONG.GT.0) CALL LCMDEL(IPMAC,HADF(ITYPE))
+              ENDDO
+              DEALLOCATE(HADF)
+            ENDIF
+            ADF2M(:NMIX,:NGRP,:NGRP,:NTYPE)=0.0
           ENDIF
           CALL LCMSIX(MPCPO,' ',2)
           CALL LCMSIX(IPMAC,' ',2)
-          ADF2(:NMIX,:NGRP,:NTYPE)=0.0
         ENDIF
         IF(NGFF.NE.0) THEN
           !copy GFF geom and FINF names from multicompo
@@ -160,9 +173,7 @@
             ENDDO
           ENDIF
           DO IBM=1,NMIX
-            IF(MIXC(IBM).EQ.IBMOLD) THEN
-              GFF(IBM,:NGFF,:NGRP,:NFINF+2)=0.0
-            ENDIF
+            IF(MIXC(IBM).EQ.IBMOLD) GFF(IBM,:NGFF,:NGRP,:NFINF+2)=0.0
           ENDDO
           CALL LCMSIX(IPMAC,' ',2)
         ENDIF
@@ -170,19 +181,25 @@
           CALL LCMSIX(IPMAC,'ADF',1)
           IF(IDF.EQ.1) THEN
             DO IBM=1,NMIX
-              IF(MIXC(IBM).EQ.IBMOLD) THEN
-                ADF2(IBM,:NGRP,1)=0.0
-              ENDIF
+              IF(MIXC(IBM).EQ.IBMOLD) ADF2(IBM,:NGRP,1)=0.0
             ENDDO
-          ELSE IF(IDF.EQ.2) THEN
+          ELSE IF((IDF.EQ.2).OR.(IDF.EQ.3)) THEN
             ALLOCATE(HADF(NTYPE))
             CALL LCMGTC(IPMAC,'HADF',8,NTYPE,HADF)
             DO ITYPE=1,NTYPE
               CALL LCMGET(IPMAC,HADF(ITYPE),ADF2(1,1,ITYPE))
               DO IBM=1,NMIX
-                IF(MIXC(IBM).EQ.IBMOLD) THEN
-                  ADF2(IBM,:NGRP,ITYPE)=0.0
-                ENDIF
+                IF(MIXC(IBM).EQ.IBMOLD) ADF2(IBM,:NGRP,ITYPE)=0.0
+              ENDDO
+            ENDDO
+            DEALLOCATE(HADF)
+          ELSE IF(IDF.EQ.4) THEN
+            ALLOCATE(HADF(NTYPE))
+            CALL LCMGTC(IPMAC,'HADF',8,NTYPE,HADF)
+            DO ITYPE=1,NTYPE
+              CALL LCMGET(IPMAC,HADF(ITYPE),ADF2M(1,1,1,ITYPE))
+              DO IBM=1,NMIX
+                IF(MIXC(IBM).EQ.IBMOLD) ADF2M(IBM,:NGRP,:NGRP,ITYPE)=0.0
               ENDDO
             ENDDO
             DEALLOCATE(HADF)
@@ -221,30 +238,33 @@
 *----
       IF(NGFF.NE.0) THEN
         CALL LCMSIX(MPCPO,'MACROLIB',1)
-        CALL LCMSIX(MPCPO,'GFF',1)
-        CALL LCMGET(MPCPO,'NWT0',GAR5(1,1,1))
-        CALL LCMGET(MPCPO,'H-FACTOR',GAR5(1,1,2))
-        CALL LCMLEN(MPCPO,'FINF_NUMBER ',NFINF,ITYLCM)
-        IF(NFINF.GT.0) THEN
-          CALL LCMGET(MPCPO,'FINF_NUMBER ',FINF)
-          DO I=1,NFINF
-            WRITE(FINFN,'(5HFINF_,I3.3)') FINF(I)
-            CALL LCMGET(MPCPO,FINFN,GAR5(1,1,2+I))
-          ENDDO
-        ENDIF
-        DO IGFF=1,NGFF
-          DO IGR=1,NGRP
-            GFF(IBM,IGFF,IGR,1)=GFF(IBM,IGFF,IGR,1)
-     1                          +WEIGHT*GAR5(IGFF,IGR,1)
-            GFF(IBM,IGFF,IGR,2)=GFF(IBM,IGFF,IGR,2)
-     1                          +WEIGHT*GAR5(IGFF,IGR,2)
+        CALL LCMLEN(MPCPO,'GFF',ILONG,ITYLCM)
+        IF(ILONG.NE.0) THEN
+          CALL LCMSIX(MPCPO,'GFF',1)
+          CALL LCMGET(MPCPO,'NWT0',GAR5(1,1,1))
+          CALL LCMGET(MPCPO,'H-FACTOR',GAR5(1,1,2))
+          CALL LCMLEN(MPCPO,'FINF_NUMBER ',NFINF,ITYLCM)
+          IF(NFINF.GT.0) THEN
+            CALL LCMGET(MPCPO,'FINF_NUMBER ',FINF)
             DO I=1,NFINF
-              GFF(IBM,IGFF,IGR,2+I)=GFF(IBM,IGFF,IGR,2+I)
-     1                         +WEIGHT*GAR5(IGFF,IGR,2+I)
+              WRITE(FINFN,'(5HFINF_,I3.3)') FINF(I)
+              CALL LCMGET(MPCPO,FINFN,GAR5(1,1,2+I))
+            ENDDO
+          ENDIF
+          DO IGFF=1,NGFF
+            DO IGR=1,NGRP
+              GFF(IBM,IGFF,IGR,1)=GFF(IBM,IGFF,IGR,1)
+     1                            +WEIGHT*GAR5(IGFF,IGR,1)
+              GFF(IBM,IGFF,IGR,2)=GFF(IBM,IGFF,IGR,2)
+     1                            +WEIGHT*GAR5(IGFF,IGR,2)
+              DO I=1,NFINF
+                GFF(IBM,IGFF,IGR,2+I)=GFF(IBM,IGFF,IGR,2+I)
+     1                           +WEIGHT*GAR5(IGFF,IGR,2+I)
+              ENDDO
             ENDDO
           ENDDO
-        ENDDO
-        CALL LCMSIX(MPCPO,' ',2)
+          CALL LCMSIX(MPCPO,' ',2)
+        ENDIF
         CALL LCMSIX(MPCPO,' ',2)
       ENDIF
 *----
@@ -252,25 +272,41 @@
 *----
       IF(IDF.NE.0) THEN
         CALL LCMSIX(MPCPO,'MACROLIB',1)
-        CALL LCMSIX(MPCPO,'ADF',1)
-        IF(IDF.EQ.1) THEN
-          GAR6(:NGRP,:2)=0.0
-          CALL LCMGET(MPCPO,'ALBS00',GAR6)
-          DO IGR=1,NGRP
-            ADF2(IBM,IGR,:2)=ADF2(IBM,IGR,:2)+WEIGHT*GAR6(IGR,:2)
-          ENDDO
-        ELSE IF(IDF.EQ.2) THEN
-          ALLOCATE(HADF(NTYPE))
-          CALL LCMGTC(MPCPO,'HADF',8,NTYPE,HADF)
-          DO ITYPE=1,NTYPE
-            CALL LCMGET(MPCPO,HADF(ITYPE),GAR4)
+        CALL LCMLEN(MPCPO,'ADF',ILONG,ITYLCM)
+        IF(ILONG.NE.0) THEN
+          CALL LCMSIX(MPCPO,'ADF',1)
+          IF(IDF.EQ.1) THEN
+            GAR6(:NGRP,:2)=0.0
+            CALL LCMGET(MPCPO,'ALBS00',GAR6)
             DO IGR=1,NGRP
-              ADF2(IBM,IGR,ITYPE)=ADF2(IBM,IGR,ITYPE)+WEIGHT*GAR4(IGR)
+              ADF2(IBM,IGR,:2)=ADF2(IBM,IGR,:2)+WEIGHT*GAR6(IGR,:2)
             ENDDO
-          ENDDO
-          DEALLOCATE(HADF)
+          ELSE IF((IDF.EQ.2).OR.(IDF.EQ.3)) THEN
+            ALLOCATE(HADF(NTYPE))
+            CALL LCMGTC(MPCPO,'HADF',8,NTYPE,HADF)
+            DO ITYPE=1,NTYPE
+              CALL LCMGET(MPCPO,HADF(ITYPE),GAR4)
+              DO IGR=1,NGRP
+                ADF2(IBM,IGR,ITYPE)=ADF2(IBM,IGR,ITYPE)+WEIGHT*GAR4(IGR)
+              ENDDO
+            ENDDO
+            DEALLOCATE(HADF)
+          ELSE IF(IDF.EQ.4) THEN
+            ALLOCATE(HADF(NTYPE))
+            CALL LCMGTC(MPCPO,'HADF',8,NTYPE,HADF)
+            DO ITYPE=1,NTYPE
+              CALL LCMGET(MPCPO,HADF(ITYPE),GAR4)
+              DO JGR=1,NGRP
+                DO IGR=1,NGRP
+                  ADF2M(IBM,IGR,JGR,ITYPE)=ADF2M(IBM,IGR,JGR,ITYPE)+
+     1            WEIGHT*GAR4((JGR-1)*NGRP+IGR)
+                ENDDO
+              ENDDO
+            ENDDO
+            DEALLOCATE(HADF)
+          ENDIF
+          CALL LCMSIX(MPCPO,' ',2)
         ENDIF
-        CALL LCMSIX(MPCPO,' ',2)
         CALL LCMSIX(MPCPO,' ',2)
       ENDIF
 *----
@@ -310,15 +346,25 @@
 *----
       IF(IDF.EQ.1) THEN
         CALL LCMSIX(IPMAC,'ADF',1)
-        CALL LCMPUT(IPMAC,'NCR-ALBS00',NMIX*NGRP*2,2,ADF2(1,1,1))
+        CALL LCMPUT(IPMAC,'ALBS00',NMIX*NGRP*2,2,ADF2(1,1,1))
         CALL LCMSIX(IPMAC,' ',2)
-      ELSE IF(IDF.EQ.2) THEN
+      ELSE IF((IDF.EQ.2).OR.(IDF.EQ.3)) THEN
         CALL LCMSIX(IPMAC,'ADF',1)
         ALLOCATE(HADF(NTYPE))
         CALL LCMGTC(IPMAC,'HADF',8,NTYPE,HADF)
         DO ITYPE=1,NTYPE
-          CALL LCMPUT(IPMAC,'NCR-'//HADF(ITYPE),NMIX*NGRP,2,
+          CALL LCMPUT(IPMAC,HADF(ITYPE),NMIX*NGRP,2,
      1    ADF2(1,1,ITYPE))
+        ENDDO
+        DEALLOCATE(HADF)
+        CALL LCMSIX(IPMAC,' ',2)
+      ELSE IF(IDF.EQ.4) THEN
+        CALL LCMSIX(IPMAC,'ADF',1)
+        ALLOCATE(HADF(NTYPE))
+        CALL LCMGTC(IPMAC,'HADF',8,NTYPE,HADF)
+        DO ITYPE=1,NTYPE
+          CALL LCMPUT(IPMAC,HADF(ITYPE),NMIX*NGRP*NGRP,2,
+     1    ADF2M(1,1,1,ITYPE))
         ENDDO
         DEALLOCATE(HADF)
         CALL LCMSIX(IPMAC,' ',2)
@@ -343,49 +389,6 @@
       IF(IMPX.GT.0) WRITE(IOUT,'(/33H NCRAGF: PROCESS MULTICOMPO MIXTU,
      1 6HRE-out,I5)') IBMOLD
   500 CONTINUE
-*----
-*  AVERAGE ADF INFORMATION
-*----
-      IF(IDF.EQ.1) THEN
-        ALLOCATE(VOL(NMIX))
-        CALL LCMGET(IPMAC,'VOLUME',VOL)
-        CALL LCMSIX(IPMAC,'ADF',1)
-        CALL LCMGET(IPMAC,'NCR-ALBS00',ADF2(1,1,1))
-        DO I=1,2
-          DO IGR=1,NGRP
-            GAR1=0.0D0
-            GAR2=0.0D0
-            DO IBM=1,NMIX
-              GAR1=GAR1+ADF2(IBM,IGR,I)*VOL(IBM)
-              GAR2=GAR2+VOL(IBM)
-            ENDDO
-            GAR6(IGR,I)=REAL(GAR1/GAR2)
-          ENDDO
-        ENDDO
-        DEALLOCATE(VOL)
-        CALL LCMPUT(IPMAC,'ALBS00',NGRP*2,2,GAR6(1,1))
-        CALL LCMSIX(IPMAC,' ',2)
-      ELSE IF(IDF.EQ.2) THEN
-        ALLOCATE(HADF(NTYPE),VOL(NMIX))
-        CALL LCMGET(IPMAC,'VOLUME',VOL)
-        CALL LCMSIX(IPMAC,'ADF',1)
-        CALL LCMGTC(IPMAC,'HADF',8,NTYPE,HADF)
-        DO ITYPE=1,NTYPE
-          CALL LCMGET(IPMAC,'NCR-'//HADF(ITYPE),ADF2(1,1,ITYPE))
-          DO IGR=1,NGRP
-            GAR1=0.0D0
-            GAR2=0.0D0
-            DO IBM=1,NMIX
-              GAR1=GAR1+ADF2(IBM,IGR,ITYPE)*VOL(IBM)
-              GAR2=GAR2+VOL(IBM)
-            ENDDO
-            GAR6(IGR,1)=REAL(GAR1/GAR2)
-          ENDDO
-          CALL LCMPUT(IPMAC,HADF(ITYPE),NGRP,2,GAR6(1,1))
-        ENDDO
-        DEALLOCATE(VOL,HADF)
-        CALL LCMSIX(IPMAC,' ',2)
-      ENDIF
 *----
 *  AVERAGE PHYSICAL ALBEDO INFORMATION
 *----
@@ -441,7 +444,6 @@
 *----
 *  SCRATCH STORAGE DEALLOCATION
 *----
-      DEALLOCATE(ADF2,GAR4)
-      DEALLOCATE(GFF,GAR5,ALBP,ALBP2,GAR6,ZKEFF,ZKINF)
+      DEALLOCATE(ADF2M,ADF2,ZKEFF,ZKINF,ALBP2,ALBP,GAR5,GFF,GAR6,GAR4)
       RETURN
       END

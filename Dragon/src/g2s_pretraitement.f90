@@ -45,7 +45,7 @@ module pretraitement
 
     implicit none
 
-  real,parameter :: geomPrec = 1.e-5
+  real,parameter :: geomPrec = 1.e-4
   real,parameter :: sqrt_3f  = 1.732050807568
 
   !composeRotXXX(t1,t2)=t2ot1

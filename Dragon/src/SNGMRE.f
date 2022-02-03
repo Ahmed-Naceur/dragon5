@@ -1,6 +1,6 @@
 *DECK SNGMRE
       SUBROUTINE SNGMRE (KPSYS,NGIND,IPTRK,IMPX,NGEFF,NREG,NBMIX,NUN,
-     1 NSTART,MAXIT,EPSINR,MAT,VOL,KEYFLX,FUNKNO,SUNKNO)
+     1 NSTART,MAXIT,EPSINR,MAT,VOL,KEYFLX,FUNKNO,SUNKNO,FLUXC)
 *
 *-----------------------------------------------------------------------
 *
@@ -38,6 +38,7 @@
 *
 *Parameters: input/output
 * FUNKNO  unknown vector.
+* FLUXC   flux at the cutoff energy.
 *
 *-----------------------------------------------------------------------
 *
@@ -50,6 +51,7 @@
      1            MAT(NREG),KEYFLX(NREG)
       TYPE(C_PTR) KPSYS(NGEFF),IPTRK
       REAL        EPSINR,VOL(NREG),FUNKNO(NUN,NGEFF),SUNKNO(NUN,NGEFF)
+      REAL,OPTIONAL :: FLUXC(NREG)
 *----
 *  LOCAL VARIABLES
 *----
@@ -85,7 +87,7 @@
       DO WHILE((LNCONV.GT.0).AND.(ITER.LT.MAXIT))
         RR(:NUN,:NGEFF)=FUNKNO(:NUN,:NGEFF)
         CALL SNFLUX(KPSYS,INCONV,NGIND,IPTRK,IMPX,NGEFF,NREG,NBMIX,
-     1  NUN,MAT,VOL,KEYFLX,RR,SUNKNO,NITER)
+     1  NUN,MAT,VOL,KEYFLX,RR,SUNKNO,NITER,FLUXC)
         NITER=NITER+1
         DO II=1,NGEFF
           IF(.NOT.INCONV(II)) CYCLE
@@ -131,7 +133,7 @@
             RR(:NUN,II)=REAL(V(:NUN,K,II))
           ENDDO
           CALL SNFLUX(KPSYS,INCONV,NGIND,IPTRK,IMPX,NGEFF,NREG,NBMIX,
-     1    NUN,MAT,VOL,KEYFLX,RR,QQ,NITER)
+     1    NUN,MAT,VOL,KEYFLX,RR,QQ,NITER,FLUXC)
           NITER=NITER+1
           DO II=1,NGEFF
             IF(.NOT.INCONV(II)) CYCLE

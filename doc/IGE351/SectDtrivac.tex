@@ -139,7 +139,8 @@ unknown vector. $\mathcal{S}^{t}_{11}\le\mathcal{S}^{t}_{2}$.
  3 & \textrm{Nodal collocation method with full tensorial products (mesh-centered finite} \\
    & \textrm{differences or dual finite elements with Gauss-Lobatto quadrature). \Eq{tratr2} or} \\
    & \textrm{\Eq{tratr3} is used.} \\
- 4 & \textrm{Nodal expansion method (NEM).}
+ 4 & \textrm{Coarse mesh finite differences (CMFD) method.} \\
+ 5 & \textrm{Nodal expansion method (NEM).}
 \end{array} \right.
 \end{displaymath}
 
@@ -189,15 +190,15 @@ for supervectorial operations)
 \item $\mathcal{S}^{t}_{24}$: ({\tt NR0}) Number of radii used with the cylindrical correction
 algorithm for the albedos. Equal to zero if no cylindrical correction is applied.
 
-\item $\mathcal{S}^{t}_{25}$: ({\tt LL4F}) Order of matrices $\bf{T}$ if $\mathcal{S}^{t}_{12}=2$
+\item $\mathcal{S}^{t}_{25}$: ({\tt LL4F}) Order of matrices $\bf{T}$ if $\mathcal{S}^{t}_{12}=2$ or number of average flux components if $\mathcal{S}^{t}_{12}=4$
 
 \item $\mathcal{S}^{t}_{26}$: ({\tt LL4W}) Order of matrices $\bf{A_w}$ if $\mathcal{S}^{t}_{12}=2$
 
-\item $\mathcal{S}^{t}_{27}$: ({\tt LL4X}) Order of matrices $\bf{A_x}$ if $\mathcal{S}^{t}_{12}=2$
+\item $\mathcal{S}^{t}_{27}$: ({\tt LL4X}) Order of matrices $\bf{A_x}$ if $\mathcal{S}^{t}_{12}=2$ or number of $X-$directed net current components if $\mathcal{S}^{t}_{12}=4$
 
-\item $\mathcal{S}^{t}_{28}$: ({\tt LL4Y}) Order of matrices $\bf{A_y}$ if $\mathcal{S}^{t}_{12}=2$
+\item $\mathcal{S}^{t}_{28}$: ({\tt LL4Y}) Order of matrices $\bf{A_y}$ if $\mathcal{S}^{t}_{12}=2$ or number of $Y-$directed net current components if $\mathcal{S}^{t}_{12}=4$
 
-\item $\mathcal{S}^{t}_{29}$: ({\tt LL4Z}) Order of matrices $\bf{A_z}$ if $\mathcal{S}^{t}_{12}=2$
+\item $\mathcal{S}^{t}_{29}$: ({\tt LL4Z}) Order of matrices $\bf{A_z}$ if $\mathcal{S}^{t}_{12}=2$ or number of $Z-$directed net current components if $\mathcal{S}^{t}_{12}=4$
 
 \item $\mathcal{S}^{t}_{30}$: ({\tt NLF}) Number of components in the angular expansion of the flux. Must be a positive
 even number. Set to zero for diffusion theory. Set to 2 for $P_1$ method.
@@ -282,13 +283,13 @@ directory.
   {DD\blank{10}}{$\mathcal{S}^{t}_{1}$}{$\mathcal{S}^{t}_{6}=3 \ {\rm or} \ 6$}{cm}
   {Element-ordered position used with type 3 and 6 cylindrical geometries.} 
 \IntEnr
-  {KN\blank{10}}{$\mathcal{S}^{t}_{1}\times N_{\rm kn}$}
+  {KN\blank{10}}{$N_{\rm kn}\times\mathcal{S}^{t}_{1}$}
   {Element-ordered unknown list. $N_{\rm kn}$ is the number of unknowns per element.} 
 \RealEnr
-  {QFR\blank{9}}{$\mathcal{S}^{t}_{1}\times N_{\rm surf}$}{}
+  {QFR\blank{9}}{$N_{\rm surf}\times\mathcal{S}^{t}_{1}$}{}
   {Element-ordered boundary condition. $N_{\rm surf}=6$ in Cartesian geometry and $=8$ in hexagonal geometry.} 
 \IntEnr
-  {IQFR\blank{8}}{$\mathcal{S}^{t}_{1}\times N_{\rm surf}$}
+  {IQFR\blank{8}}{$N_{\rm surf}\times\mathcal{S}^{t}_{1}$}
   {Element-ordered physical albedo indices. $N_{\rm surf}=6$ in Cartesian geometry and $=8$ in hexagonal geometry.} 
 \OptIntEnr
   {MUW\blank{9}}{$\mathcal{S}^{t}_{11}$ or $\mathcal{S}^{t}_{26}$}{$\mathcal{S}^{t}_{6}\ge 8$}

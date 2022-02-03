@@ -1,7 +1,8 @@
 *DECK SNFP13
       SUBROUTINE SNFP13(NUN,NGEFF,IMPX,INCONV,NGIND,LX,LY,LZ,IELEM,
      1 IBFP,NMAT,NPQ,NSCT,MAT,VOL,TOTAL,ESTOPW,NCODE,ZCODE,DELTAE,
-     2 QEXT,LFIXUP,DU,DE,DZ,W,MRMX,MRMY,MRMZ,DC,DB,DA,PL,FUNKNO)
+     2 QEXT,LFIXUP,DU,DE,DZ,W,MRMX,MRMY,MRMZ,DC,DB,DA,PL,FUNKNO,
+     3 FLUXC)
 *
 *-----------------------------------------------------------------------
 *
@@ -59,6 +60,7 @@
 *
 *Parameters: input/output
 * FUNKNO  Legendre components of the flux and boundary fluxes.
+* FLUXC   flux at the cutoff energy.
 *
 *-----------------------------------------------------------------------
 *
@@ -74,7 +76,7 @@
       REAL VOL(LX,LY,LZ),TOTAL(0:NMAT,NGEFF),ESTOPW(0:NMAT,2,NGEFF),
      1 ZCODE(6),DELTAE(NGEFF),QEXT(NUN,NGEFF),DU(NPQ),DE(NPQ),DZ(NPQ),
      2 W(NPQ),DC(LX,LY,NPQ),DB(LX,LZ,NPQ),DA(LY,LZ,NPQ),PL(NSCT,NPQ),
-     3 FUNKNO(NUN,NGEFF)
+     3 FUNKNO(NUN,NGEFF),FLUXC(LX,LY,LZ)
       LOGICAL LFIXUP
 *----
 *  LOCAL VARIABLES
@@ -376,8 +378,8 @@
      1        2.0D0*ABS(DC(I,J,M))+VT
       Q2(1,2)=2.0D0*ABS(DA(J,K,M))*XNI(1,1,J,K)+
      1        2.0D0*ABS(DB(I,K,M))*XNJ(1,1,K)+
-     2        2.0D0*ABS(DC(I,J,M))*XNK(1,1)+FN*FEP(1)*VOL(I,J,K)+
-     3        VOL(I,J,K)*Q(1)
+     2        2.0D0*ABS(DC(I,J,M))*XNK(1,1)+(FN*FEP(1)+
+     3        Q(1))*VOL(I,J,K)
       ELSE IF(IELEM.EQ.2) THEN
       Q2(1,1)=VT
       Q2(1,2)=CONST0*DA(J,K,M)
@@ -401,20 +403,20 @@
       Q2(8,8)=-VT-6.0D0*ABS(DA(J,K,M))-6.0D0*ABS(DB(I,K,M))
      1        -6.0D0*ABS(DC(I,J,M))
 *---------------
-      Q2(1,9)=FN*FEP(1)*VOL(I,J,K)+VOL(I,J,K)*Q(1)
-      Q2(2,9)=-FN*FEP(2)*VOL(I,J,K)-VOL(I,J,K)*Q(2)+CONST0*DA(J,K,M)*
+      Q2(1,9)=(FN*FEP(1)+Q(1))*VOL(I,J,K)
+      Q2(2,9)=-(FN*FEP(2)+Q(2))*VOL(I,J,K)+CONST0*DA(J,K,M)*
      1        XNI(1,1,J,K)
-      Q2(3,9)=-FN*FEP(3)*VOL(I,J,K)-VOL(I,J,K)*Q(3)+CONST0*DB(I,K,M)*
+      Q2(3,9)=-(FN*FEP(3)+Q(3))*VOL(I,J,K)+CONST0*DB(I,K,M)*
      1        XNJ(1,1,K)
-      Q2(4,9)=-FN*FEP(4)*VOL(I,J,K)-VOL(I,J,K)*Q(4)+CONST0*DC(I,J,M)*
+      Q2(4,9)=-(FN*FEP(4)+Q(4))*VOL(I,J,K)+CONST0*DC(I,J,M)*
      1        XNK(1,1)
-      Q2(5,9)=FN*FEP(5)*VOL(I,J,K)+VOL(I,J,K)*Q(5)-CONST0*DA(J,K,M)*
+      Q2(5,9)=(FN*FEP(5)+Q(5))*VOL(I,J,K)-CONST0*DA(J,K,M)*
      1        XNI(2,1,J,K)-CONST0*DB(I,K,M)*XNJ(2,1,K)
-      Q2(6,9)=FN*FEP(6)*VOL(I,J,K)+VOL(I,J,K)*Q(6)-CONST0*DA(J,K,M)*
+      Q2(6,9)=(FN*FEP(6)+Q(6))*VOL(I,J,K)-CONST0*DA(J,K,M)*
      1        XNI(1,2,J,K)-CONST0*DC(I,J,M)*XNK(2,1)
-      Q2(7,9)=FN*FEP(7)*VOL(I,J,K)+VOL(I,J,K)*Q(7)-CONST0*DB(I,K,M)*
+      Q2(7,9)=(FN*FEP(7)+Q(7))*VOL(I,J,K)-CONST0*DB(I,K,M)*
      1        XNJ(1,2,K)-CONST0*DC(I,J,M)*XNK(1,2)
-      Q2(8,9)=-FN*FEP(8)*VOL(I,J,K)-VOL(I,J,K)*Q(8)+CONST0*DA(J,K,M)*
+      Q2(8,9)=-(FN*FEP(8)+Q(8))*VOL(I,J,K)+CONST0*DA(J,K,M)*
      1        XNI(2,2,J,K)+CONST0*DB(I,K,M)*XNJ(2,2,K)
      2        +CONST0*DC(I,J,M)*XNK(2,2)
 
@@ -510,71 +512,71 @@
       Q2(27,27)=-VT-1.0D1*ABS(DA(J,K,M))-1.0D1*ABS(DB(I,K,M))-
      1        1.0D1*ABS(DC(I,J,M))
 *---------------------
-      Q2(1,28)=-FN*FEP(1)*VOL(I,J,K)-VOL(I,J,K)*Q(1)-2.0D0*
+      Q2(1,28)=-(FN*FEP(1)+Q(1))*VOL(I,J,K)-2.0D0*
      1        ABS(DA(J,K,M))*XNI(1,1,J,K)-2.0D0*ABS(DB(I,K,M))*
      2        XNJ(1,1,K)-2.0D0*ABS(DC(I,J,M))*XNK(1,1)
-      Q2(2,28)=FN*FEP(2)*VOL(I,J,K)+VOL(I,J,K)*Q(2)+2.0D0*
+      Q2(2,28)=(FN*FEP(2)+Q(2))*VOL(I,J,K)+2.0D0*
      1        ABS(DB(I,K,M))*XNJ(2,1,K)+2.0D0*ABS(DC(I,J,M))*XNK(2,1)
-      Q2(3,28)=FN*FEP(3)*VOL(I,J,K)+VOL(I,J,K)*Q(3)+2.0D0*
+      Q2(3,28)=(FN*FEP(3)+Q(3))*VOL(I,J,K)+2.0D0*
      1        ABS(DA(J,K,M))*XNI(2,1,J,K)+2.0D0*ABS(DC(I,J,M))*XNK(1,2)
-      Q2(4,28)=FN*FEP(4)*VOL(I,J,K)+VOL(I,J,K)*Q(4)+2.0D0*
+      Q2(4,28)=(FN*FEP(4)+Q(4))*VOL(I,J,K)+2.0D0*
      1        ABS(DA(J,K,M))*XNI(1,2,J,K)+2.0D0*ABS(DB(I,K,M))*
      2        XNJ(1,2,K)
-      Q2(5,28)=-FN*FEP(5)*VOL(I,J,K)-VOL(I,J,K)*Q(5)-2.0D0*
+      Q2(5,28)=-(FN*FEP(5)+Q(5))*VOL(I,J,K)-2.0D0*
      1        ABS(DC(I,J,M))*XNK(2,2)
-      Q2(6,28)=-FN*FEP(6)*VOL(I,J,K)-VOL(I,J,K)*Q(6)-2.0D0*
+      Q2(6,28)=-(FN*FEP(6)+Q(6))*VOL(I,J,K)-2.0D0*
      1        ABS(DA(J,K,M))*XNI(2,2,J,K)
-      Q2(7,28)=-FN*FEP(7)*VOL(I,J,K)-VOL(I,J,K)*Q(7)-2.0D0*
+      Q2(7,28)=-(FN*FEP(7)+Q(7))*VOL(I,J,K)-2.0D0*
      1        ABS(DB(I,K,M))*XNJ(2,2,K)
-      Q2(8,28)=FN*FEP(8)*VOL(I,J,K)+VOL(I,J,K)*Q(8)
-      Q2(9,28)=-FN*FEP(9)*VOL(I,J,K)-VOL(I,J,K)*Q(9)-CONST1*
+      Q2(8,28)=(FN*FEP(8)+Q(8))*VOL(I,J,K)
+      Q2(9,28)=-(FN*FEP(9)+Q(9))*VOL(I,J,K)-CONST1*
      1        ABS(DA(J,K,M))*XNI(1,1,J,K)-2.0D0*ABS(DB(I,K,M))*
      2        XNJ(3,1,K)-2.0D0*ABS(DC(I,J,M))*XNK(3,1)
-      Q2(10,28)=-FN*FEP(10)*VOL(I,J,K)-VOL(I,J,K)*Q(10)-CONST1*
+      Q2(10,28)=-(FN*FEP(10)+Q(10))*VOL(I,J,K)-CONST1*
      1        ABS(DB(I,K,M))*XNJ(1,1,K)-2.0D0*ABS(DA(J,K,M))*
      2        XNI(3,1,J,K)-2.0D0*ABS(DC(I,J,M))*XNK(1,3)
-      Q2(11,28)=-FN*FEP(11)*VOL(I,J,K)-VOL(I,J,K)*Q(11)-2.0D0*
+      Q2(11,28)=-(FN*FEP(11)+Q(11))*VOL(I,J,K)-2.0D0*
      1        ABS(DA(J,K,M))*XNI(1,3,J,K)-2.0D0*ABS(DB(I,K,M))*
      2        XNJ(1,3,K)-CONST1*ABS(DC(I,J,M))*XNK(1,1)
-      Q2(12,28)=FN*FEP(12)*VOL(I,J,K)+VOL(I,J,K)*Q(12)+CONST1*
+      Q2(12,28)=(FN*FEP(12)+Q(12))*VOL(I,J,K)+CONST1*
      1        ABS(DA(J,K,M))*XNI(2,1,J,K)+2.0D0*ABS(DC(I,J,M))*XNK(3,2)
-      Q2(13,28)=FN*FEP(13)*VOL(I,J,K)+VOL(I,J,K)*Q(13)+2.0D0*
+      Q2(13,28)=(FN*FEP(13)+Q(13))*VOL(I,J,K)+2.0D0*
      1        ABS(DB(I,K,M))*XNJ(3,2,K)+CONST1*ABS(DA(J,K,M))*
      2        XNI(1,2,J,K)
-      Q2(14,28)=-FN*FEP(14)*VOL(I,J,K)-VOL(I,J,K)*Q(14)-CONST1*
+      Q2(14,28)=-(FN*FEP(14)+Q(14))*VOL(I,J,K)-CONST1*
      1        ABS(DA(J,K,M))*XNI(2,2,J,K)
-      Q2(15,28)=FN*FEP(15)*VOL(I,J,K)+VOL(I,J,K)*Q(15)+2.0D0*
+      Q2(15,28)=(FN*FEP(15)+Q(15))*VOL(I,J,K)+2.0D0*
      1        ABS(DA(J,K,M))*XNI(2,3,J,K)+CONST1*ABS(DC(I,J,M))*XNK(1,2)
-      Q2(16,28)=FN*FEP(16)*VOL(I,J,K)+VOL(I,J,K)*Q(16)+2.0D0*
+      Q2(16,28)=(FN*FEP(16)+Q(16))*VOL(I,J,K)+2.0D0*
      1        ABS(DB(I,K,M))*XNJ(2,3,K)+CONST1*ABS(DC(I,J,M))*XNK(2,1)
-      Q2(17,28)=FN*FEP(17)*VOL(I,J,K)+VOL(I,J,K)*Q(17)+CONST1*
-     1        ABS(DB(I,K,M))*XNJ(2,1,K)+CONST1*ABS(DC(I,J,M))*XNK(2,3)
-      Q2(18,28)=-FN*FEP(18)*VOL(I,J,K)-VOL(I,J,K)*Q(18)-CONST1*
+      Q2(17,28)=(FN*FEP(17)+Q(17))*VOL(I,J,K)+CONST1*
+     1        ABS(DB(I,K,M))*XNJ(2,1,K)+2.0D0*ABS(DC(I,J,M))*XNK(2,3)
+      Q2(18,28)=-(FN*FEP(18)+Q(18))*VOL(I,J,K)-CONST1*
      1        ABS(DB(I,K,M))*XNJ(2,2,K)
-      Q2(19,28)=FN*FEP(19)*VOL(I,J,K)+VOL(I,J,K)*Q(19)+2.0D0*
+      Q2(19,28)=(FN*FEP(19)+Q(19))*VOL(I,J,K)+2.0D0*
      1        ABS(DA(J,K,M))*XNI(3,2,J,K)+CONST1*ABS(DB(I,K,M))*
      2        XNJ(1,2,K)
-      Q2(20,28)=-FN*FEP(20)*VOL(I,J,K)-VOL(I,J,K)*Q(20)-CONST1*
+      Q2(20,28)=-(FN*FEP(20)+Q(20))*VOL(I,J,K)-CONST1*
      1        ABS(DC(I,J,M))*XNK(2,2)
-      Q2(21,28)=-FN*FEP(21)*VOL(I,J,K)-VOL(I,J,K)*Q(21)-
+      Q2(21,28)=-(FN*FEP(21)+Q(21))*VOL(I,J,K)-
      1        CONST1*ABS(DA(J,K,M))*XNI(3,1,J,K)-
      2        CONST1*ABS(DB(I,K,M))*XNJ(3,1,K)-
-     3        2.0D0*CONST1*ABS(DC(I,J,M))*XNK(3,3)
-      Q2(22,28)=-FN*FEP(22)*VOL(I,J,K)-VOL(I,J,K)*Q(22)-2.0D0*
+     3        2.0D0*ABS(DC(I,J,M))*XNK(3,3)
+      Q2(22,28)=-(FN*FEP(22)+Q(22))*VOL(I,J,K)-2.0D0*
      1        ABS(DA(J,K,M))*XNI(3,3,J,K)-CONST1*ABS(DB(I,K,M))*
      2        XNJ(1,3,K)-CONST1*ABS(DC(I,J,M))*XNK(1,3)
-      Q2(23,28)=-FN*FEP(23)*VOL(I,J,K)-VOL(I,J,K)*Q(23)-
+      Q2(23,28)=-(FN*FEP(23)+Q(23))*VOL(I,J,K)-
      1        CONST1*ABS(DA(J,K,M))*XNI(1,3,J,K)-
      2        2.0D0*ABS(DB(I,K,M))*XNJ(3,3,K)-
      3        CONST1*ABS(DC(I,J,M))*XNK(3,1)
-      Q2(24,28)=FN*FEP(24)*VOL(I,J,K)+VOL(I,J,K)*Q(24)+CONST1*
+      Q2(24,28)=(FN*FEP(24)+Q(24))*VOL(I,J,K)+CONST1*
      1        ABS(DB(I,K,M))*XNJ(2,3,K)+CONST1*ABS(DC(I,J,M))*XNK(2,3)
-      Q2(25,28)=FN*FEP(25)*VOL(I,J,K)+VOL(I,J,K)*Q(25)+CONST1*
+      Q2(25,28)=(FN*FEP(25)+Q(25))*VOL(I,J,K)+CONST1*
      1        ABS(DA(J,K,M))*XNI(2,3,J,K)+CONST1*ABS(DC(I,J,M))*XNK(3,2)
-      Q2(26,28)=FN*FEP(26)*VOL(I,J,K)+VOL(I,J,K)*Q(26)+CONST1*
+      Q2(26,28)=(FN*FEP(26)+Q(26))*VOL(I,J,K)+CONST1*
      1        ABS(DA(J,K,M))*XNI(3,2,J,K)+CONST1*ABS(DB(I,K,M))*
      2        XNJ(3,2,K)
-      Q2(27,28)=-FN*FEP(27)*VOL(I,J,K)-VOL(I,J,K)*Q(27)-
+      Q2(27,28)=-(FN*FEP(27)+Q(27))*VOL(I,J,K)-
      1        CONST1*ABS(DA(J,K,M))*XNI(3,3,J,K)-
      2        CONST1*ABS(DB(I,K,M))*XNJ(3,3,K)-
      3        CONST1*ABS(DC(I,J,M))*XNK(3,3)
@@ -638,6 +640,9 @@
       ENDIF
       FEP(:IELEM**3)=G2*Q2(:IELEM**3,IELEM**3+1)-G1*FEP(:IELEM**3)
       FLUX0(:IELEM**3,M,I,J,K)=FEP(:IELEM**3)/DELTAE(IG)
+      IF(IG.EQ.NGEFF) THEN
+      FLUXC(I,J,K)=FLUXC(I,J,K)+W(M)*REAL(FLUX0(1,M,I,J,K))*PL(1,M)
+      ENDIF
       DO 270 L=1,NSCT
       DO 260 IEL=1,IELEM**3
       FLUX(IEL,L,I,J,K)=FLUX(IEL,L,I,J,K)+W(M)*Q2(IEL,IELEM**3+1)*

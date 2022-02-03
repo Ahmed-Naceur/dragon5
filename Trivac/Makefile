@@ -27,3 +27,4 @@ tests :
 	./rtrivac multigroup_albedo_2d.x2m $(fcompiler) -quiet
 	./rtrivac multigroup_albedo_3d.x2m $(fcompiler) -quiet
 	./rtrivac takedaM4_spn.x2m $(fcompiler) -quiet
+	./rtrivac prob5p12_nem.x2m $(fcompiler) -quiet

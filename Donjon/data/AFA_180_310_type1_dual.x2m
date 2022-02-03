@@ -1,0 +1,45 @@
+LINKED_LIST AFA TRACK MACRO SYSTEM FLUX ;
+MODULE GEO: TRIVAT: TRIVAA: FLUD: HUTL: ACR: END: ;
+HDF5_FILE AFA_180 :: FILE "./AFA_180.h5" ;
+HDF5_FILE AFA_310 :: FILE "./AFA_310.h5" ;
+PROCEDURE assertS ;
+*
+AFA := GEO: :: CAR3D 6 6 1
+  EDIT 1
+  X- REFL X+ REFL
+  Y- REFL Y+ REFL
+  Z- REFL Z+ REFL
+  MIX
+     1    2    2    1    1    2
+     2    1    1    2    2    1
+     2    1    1    2    2    1
+     1    2    2    1    1    2
+     1    2    2    1    1    2
+     2    1    1    2    2    1
+  MESHX -32.419628 -21.613085 -10.8065426 0.0 10.8065426 21.613085
+        32.419628
+  MESHY -32.419628 -21.613085 -10.8065426 0.0 10.8065426 21.613085
+        32.419628
+  MESHZ -21.613085 21.613085
+  ;
+TRACK := TRIVAT: AFA :: EDIT 2 DUAL 3 3 ;
+
+HUTL: AFA_180 :: DIR
+ DIR 'input'
+;
+
+MACRO :=  ACR: AFA_180 AFA_310 :: EDIT 2 NMIX 2
+   APEX AFA_180 MIX  1 SET 'Burnup' 0.0 ENDMIX
+   APEX AFA_310 MIX  2 SET 'Burnup' 0.0 ENDMIX
+;
+
+************************************************************************
+*  FLUX SOLUTION (RAVIART-THOMAS)                                      *
+************************************************************************
+SYSTEM := TRIVAA: MACRO TRACK ::
+      EDIT 2 ;
+FLUX := FLUD: SYSTEM TRACK ::
+      EDIT 2 ;
+assertS FLUX :: 'K-EFFECTIVE' 1 0.9985927 ;
+ECHO "AFA_180_310_type1_dual completed" ;
+END: ;

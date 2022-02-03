@@ -79,11 +79,11 @@ $[$~\moc{NGET}~$[$~(\dusa{adf}($g$), $g$=1,$N_g$) $]~]$ \\
 \item[\dusa{iprint}] index used to control the printing in module {\tt BREF:}. =0 for no print; =1 for minimum printing (default value).
 
 \item[\moc{HYPE}] keyword used to specify the type of nodal expansion base functions used to represent the flux with the {\tt DF-NEM} and {\tt ERM-NEM}
-methods. By default, polynomials defined over $(-0.5,0.5)$ are used as base functions:
+methods. By default, polynomials defined over $(-0.5,0.5)$ are used as base functions:\cite{nestle}
 \begin{eqnarray}
 \nonumber P_0(u)\negthinspace &=&\negthinspace 1\\
 \nonumber P_1(u)\negthinspace &=&\negthinspace u\\
-\nonumber P_2(u)\negthinspace &=&\negthinspace u^2-{1\over 12}\\
+\nonumber P_2(u)\negthinspace &=&\negthinspace 3u^2-{1\over 4}\\
 \nonumber P_3(u)\negthinspace &=&\negthinspace \left( u^2-{1\over 4}\right)u\\
 P_4(u)\negthinspace &=&\negthinspace \left( u^2-{1\over 4}\right)\left( u^2-{1\over 20}\right)
 \end{eqnarray}

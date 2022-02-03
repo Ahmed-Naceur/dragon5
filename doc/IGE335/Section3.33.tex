@@ -30,6 +30,7 @@ accumulate deposition values gathered from successive solutions of the Boltzmann
 \begin{DataStructure}{Structure \dstr{HEAT\_data}}
 $[$~\moc{EDIT} \dusa{iprint}~$]$ \\
 $[~\{$ \moc{POWR} \dusa{power} $|$ \moc{SOUR} \dusa{snumb} $\}~]$ \\
+$[~\{$ \moc{BC} $|$ \moc{NBC} $\}~]$ \\
 $[~\{$ \moc{PICKE}  {\tt >>} \dusa{esum} {\tt <<} $|$ \moc{PICKC}  {\tt >>} \dusa{csum} {\tt <<} $\}~]$ \\
 ;
 \end{DataStructure}
@@ -48,6 +49,10 @@ $[~\{$ \moc{PICKE}  {\tt >>} \dusa{esum} {\tt <<} $|$ \moc{PICKC}  {\tt >>} \dus
 \item[\moc{SOUR}] keyword used to set \dusa{snumb}. Fixed source information (record {\tt FIXE}) must be available in the first extended macrolib \dusa{MACRO}.
 
 \item[\dusa{snumb}] number of source particles used to normalize the flux. By default, the flux is not normalized.
+
+\item[\moc{BC}]  keyword used to take into account the contribution of the particules falling below the cutoff energy to the charge and energy deposition calculations using method from Morel\cite{morel1996} (by default).
+
+\item[\moc{NBC}] keyword used to disable the contribution of the particules falling below the cutoff energy to the charge and energy deposition calculations.
 
 \item[\moc{PICKE}]  keyword used to recover the total energy deposition value (MeV/cc/s) in a CLE-2000 variable.
 

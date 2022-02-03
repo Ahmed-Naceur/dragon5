@@ -1,7 +1,7 @@
 *DECK DOORFV
       SUBROUTINE DOORFV(CDOOR,IPSYS,NPSYS,IPTRK,IFTRAK,IMPX,NGRP,NMAT,
      1 IDIR,NREG,NUN,IPHASE,LEXAC,MAT,VOL,KEYFLX,TITR,SUNKNO,FUNKNO,
-     2 IPMACR,REBFLG)
+     2 IPMACR,REBFLG,FLUXC)
 *
 *-----------------------------------------------------------------------
 *
@@ -50,6 +50,7 @@
 * FUNKNO  unknown vector.
 * IPMACR  pointer to the macrolib LCM object.
 * REBFLG  ACA or SCR rebalancing flag.
+* FLUXC   flux at the cutoff energy.
 *
 *-----------------------------------------------------------------------
 *
@@ -64,6 +65,7 @@
       REAL VOL(NREG)
       REAL, TARGET :: SUNKNO(NUN,NGRP),FUNKNO(NUN,NGRP)
       LOGICAL LEXAC,REBFLG
+      REAL,OPTIONAL :: FLUXC(NREG)
 *----
 *  LOCAL VARIABLES
 *----
@@ -220,7 +222,7 @@
             DEALLOCATE(INCONV)
          ELSE IF(CDOOR.EQ.'SN') THEN
             CALL SNF(KPSYS,IPTRK,IFTRAK,IMPX,NGEFF,NGIND,IDIR,NREG,NMAT,
-     >               NUN,MAT,VOL,KEYFLX,FUNKNO2,SUNKNO2,TITR)
+     >               NUN,MAT,VOL,KEYFLX,FUNKNO2,SUNKNO2,TITR,FLUXC)
          ELSE IF(CDOOR.EQ.'MCCG') THEN
             CALL MCCGF(KPSYS,IPTRK,IFTRAK,IPMACR,IMPX,NGRP,NGEFF,NGIND,
      >                 IDIR,NREG,NMAT,NUN,LEXAC,MAT,VOL,KEYFLX,FUNKNO2,

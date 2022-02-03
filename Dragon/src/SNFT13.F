@@ -508,7 +508,7 @@
       Q2(16,28)=VOL(I,J,K)*Q(16)+2.0D0*ABS(DB(I,K,M))*XNJ(2,3,K)+
      1        CONST1*ABS(DC(I,J,M))*XNK(2,1)
       Q2(17,28)=VOL(I,J,K)*Q(17)+CONST1*ABS(DB(I,K,M))*XNJ(2,1,K)+
-     1        CONST1*ABS(DC(I,J,M))*XNK(2,3)
+     1        2.0D0*ABS(DC(I,J,M))*XNK(2,3)
       Q2(18,28)=-VOL(I,J,K)*Q(18)-CONST1*ABS(DB(I,K,M))*XNJ(2,2,K)
       Q2(19,28)=VOL(I,J,K)*Q(19)+2.0D0*ABS(DA(J,K,M))*XNI(3,2,J,K)+
      1        CONST1*ABS(DB(I,K,M))*XNJ(1,2,K)
@@ -516,7 +516,7 @@
       Q2(21,28)=-VOL(I,J,K)*Q(21)-
      1        CONST1*ABS(DA(J,K,M))*XNI(3,1,J,K)-
      2        CONST1*ABS(DB(I,K,M))*XNJ(3,1,K)-
-     3        2.0D0*CONST1*ABS(DC(I,J,M))*XNK(3,3)
+     3        2.0D0*ABS(DC(I,J,M))*XNK(3,3)
       Q2(22,28)=-VOL(I,J,K)*Q(22)-2.0D0*ABS(DA(J,K,M))*XNI(3,3,J,K)
      1        -CONST1*ABS(DB(I,K,M))*XNJ(1,3,K)
      2        -CONST1*ABS(DC(I,J,M))*XNK(1,3)

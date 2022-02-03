@@ -37,7 +37,7 @@
 * ILEAK1  type of leakage calculation in actual macrolib
 *         =0: no leakage; =1: homogeneous leakage (Diffon).
 * ILEAK2  type of leakage calculation in reference macrolib.
-* IDF2    ADF type, 0 = none, 1 = Albedo, 2 = FD_B/FD_C/...
+* IDF2    ADF type, 0 = none, 1 = Albedo, 2 = FD_B/FD_C/..., 3 = ADF.
 * MATCOD  material mixture indices per region.
 * KEYFLX  position of averaged fluxes in unknown vector.
 * VOL     volumes.

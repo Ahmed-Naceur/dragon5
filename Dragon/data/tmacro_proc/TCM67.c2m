@@ -89,7 +89,7 @@ SYSTEM := DELETE: SYSTEM ;
 *  Compute the primary energy deposition
 *----
 DEPOS := HEAT: EEDITS GEDITS ::
-    EDIT 1 SOUR 0.0518134 ! 1/(\ro_{W} g/cm^{3})
+    EDIT 1 NBC SOUR 0.0518134 ! 1/(\ro_{W} g/cm^{3})
     ;
 EEDITS GEDITS EFLUX := DELETE: EEDITS GEDITS EFLUX ;
 *----
@@ -132,7 +132,7 @@ SYSTEM ESOUR := DELETE: SYSTEM ESOUR ;
 *  Compute the secondary total energy deposition
 *----
 DEPOS := HEAT: DEPOS EEDITS GEDITS ::
-    EDIT 1 PICKE >>esum<<
+    EDIT 1 NBC PICKE >>esum<<
     ;
 ECHO "total energy deposition=" esum "MeV/cc" ;
 *----

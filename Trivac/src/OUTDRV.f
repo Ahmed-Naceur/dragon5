@@ -5,7 +5,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* Driver for the port-treatment of reactor calculation results.
+* Driver for the post-treatment of reactor calculation results.
 *
 *Copyright:
 * Copyright (C) 2002 Ecole Polytechnique de Montreal
@@ -56,12 +56,13 @@
       CHARACTER TEXT4*4
       DOUBLE PRECISION DFLOTT,ZNORM
       INTEGER, DIMENSION(:), ALLOCATABLE :: IHOM,IGCOND
-      REAL, DIMENSION(:), ALLOCATABLE :: SGD
+      REAL, DIMENSION(:), ALLOCATABLE :: SGD,FLUXC
       REAL, DIMENSION(:,:), ALLOCATABLE :: EVECT,ADECT,ZUFIS
 *----
 *  SCRATCH STORAGE ALLOCATION
 *----
-      ALLOCATE(IHOM(NEL),IGCOND(NGRP),EVECT(NUN,NGRP),SGD(NBMIX))
+      ALLOCATE(IHOM(NEL),IGCOND(NGRP),EVECT(NUN,NGRP),SGD(NBMIX),
+     1 FLUXC(NEL))
 *
       TKR=0.0
       IMPX=1
@@ -79,6 +80,13 @@
       IF(ILEN.GT.0) THEN
          CALL LCMGET(IPFLUX,'K-EFFECTIVE',FKEFF)
          CALL LCMPUT(IPMAC2,'K-EFFECTIVE',1,2,FKEFF)
+      ENDIF
+      CALL LCMLEN(IPFLUX,'FLUXC',ILEN,ITYLCM)
+      IF(ILEN.GT.0) THEN
+         CALL LCMGET(IPFLUX,'FLUXC',FLUXC)
+         CALL LCMPUT(IPMAC2,'FLUXC',NEL,2,FLUXC)
+         CALL LCMGET(IPFLUX,'ECUTOFF',ECUTOFF)
+         CALL LCMPUT(IPMAC2,'ECUTOFF',1,2,ECUTOFF)
       ENDIF
 *
    20 CALL REDGET(INDIC,NITMA,FLOTT,TEXT4,DFLOTT)
@@ -227,7 +235,7 @@
 *----
 *  SCRATCH STORAGE DEALLOCATION
 *----
-  140 DEALLOCATE(IHOM,IGCOND,EVECT,SGD)
+  140 DEALLOCATE(FLUXC,SGD,EVECT,IGCOND,IHOM)
       RETURN
 *
   300 FORMAT(/9H OUTDRV: ,A7,28H FLUX NORMALIZATION FACTOR =,1P,E13.5)

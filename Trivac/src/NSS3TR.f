@@ -4,7 +4,7 @@
 *-----------------------------------------------------------------------
 *
 *Purpose:
-*Assembly of fission system matrices for the nodal expansion method.
+* Assembly of fission system matrices for the nodal expansion method.
 *
 *Copyright:
 * Copyright (C) 2021 Ecole Polytechnique de Montreal
@@ -17,6 +17,10 @@
 *
 *Parameters: input
 * ITRIAL  type of base (=1: polynomial; =2: hyperbolic)
+* NEL     number of nodes
+* NMIX    number of mixtures
+* MAT     node mixtures
+* XX      node widths
 * DIFF    diffusion coefficients.
 * SIGR    macroscopic removal cross section.
 * SIGT    fission cross section.
@@ -33,18 +37,18 @@
       NUM1=0
       DO KEL=1,NEL
         IBM=MAT(KEL)
-        SIGG=SIGT(MAT(KEL))
-        ETA=XX(KEL)*SQRT(SIGR(MAT(KEL))/DIFF(MAT(KEL)))
+        SIGG=SIGT(IBM)
+        ETA=XX(KEL)*SQRT(SIGR(IBM)/DIFF(IBM))
         ! WEIGHT RESIDUAL EQUATIONS:
         B11(NUM1+1,NUM1+1)=SIGG
         B11(NUM1+2,NUM1+2)=SIGG/12.0
-        B11(NUM1+3,NUM1+3)=SIGG/180.0
-        IF (ITRIAL(IBM) == 1) THEN
+        B11(NUM1+3,NUM1+3)=SIGG/20.0
+        IF(ITRIAL(IBM) == 1) THEN
           B11(NUM1+2,NUM1+4)=-SIGG/120.0
-          B11(NUM1+3,NUM1+5)=-SIGG/2100.0
+          B11(NUM1+3,NUM1+5)=-SIGG/700.0
         ELSE
-          ALP1=ETA*COSH(ETA/2)-2.0*SINH(ETA/2)
-          ALP2=((12.0+ETA**2)*SINH(ETA/2)-6.0*ETA*COSH(ETA/2))/(3.0*ETA)
+          ALP1=ETA*COSH(ETA/2.0)-2.0*SINH(ETA/2.0)
+          ALP2=((12.0+ETA**2)*SINH(ETA/2.0)-6.0*ETA*COSH(ETA/2.0))/ETA
           B11(NUM1+2,NUM1+4)=SIGG*ALP1/(ETA**2)
           B11(NUM1+3,NUM1+5)=SIGG*ALP2/(ETA**2)
         ENDIF

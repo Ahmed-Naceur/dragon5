@@ -30,7 +30,7 @@
 *         recovered.
 * ILEAKS  type of leakage calculation (=0: no; =1: isotropic;
 *         =2: anisotropic).
-* IDF     discontinuity factor flag (=0: not used; =2: recovered).
+* IDF     discontinuity factor flag (=0: not used; =3: recovered).
 * IPRINT  print parameter
 *
 *Parameters: output
@@ -224,7 +224,7 @@
 *----
 *  RECOVER ADF
 *----
-        IF(IDF.EQ.2) THEN
+        IF(IDF.EQ.3) THEN
           CALL LCMSIX(IPMAC2(IC),'ADF',1)
           IF(IPRINT.GT.5) CALL LCMLIB(IPMAC2(IC))
           CALL LCMLEN(IPMAC2(IC),'HADF',NTYPE,ITYLCM)
@@ -262,7 +262,7 @@
             WRITE(6,20) 'JXP',JXP(:,IGR,IC)
             WRITE(6,20) 'FHETXM',FHETXM(:,IGR,IC)
             WRITE(6,20) 'FHETXP',FHETXP(:,IGR,IC)
-            IF(IDF.EQ.2) WRITE(6,20) 'ADF1',ADF1(:,IGR,IC)
+            IF(IDF.EQ.3) WRITE(6,20) 'ADF1',ADF1(:,IGR,IC)
           ENDDO
         ENDIF
       ENDDO

@@ -1,9 +1,10 @@
-      SUBROUTINE FMAC04(NGPRT,NPART,NGP,IEMAX,IEMIN)
+*DECK FMAC04 
+      SUBROUTINE FMAC04(NGPRT,NGP,NPART,NK,H)
 *
 *-----------------------------------------------------------------------
 *
 *Purpose:
-* Find the index in a FMAC-M array.
+* Reorganize boundary information from FMAC-M array.
 *
 *Copyright:
 * Copyright (C) 2020 Ecole Polytechnique de Montreal
@@ -12,36 +13,43 @@
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version
 *
-*Author(s): A. Hebert
+*Author(s): C. Bienvenue
 *
 *Parameters: input
 * NGPRT   number of energy groups per particle.
-* NPART   number of particles in FMAC-M file.
 * NGP     number of energy groups for all particles.
-* IEMAX   index of upper energy information in FMAC-M array.
+* NPART   number of particles in FMAC-M file.
+* NK      number of mixtures
+* H       boundary informations array from FMAC-M file.
 *
 *Parameters: output
-* IEMIN   index of lower energy information in FMAC-M array.
+* H       boundary informations array organized by particle.
 *
 *-----------------------------------------------------------------------
 *
 *----
 *  SUBROUTINE ARGUMENTS
 *----
-      INTEGER NGPRT(NPART),NPART,NGP,IEMAX,IEMIN
+      INTEGER NGPRT(NPART),NGP,NPART
+      REAL H(NK,NGP+NPART),HTEMP(NK,NGP+NPART)
 *
-      IEMIN=IEMAX+1
-      II=NGP+NPART+1
-      NN=0
+      NGT1=0
+      NGT2=0
       DO I=1,NPART
-        II=II-1
-        NN=NN+NGPRT(I)
-        IF(IEMAX.LT.NN) THEN
-          EXIT
-        ELSE IF(IEMAX.EQ.NN) THEN
-          IEMIN=II
-          EXIT
-        ENDIF
+        DO J=1,NGPRT(I)+1
+          DO K=1,NK
+            IF(J.LE.NGPRT(I)) THEN
+              HTEMP(k,NGT2+J)=H(k,NGT1+J)
+            ELSE
+              HTEMP(k,NGT2+J)=H(k,NGP+NPART+1-I)
+            ENDIF
+          ENDDO
+        ENDDO
+        NGT1=NGT1+NGPRT(I)
+        NGT2=NGT2+NGPRT(I)+1
       ENDDO
+      
+      H=HTEMP
+
       RETURN
       END

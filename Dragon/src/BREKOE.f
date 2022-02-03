@@ -122,7 +122,7 @@
       ISTATE(2)=NMIX1
       ISTATE(3)=1
       ISTATE(9)=1  ! diffusion coefficient information
-      IF(ISPH.EQ.0) ISTATE(12)=2 ! discontinuity factor information
+      IF(ISPH.EQ.0) ISTATE(12)=3 ! discontinuity factor information
       CALL LCMPUT(IPMAC1,'STATE-VECTOR',NSTATE,1,ISTATE)
       CALL LCMPUT(IPMAC1,'ENERGY',NG+1,2,ENER)
       WORK(1)=1.0

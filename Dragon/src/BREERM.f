@@ -223,13 +223,13 @@
 *----
           DO IGR=1,NG
             IF (ITRIAL(IGR) == 1) THEN
-              Q(1) = ALPHA(3,IGR)/6.
+              Q(1) = ALPHA(3,IGR)/2.
               FHOMM(IC,IGR,IBM)=-ALPHA(2,IGR)/2.+ALPHA(1,IGR)+Q(1)
               FHOMP(IC,IGR,IBM)=ALPHA(2,IGR)/2.+ALPHA(1,IGR)+Q(1)
             ELSE
               Q(1) = ETA(IGR)/2.
               Q(2) = SINH(Q(1))
-              Q(3) = ALPHA(3,IGR)/6.
+              Q(3) = ALPHA(3,IGR)/2.
               Q(4) = ALPHA(4,IGR)*Q(2)
               Q(5) = ALPHA(5,IGR)*(COSH(Q(1)) - (2*Q(2))/ETA(IGR))
               FHOMM(IC,IGR,IBM)=-ALPHA(2,IGR)/2.+ALPHA(1,IGR)+Q(3)-Q(4)+
@@ -447,7 +447,7 @@
       IF(J_FUEL.GT.0) ISTATE(4)=1
       IF(ICODE(2).NE.0) ISTATE(8)=1  ! physical matrix albedo info
       ISTATE(9)=1  ! diffusion coefficient information
-      IF(ISPH.EQ.0) ISTATE(12)=3 ! discontinuity factor information
+      IF(ISPH.EQ.0) ISTATE(12)=4 ! discontinuity factor information
       CALL LCMPUT(IPMAC1,'STATE-VECTOR',NSTATE,1,ISTATE)
       CALL LCMPUT(IPMAC1,'ENERGY',NG+1,2,ENER)
       CALL LCMPUT(IPMAC1,'VOLUME',NMIX1,2,VOL)

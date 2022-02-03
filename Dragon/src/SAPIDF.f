@@ -1,5 +1,5 @@
 *DECK SAPIDF
-      SUBROUTINE SAPIDF(IPSAP,IPEDIT,NG,ICAL,FNORM,REGFLX)
+      SUBROUTINE SAPIDF(IPSAP,IPEDIT,NG,NMIL,ICAL,FNORM,REGFLX)
 *
 *-----------------------------------------------------------------------
 *
@@ -19,6 +19,7 @@
 * IPSAP   pointer to the Saphyb.
 * IPEDIT  pointer to the edition object (L_EDIT signature).
 * NG      number of condensed energy groups.
+* NMIL    number of mixtures.
 * ICAL    index of the current elementary calculation.
 * FNORM   flux normalization factor.
 * REGFLX  averaged flux in the complete geometry.
@@ -30,12 +31,12 @@
 *  SUBROUTINE ARGUMENTS
 *----
       TYPE(C_PTR) IPSAP,IPEDIT
-      INTEGER NG,ICAL
+      INTEGER NG,NMIL,ICAL
       REAL FNORM,REGFLX(NG)
 *----
 *  LOCAL VARIABLES
 *----
-      CHARACTER DIRNAM*12
+      CHARACTER DIRNAM*12,HSMG*131
 *----
 *  ALLOCATABLE ARRAYS
 *----
@@ -45,6 +46,7 @@
 *----
 *  RECOVER DISCONTINUITY FACTOR INFORMATION FROM MACROLIB
 *----
+      IF(NMIL.NE.1) CALL XABORT('SAPIDF: NMIL=1 EXPECTED.')
       CALL LCMSIX(IPEDIT,'MACROLIB',1)
       CALL LCMLEN(IPEDIT,'ADF',ILONG,ITYLCM)
       IF(ILONG.EQ.0) CALL XABORT('SAPIDF: MISSING ADF DIRECTORY IN EDI'
@@ -55,7 +57,11 @@
       CALL LCMGTC(IPEDIT,'HADF',8,NSURFD,HADF)
       DO I=1,NSURFD
         CALL LCMLEN(IPEDIT,HADF(I),ILONG,ITYLCM)
-        IF(ILONG.NE.NG) CALL XABORT('SAPIDF: ADF OVERFLOW.')
+        IF(ILONG.NE.NG) THEN
+          WRITE(HSMG,'(12HSAPIDF: BAD ,A,8H LENGTH=,I5,10H EXPECTED=,
+     1    I5,1H.)') HADF(I),ILONG,NG
+          CALL XABORT(HSMG)
+        ENDIF
         CALL LCMGET(IPEDIT,HADF(I),SURF)
         DO IGR=1,NG
           SURFLX(I,IGR)=SURF(IGR)*FNORM*1.0E13

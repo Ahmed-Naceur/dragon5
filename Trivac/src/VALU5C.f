@@ -28,7 +28,7 @@
 * ISS     mixture index assigned to each element.
 * IXLG    number of interpolated points according to X.
 * ITRIAL  type of expansion functions in the nodal calculation
-*         (=1: polynomial; =2: hyperbolic).
+*         (=0: CMFD; =1: polynomial NEM; =2: hyperbolic NEM).
 *                                                                      
 *Parameters: output
 * AXY     interpolated fluxes.
@@ -61,7 +61,7 @@
         ABSC=X(I)
         GAR=0.0
 *                                                          
-*       Find the finite element index containing the interpolation point
+*       Find the node index containing the interpolation point
         IS=0
         DO 20 KEL=1,LX
           IS=KEL
@@ -73,14 +73,19 @@
         ETA=(XXX(IS+1)-XXX(IS))*SQRT(SIGR(IBM)/DIFF(IBM))
         U=(ABSC-0.5*(XXX(IS)+XXX(IS+1)))/(XXX(IS+1)-XXX(IS))
         U=(ABSC-XXX(IS))/(XXX(IS+1)-XXX(IS))-0.5
-        GAR=EVT((IS-1)*5+1)+EVT((IS-1)*5+2)*U+EVT((IS-1)*5+3)*
-     1  (U**2-1.0/12.0)
-        IF(ITRIAL.EQ.1) THEN
-          GAR=GAR+EVT((IS-1)*5+4)*(U**2-0.25)*U+
-     1    EVT((IS-1)*5+5)*(U**2-0.25)*(U**2-0.05)
+        IF(ITRIAL.EQ.0) THEN
+          GAR=EVT((IS-1)*3+1)+EVT((IS-1)*3+2)*U+EVT((IS-1)*3+3)*
+     1    (3.0*U**2-1.0/4.0)
         ELSE
-          GAR=GAR+EVT((IS-1)*5+4)*SINH(ETA*U)+
-     1    EVT((IS-1)*5+5)*(COSH(ETA*U)-2.0*SINH(ETA/2.0)/ETA)
+          GAR=EVT((IS-1)*5+1)+EVT((IS-1)*5+2)*U+EVT((IS-1)*5+3)*
+     1    (3.0*U**2-1.0/4.0)
+          IF(ITRIAL.EQ.1) THEN
+            GAR=GAR+EVT((IS-1)*5+4)*(U**2-0.25)*U+
+     1      EVT((IS-1)*5+5)*(U**2-0.25)*(U**2-0.05)
+          ELSE
+            GAR=GAR+EVT((IS-1)*5+4)*SINH(ETA*U)+
+     1      EVT((IS-1)*5+5)*(COSH(ETA*U)-2.0*SINH(ETA/2.0)/ETA)
+          ENDIF
         ENDIF
   100   AXY(I)=GAR
       ENDDO

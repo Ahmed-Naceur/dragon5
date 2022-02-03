@@ -57,11 +57,13 @@
 * CURNAM  name of LCM directory where the current rates are to be
 *         stored.
 * OLDNAM  name of LCM directory where old reaction rates were stored.
-* IADF    flag for assembly discontinuity factors (ADF) information:
+* IADF    flag for computing boundary or ADF information:
 *         = 0 do not compute them;
-*         = 1 compute them using ALBS information;
-*         = 2 compute them using averaged fluxes in boundary regions;
-*         = 3 compute them using SYBIL/ARM or MOC interface currents;
+*         = 1 compute boundary currents using ALBS information;
+*         = 2 recover averaged fluxes in boundary regions;
+*         = -2 compute ADF using averaged fluxes in boundary regions;
+*         = 3 compute boundary information using SYBIL/ARM or MOC
+*         interface currents;
 *         = 4 recover ADF information from input macrolib.
 * NW      type of weighting for P1 cross section info:
 *         =0 use flux to merge/condense P1 matrices;
@@ -118,7 +120,7 @@
 *----
 *  LOCAL VARIABLES
 *----
-      CHARACTER     CARLIR*8,HTYPE*4
+      CHARACTER     CARLIR*8,HTYPE*8
       REAL          REALIR
       DOUBLE PRECISION DBLLIR
       INTEGER, ALLOCATABLE, DIMENSION(:) :: MIXMER,INADF,IOFGAP,IREMIX
@@ -154,8 +156,14 @@
       ELSE IF(CARLIR.EQ.'ADF') THEN
         IADF=2
         CALL REDGET(ITYPLU,INTLIR,REALIR,HTYPE,DBLLIR)
-        IF(ITYPLU.NE.3) CALL XABORT('EDIGET: READ ERROR - CHARACTER*4 '
-     >  //'TYPE EXPECTED')
+        IF(ITYPLU.NE.3) CALL XABORT('EDIGET: READ ERROR - CHARACTER*8 '
+     >  //'TYPE EXPECTED(1)')
+        IF(HTYPE.EQ.'*') THEN
+          IADF=-2
+          CALL REDGET(ITYPLU,INTLIR,REALIR,HTYPE,DBLLIR)
+          IF(ITYPLU.NE.3) CALL XABORT('EDIGET: READ ERROR - CHARACTER*'
+     >    //'8 TYPE EXPECTED(2)')
+        ENDIF
         CALL LCMSIX(IPEDIT,'REF:ADF',1)
         CALL LCMLEN(IPEDIT,'NTYPE',ILONG,ITYLCM)
         IF(ILONG.EQ.0) THEN

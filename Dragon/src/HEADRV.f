@@ -1,6 +1,6 @@
 *DECK HEADRV
       SUBROUTINE HEADRV(IPDEP,NPART,IPMAC,NBMIX,NGRP,ZNORM,IMPX,ESUM,
-     1 CSUM)
+     1 CSUM,IBC)
 *
 *-----------------------------------------------------------------------
 *
@@ -48,6 +48,7 @@
       CHARACTER HSMG*131,TEXT1*1
       DOUBLE PRECISION VTOT
       LOGICAL LCHARG
+      REAL FLUXC(NBMIX)
 *----
 *  ALLOCATABLE ARRAYS
 *----
@@ -86,6 +87,11 @@
       CALL XDDSET(EDEPOT,NBMIX,0.0D0)
       CALL XDDSET(CDEPOT,NBMIX,0.0D0)
       DO I=1,NPART
+        CALL LCMLEN(IPMAC(I),'FLUXC',IBC2,ITYLCM)
+        IF(IBC.EQ.1.AND.IBC2.NE.0) THEN
+        CALL LCMGET(IPMAC(I),'FLUXC',FLUXC)
+        CALL LCMGET(IPMAC(I),'ECUTOFF',ECUTOFF)
+        ENDIF
         CALL LCMGET(IPMAC(I),'VOLUME',VOL)
         CALL LCMGTC(IPMAC(I),'PARTICLE',1,1,TEXT1)
         SNAME(I)=TEXT1
@@ -106,6 +112,9 @@
           DO IBM=1,NBMIX
             EDEPO(IBM,I)=EDEPO(IBM,I)+FLIN(IBM)*SGD(IBM)*ZNORM/
      1      VOL(IBM)
+            IF(IBC.EQ.1.AND.IBC2.NE.0) THEN
+              EDEPO(IBM,I)=EDEPO(IBM,I)+ECUTOFF*FLUXC(IBM)*ZNORM
+            ENDIF
           ENDDO
           CALL LCMLEN(KPMAC,'C-FACTOR',LENGT,ITYLCM)
           IF(LENGT.GT.0) THEN
@@ -114,6 +123,9 @@
             DO IBM=1,NBMIX
               CDEPO(IBM,I)=CDEPO(IBM,I)+FLIN(IBM)*SGD(IBM)*ZNORM/
      1        VOL(IBM)
+              IF(IBC.EQ.1.AND.IBC2.NE.0) THEN
+                CDEPO(IBM,I)=CDEPO(IBM,I)+FLUXC(IBM)*ZNORM
+              ENDIF
             ENDDO
           ENDIF
         ENDDO

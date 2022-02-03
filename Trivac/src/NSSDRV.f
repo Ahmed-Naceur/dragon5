@@ -1,6 +1,6 @@
 *DECK NSSDRV
-      SUBROUTINE NSSDRV(IPTRK,IPMAC,IPFLX,NG,LX1,NMIX,ITRIAL,EPSOUT,
-     1 MAXOUT,LNODF,BB2,IPRINT)
+      SUBROUTINE NSSDRV(IPTRK,IPMAC,IPFLX,LNEM,NUN,NG,LX1,NMIX,ITRIAL,
+     1 EPSOUT,MAXOUT,LNODF,BB2,IPRINT)
 *
 *-----------------------------------------------------------------------
 *
@@ -20,6 +20,8 @@
 * IPTRK   nodal tracking.
 * IPMAC   nodal macrolib.
 * IPFLX   nodal flux.
+* LNEM    solution flag (=.true.: NEM; =.false.:CMFD).
+* NUN     number of unknowns.
 * NG      number of energy groups.
 * LX1     number of nodes in the nodal calculation.
 * NMIX    number of mixtures in the nodal calculation.
@@ -28,7 +30,7 @@
 * EPSOUT  convergence epsilon for the power method.
 * MAXOUT  maximum number of iterations for the power method.
 * LNODF   flag set to .true. to force discontinuity factors to one.
-* BB2     imposed leakege used in non-regression tests.
+* BB2     imposed leakage used in non-regression tests.
 * IPRINT  edition flag.
 *
 *-----------------------------------------------------------------------
@@ -38,15 +40,14 @@
 *  SUBROUTINE ARGUMENTS
 *----
       TYPE(C_PTR) IPTRK,IPMAC,IPFLX
-      INTEGER NG,LX1,NMIX,ITRIAL(NMIX,NG),MAXOUT,IPRINT
+      INTEGER NUN,NG,LX1,NMIX,ITRIAL(NMIX,NG),MAXOUT,IPRINT
       REAL EPSOUT,BB2
-      LOGICAL LNODF
+      LOGICAL LNEM,LNODF
 *----
 *  LOCAL VARIABLES
 *----
       PARAMETER (NSTATE=40)
-      INTEGER ISTATE(NSTATE),NCODE(6),ICODE(6)
-      REAL ZCODE(6)
+      INTEGER ISTATE(NSTATE),ICODE(6)
       TYPE(C_PTR) JPMAC,KPMAC,JPFLX
       CHARACTER(LEN=8) HADF(2)
       CHARACTER(LEN=72) TITLE
@@ -54,21 +55,18 @@
 *  ALLOCATABLE ARRAYS
 *----
       INTEGER, ALLOCATABLE, DIMENSION(:) :: MAT,IJJ,NJJ,IPOS
-      INTEGER, ALLOCATABLE, DIMENSION(:,:) :: KN,IQFR
-      REAL, ALLOCATABLE, DIMENSION(:) :: XX,VOL,WORK,EVECT
-      REAL, ALLOCATABLE, DIMENSION(:,:) :: BETA,DIFF,SIGR,CHI,SIGF,A,B,
-     1 AI,A11,QFR,QFR2,COUR
-      REAL, ALLOCATABLE, DIMENSION(:,:,:) :: SCAT,FDXM,FDXP
+      INTEGER, ALLOCATABLE, DIMENSION(:,:) :: IQFR
+      REAL, ALLOCATABLE, DIMENSION(:) :: XX,WORK
+      REAL, ALLOCATABLE, DIMENSION(:,:) :: DIFF,SIGR,CHI,SIGF,QFR,ALBP,
+     1 EVECT 
+      REAL, ALLOCATABLE, DIMENSION(:,:,:) :: BETA,SCAT,FDXM,FDXP
       REAL, ALLOCATABLE, DIMENSION(:,:,:,:) :: FD
-*
-      ALB(X)=0.5*(1.0-X)/(1.0+X)
 *----
 *  SCRATCH STORAGE ALLOCATION
 *----
       ALLOCATE(DIFF(NMIX,NG),SIGR(NMIX,NG),CHI(NMIX,NG),SIGF(NMIX,NG),
-     1 SCAT(NMIX,NG,NG),BETA(NG,NG),FD(NMIX,2,NG,NG),COUR(LX1+1,NG))
-      ALLOCATE(MAT(LX1),VOL(LX1),XX(LX1),KN(6,LX1),QFR(6,LX1),
-     1 IQFR(6,LX1))
+     1 SCAT(NMIX,NG,NG),FD(NMIX,2,NG,NG))
+      ALLOCATE(MAT(LX1),XX(LX1),QFR(6,LX1),IQFR(6,LX1))
 *----
 *  RECOVER TRACKING INFORMATION
 *----
@@ -78,13 +76,9 @@
         CALL LCMGTC(IPTRK,'TITLE',72,1,TITLE)
         IF(IPRINT.GT.0) WRITE(6,'(/9H NSSDRV: ,A72)') TITLE
       ENDIF
-      CALL LCMGET(IPTRK,'NCODE',NCODE)
       CALL LCMGET(IPTRK,'ICODE',ICODE)
-      CALL LCMGET(IPTRK,'ZCODE',ZCODE)
       CALL LCMGET(IPTRK,'MATCOD',MAT)
-      CALL LCMGET(IPTRK,'VOLUME',VOL)
       CALL LCMGET(IPTRK,'XX',XX)
-      CALL LCMGET(IPTRK,'KN',KN)
       CALL LCMGET(IPTRK,'QFR',QFR)
       CALL LCMGET(IPTRK,'IQFR',IQFR)
 *----
@@ -95,9 +89,10 @@
      >  13HMACROLIB (B2=,1P,E12.5,2H).)') BB2
       ENDIF
       CALL LCMGET(IPMAC,'STATE-VECTOR',ISTATE)
+      NALB=ISTATE(8) ! number of physical albedos
       JPMAC=LCMGID(IPMAC,'GROUP')
       ALLOCATE(WORK(NMIX*NG),IJJ(NMIX),NJJ(NMIX),IPOS(NMIX),
-     1 FDXM(NMIX,NG,NG),FDXP(NMIX,NG,NG))
+     1 FDXM(NMIX,NG,NG),FDXP(NMIX,NG,NG),BETA(NALB,NG,NG))
       DO IGR=1,NG
         KPMAC=LCMGIL(JPMAC,IGR)
         CALL LCMGET(KPMAC,'NTOT0',SIGR(1,IGR))
@@ -124,18 +119,28 @@
           ENDDO
         ENDIF
       ENDDO
-      IF(ICODE(2).NE.0) THEN
+      IF(NALB.GT.0) THEN
         CALL LCMLEN(IPMAC,'ALBEDO',ILONG,ITYLCM)
-        IF(ILONG.EQ.NG) THEN
-          CALL LCMGET(IPMAC,'ALBEDO',WORK)
-          BETA(:,:)=1.0
+        IF(ILONG.EQ.NALB*NG) THEN
+          ALLOCATE(ALBP(NALB,NG))
+          CALL LCMGET(IPMAC,'ALBEDO',ALBP)
+          BETA(:,:,:)=1.0
           DO IGR=1,NG
-            BETA(IGR,IGR)=WORK(IGR)
+            BETA(:NALB,IGR,IGR)=ALBP(:NALB,IGR)
           ENDDO
-        ELSE IF(ILONG.EQ.NG*NG) THEN
+          DEALLOCATE(ALBP)
+        ELSE IF(ILONG.EQ.NALB*NG*NG) THEN
           CALL LCMGET(IPMAC,'ALBEDO',BETA)
         ELSE
           CALL XABORT('NSSDRV: INVALID ALBEDO LENGTH.')
+        ENDIF
+        IF(IPRINT.GT.1) THEN
+          DO IALB=1,NALB
+            WRITE(6,'(/35H NSSDRV: PHYSICAL ALBEDO MATRIX ID=,I4)') IALB
+            DO IGR=1,NG
+              WRITE(6,'(5X,1P,10E12.4)') BETA(IALB,IGR,:)
+            ENDDO
+          ENDDO
         ENDIF
       ENDIF
       FD(:,:,:,:)=0.0
@@ -146,9 +151,7 @@
             FD(IBM,2,IGR,IGR)=1.0
           ENDDO
         ENDDO
-      ELSE IF(ISTATE(12).EQ.1) THEN
-        CALL XABORT('NSSDRV: CURRENT INFORMATION NOT SUPPORTED.')
-      ELSE IF(ISTATE(12).EQ.2) THEN
+      ELSE IF(ISTATE(12).EQ.3) THEN
         CALL LCMSIX(IPMAC,'ADF',1)
           CALL LCMGTC(IPMAC,'HADF',8,1,HADF(1))
           CALL LCMGET(IPMAC,HADF(1),WORK)
@@ -159,7 +162,7 @@
             FD(IBM,2,IGR,IGR)=WORK((IGR-1)*NMIX+IBM)
           ENDDO
         ENDDO
-      ELSE IF(ISTATE(12).EQ.3) THEN
+      ELSE IF(ISTATE(12).EQ.4) THEN
         CALL LCMSIX(IPMAC,'ADF',1)
           CALL LCMGTC(IPMAC,'HADF',8,2,HADF)
           CALL LCMGET(IPMAC,HADF(1),FDXM)
@@ -171,129 +174,35 @@
             FD(:NMIX,2,IGR,JGR)=FDXP(:NMIX,IGR,JGR)
           ENDDO
         ENDDO
+      ELSE
+        CALL XABORT('NSSDRV: FLUX/CURRENT INFORMATION NOT SUPPORTED.')
       ENDIF
       DEALLOCATE(FDXP,FDXM,IPOS,NJJ,IJJ,WORK)
 *----
-* INITIALIZE IPFLX OBJECT
+*  COMPUTE THE FLUX AND STORE NODAL SOLUTION IN IPFLX
 *----
+      ALLOCATE(EVECT(NUN,NG))
+      IF(LNEM) THEN
+        CALL NSSFL1(NUN,NG,LX1,NMIX,NALB,ITRIAL,EPSOUT,MAXOUT,MAT,XX,
+     1  IQFR,QFR,DIFF,SIGR,CHI,SIGF,SCAT,BETA,FD,IPRINT,EVAL,EVECT)
+      ELSE
+        CALL NSSFL2(NUN,NG,LX1,NMIX,NALB,EPSOUT,MAXOUT,MAT,XX,IQFR,
+     1  QFR,DIFF,SIGR,CHI,SIGF,SCAT,BETA,FD,IPRINT,EVAL,EVECT)
+      ENDIF
       ISTATE(:)=0
       ISTATE(1)=NG
-      ISTATE(2)=5*LX1
+      ISTATE(2)=NUN
       ISTATE(6)=2
       CALL LCMPUT(IPFLX,'STATE-VECTOR',NSTATE,1,ISTATE)
-*----
-*  COMPUTE NODAL SOLUTION
-*----
-      ALLOCATE(A(5*LX1*NG,5*LX1*NG),B(5*LX1*NG,5*LX1*NG))
-      A(:5*LX1*NG,:5*LX1*NG)=0.0
-      B(:5*LX1*NG,:5*LX1*NG)=0.0
-      ALLOCATE(WORK(NMIX),A11(5*LX1,5*LX1),QFR2(6,LX1))
-      DO J=1,NG
-        IOF1=(J-1)*5*LX1
-        DO I=1,NG
-          IF(ICODE(2).NE.0) THEN
-            DO IQW=1,2
-              DO IEL=1,LX1
-                IALB=IQFR(IQW,IEL)
-                IF(IALB.NE.0) QFR2(IQW,IEL)=QFR(IQW,IEL)*ALB(BETA(I,J))
-              ENDDO
-            ENDDO
-          ELSE
-            IF(I == J) THEN
-              QFR2(:6,:LX1)=QFR(:6,:LX1)
-            ELSE
-              QFR2(:6,:LX1)=0.0
-            ENDIF
-          ENDIF
-          DO IBM=1,NMIX
-            WORK(IBM)=CHI(IBM,I)*SIGF(IBM,J)
-          ENDDO
-          IOF2=(I-1)*5*LX1
-          IF(I == J) THEN
-            CALL NSS1TR(ITRIAL(1,J),LX1,NMIX,MAT,XX,KN,QFR2,DIFF(:,I),
-     1      SIGR(:,I),FD(:,:,I,J),A11)
-            A(IOF1+1:IOF1+LX1*5,IOF2+1:IOF2+LX1*5)=A11(:,:)
-          ELSE
-            CALL NSS2TR(ITRIAL(1,J),LX1,NMIX,MAT,XX,KN,QFR2,DIFF(:,J),
-     1      SIGR(:,J),SCAT(:,I,J),FD(:,:,I,J),A11)
-            A(IOF2+1:IOF2+LX1*5,IOF1+1:IOF1+LX1*5)=-A11(:,:)
-          ENDIF
-          CALL NSS3TR(ITRIAL(1,J),LX1,NMIX,MAT,XX,DIFF(:,J),SIGR(:,J),
-     1    WORK(:),A11)
-          B(IOF2+1:IOF2+LX1*5,IOF1+1:IOF1+LX1*5)=A11(:,:)
-        ENDDO
-      ENDDO
-      DEALLOCATE(QFR2,A11,WORK)
-*----
-*  SOLVE EIGENVALUE MATRIX SYSTEM
-*----
-      EPS=1.0E-7
-      CALL ALINV(5*LX1*NG,A,5*LX1*NG,IER)
-      IF(IER.NE.0) CALL XABORT('NSSDRV: SINGULAR MATRIX')
-      ALLOCATE(AI(5*LX1*NG,5*LX1*NG),EVECT(5*LX1*NG))
-      AI(:5*LX1*NG,:5*LX1*NG)=MATMUL(A(:5*LX1*NG,:5*LX1*NG),
-     1 B(:5*LX1*NG,:5*LX1*NG))
-      EVECT(:)=1.0
-      CALL AL1EIG(5*LX1*NG,AI,EPSOUT,MAXOUT,ITER,EVECT,EVAL)
-      IF(IPRINT.GT.0) WRITE(6,10) EVAL,ITER
-      DEALLOCATE(AI)
-*----
-*  NORMALIZE THE FLUX
-*----
-      FLXMAX=0.0
-      DO IUN=1,5*LX1*NG
-        IF(ABS(EVECT(IUN)).GT.ABS(FLXMAX)) FLXMAX=EVECT(IUN)
-      ENDDO
-      EVECT(:)=EVECT(:)/FLXMAX
-*----
-*  STORE FLUX IN IPFLX
-*----
       JPFLX=LCMLID(IPFLX,'FLUX',NG)
-      NUM0=0
-      DO IG=1,NG
-        DO KEL=1,LX1
-          IBM=MAT(KEL)
-          IOF=NUM0+(KEL-1)*5
-          IF(ITRIAL(IBM,IG).EQ.1) THEN
-            COUR(KEL,IG)=-(DIFF(IBM,IG)/XX(KEL))*(EVECT(IOF+2)-
-     1      EVECT(IOF+3)+EVECT(IOF+4)/2.0-EVECT(IOF+5)/5.0)
-          ELSE
-            ETA=XX(KEL)*SQRT(SIGR(IBM,IG)/DIFF(IBM,IG))
-            COUR(KEL,IG)=-(DIFF(IBM,IG)/XX(KEL))*(EVECT(IOF+2)-
-     1      EVECT(IOF+3)+EVECT(IOF+4)*ETA*COSH(ETA/2)-
-     2      EVECT(IOF+5)*ETA*SINH(ETA/2))
-          ENDIF
-        ENDDO
-        IBM=MAT(LX1)
-        IOF=NUM0+(LX1-1)*5
-        IF(ITRIAL(IBM,IG).EQ.1) THEN
-          COUR(LX1+1,IG)=-(DIFF(IBM,IG)/XX(LX1))*(EVECT(IOF+2)+
-     1    EVECT(IOF+3)+EVECT(IOF+4)/2.0+EVECT(IOF+5)/5.0)
-        ELSE
-          ETA=XX(LX1)*SQRT(SIGR(IBM,IG)/DIFF(IBM,IG))
-          COUR(LX1+1,IG)=-(DIFF(IBM,IG)/XX(LX1))*(EVECT(IOF+2)+
-     1    EVECT(IOF+3)+EVECT(IOF+4)*ETA*COSH(ETA/2)+
-     2    EVECT(IOF+5)*ETA*SINH(ETA/2))
-        ENDIF
-        IF(IPRINT.GT.0) THEN
-          WRITE(6,'(/33H NSSDRV: AVERAGED FLUXES IN GROUP,I5)') IG
-          WRITE(6,'(1P,10e12.4)') (EVECT(NUM0+(I-1)*5+1),I=1,LX1)
-          WRITE(6,'(/39H NSSDRV: SURFACIC NET CURRENTS IN GROUP,I5)') IG
-          WRITE(6,'(1P,10e12.4)') (COUR(I,IG),I=1,LX1+1)
-        ENDIF
-*----
-* STORE NODAL SOLUTION IN IPFLX
-*----
-        CALL LCMPDL(JPFLX,IG,5*LX1,2,EVECT(NUM0+1))
-        NUM0=NUM0+5*LX1
+      DO IGR=1,NG
+        CALL LCMPDL(JPFLX,IGR,NUN,2,EVECT(1,IGR))
       ENDDO
       CALL LCMPUT(IPFLX,'K-EFFECTIVE',1,2,EVAL)
+      DEALLOCATE(EVECT)
 *----
 *  SCRATCH STORAGE DEALLOCATION
 *----
-      DEALLOCATE(EVECT,B,A)
-      DEALLOCATE(COUR,FD,BETA,SCAT,SIGF,CHI,SIGR,DIFF,MAT,XX,VOL,KN,
-     1 QFR,IQFR)
+      DEALLOCATE(FD,BETA,SCAT,SIGF,CHI,SIGR,DIFF,MAT,XX,QFR,IQFR)
       RETURN
-   10 FORMAT(14H NSSDRV: KEFF=,F11.8,12H OBTAINED IN,I5,11H ITERATIONS)
       END
