@@ -2,7 +2,7 @@
 #shopt -s expand_aliases
 #source ~/.profile
 
-# Execution ./cepxs_water_lobatto 3.00 0 80 8 no-coupling no-csda
+# Execution ./cepxs_water_lobatto 20.00 0 300 2 no-coupling no-csda
 
 #Your_Path_To_Cepxs="/home/ahnac/cepxs-radiotherapy/CSD/";
 Your_Path_To_Cepxs="/home/ahnac/cepxs-radiotherapy/CEPXS-BFP-LOBATTO/data/";

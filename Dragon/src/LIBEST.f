@@ -175,6 +175,7 @@
                CALL LCMGET(JPLIB,CV(:8)//NORD(IXSPER),GA1)
                DO LLL=1,NGROUP+1
                   ESTOP(IBM,LLL,ICV)=ESTOP(IBM,LLL,ICV)+GA1(LLL)*DENISO
+                  !PRINT *,"DENISO=",DENISO
                ENDDO
                DENISO=DENISO*TIMFCT
             ENDDO
@@ -202,7 +203,7 @@
                !PRINT *,ENER(LLL)
                !PRINT *,"ESTOP(IBM,LLL,1)=",ESTOP(IBM,LLL,1)
                !PRINT *,"DENMAT(IBM,LLL )=",DENMAT(IBM,LLL)
-               ESTOP(IBM,LLL,1)=ESTOP(IBM,LLL,1)-DENMAT(IBM,LLL) !MeV/cm
+               !ESTOP(IBM,LLL,1)=ESTOP(IBM,LLL,1)-DENMAT(IBM,LLL) !MeV/cm
                !PRINT *,"ESTOP(IBM,LLL,1)=",ESTOP(IBM,LLL,1)
             ENDDO
          ENDDO

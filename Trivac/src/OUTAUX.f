@@ -187,14 +187,7 @@
          L=MAT(K)
          IPFL=IDL(K)
          IF((IBM.NE.0).AND.(L.NE.0).AND.(IPFL.NE.0)) THEN
-            RATE(IBM)=RATE(IBM)+EVECT(IPFL,IGR)*VOL(K)*WORK(L)
-            !AHMED
-            !IF (HREAC(IREAC).EQ.'H-FACTOR') THEN
-            !   PRINT *,"------k=",K
-            !   PRINT *,"EVECT(IPFL,IGR)=",EVECT(IPFL,IGR)
-            !   PRINT *,"H-FACTOR       =",WORK(L)
-            !   PRINT *,"RATE(IBM)      =",RATE(IBM)
-            !ENDIF   
+            RATE(IBM)=RATE(IBM)+EVECT(IPFL,IGR)*VOL(K)*WORK(L)   
          ENDIF
   130    CONTINUE
          DO 140 IBM=1,NZS
@@ -202,7 +195,6 @@
   140    CONTINUE
       ENDIF
   150 CONTINUE
-      !CALL XABORT('AHMED,OUTAUX.f')
 *----
 *  FIXED SOURCES
 *----

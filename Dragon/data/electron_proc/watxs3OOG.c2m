@@ -42,7 +42,7 @@ GEOM := GEO: :: CAR1D 2
 * --- Tracking           
 TRACK := SNT: GEOM ::
       TITLE 'Water-Slab: CEPXS-BFP-DRAGON'
-      EDIT 2 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2 EPSI 1.E-5
+      EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2 EPSI 1.E-5
       QUAD 1 MAXI 300 BFPL ;
 
 
@@ -101,7 +101,7 @@ EEDIT := OUT: FLUX TRACK MACRO GEOM :: EDIT 2 COND INTG NONE ;
 GEDIT := EEDIT ;
 DEPOS := HEAT: EEDIT GEDIT :: EDIT 2 ; 
 
-
+edep_xs.txt   := DEPOS ; 
 edit_xs.txt   := EEDIT ;  
 track_xs.txt  := TRACK ;
 geom_xs.txt   := GEOM ; 

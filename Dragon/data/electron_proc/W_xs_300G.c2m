@@ -105,7 +105,7 @@ EEDIT := OUT: FLUX TRACK MACRO GEOM :: EDIT 2 COND INTG NONE ;
 GEDIT := EEDIT ;
 DEPOS := HEAT: EEDIT GEDIT :: EDIT 2 ; 
 
-
+edep_xs.txt   := DEPOS ;
 edit_xs.txt   := EEDIT ;  
 track_xs.txt  := TRACK ;
 geom_xs.txt   := GEOM ; 

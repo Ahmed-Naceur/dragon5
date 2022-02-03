@@ -11,16 +11,14 @@ W_xs_300G W_xsr_300G W_xso_300G  ;                                         0006
 *wat_xsr_2G ;                                                              0010
 *watxs3OOG ;                                                               0011
 *watxsr3OOG ;                                                              0012
-*W_xs_80G ;                                                                0013
-*W_xsr_80G ;                                                               0014
-W_xsr_300G ;                                                               0015
-W_xs_300G ;                                                                0016
-QUIT "LIST" .                                                              0017
+W_xsr_300G ;                                                               0013
+W_xs_300G ;                                                                0014
+QUIT "LIST" .                                                              0015
  
 <|PROCEDURE wat_xs_80G wat_xsr_80G wat_xsr_2G                             |<0004
 <|watxs3OOG watxsr3OOG W_xs_80G W_xsr_80G                                 |<0005
 <|W_xs_300G W_xsr_300G W_xso_300G  ;                                      |<0006
-<|W_xsr_300G ;                                                            |<0015
+<|W_xsr_300G ;                                                            |<0013
 <|MODULE       GEO: LIB: MAC: SNT: ASM: FLU: HEAT: OUT: DELETE:           |<0007
 <|UTL: END: EDI: STAT: ;                                                  |<0008
 <|PROCEDURE    assertS ;                                                  |<0009
@@ -86,7 +84,7 @@ QUIT "LIST" .                                                              0017
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : SNT:        
--->>MODULE SNT:        : TIME SPENT=        0.001 MEMORY USAGE= 2.520E+02
+-->>MODULE SNT:        : TIME SPENT=        0.000 MEMORY USAGE= 2.520E+02
 <|MICRO  := LIB: ::                                                       |<0033
 <|EDIT 2                                                                  |<0034
 <|NMIX 1                                                                  |<0035
@@ -154,7 +152,7 @@ QUIT "LIST" .                                                              0017
  -----  ------------  ------------  ------------  ----  ----------  ---------  ---------  ----------  ------------------
      1  Wnat    0001  w             MATXS2     1     1  3.2756E-03  3.000E+02  1.000E+10   0             0                         
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.505 MEMORY USAGE= 2.980E+03
+-->>MODULE LIB:        : TIME SPENT=        0.016 MEMORY USAGE= 2.096E+03
 <|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0042
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
@@ -163,7 +161,7 @@ QUIT "LIST" .                                                              0017
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: STEP UP TO LEVEL 'MACROLIB    '.
--->>module EQU:        : time spent=        0.002 memory usage= 1.584E+03
+-->>module EQU:        : time spent=        0.001 memory usage= 1.584E+03
 ->@END MODULE   : EQU:        
 <|micr_xsr.txt   := MICRO ;                                               |<0043
 ->@BEGIN MODULE : EQU:        
@@ -173,7 +171,7 @@ QUIT "LIST" .                                                              0017
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MICRO       ' WAS EXPORTED TO FILE 'micr_xsr.txt'.
--->>module EQU:        : time spent=        0.111 memory usage= 3.680E+02
+-->>module EQU:        : time spent=        0.015 memory usage= 1.560E+02
 ->@END MODULE   : EQU:        
 <|macr_xsr.txt   := MACRO ;                                               |<0044
 ->@BEGIN MODULE : EQU:        
@@ -183,7 +181,7 @@ QUIT "LIST" .                                                              0017
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macr_xsr.txt'.
--->>module EQU:        : time spent=        0.059 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.012 memory usage= 4.000E+00
 ->@END MODULE   : EQU:        
 <|OLDMACRO := MACRO ;                                                     |<0045
 ->@BEGIN MODULE : EQU:        
@@ -191,7 +189,7 @@ QUIT "LIST" .                                                              0017
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
--->>module EQU:        : time spent=        0.002 memory usage= 1.580E+03
+-->>module EQU:        : time spent=        0.002 memory usage= 1.316E+03
 ->@END MODULE   : EQU:        
 <|MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;                          |<0046
 ->@BEGIN MODULE : MAC:        
@@ -216,10 +214,10 @@ QUIT "LIST" .                                                              0017
  IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
  NPART0     0   (NUMBER OF COMPANION PARTICLES)
 ->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.019 MEMORY USAGE= 7.920E+02
+-->>MODULE MAC:        : TIME SPENT=        0.015 MEMORY USAGE= 2.640E+02
 <|OLDMACRO := DELETE: OLDMACRO ;                                          |<0047
 <|END: ;                                                                  |<0048
-<|W_xs_300G ;                                                             |<0016
+<|W_xs_300G ;                                                             |<0014
 <|MODULE       GEO: FMAC: MAC: SNT: ASM: FLU: OUT: HEAT: DELETE: UTL:     |<0007
 <|END: ;                                                                  |<0008
 <|PROCEDURE    assertS ;                                                  |<0009
@@ -428,7 +426,7 @@ QUIT "LIST" .                                                              0017
        PARTICLE NAMES:       B
  NB. OF ENERGY GROUPS:     300
 ->@END MODULE   : FMAC:       
--->>MODULE FMAC:       : TIME SPENT=        0.110 MEMORY USAGE= 0.000E+00
+-->>MODULE FMAC:       : TIME SPENT=        0.366 MEMORY USAGE= 0.000E+00
 <|macro_xs.txt  := MACRO ;                                                |<0044
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
@@ -437,7 +435,7 @@ QUIT "LIST" .                                                              0017
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macro_xs.txt'.
--->>module EQU:        : time spent=        0.092 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.087 memory usage= 4.400E+01
 ->@END MODULE   : EQU:        
 <|END: ;                                                                  |<0045
 . ------------------------------------------------------------------------ .
