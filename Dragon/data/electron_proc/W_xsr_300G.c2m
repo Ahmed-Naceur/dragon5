@@ -54,16 +54,18 @@ MICRO  := LIB: ::
 
 MACRO := MICRO :: STEP UP MACROLIB ;
 
-micr_xsr.txt   := MICRO ;
 macr_xsr.txt   := MACRO ;
+
+*END: ; QUIT "LIST" .
+
+
+micr_xsr.txt   := MICRO ;
+
 
 OLDMACRO := MACRO ;
 MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;
 OLDMACRO := DELETE: OLDMACRO ;
 
-END: ; QUIT "LIST" .
-
-*DIFFRES := STAT: MACRO OLDMACRO :: ;
 
 * --- Specify fixed particle source density   
 
@@ -93,7 +95,6 @@ MACRO := MAC: MACRO ::
     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
     0.0 0.0 ;
-
 
 
 * ---- Electron flux

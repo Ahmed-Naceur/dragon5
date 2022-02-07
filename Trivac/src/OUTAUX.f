@@ -182,12 +182,19 @@
      1   HREAC(IREAC)//' CROSS SECTIONS.')
          CALL LCMGET(KPMAC1,TEXT12,WORK)
          CALL XDRSET(RATE,NZS,0.0)
+         print *,"**********************************GROUP=",IGR
          DO 130 K=1,NEL
          IBM=IHOM(K)
          L=MAT(K)
          IPFL=IDL(K)
          IF((IBM.NE.0).AND.(L.NE.0).AND.(IPFL.NE.0)) THEN
-            RATE(IBM)=RATE(IBM)+EVECT(IPFL,IGR)*VOL(K)*WORK(L)   
+            RATE(IBM)=RATE(IBM)+EVECT(IPFL,IGR)*VOL(K)*WORK(L) 
+            !AHMED
+            IF (HREAC(IREAC).EQ.'H-FACTOR') THEN 
+               print *,"----------element=",K
+               print *,"work=",WORK(L)
+               print *,"flux=",EVECT(IPFL,IGR)
+            ENDIF
          ENDIF
   130    CONTINUE
          DO 140 IBM=1,NZS
@@ -514,6 +521,9 @@
       ENDIF
       IDATA(15)=0
       CALL LCMPUT(IPMAC2,'STATE-VECTOR',NSTATE,1,IDATA)
+
+      !AHMED
+      CALL XABORT('AHMED,OUTAUX.f')
 *----
 *  SCRATCH STORAGE DEALLOCATION
 *----
