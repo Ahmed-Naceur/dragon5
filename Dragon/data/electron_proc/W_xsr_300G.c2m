@@ -56,7 +56,7 @@ MACRO := MICRO :: STEP UP MACROLIB ;
 
 macr_xsr.txt   := MACRO ;
 
-*END: ; QUIT "LIST" .
+END: ; QUIT "LIST" .
 
 
 micr_xsr.txt   := MICRO ;
