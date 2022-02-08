@@ -56,11 +56,7 @@
           A11(NUM1+3,NUM1+5)=-SIGG/700.0-DIDD/(5.0*DX2)
         ELSE
           ALP0=2.0*ETA*SINH(ETA/2.0)
-          ALP1=ETA*COSH(ETA/2.0)-2.0*SINH(ETA/2.0)
-          ALP2=((12.0+ETA**2)*SINH(ETA/2.0)-6.0*ETA*COSH(ETA/2.0))/ETA
           A11(NUM1+1,NUM1+5)=-DIDD*ALP0/DX2
-          A11(NUM1+2,NUM1+4)=(SIGG/(ETA**2)-DIDD/DX2)*ALP1
-          A11(NUM1+3,NUM1+5)=(SIGG/(ETA**2)-DIDD/DX2)*ALP2
         ENDIF
         NUM1=NUM1+5
       ENDDO
@@ -89,8 +85,8 @@
           A11(NUM1+4,NUM1+5)=FDP*ALP1/ETA
         ENDIF
         IF(ITRIAL(IBMP) == 2) THEN
-          ALP1P=ETAP*COSH(ETAP/2)-2.0*SINH(ETAP/2)
-          A11(NUM1+4,NUM2+4)=FDM*SINH(ETAP/2)
+          ALP1P=ETAP*COSH(ETAP/2.0)-2.0*SINH(ETAP/2.0)
+          A11(NUM1+4,NUM2+4)=FDM*SINH(ETAP/2.0)
           A11(NUM1+4,NUM2+5)=-FDM*ALP1P/ETAP
         ENDIF
         ! current contunuity:
@@ -109,8 +105,8 @@
           A11(NUM1+5,NUM2+4)=-DIDDP/(2.0*XX(KEL+1))
           A11(NUM1+5,NUM2+5)=DIDDP/(5.0*XX(KEL+1))
         ELSE
-          A11(NUM1+5,NUM2+4)=-(DIDDP/XX(KEL+1))*ETAP*COSH(ETAP/2)
-          A11(NUM1+5,NUM2+5)=(DIDDP/XX(KEL+1))*ETAP*SINH(ETAP/2)
+          A11(NUM1+5,NUM2+4)=-(DIDDP/XX(KEL+1))*ETAP*COSH(ETAP/2.0)
+          A11(NUM1+5,NUM2+5)=(DIDDP/XX(KEL+1))*ETAP*SINH(ETAP/2.0)
         ENDIF
         NUM1=NUM1+5
       ENDDO

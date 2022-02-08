@@ -1,5 +1,5 @@
 *DECK VALU5C
-      SUBROUTINE VALU5C (KPMAC,LX,L4,NMIX,X,XXX,EVT,ISS,IXLG,ITRIAL,
+      SUBROUTINE VALU5C (KPMAC,LX,NUN,NMIX,X,XXX,EVT,ISS,IXLG,ITRIAL,
      1 AXY)
 *
 *-----------------------------------------------------------------------
@@ -19,7 +19,7 @@
 *Parameters: input
 * KPMAC   group directory in the macrolib.
 * LX      number of elements along the X axis.
-* L4      dimension of unknown array EVT.
+* NUN     dimension of unknown array EVT.
 * NMIX    number of mixtures.
 * X       Cartesian coordinates along the X axis where the flux is
 *         interpolated.
@@ -40,11 +40,13 @@
 *  SUBROUTINE ARGUMENTS
 *----
       TYPE(C_PTR) KPMAC
-      INTEGER LX,L4,NMIX,ISS(LX),IXLG,ITRIAL
-      REAL X(IXLG),XXX(LX+1),EVT(L4),AXY(IXLG)
+      INTEGER LX,NUN,NMIX,ISS(LX),IXLG,ITRIAL
+      REAL X(IXLG),XXX(LX+1),EVT(NUN),AXY(IXLG)
 *----
-*  ALLOCATABLE ARRAYS
+*  LOCAL VARIABLES
 *----
+      DOUBLE PRECISION  WORK1(4,5),WORK2(2,3)
+      DOUBLE PRECISION GAR,ETA,ALP1,COEF,U
       REAL, ALLOCATABLE, DIMENSION(:) :: DIFF,SIGR,SIGW
 *----
 *  RECOVER REMOVAL CROSS SECTIONS AND DIFFUSION COEFFICIENTS
@@ -71,23 +73,60 @@
    30   IBM=ISS(IS)
         IF(IBM.EQ.0) GO TO 100
         ETA=(XXX(IS+1)-XXX(IS))*SQRT(SIGR(IBM)/DIFF(IBM))
-        U=(ABSC-0.5*(XXX(IS)+XXX(IS+1)))/(XXX(IS+1)-XXX(IS))
+        ALP1=ETA*COSH(ETA/2.0)-2.0*SINH(ETA/2.0)
+        COEF=DIFF(IBM)/(XXX(IS+1)-XXX(IS))
         U=(ABSC-XXX(IS))/(XXX(IS+1)-XXX(IS))-0.5
         IF(ITRIAL.EQ.0) THEN
-          GAR=EVT((IS-1)*3+1)+EVT((IS-1)*3+2)*U+EVT((IS-1)*3+3)*
-     1    (3.0*U**2-1.0/4.0)
+          WORK2(1,1)=COEF
+          WORK2(1,2)=-3.0*COEF
+          WORK2(1,3)=EVT(3*LX+IS)
+          WORK2(2,1)=COEF
+          WORK2(2,2)=3.0*COEF
+          WORK2(2,3)=EVT(3*LX+IS+1)
+          CALL ALSBD(3,1,WORK2,IER,3)
+          IF(IER.NE.0) CALL XABORT('VALU5C: SINGULAR MATRIX(1).')
+          GAR=EVT(IS)+WORK2(1,3)*U+WORK2(2,3)*(3.0*U**2-1.0/4.0)
         ELSE
-          GAR=EVT((IS-1)*5+1)+EVT((IS-1)*5+2)*U+EVT((IS-1)*5+3)*
-     1    (3.0*U**2-1.0/4.0)
+          WORK1(:,:)=0.0
+          WORK1(1,1)=-0.5
+          WORK1(1,2)=0.5
+          WORK1(1,5)=EVT(LX+IS)-EVT(IS)
+          WORK1(2,1)=0.5
+          WORK1(2,2)=0.5
+          WORK1(2,5)=EVT(2*LX+IS)-EVT(IS)
+          WORK1(3,1)=-COEF
+          WORK1(3,2)=3.0*COEF
+          WORK1(3,5)=EVT(3*LX+IS)
+          WORK1(4,1)=-COEF
+          WORK1(4,2)=-3.0*COEF
+          WORK1(4,5)=EVT(3*LX+IS+1)
           IF(ITRIAL.EQ.1) THEN
-            GAR=GAR+EVT((IS-1)*5+4)*(U**2-0.25)*U+
-     1      EVT((IS-1)*5+5)*(U**2-0.25)*(U**2-0.05)
+            WORK1(3,3)=-0.5*COEF
+            WORK1(3,4)=0.2*COEF
+            WORK1(4,3)=-0.5*COEF
+            WORK1(4,4)=-0.2*COEF
           ELSE
-            GAR=GAR+EVT((IS-1)*5+4)*SINH(ETA*U)+
-     1      EVT((IS-1)*5+5)*(COSH(ETA*U)-2.0*SINH(ETA/2.0)/ETA)
+            WORK1(1,3)=-SINH(ETA/2.0)
+            WORK1(1,4)=ALP1/ETA
+            WORK1(2,3)=SINH(ETA/2.0)
+            WORK1(2,4)=ALP1/ETA
+            WORK1(3,3)=-COEF*ETA*COSH(ETA/2.0)
+            WORK1(3,4)=COEF*ETA*SINH(ETA/2.0)
+            WORK1(4,3)=-COEF*ETA*COSH(ETA/2.0)
+            WORK1(4,4)=-COEF*ETA*SINH(ETA/2.0)
+          ENDIF
+          CALL ALSBD(4,1,WORK1,IER,4)
+          IF(IER.NE.0) CALL XABORT('VALU5C: SINGULAR MATRIX(2).')
+          GAR=EVT(IS)+WORK1(1,5)*U+WORK1(2,5)*(3.0*U**2-1.0/4.0)
+          IF(ITRIAL.EQ.1) THEN
+            GAR=GAR+WORK1(3,5)*(U**2-0.25)*U+
+     1      WORK1(4,5)*(U**2-0.25)*(U**2-0.05)
+          ELSE
+            GAR=GAR+WORK1(3,5)*SINH(ETA*U)+
+     1      WORK1(4,5)*(COSH(ETA*U)-2.0*SINH(ETA/2.0)/ETA)
           ENDIF
         ENDIF
-  100   AXY(I)=GAR
+  100   AXY(I)=REAL(GAR)
       ENDDO
       DEALLOCATE(SIGW,SIGR,DIFF)
       RETURN

@@ -41,11 +41,6 @@
       IF (ITRIAL == 1) THEN
         A11(1,3)=-SIGR/120.0-DIFF/(2.0*DX2)
         A11(2,4)=-SIGR/700.0-DIFF/(5.0*DX2)
-      ELSE IF (ITRIAL == 2) THEN
-        ALP1=ETA*COSH(ETA/2.0)-2.0*SINH(ETA/2.0)
-        ALP2=((12.0+ETA**2)*SINH(ETA/2.0)-6.0*ETA*COSH(ETA/2.0))/ETA
-        A11(1,3)=(SIGR/(ETA**2)-DIFF/DX2)*ALP1
-        A11(2,4)=(SIGR/(ETA**2)-DIFF/DX2)*ALP2
       ENDIF
       ! LEFT CURRENT CONDITION
       A11(3,1)=-DIFF/XX

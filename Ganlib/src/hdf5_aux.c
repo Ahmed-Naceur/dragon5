@@ -25,7 +25,7 @@ herr_t print_info(hid_t ifile, const char *name, void *opdata);  /* Operator fun
 
 herr_t iretcd;
 
-static char AbortString[132];
+static char AbortString[164];
 static char name1024[1024];
 
 void hdf5_open_file_c(const char *fname, hid_t *ifile, int_32 irdonly) {

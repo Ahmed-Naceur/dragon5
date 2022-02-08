@@ -118,6 +118,9 @@
             SIGR(IBM,IGR)=SIGR(IBM,IGR)+BB2*DIFF(IBM,IGR)
           ENDDO
         ENDIF
+        DO IBM=1,NMIX
+          IF(SIGR(IBM,IGR).LE.0.0) CALL XABORT('NSSDRV: SIGR<=0.')
+        ENDDO
       ENDDO
       IF(NALB.GT.0) THEN
         CALL LCMLEN(IPMAC,'ALBEDO',ILONG,ITYLCM)

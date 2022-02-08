@@ -239,7 +239,8 @@
 *----
 *  RECOVER PARTICLE DATA
 *----
-      IF(NPART.EQ.0) THEN
+      CALL LCMLEN(IPLIB,'PARTICLE',ILONG,ITYLCM)
+      IF(ILONG.EQ.0) THEN
         HPRT1=' '
         HNPART(1)=' '
       ELSE
@@ -539,7 +540,8 @@
   295       CONTINUE
          ENDIF
          CALL LCMLEN(JPLIB,'OVERV   '//NORD(IXSPER),ILONG,ITYLCM)
-         IF((ILONG.GT.0).AND.((HPRT1.EQ.'N').OR.(HPRT1.EQ.'NEUT'))) THEN
+         IF((ILONG.GT.0).AND.((HPRT1.EQ.'N').OR.(HPRT1.EQ.'NEUT').OR.
+     1   (HPRT1.EQ.' '))) THEN
             LOVERV=.TRUE.
             CALL LCMGET(JPLIB,'OVERV   '//NORD(IXSPER),GA1)
             DO 300 LLL=1,NGROUP
@@ -974,7 +976,8 @@
 *----
 *  COMPUTE 1/V (ENER IS IN EV, NEUTRON MASS IS IN KG)
 *----
-      IF((.NOT.LOVERV).AND.((HPRT1.EQ.'N').OR.(HPRT1.EQ.'NEUT'))) THEN
+      IF((.NOT.LOVERV).AND.((HPRT1.EQ.'N').OR.(HPRT1.EQ.'NEUT').OR.
+     1   (HPRT1.EQ.' '))) THEN
          DO 800 LLL=1,NGROUP
          ENEAVG=SQRT(GA1(LLL)*GA1(LLL+1))
          ZNU=1.0/(SQRT(ENEAVG)*SQFMAS)

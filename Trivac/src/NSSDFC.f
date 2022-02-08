@@ -1,6 +1,6 @@
 *DECK NSSDFC
-      SUBROUTINE NSSDFC(IMPX,LUMP,LNEM,LX,LY,LZ,NCODE,ICODE,ZCODE,MAT,
-     1 XXX,YYY,ZZZ,LL4F,LL4X,LL4Y,LL4Z,VOL,XX,YY,ZZ,IDL,KN,QFR,IQFR)
+      SUBROUTINE NSSDFC(IMPX,LX,LY,LZ,NCODE,ICODE,ZCODE,MAT,XXX,YYY,
+     1 ZZZ,LL4F,LL4X,LL4Y,LL4Z,VOL,XX,YY,ZZ,IDL,KN,QFR,IQFR)
 *
 *-----------------------------------------------------------------------
 *
@@ -19,8 +19,6 @@
 *
 *Parameters: input
 * IMPX    print parameter.
-* LUMP    type of nodal method (.true.: 3D NEM; .false.: 1D NEM).
-* LNEM    solution flag (=.true.: NEM; =.false.:CMFD).
 * LX      number of elements along the X axis.
 * LY      number of elements along the Y axis.
 * LZ      number of elements along the Z axis.
@@ -56,7 +54,6 @@
      1 LL4X,LL4Y,LL4Z,IDL(LX,LY,LZ),KN(6,LX,LY,LZ),IQFR(6,LX,LY,LZ)
       REAL ZCODE(6),XXX(LX+1),YYY(LY+1),ZZZ(LZ+1),VOL(LX,LY,LZ),
      1 XX(LX,LY,LZ),YY(LX,LY,LZ),ZZ(LX,LY,LZ),QFR(6,LX,LY,LZ)
-      LOGICAL LUMP,LNEM
 *----
 *  LOCAL VARIABLES
 *----
@@ -80,15 +77,7 @@
             KN(:6,K2,K1,K0)=0
             IF(MAT(K2,K1,K0).EQ.0) CYCLE
             LL4F=LL4F+1
-            IF(LUMP) THEN
-              IDL(K2,K1,K0)=LL4F
-            ELSE IF(LNEM) THEN
-              ! all NEM expansion coefficients are stored in 1D cases
-              IDL(K2,K1,K0)=(LL4F-1)*5+1
-            ELSE
-              ! all CMDF expansion coefficients are stored in 1D cases
-              IDL(K2,K1,K0)=(LL4F-1)*3+1
-            ENDIF
+            IDL(K2,K1,K0)=LL4F
             KN(1,K2,K1,K0)=K2+(LX+1)*(K1-1)+(LX+1)*LY*(K0-1)
             KN(2,K2,K1,K0)=(K2+1)+(LX+1)*(K1-1)+(LX+1)*LY*(K0-1)
             KN(3,K2,K1,K0)=K1+(LY+1)*(K2-1)+(LY+1)*LX*(K0-1)

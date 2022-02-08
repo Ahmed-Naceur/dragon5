@@ -84,9 +84,9 @@ cd $Rundir
 pwd
 
 if [ $typ = 'custom' ]; then
-  cp "$CodeDir"/bin/"$MACH"/$Code ./dragon
+  cp "$CodeDir"/bin/"$MACH"/$Code ./code
 else
-  cp "$CodeDir"/bin/"$MACH"'_'$typ/$Code ./dragon
+  cp "$CodeDir"/bin/"$MACH"'_'$typ/$Code ./code
 fi
 cp "$CodeDir"/data/$data ./mydata
 
@@ -108,9 +108,9 @@ if [ -f "$CodeDir"/data/assertV.c2m ]; then
 fi
 before=$(date +%s)
 if [ $term = 0 ]; then
-  ./dragon <mydata >$xxx.result
+  ./code <mydata >$xxx.result
 else
-  ./dragon <mydata
+  ./code <mydata
 fi
 if [ $quiet = 0 ]; then
   time=$(( $(date +%s) - before))
