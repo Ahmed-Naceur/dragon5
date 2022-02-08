@@ -1,0 +1,173 @@
+\contentsline {section}{{Copyright Notice for DRAGON} }{ii}{Doc-Start}%
+\contentsline {section}{{Acknowledgments} }{iii}{Doc-Start}%
+\contentsline {section}{{Contents} }{v}{section*.1}%
+\contentsline {section}{{List of Figures} }{ix}{section*.2}%
+\contentsline {section}{{List of Tables} }{x}{section*.3}%
+\contentsline {section}{\numberline {1}{INTRODUCTION} }{1}{section.0.1}%
+\contentsline {section}{\numberline {2}{GENERAL STRUCTURE OF THE DRAGON INPUT} }{2}{section.0.2}%
+\contentsline {subsection}{\numberline {2.1}Data organization}{2}{subsection.0.2.1}%
+\contentsline {subsection}{\numberline {2.2}DRAGON Data Structure and Module Declarations}{3}{subsection.0.2.2}%
+\contentsline {subsection}{\numberline {2.3}The DRAGON Modules}{4}{subsection.0.2.3}%
+\contentsline {subsection}{\numberline {2.4}The Utility Modules}{6}{subsection.0.2.4}%
+\contentsline {subsection}{\numberline {2.5}The DRAGON Data Structures}{6}{subsection.0.2.5}%
+\contentsline {subsection}{\numberline {2.6}Main Updates in DRAGON}{7}{subsection.0.2.6}%
+\contentsline {section}{\numberline {3}{THE DRAGON MODULES} }{9}{section.0.3}%
+\contentsline {subsection}{\numberline {3.1}The \moc {MAC:} module}{9}{subsection.0.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Input structure for module {\tt MAC:}}{10}{subsubsection.0.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}Macroscopic cross section definition}{12}{subsubsection.0.3.1.2}%
+\contentsline {subsubsection}{\numberline {3.1.3}Update structure for operator {\tt MAC:}}{15}{subsubsection.0.3.1.3}%
+\contentsline {subsection}{\numberline {3.2}The {\tt LIB:} module}{16}{subsection.0.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Data input for module {\tt LIB:}}{16}{subsubsection.0.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Depletion data structure}{22}{subsubsection.0.3.2.2}%
+\contentsline {subsubsection}{\numberline {3.2.3}Mixture description structure}{23}{subsubsection.0.3.2.3}%
+\contentsline {subsection}{\numberline {3.3}The {\tt GEO:} module}{29}{subsection.0.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Data input for module {\tt GEO:}}{29}{subsubsection.0.3.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.2}Boundary conditions}{32}{subsubsection.0.3.3.2}%
+\contentsline {subsubsection}{\numberline {3.3.3}Spatial properties of geometry}{41}{subsubsection.0.3.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.4}Physical properties of geometry}{46}{subsubsection.0.3.3.4}%
+\contentsline {subsubsection}{\numberline {3.3.5}Double-heterogeneity}{59}{subsubsection.0.3.3.5}%
+\contentsline {subsubsection}{\numberline {3.3.6}Do-it-yourself geometries}{59}{subsubsection.0.3.3.6}%
+\contentsline {subsection}{\numberline {3.4}The tracking modules}{61}{subsection.0.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}The {\tt SYBILT:} tracking module}{63}{subsubsection.0.3.4.1}%
+\contentsline {subsubsection}{\numberline {3.4.2}The {\tt EXCELT:} tracking module}{66}{subsubsection.0.3.4.2}%
+\contentsline {subsubsection}{\numberline {3.4.3}The {\tt NXT:} tracking module}{70}{subsubsection.0.3.4.3}%
+\contentsline {subsubsection}{\numberline {3.4.4}The {\tt MCCGT:} tracking module}{75}{subsubsection.0.3.4.4}%
+\contentsline {subsubsection}{\numberline {3.4.5}The {\tt SNT:} tracking module}{78}{subsubsection.0.3.4.5}%
+\contentsline {subsubsection}{\numberline {3.4.6}The {\tt BIVACT:} tracking module}{81}{subsubsection.0.3.4.6}%
+\contentsline {subsubsection}{\numberline {3.4.7}The {\tt TRIVAT:} tracking module}{84}{subsubsection.0.3.4.7}%
+\contentsline {subsection}{\numberline {3.5}The {\tt SHI:} module}{86}{subsection.0.3.5}%
+\contentsline {subsubsection}{\numberline {3.5.1}Data input for module {\tt SHI:}}{86}{subsubsection.0.3.5.1}%
+\contentsline {subsection}{\numberline {3.6}The \moc {TONE:} module}{88}{subsection.0.3.6}%
+\contentsline {subsubsection}{\numberline {3.6.1}Data input for module \moc {TONE:}}{88}{subsubsection.0.3.6.1}%
+\contentsline {subsection}{\numberline {3.7}The {\tt USS:} module}{90}{subsection.0.3.7}%
+\contentsline {subsubsection}{\numberline {3.7.1}Data input for module {\tt USS:}}{91}{subsubsection.0.3.7.1}%
+\contentsline {subsection}{\numberline {3.8}The {\tt ASM:} module}{94}{subsection.0.3.8}%
+\contentsline {subsubsection}{\numberline {3.8.1}Data input for module {\tt ASM:}}{94}{subsubsection.0.3.8.1}%
+\contentsline {subsection}{\numberline {3.9}The {\tt FLU:} module}{97}{subsection.0.3.9}%
+\contentsline {subsubsection}{\numberline {3.9.1}Data input for module {\tt FLU:}}{98}{subsubsection.0.3.9.1}%
+\contentsline {subsubsection}{\numberline {3.9.2}Leakage model specification structure}{100}{subsubsection.0.3.9.2}%
+\contentsline {subsection}{\numberline {3.10}The {\tt EDI:} module}{104}{subsection.0.3.10}%
+\contentsline {subsubsection}{\numberline {3.10.1}Data input for module {\tt EDI:}}{105}{subsubsection.0.3.10.1}%
+\contentsline {subsubsection}{\numberline {3.10.2}Homogenization and condensation with the flux}{111}{subsubsection.0.3.10.2}%
+\contentsline {subsubsection}{\numberline {3.10.3}Homogenization and condensation with the flux and adjoint flux}{112}{subsubsection.0.3.10.3}%
+\contentsline {subsection}{\numberline {3.11}The {\tt EVO:} module}{113}{subsection.0.3.11}%
+\contentsline {subsubsection}{\numberline {3.11.1}Data input for module {\tt EVO:}}{115}{subsubsection.0.3.11.1}%
+\contentsline {subsubsection}{\numberline {3.11.2}Power normalization in {\tt EVO:}}{119}{subsubsection.0.3.11.2}%
+\contentsline {subsection}{\numberline {3.12}The {\tt SPH:} module}{121}{subsection.0.3.12}%
+\contentsline {subsubsection}{\numberline {3.12.1}Data input for module {\tt SPH:}}{122}{subsubsection.0.3.12.1}%
+\contentsline {subsubsection}{\numberline {3.12.2}Specification for the type of equivalence calculation}{123}{subsubsection.0.3.12.2}%
+\contentsline {subsection}{\numberline {3.13}The \moc {CFC:} module}{127}{subsection.0.3.13}%
+\contentsline {subsubsection}{\numberline {3.13.1}Data input for module \moc {CFC:}}{128}{subsubsection.0.3.13.1}%
+\contentsline {subsection}{\numberline {3.14}The {\tt INFO:} module}{130}{subsection.0.3.14}%
+\contentsline {subsubsection}{\numberline {3.14.1}Data input for module {\tt INFO:}}{130}{subsubsection.0.3.14.1}%
+\contentsline {subsection}{\numberline {3.15}The \moc {MRG:} module}{133}{subsection.0.3.15}%
+\contentsline {subsubsection}{\numberline {3.15.1}Data input for geometry pre-homogenization}{133}{subsubsection.0.3.15.1}%
+\contentsline {subsubsection}{\numberline {3.15.2}Data input for tracking file partitioning}{134}{subsubsection.0.3.15.2}%
+\contentsline {subsection}{\numberline {3.16}The {\tt COMPO:} module}{135}{subsection.0.3.16}%
+\contentsline {subsubsection}{\numberline {3.16.1}Initialization data input for module {\tt COMPO:}}{137}{subsubsection.0.3.16.1}%
+\contentsline {subsubsection}{\numberline {3.16.2}Modification data input for module {\tt COMPO:}}{140}{subsubsection.0.3.16.2}%
+\contentsline {subsubsection}{\numberline {3.16.3}Modification (catenate) data input for module {\tt COMPO:}}{141}{subsubsection.0.3.16.3}%
+\contentsline {subsubsection}{\numberline {3.16.4}Display data input for module {\tt COMPO:}}{141}{subsubsection.0.3.16.4}%
+\contentsline {subsection}{\numberline {3.17}The \moc {TLM:} module}{143}{subsection.0.3.17}%
+\contentsline {subsubsection}{\numberline {3.17.1}Data input for module \moc {TLM:}}{143}{subsubsection.0.3.17.1}%
+\contentsline {subsection}{\numberline {3.18}The {\tt M2T:} module}{146}{subsection.0.3.18}%
+\contentsline {subsubsection}{\numberline {3.18.1}Data input for module {\tt M2T:}}{146}{subsubsection.0.3.18.1}%
+\contentsline {subsection}{\numberline {3.19}The {\tt CHAB:} module}{148}{subsection.0.3.19}%
+\contentsline {subsubsection}{\numberline {3.19.1}Data input for module {\tt CHAB:}}{148}{subsubsection.0.3.19.1}%
+\contentsline {subsection}{\numberline {3.20}The \moc {CPO:} module}{150}{subsection.0.3.20}%
+\contentsline {subsubsection}{\numberline {3.20.1}Data input for module \moc {CPO:}}{150}{subsubsection.0.3.20.1}%
+\contentsline {subsection}{\numberline {3.21}The {\tt SAP:} module}{152}{subsection.0.3.21}%
+\contentsline {subsubsection}{\numberline {3.21.1}Initialization data input for module {\tt SAP:}}{154}{subsubsection.0.3.21.1}%
+\contentsline {subsubsection}{\numberline {3.21.2}Modification data input for module {\tt SAP:}}{156}{subsubsection.0.3.21.2}%
+\contentsline {subsubsection}{\numberline {3.21.3}Modification (catenate) data input for module {\tt SAP:}}{157}{subsubsection.0.3.21.3}%
+\contentsline {subsection}{\numberline {3.22}The {\tt MC:} module}{159}{subsection.0.3.22}%
+\contentsline {subsubsection}{\numberline {3.22.1}Data input for module {\tt MC:}}{159}{subsubsection.0.3.22.1}%
+\contentsline {subsection}{\numberline {3.23}The \moc {T:} module}{161}{subsection.0.3.23}%
+\contentsline {subsection}{\numberline {3.24}The {\tt DMAC:} module}{162}{subsection.0.3.24}%
+\contentsline {subsubsection}{\numberline {3.24.1}Data input for module {\tt DMAC:}}{162}{subsubsection.0.3.24.1}%
+\contentsline {subsection}{\numberline {3.25}The {\tt SENS:} module}{164}{subsection.0.3.25}%
+\contentsline {subsubsection}{\numberline {3.25.1}Data input for module {\tt SENS:}}{164}{subsubsection.0.3.25.1}%
+\contentsline {subsection}{\numberline {3.26}The {\tt DUO:} module}{166}{subsection.0.3.26}%
+\contentsline {subsubsection}{\numberline {3.26.1}Data input for module {\tt DUO:}}{166}{subsubsection.0.3.26.1}%
+\contentsline {subsubsection}{\numberline {3.26.2}Theory}{167}{subsubsection.0.3.26.2}%
+\contentsline {subsection}{\numberline {3.27}The {\tt S2M:} module}{169}{subsection.0.3.27}%
+\contentsline {subsubsection}{\numberline {3.27.1}Data input for module {\tt S2M:}}{169}{subsubsection.0.3.27.1}%
+\contentsline {subsection}{\numberline {3.28}The \moc {FMT:} module}{170}{subsection.0.3.28}%
+\contentsline {subsection}{\numberline {3.29}The {\tt FMAC:} module}{172}{subsection.0.3.29}%
+\contentsline {subsubsection}{\numberline {3.29.1}Data input for module {\tt FMAC:}}{172}{subsubsection.0.3.29.1}%
+\contentsline {subsection}{\numberline {3.30}The {\tt PSOUR:} module}{173}{subsection.0.3.30}%
+\contentsline {subsubsection}{\numberline {3.30.1}Data input for module {\tt PSOUR:}}{173}{subsubsection.0.3.30.1}%
+\contentsline {subsection}{\numberline {3.31}The {\tt HEAT:} module}{174}{subsection.0.3.31}%
+\contentsline {subsubsection}{\numberline {3.31.1}Data input for module {\tt HEAT:}}{174}{subsubsection.0.3.31.1}%
+\contentsline {subsection}{\numberline {3.32}The {\tt BREF:} module}{176}{subsection.0.3.32}%
+\contentsline {subsubsection}{\numberline {3.32.1}Data input for module {\tt BREF:}}{177}{subsubsection.0.3.32.1}%
+\contentsline {subsection}{\numberline {3.33}The \tt {PSP:} module}{180}{subsection.0.3.33}%
+\contentsline {subsubsection}{\numberline {3.33.1}Data input for module {\tt PSP:}}{180}{subsubsection.0.3.33.1}%
+\contentsline {section}{\numberline {4}{THE SALOME-RELATED MODULES} }{182}{section.0.4}%
+\contentsline {subsection}{\numberline {4.1}The {\tt G2S:} module}{182}{subsection.0.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}Data input for module {\tt G2S:}}{182}{subsubsection.0.4.1.1}%
+\contentsline {subsection}{\numberline {4.2}The {\tt G2MC:} module}{184}{subsection.0.4.2}%
+\contentsline {subsection}{\numberline {4.3}The {\tt {\tt SALT:}} tracking module}{185}{subsection.0.4.3}%
+\contentsline {section}{\numberline {5}{THE UTILITY MODULES} }{189}{section.0.5}%
+\contentsline {subsection}{\numberline {5.1}The equality module}{189}{subsection.0.5.1}%
+\contentsline {subsection}{\numberline {5.2}The UTL: module}{190}{subsection.0.5.2}%
+\contentsline {subsection}{\numberline {5.3}The HUTL: module}{192}{subsection.0.5.3}%
+\contentsline {subsection}{\numberline {5.4}The DELETE: module}{193}{subsection.0.5.4}%
+\contentsline {subsection}{\numberline {5.5}The BACKUP: module}{194}{subsection.0.5.5}%
+\contentsline {subsection}{\numberline {5.6}The RECOVER: module}{195}{subsection.0.5.6}%
+\contentsline {subsection}{\numberline {5.7}The ADD: module}{196}{subsection.0.5.7}%
+\contentsline {subsection}{\numberline {5.8}The MPX: module}{197}{subsection.0.5.8}%
+\contentsline {subsection}{\numberline {5.9}The STAT: module}{198}{subsection.0.5.9}%
+\contentsline {subsection}{\numberline {5.10}The GREP: module}{199}{subsection.0.5.10}%
+\contentsline {subsection}{\numberline {5.11}The MSTR module}{201}{subsection.0.5.11}%
+\contentsline {subsection}{\numberline {5.12}The FIND0: module}{203}{subsection.0.5.12}%
+\contentsline {subsection}{\numberline {5.13}The ABORT: module}{204}{subsection.0.5.13}%
+\contentsline {subsection}{\numberline {5.14}The END: module}{205}{subsection.0.5.14}%
+\contentsline {section}{\numberline {6}{THE MPI MODULES} }{206}{section.0.6}%
+\contentsline {subsection}{\numberline {6.1}The DRVMPI: module}{206}{subsection.0.6.1}%
+\contentsline {subsection}{\numberline {6.2}The SNDMPI: module}{207}{subsection.0.6.2}%
+\contentsline {section}{\numberline {7}{EXAMPLES} }{208}{section.0.7}%
+\contentsline {subsection}{\numberline {7.1}Scattering cross sections}{208}{subsection.0.7.1}%
+\contentsline {subsection}{\numberline {7.2}Geometries}{208}{subsection.0.7.2}%
+\contentsline {subsection}{\numberline {7.3}MATXS7A microscopic cross-section examples}{214}{subsection.0.7.3}%
+\contentsline {subsubsection}{\numberline {7.3.1}\tst (TCXA01) -- The Mosteller benchmark.}{214}{subsubsection.0.7.3.1}%
+\contentsline {subsection}{\numberline {7.4}Macroscopic cross sections examples}{218}{subsection.0.7.4}%
+\contentsline {subsubsection}{\numberline {7.4.1}\tst (TCM01) -- Annular region}{218}{subsubsection.0.7.4.1}%
+\contentsline {subsubsection}{\numberline {7.4.2}\tst (TCM02) -- The Stankovski test case.}{219}{subsubsection.0.7.4.2}%
+\contentsline {subsubsection}{\numberline {7.4.3}\tst (TCM03) -- Watanabe and Maynard problem with a void region.}{221}{subsubsection.0.7.4.3}%
+\contentsline {subsubsection}{\numberline {7.4.4}\tst (TCM04) -- Adjuster rod in a CANDU type supercell.}{226}{subsubsection.0.7.4.4}%
+\contentsline {subsubsection}{\numberline {7.4.5}\tst (TCM05) -- Comparison of leakage models}{229}{subsubsection.0.7.4.5}%
+\contentsline {subsubsection}{\numberline {7.4.6}\tst (TCM06) -- Buckling search without fission source}{233}{subsubsection.0.7.4.6}%
+\contentsline {subsubsection}{\numberline {7.4.7}\tst (TCM07) -- Test of boundary conditions}{235}{subsubsection.0.7.4.7}%
+\contentsline {subsubsection}{\numberline {7.4.8}\tst (TCM08) -- Fixed source problem with fission}{236}{subsubsection.0.7.4.8}%
+\contentsline {subsubsection}{\numberline {7.4.9}\tst (TCM09) -- Solution of a 2-D fission source problem using \moc {MCCGT:}}{238}{subsubsection.0.7.4.9}%
+\contentsline {subsubsection}{\numberline {7.4.10}\tst (TCM10) -- Solution of a 2-D fixed source problem using \moc {MCCGT:}}{241}{subsubsection.0.7.4.10}%
+\contentsline {subsubsection}{\numberline {7.4.11}\tst (TCM11) -- Comparison of CP and MoC solutions}{243}{subsubsection.0.7.4.11}%
+\contentsline {subsubsection}{\numberline {7.4.12}\tst (TCM12) - Solution of a 3-D problem using the \moc {MCU:} module}{247}{subsubsection.0.7.4.12}%
+\contentsline {subsubsection}{\numberline {7.4.13}\tst (TCM13) - Hexagonal assembly with hexagonal cells containing clusters}{248}{subsubsection.0.7.4.13}%
+\contentsline {subsection}{\numberline {7.5}WIMSD4 microscopic cross-section examples.}{251}{subsection.0.7.5}%
+\contentsline {subsubsection}{\numberline {7.5.1}\tst (TCWU01) -- The Mosteller benchmark.}{251}{subsubsection.0.7.5.1}%
+\contentsline {subsubsection}{\numberline {7.5.2}\tst (TCWU02) -- A $17\times 17$ PWR type assembly}{253}{subsubsection.0.7.5.2}%
+\contentsline {subsubsection}{\numberline {7.5.3}\tst (TCWU03) -- An hexagonal assembly}{257}{subsubsection.0.7.5.3}%
+\contentsline {subsubsection}{\numberline {7.5.4}\tst (TCWU04) -- A Cylindrical cell with burnup.}{260}{subsubsection.0.7.5.4}%
+\contentsline {subsubsection}{\numberline {7.5.5}\tst (TCWU05) -- A CANDU-6 type annular cell with burnup.}{264}{subsubsection.0.7.5.5}%
+\contentsline {subsubsection}{\numberline {7.5.6}\tst (TCWU06) -- A CANDU-6 type supercell with control rods.}{268}{subsubsection.0.7.5.6}%
+\contentsline {subsubsection}{\numberline {7.5.7}\tst (TCWU07) -- A CANDU-6 type calculation using various leakage options.}{271}{subsubsection.0.7.5.7}%
+\contentsline {subsubsection}{\numberline {7.5.8}\tst (TCWU08) -- Burnup of an homogeneous cell.}{274}{subsubsection.0.7.5.8}%
+\contentsline {subsubsection}{\numberline {7.5.9}\tst (TCWU09) -- Testing boundary conditions.}{276}{subsubsection.0.7.5.9}%
+\contentsline {subsubsection}{\numberline {7.5.10}\tst (TCWU10) -- Fixed source problem in multiplicative media.}{278}{subsubsection.0.7.5.10}%
+\contentsline {subsubsection}{\numberline {7.5.11}\tst (TCWU11) -- Two group burnup of a CANDU-6 type cell.}{279}{subsubsection.0.7.5.11}%
+\contentsline {subsubsection}{\numberline {7.5.12}\tst (TCWU12) -- Mixture composition.}{282}{subsubsection.0.7.5.12}%
+\contentsline {subsubsection}{\numberline {7.5.13}\tst (TCWU13) -- Solution by the method of cyclic characteristics}{285}{subsubsection.0.7.5.13}%
+\contentsline {subsubsection}{\numberline {7.5.14}\tst (TCWU14) -- SPH Homogenisation without tracking}{287}{subsubsection.0.7.5.14}%
+\contentsline {subsubsection}{\numberline {7.5.15}\tst (TCWU15) -- A CANDU--6 type Cartesian cell with burnup}{290}{subsubsection.0.7.5.15}%
+\contentsline {subsubsection}{\numberline {7.5.16}\tst (TCWU17) -- A 2-D CANDU--6 supercell with control rods}{293}{subsubsection.0.7.5.16}%
+\contentsline {subsubsection}{\numberline {7.5.17}\tst (TCWU17Lib) -- Microlib definition.}{299}{subsubsection.0.7.5.17}%
+\contentsline {subsubsection}{\numberline {7.5.18}\tst (TCWU31) -- Compo-based two group burnup of a CANDU-6 type cell.}{301}{subsubsection.0.7.5.18}%
+\contentsline {subsubsection}{\numberline {7.5.19}\tst (TCWU05Lib) -- Microlib definition.}{304}{subsubsection.0.7.5.19}%
+\contentsline {subsection}{\numberline {7.6}Depletion chain examples}{307}{subsection.0.7.6}%
+\contentsline {subsection}{\numberline {7.7}Assert procedures}{310}{subsection.0.7.7}%
+\contentsline {section}{\numberline {8}{THE DRAGON PACKAGE} }{313}{section.0.8}%
+\contentsline {section}{\numberline {9}{THE GAN GENERALIZED DRIVER} }{317}{section.0.9}%
+\contentsline {section}{\numberline {10}{THE CLE-2000 CONTROL LANGUAGE} }{319}{section.0.10}%
+\contentsline {section}{{References} }{321}{section*.4}%

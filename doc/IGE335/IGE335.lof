@@ -1,0 +1,44 @@
+\contentsline {figure}{\numberline {1}{\ignorespaces Hexagonal geometry with triangular mesh containing 4 concentric hexagon}}{32}{figure.0.1}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Diagonal boundary conditions in Cartesian geometry}}{35}{figure.0.2}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Various boundary conditions in Cartesian geometry}}{36}{figure.0.3}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Translation/rotation boundary conditions in Cartesian geometry}}{36}{figure.0.4}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Representing a checkerboard in Cartesian geometry}}{37}{figure.0.5}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Hexagonal geometries of type S30 and SA60}}{37}{figure.0.6}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Hexagonal geometries of type SB60 and S90}}{38}{figure.0.7}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Hexagonal geometries of type R120 and R180}}{38}{figure.0.8}%
+\contentsline {figure}{\numberline {9}{\ignorespaces Hexagonal geometry of type SA180}}{39}{figure.0.9}%
+\contentsline {figure}{\numberline {10}{\ignorespaces Hexagonal geometry of type SB180}}{39}{figure.0.10}%
+\contentsline {figure}{\numberline {11}{\ignorespaces Hexagonal geometry of type COMPLETE}}{40}{figure.0.11}%
+\contentsline {figure}{\numberline {12}{\ignorespaces Cylindrical correction in Cartesian geometry}}{40}{figure.0.12}%
+\contentsline {figure}{\numberline {13}{\ignorespaces Definition of the radii in a \moc {CARCEL}-- or \moc {HEXCEL}--type geometry}}{44}{figure.0.13}%
+\contentsline {figure}{\numberline {14}{\ignorespaces Numerotation of the sectors in a Cartesian cell}}{46}{figure.0.14}%
+\contentsline {figure}{\numberline {15}{\ignorespaces Numerotation of the sectors in an hexagonal cell}}{47}{figure.0.15}%
+\contentsline {figure}{\numberline {16}{\ignorespaces Hexagonal geometry with triangular mesh that extends past the hexagonal boundary}}{47}{figure.0.16}%
+\contentsline {figure}{\numberline {17}{\ignorespaces Description of the various rotations allowed for Cartesian geometries}}{54}{figure.0.17}%
+\contentsline {figure}{\numberline {18}{\ignorespaces Description of the various rotation allowed for hexagonal geometries}}{55}{figure.0.18}%
+\contentsline {figure}{\numberline {19}{\ignorespaces Typical cluster geometry}}{55}{figure.0.19}%
+\contentsline {figure}{\numberline {20}{\ignorespaces Organization of a {\tt multicompo} object.}}{135}{figure.0.20}%
+\contentsline {figure}{\numberline {21}{\ignorespaces Parameter tree in a {\sc multicompo} object}}{135}{figure.0.21}%
+\contentsline {figure}{\numberline {22}{\ignorespaces Global parameter tree in a {\sc saphyb} object}}{152}{figure.0.22}%
+\contentsline {figure}{\numberline {23}{\ignorespaces Definition of geometries used by the {\tt BREF:} module}}{176}{figure.0.23}%
+\contentsline {figure}{\numberline {24}{\ignorespaces Equivalent ERM-NEM reflector for the BEAVRS benchmark}}{176}{figure.0.24}%
+\contentsline {figure}{\numberline {25}{\ignorespaces Slab geometry with mesh-splitting}}{209}{figure.0.25}%
+\contentsline {figure}{\numberline {26}{\ignorespaces Two-dimensional Cartesian assembly containing micro-structures}}{209}{figure.0.26}%
+\contentsline {figure}{\numberline {27}{\ignorespaces Cylindrical cluster geometry}}{210}{figure.0.27}%
+\contentsline {figure}{\numberline {28}{\ignorespaces Two-dimensional hexagonal geometry}}{211}{figure.0.28}%
+\contentsline {figure}{\numberline {29}{\ignorespaces Three-dimensional Cartesian super-cell}}{212}{figure.0.29}%
+\contentsline {figure}{\numberline {30}{\ignorespaces Hexagonal multicell lattice geometry}}{213}{figure.0.30}%
+\contentsline {figure}{\numberline {31}{\ignorespaces Geometry for test case \tst (TCM01) for an annular cell with macroscopic cross sections.}}{218}{figure.0.31}%
+\contentsline {figure}{\numberline {32}{\ignorespaces Geometry for test case \tst (TCM02).}}{220}{figure.0.32}%
+\contentsline {figure}{\numberline {33}{\ignorespaces Geometry for test case \tst (TCM03).}}{222}{figure.0.33}%
+\contentsline {figure}{\numberline {34}{\ignorespaces Geometry of the CANDU-6 supercell with stainless steel rods.}}{227}{figure.0.34}%
+\contentsline {figure}{\numberline {35}{\ignorespaces Geometry of a 2-D hexagonal assembly filled with triangular/hexagonal cells.}}{248}{figure.0.35}%
+\contentsline {figure}{\numberline {36}{\ignorespaces Geometry for the Mosteller benchmark problem.}}{251}{figure.0.36}%
+\contentsline {figure}{\numberline {37}{\ignorespaces Geometry for test case \tst (TCWU02).}}{254}{figure.0.37}%
+\contentsline {figure}{\numberline {38}{\ignorespaces Geometry for test case \tst (TCWU03).}}{258}{figure.0.38}%
+\contentsline {figure}{\numberline {39}{\ignorespaces Depletion chain of heavy isotopes.}}{261}{figure.0.39}%
+\contentsline {figure}{\numberline {40}{\ignorespaces Geometry of the CANDU-6 cell.}}{265}{figure.0.40}%
+\contentsline {figure}{\numberline {41}{\ignorespaces Geometry of 2-D CANDU--6 supercell with control rods.}}{293}{figure.0.41}%
+\contentsline {figure}{\numberline {42}{\ignorespaces An example of depletion chain.}}{308}{figure.0.42}%
+\contentsline {figure}{\numberline {43}{\ignorespaces Distribution content.}}{313}{figure.0.43}%
+\contentsline {figure}{\numberline {44}{\ignorespaces An example of an associative table.}}{317}{figure.0.44}%
