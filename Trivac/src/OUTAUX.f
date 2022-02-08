@@ -190,11 +190,11 @@
          IF((IBM.NE.0).AND.(L.NE.0).AND.(IPFL.NE.0)) THEN
             RATE(IBM)=RATE(IBM)+EVECT(IPFL,IGR)*VOL(K)*WORK(L) 
             !AHMED
-            IF (HREAC(IREAC).EQ.'H-FACTOR') THEN 
-               print *,"----------element=",K
-               print *,"work=",WORK(L)
-               print *,"flux=",EVECT(IPFL,IGR)
-            ENDIF
+            !IF (HREAC(IREAC).EQ.'H-FACTOR') THEN 
+            !   print *,"----------element=",K
+            !   print *,"work=",WORK(L)
+            !   print *,"flux=",EVECT(IPFL,IGR)
+            !ENDIF
          ENDIF
   130    CONTINUE
          DO 140 IBM=1,NZS
@@ -523,7 +523,7 @@
       CALL LCMPUT(IPMAC2,'STATE-VECTOR',NSTATE,1,IDATA)
 
       !AHMED
-      CALL XABORT('AHMED,OUTAUX.f')
+      !CALL XABORT('AHMED,OUTAUX.f')
 *----
 *  SCRATCH STORAGE DEALLOCATION
 *----

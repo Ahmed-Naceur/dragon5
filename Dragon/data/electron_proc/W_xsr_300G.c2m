@@ -44,7 +44,7 @@ TRACK := SNT: GEOM ::
 MICRO  := LIB: :: 
           EDIT 2
           NMIX 1 
-          ANIS 2
+          ANIS 3
           MIXS LIB: MATXS2 FIL: _W300g_20MeV
           MIX  1  300.0  1.0 NOGAS
           Wnat = w 1.0 
@@ -56,7 +56,7 @@ MACRO := MICRO :: STEP UP MACROLIB ;
 
 macr_xsr.txt   := MACRO ;
 
-END: ; QUIT "LIST" .
+* END: ; QUIT "LIST" .
 
 
 micr_xsr.txt   := MICRO ;

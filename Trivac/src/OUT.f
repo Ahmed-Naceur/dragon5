@@ -135,6 +135,11 @@
       NL=IGP(3)
       NBFIS=IGP(4)
       NALBP=IGP(8)
+      !AHMED
+      PRINT *,"AHMED"
+      PRINT *,NGRP,NBMIX,NL,NALBP
+      !CALL XABORT('AHMED,OUT.F')
+      
 *----
 *  RECOVER GENERAL TRACKING INFORMATION.
 *----
