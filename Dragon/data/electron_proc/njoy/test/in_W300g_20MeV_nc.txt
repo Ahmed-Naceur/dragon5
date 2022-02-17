@@ -1,6 +1,6 @@
 cepxsr
 30 0 33 40 
-7400 1 0 2 3 1
+7400 1 0 2 1 1
 W-20MeV-300Groups:CEPXSR/
 300 / # of groups boundaries
 1.0000000547034879e+03

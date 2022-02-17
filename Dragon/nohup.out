@@ -6,3 +6,164 @@
 [0;32m[OK][0m
 ./rdragon salmacro.x2m -quiet
 /tmp/rundir24
+execute electron with Dragon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir8
+/tmp/rundir8
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_11e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_11e_P2_NC.txt »: Le fichier existe
+ln: impossible de créer le lien symbolique « ./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt »: Le fichier existe
+total 8784
+-rwxr-xr-x 1 ahnac IGN 8926136 10 fév 23:09 dragon
+lrwxrwxrwx 1 ahnac IGN      99 10 fév 23:09 FMAC_e_W_20.00MeV_0g_300e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/FMAC_e_W_20.00MeV_0g_300e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN      99 10 fév 23:09 FMAC_e_water_3.00MeV_0g_2e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_3.00MeV_0g_2e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN      99 10 fév 23:09 FMAC_e_water_3.00MeV_2g_2e_P2_FC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_3.00MeV_2g_2e_P2_FC.txt
+lrwxrwxrwx 1 ahnac IGN     110 10 fév 23:09 FMAC_e_water_lobatto_10.00MeV_0g_300e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_lobatto_10.00MeV_0g_300e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN     110 10 fév 23:09 FMAC_e_water_lobatto_20.00MeV_0g_300e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_lobatto_20.00MeV_0g_300e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN     107 10 fév 23:09 FMAC_e_water_lobatto_3.00MeV_0g_2e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_lobatto_3.00MeV_0g_2e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN     109 10 fév 23:09 FMAC_e_water_lobatto_3.00MeV_0g_300e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_lobatto_3.00MeV_0g_300e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN     108 10 fév 23:09 FMAC_e_water_lobatto_3.00MeV_0g_80e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_lobatto_3.00MeV_0g_80e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN     108 10 fév 23:09 FMAC_e_water_lobatto_3.00MeV_0g_80e_P8_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_lobatto_3.00MeV_0g_80e_P8_NC.txt
+lrwxrwxrwx 1 ahnac IGN     107 10 fév 23:09 FMAC_e_water_lobatto_3.00MeV_2g_2e_P2_FC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_lobatto_3.00MeV_2g_2e_P2_FC.txt
+lrwxrwxrwx 1 ahnac IGN     106 10 fév 23:09 FMAC_e_W_lobatto_10.00MeV_0g_300e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_W_lobatto_10.00MeV_0g_300e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN     105 10 fév 23:09 FMAC_e_W_lobatto_20.00MeV_0g_11e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_W_lobatto_20.00MeV_0g_11e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN     104 10 fév 23:09 FMAC_e_W_lobatto_20.00MeV_0g_2e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_W_lobatto_20.00MeV_0g_2e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN     106 10 fév 23:09 FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN     106 10 fév 23:09 FMAC_e_W_lobatto_20.00MeV_0g_300e_P8_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_W_lobatto_20.00MeV_0g_300e_P8_NC.txt
+lrwxrwxrwx 1 ahnac IGN     105 10 fév 23:09 FMAC_e_W_lobatto_3.00MeV_0g_300e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_W_lobatto_3.00MeV_0g_300e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN     104 10 fév 23:09 FMAC_e_W_lobatto_3.00MeV_0g_80e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_W_lobatto_3.00MeV_0g_80e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN      85 10 fév 23:09 macro_xs_no_stern.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/macro_xs_no_stern.txt
+-rw-r--r-- 1 ahnac IGN     352 10 fév 23:09 mydata
+lrwxrwxrwx 1 ahnac IGN      88 10 fév 23:09 _test -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_test.txt
+lrwxrwxrwx 1 ahnac IGN      91 10 fév 23:09 _test_nc -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_test_nc.txt
+lrwxrwxrwx 1 ahnac IGN      92 10 fév 23:09 _W300g -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_nc.txt
+lrwxrwxrwx 1 ahnac IGN      98 10 fév 23:09 _W300g_10MeV -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_10MeV_nc.txt
+lrwxrwxrwx 1 ahnac IGN      98 10 fév 23:09 _W300g_20MeV -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_20MeV_nc.txt
+lrwxrwxrwx 1 ahnac IGN      98 10 fév 23:09 _W300g_20MeV_fc -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_20MeV_fc.txt
+lrwxrwxrwx 1 ahnac IGN     101 10 fév 23:09 _W300g_P8_20MeV -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_P8_20MeV_nc.txt
+lrwxrwxrwx 1 ahnac IGN      89 10 fév 23:09 _wat300g -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/matxs_water_300groups.txt
+lrwxrwxrwx 1 ahnac IGN     103 10 fév 23:09 _wat300g_10MeV -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_water_300g_10MeV_nc.txt
+lrwxrwxrwx 1 ahnac IGN     103 10 fév 23:09 _wat300g_20MeV -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_water_300g_20MeV_nc.txt
+lrwxrwxrwx 1 ahnac IGN      88 10 fév 23:09 _water80g -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/matxs_water_80groups.txt
+-rw-r--r-- 1 ahnac IGN    3886 10 fév 23:09 watxs3OOG.c2m
+-rw-r--r-- 1 ahnac IGN    4694 10 fév 23:09 wat_xs_80G.c2m
+-rw-r--r-- 1 ahnac IGN    4851 10 fév 23:09 wat_xsr_2G.c2m
+-rw-r--r-- 1 ahnac IGN    3931 10 fév 23:09 watxsr3OOG.c2m
+-rw-r--r-- 1 ahnac IGN    4847 10 fév 23:09 wat_xsr_80G.c2m
+-rw-r--r-- 1 ahnac IGN    3962 10 fév 23:09 W_xs_300G.c2m
+-rw-r--r-- 1 ahnac IGN    4676 10 fév 23:09 W_xs_80G.c2m
+-rw-r--r-- 1 ahnac IGN    3528 10 fév 23:09 W_xso_300G.c2m
+-rw-r--r-- 1 ahnac IGN    3908 10 fév 23:09 W_xsr_300G.c2m
+-rw-r--r-- 1 ahnac IGN    4813 10 fév 23:09 W_xsr_80G.c2m
+electron access script terminated
+End of execution. Total execution time: 0h 28min 45s
+access twlup.save
+total 138900
+-rw-r--r-- 1 ahnac IGN      902 10 fév 23:09 assertS.c2m
+-rw-r--r-- 1 ahnac IGN      798 10 fév 23:09 assertV.c2m
+-rwxr-xr-x 1 ahnac IGN  8926136 10 fév 23:09 dragon
+-rw-r--r-- 1 ahnac IGN    15729 10 fév 23:23 edep_xsr.txt
+-rw-r--r-- 1 ahnac IGN    15729 10 fév 23:37 edep_xs.txt
+-rw-r--r-- 1 ahnac IGN    39090 10 fév 23:23 edit_xsr.txt
+-rw-r--r-- 1 ahnac IGN    32041 10 fév 23:37 edit_xs.txt
+-rw-r--r-- 1 ahnac IGN   369452 10 fév 23:37 electron.result
+-rw-r--r-- 1 ahnac IGN 64181224 10 fév 23:23 flux_xsr.txt
+-rw-r--r-- 1 ahnac IGN 64181224 10 fév 23:37 flux_xs.txt
+lrwxrwxrwx 1 ahnac IGN       99 10 fév 23:09 FMAC_e_W_20.00MeV_0g_300e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/FMAC_e_W_20.00MeV_0g_300e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN       99 10 fév 23:09 FMAC_e_water_3.00MeV_0g_2e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_3.00MeV_0g_2e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN       99 10 fév 23:09 FMAC_e_water_3.00MeV_2g_2e_P2_FC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_3.00MeV_2g_2e_P2_FC.txt
+lrwxrwxrwx 1 ahnac IGN      110 10 fév 23:09 FMAC_e_water_lobatto_10.00MeV_0g_300e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_lobatto_10.00MeV_0g_300e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN      110 10 fév 23:09 FMAC_e_water_lobatto_20.00MeV_0g_300e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_lobatto_20.00MeV_0g_300e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN      107 10 fév 23:09 FMAC_e_water_lobatto_3.00MeV_0g_2e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_lobatto_3.00MeV_0g_2e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN      109 10 fév 23:09 FMAC_e_water_lobatto_3.00MeV_0g_300e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_lobatto_3.00MeV_0g_300e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN      108 10 fév 23:09 FMAC_e_water_lobatto_3.00MeV_0g_80e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_lobatto_3.00MeV_0g_80e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN      108 10 fév 23:09 FMAC_e_water_lobatto_3.00MeV_0g_80e_P8_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_lobatto_3.00MeV_0g_80e_P8_NC.txt
+lrwxrwxrwx 1 ahnac IGN      107 10 fév 23:09 FMAC_e_water_lobatto_3.00MeV_2g_2e_P2_FC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_water_lobatto_3.00MeV_2g_2e_P2_FC.txt
+lrwxrwxrwx 1 ahnac IGN      106 10 fév 23:09 FMAC_e_W_lobatto_10.00MeV_0g_300e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_W_lobatto_10.00MeV_0g_300e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN      105 10 fév 23:09 FMAC_e_W_lobatto_20.00MeV_0g_11e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_W_lobatto_20.00MeV_0g_11e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN      104 10 fév 23:09 FMAC_e_W_lobatto_20.00MeV_0g_2e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_W_lobatto_20.00MeV_0g_2e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN      106 10 fév 23:09 FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN      106 10 fév 23:09 FMAC_e_W_lobatto_20.00MeV_0g_300e_P8_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_W_lobatto_20.00MeV_0g_300e_P8_NC.txt
+lrwxrwxrwx 1 ahnac IGN      105 10 fév 23:09 FMAC_e_W_lobatto_3.00MeV_0g_300e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_W_lobatto_3.00MeV_0g_300e_P2_NC.txt
+lrwxrwxrwx 1 ahnac IGN      104 10 fév 23:09 FMAC_e_W_lobatto_3.00MeV_0g_80e_P2_NC.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/cepxs-dragon/FMAC_e_W_lobatto_3.00MeV_0g_80e_P2_NC.txt
+-rw-r--r-- 1 ahnac IGN     2065 10 fév 23:23 geom_xsr.txt
+-rw-r--r-- 1 ahnac IGN     2065 10 fév 23:37 geom_xs.txt
+lrwxrwxrwx 1 ahnac IGN       85 10 fév 23:09 macro_xs_no_stern.txt -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/macro_xs_no_stern.txt
+-rw-r--r-- 1 ahnac IGN   816391 10 fév 23:23 macro_xs.txt
+-rw-r--r-- 1 ahnac IGN  1324973 10 fév 23:09 macr_xsr.txt
+-rw-r--r-- 1 ahnac IGN  1415300 10 fév 23:09 micr_xsr.txt
+-rw-r--r-- 1 ahnac IGN      352 10 fév 23:09 mydata
+-rw-r--r-- 1 ahnac IGN   362280 10 fév 23:23 syst_xsr.txt
+-rw-r--r-- 1 ahnac IGN   362280 10 fév 23:37 syst_xs.txt
+lrwxrwxrwx 1 ahnac IGN       88 10 fév 23:09 _test -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_test.txt
+lrwxrwxrwx 1 ahnac IGN       91 10 fév 23:09 _test_nc -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_test_nc.txt
+-rw-r--r-- 1 ahnac IGN    15411 10 fév 23:37 track_xs.txt
+-rw-r--r-- 1 ahnac IGN    15411 10 fév 23:23 trac_xsr.txt
+lrwxrwxrwx 1 ahnac IGN       92 10 fév 23:09 _W300g -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_nc.txt
+lrwxrwxrwx 1 ahnac IGN       98 10 fév 23:09 _W300g_10MeV -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_10MeV_nc.txt
+lrwxrwxrwx 1 ahnac IGN       98 10 fév 23:09 _W300g_20MeV -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_20MeV_nc.txt
+lrwxrwxrwx 1 ahnac IGN       98 10 fév 23:09 _W300g_20MeV_fc -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_20MeV_fc.txt
+lrwxrwxrwx 1 ahnac IGN      101 10 fév 23:09 _W300g_P8_20MeV -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_P8_20MeV_nc.txt
+lrwxrwxrwx 1 ahnac IGN       89 10 fév 23:09 _wat300g -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/matxs_water_300groups.txt
+lrwxrwxrwx 1 ahnac IGN      103 10 fév 23:09 _wat300g_10MeV -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_water_300g_10MeV_nc.txt
+lrwxrwxrwx 1 ahnac IGN      103 10 fév 23:09 _wat300g_20MeV -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_water_300g_20MeV_nc.txt
+lrwxrwxrwx 1 ahnac IGN       88 10 fév 23:09 _water80g -> /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/matxs_water_80groups.txt
+-rw-r--r-- 1 ahnac IGN     3886 10 fév 23:09 watxs3OOG.c2m
+-rw-r--r-- 1 ahnac IGN     4694 10 fév 23:09 wat_xs_80G.c2m
+-rw-r--r-- 1 ahnac IGN     4851 10 fév 23:09 wat_xsr_2G.c2m
+-rw-r--r-- 1 ahnac IGN     3931 10 fév 23:09 watxsr3OOG.c2m
+-rw-r--r-- 1 ahnac IGN     4847 10 fév 23:09 wat_xsr_80G.c2m
+-rw-r--r-- 1 ahnac IGN     3962 10 fév 23:09 W_xs_300G.c2m
+-rw-r--r-- 1 ahnac IGN     7442 10 fév 23:23 W_xs_300G.l2m
+-rw------- 1 ahnac IGN    13696 10 fév 23:23 W_xs_300G.o2m
+-rw-r--r-- 1 ahnac IGN     4676 10 fév 23:09 W_xs_80G.c2m
+-rw-r--r-- 1 ahnac IGN     3528 10 fév 23:09 W_xso_300G.c2m
+-rw-r--r-- 1 ahnac IGN     3908 10 fév 23:09 W_xsr_300G.c2m
+-rw-r--r-- 1 ahnac IGN     7682 10 fév 23:09 W_xsr_300G.l2m
+-rw------- 1 ahnac IGN    15104 10 fév 23:09 W_xsr_300G.o2m
+-rw-r--r-- 1 ahnac IGN     4813 10 fév 23:09 W_xsr_80G.c2m
+the listing is located on ./Linux_x86_64
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'FLUX        ' WAS EXPORTED TO FILE 'flux_xs.txt '.
+-->>module EQU:        : time spent=        2.818 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|EEDIT FLUX SYSTEM MACRO TRACK GEOM := DELETE:                           |<0090
+<|EEDIT FLUX SYSTEM MACRO TRACK GEOM ;                                    |<0091
+<|END: ;                                                                  |<0092
+. ------------------------------------------------------------------------ .
+
+ normal end of execution for dragon 5  Version 5.0.7 ($Revision: 2060 $)               
+ check for warning in listing
+ before assuming your run was successful
