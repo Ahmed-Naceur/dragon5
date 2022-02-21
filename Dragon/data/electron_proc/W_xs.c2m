@@ -1,0 +1,102 @@
+*--------------------------------------------------------------------- 
+*  Electron Source on 1D Slab Geometry (TUNGSTEN)
+*  CEPXS-BFP library
+*  Author: Ahmed Naceur.
+*---------------------------------------------------------------------
+
+* --- Define STRUCTURES and MODULES used
+
+MODULE       GEO: FMAC: MAC: SNT: ASM: FLU: OUT: HEAT: DELETE: UTL: 
+             END: ;
+PROCEDURE    assertS ;
+
+LINKED_LIST  MACRO OLDMACRO GEOM TRACK SYSTEM FLUX DEPOS EEDIT GWT0 
+             GEDIT ;
+
+SEQ_ASCII    FMAC_M :: FILE 
+*'./FMAC_e_W_lobatto_3.00MeV_80g_80e_P8_FC.txt' ;
+*'./FMAC_e_W_lobatto_3.00MeV_0g_80e_P8_NC.txt' ;
+*'./FMAC_e_W_3.00MeV_2g_2e_P2_FC.txt' ;
+*'./FMAC_e_W_lobatto_3.00MeV_2g_2e_P2_FC.txt' ;
+*'./FMAC_e_W_lobatto_3.00MeV_0g_2e_P2_NC.txt' ;
+*'./FMAC_e_W_lobatto_3.00MeV_0g_300e_P2_NC.txt' ;
+*'./FMAC_e_W_lobatto_10.00MeV_0g_300e_P2_NC.txt' ;
+*'./FMAC_e_W_lobatto_20.00MeV_0g_300e_P1_NC.txt' ;
+'./FMAC_e_W_lobatto_15.00MeV_0g_3e_P1_NC.txt' ;
+*'./FMAC_e_W_lobatto_20.00MeV_0g_300e_P8_NC.txt' ;
+
+SEQ_ASCII    edep_xs.txt     :: FILE 'edep_xs.txt' ;
+SEQ_ASCII    edit_xs.txt     :: FILE 'edit_xs.txt' ;
+SEQ_ASCII    macro_xs.txt    :: FILE 'macro_xs.txt' ;
+SEQ_ASCII    flux_xs.txt     :: FILE 'flux_xs.txt' ;
+SEQ_ASCII    syst_xs.txt     :: FILE 'syst_xs.txt' ;
+SEQ_ASCII    geom_xs.txt     :: FILE 'geom_xs.txt' ;
+SEQ_ASCII    track_xs.txt    :: FILE 'track_xs.txt' ;
+
+* --- Geometry 
+GEOM := GEO: :: CAR1D 2
+           X- VOID  X+ VOID
+           MIX  1 2
+           MESHX 0.0 0.3 2.0
+           SPLITX 30 70
+           ;
+
+* --- Tracking           
+TRACK := SNT: GEOM ::
+      TITLE 'TUNGSTEN-Slab: CEPXS-BFP-DRAGON'
+*      EDIT 2 MAXR 1000 SCHM 2 DIAM 1 NLIVO SN 2 SCAT 2 
+      EDIT 2 MAXR 1000 DIAM 1 NLIVO SN 2 SCAT 2 
+      EPSI 1.E-5
+      QUAD 1 MAXI 300 BFPL ;
+
+
+* --- Library access and structuring
+MACRO    := FMAC: FMAC_M :: EDIT 99 PARTICLE B ;
+
+macro_xs.txt  := MACRO ;
+
+END: ; QUIT "LIST" .
+
+OLDMACRO := MACRO ;
+
+MACRO    := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;
+
+OLDMACRO := DELETE: OLDMACRO ;
+
+REAL qsour := 1.E10 2.0 / $Pi_R / ; ! [cm-3 s-1]
+
+MACRO := MAC: MACRO ::
+         READ INPUT
+         MIX 1 FIXE
+         <<qsour>>  0.0 0.0  ;
+
+
+* ---- Electron flux
+
+SYSTEM := ASM: MACRO TRACK :: EDIT 1 ARM ;
+FLUX   := FLU: MACRO TRACK SYSTEM :: 
+               EDIT 1 TYPE S EXTE 100 1.E-5 ;
+
+* --- Recover flux and reaction rates
+
+EEDIT := OUT: FLUX TRACK MACRO GEOM :: EDIT 1 COND INTG NONE ;
+
+ 
+* --- Energy deposition from the e-source
+
+GEDIT := EEDIT ;
+DEPOS := HEAT: EEDIT GEDIT :: EDIT 2 ; 
+
+edep_xs.txt   := DEPOS ;
+edit_xs.txt   := EEDIT ;  
+track_xs.txt  := TRACK ;
+geom_xs.txt   := GEOM ; 
+syst_xs.txt   := SYSTEM ;
+flux_xs.txt   := FLUX  ;
+
+EEDIT FLUX SYSTEM MACRO TRACK GEOM := DELETE: 
+  EEDIT FLUX SYSTEM MACRO TRACK GEOM ; 
+
+END: ; QUIT "LIST" .
+
+

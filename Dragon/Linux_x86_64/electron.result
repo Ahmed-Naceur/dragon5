@@ -4,39 +4,43 @@
 *                                                                          0003
 PROCEDURE wat_xs_80G wat_xsr_80G wat_xsr_2G                                0004
 watxs3OOG watxsr3OOG W_xs_80G W_xsr_80G                                    0005
-W_xs_300G W_xsr_300G W_ele_300G  ;                                         0006
-*---- PROCEDURES LISTING                                                   0007
-*wat_xs_80G ;                                                              0008
-*wat_xsr_80G ;                                                             0009
-*wat_xsr_2G ;                                                              0010
-*watxs3OOG ;                                                               0011
-*watxsr3OOG ;                                                              0012
-*W_ele_300G ;                                                              0013
-W_xsr_300G ;                                                               0014
-W_xs_300G ;                                                                0015
-QUIT "LIST" .                                                              0016
+W_xs_300G W_xsr_300G W_ele_300G                                            0006
+W_xs W_xsr  ;                                                              0007
+*---- PROCEDURES LISTING                                                   0008
+*wat_xs_80G ;                                                              0009
+*wat_xsr_80G ;                                                             0010
+*wat_xsr_2G ;                                                              0011
+*watxs3OOG ;                                                               0012
+*watxsr3OOG ;                                                              0013
+W_ele_300G ;                                                               0014
+*W_xsr_300G ;                                                              0015
+*W_xs_300G ;                                                               0016
+*W_xs ;                                                                    0017
+*W_xsr ;                                                                   0018
+QUIT "LIST" .                                                              0019
  
 <|PROCEDURE wat_xs_80G wat_xsr_80G wat_xsr_2G                             |<0004
 <|watxs3OOG watxsr3OOG W_xs_80G W_xsr_80G                                 |<0005
-<|W_xs_300G W_xsr_300G W_ele_300G  ;                                      |<0006
-<|W_xsr_300G ;                                                            |<0014
+<|W_xs_300G W_xsr_300G W_ele_300G                                         |<0006
+<|W_xs W_xsr  ;                                                           |<0007
+<|W_ele_300G ;                                                            |<0014
 <|MODULE       GEO: LIB: MAC: SNT: ASM: FLU: HEAT: OUT: DELETE:           |<0007
 <|UTL: END: EDI: STAT: ;                                                  |<0008
 <|PROCEDURE    assertS ;                                                  |<0009
 <|LINKED_LIST   MACRO DEPOS MICRO OLDMACRO GEOM TRACK SYSTEM FLUX         |<0010
 <|EEDIT EDITION EEDITcopy DIFFRES ;                                       |<0011
-<|SEQ_ASCII    edep_xsr.txt   :: FILE 'edep_xsr.txt' ;                    |<0012
-<|SEQ_ASCII    edit_xsr.txt   :: FILE 'edit_xsr.txt' ;                    |<0013
-<|SEQ_ASCII    micr_xsr.txt   :: FILE 'micr_xsr.txt' ;                    |<0014
-<|SEQ_ASCII    macr_xsr.txt   :: FILE 'macr_xsr.txt' ;                    |<0015
-<|SEQ_ASCII    flux_xsr.txt   :: FILE 'flux_xsr.txt' ;                    |<0016
-<|SEQ_ASCII    syst_xsr.txt   :: FILE 'syst_xsr.txt' ;                    |<0017
-<|SEQ_ASCII    geom_xsr.txt   :: FILE 'geom_xsr.txt' ;                    |<0018
-<|SEQ_ASCII    trac_xsr.txt   :: FILE 'trac_xsr.txt' ;                    |<0019
+<|SEQ_ASCII    edep_ele.txt   :: FILE 'edep_ele.txt' ;                    |<0012
+<|SEQ_ASCII    edit_ele.txt   :: FILE 'edit_ele.txt' ;                    |<0013
+<|SEQ_ASCII    micr_ele.txt   :: FILE 'micr_ele.txt' ;                    |<0014
+<|SEQ_ASCII    macr_ele.txt   :: FILE 'macr_ele.txt' ;                    |<0015
+<|SEQ_ASCII    flux_ele.txt   :: FILE 'flux_ele.txt' ;                    |<0016
+<|SEQ_ASCII    syst_ele.txt   :: FILE 'syst_ele.txt' ;                    |<0017
+<|SEQ_ASCII    geom_ele.txt   :: FILE 'geom_ele.txt' ;                    |<0018
+<|SEQ_ASCII    trac_ele.txt   :: FILE 'trac_ele.txt' ;                    |<0019
 <|GEOM := GEO: :: CAR1D 2                                                 |<0021
 <|X- VOID  X+ VOID                                                        |<0022
 <|MIX  1 2                                                                |<0023
-<|MESHX 0.0 0.3 2.0                                                       |<0024
+<|MESHX 0.0 0.01 2.0                                                      |<0024
 <|SPLITX 30 70                                                            |<0025
 <|;                                                                       |<0026
  DDDDDD   RRRRRR     AAA     GGGGG    OOOOO   NN     NN
@@ -77,7 +81,7 @@ QUIT "LIST" .                                                              0016
 -->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
 <|TRACK := SNT: GEOM ::                                                   |<0028
 <|TITLE 'Water-Slab:Cepxsr-Dragon'                                        |<0029
-<|EDIT 0 MAXR 1000 SCHM 2 DIAM 1 NLIVO SN 2 SCAT 2                        |<0030
+<|EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2                              |<0030
 <|EPSI 1.E-5 QUAD 1 MAXI 300 BFPL ;                                       |<0031
 ->@BEGIN MODULE : SNT:        
 ->@DESCRIPTION  : Discrete ordinates tracking                                             
@@ -89,8 +93,8 @@ QUIT "LIST" .                                                              0016
 <|MICRO  := LIB: ::                                                       |<0033
 <|EDIT 2                                                                  |<0034
 <|NMIX 1                                                                  |<0035
-<|ANIS 2                                                                  |<0036
-<|MIXS LIB: MATXS2 FIL: _W300g_20MeV                                      |<0037
+<|ANIS 3                                                                  |<0036
+<|MIXS LIB: MATXS2 FIL: _electr                                           |<0037
 <|MIX  1  300.0  1.0 NOGAS                                                |<0038
 <|Wnat = w 1.0                                                            |<0039
 <|;                                                                       |<0040
@@ -104,7 +108,7 @@ QUIT "LIST" .                                                              0016
  -----  ------------  ------------  ------------  ----  ----------  ----------  ---------  --------  ----------  ------------------
      1  Wnat    0001  w             MATXS2     1     1  1.0000E+00  1.0000E+00  3.000E+02  1.00E+10   0             0                         
 
- PROCESSING MATXS2 LIBRARY NAMED _W300g_2.
+ PROCESSING MATXS2 LIBRARY NAMED _electr .
 
  MATXS2 FILE ID:   matxs W-20MeV-300Group VERS  1
  test                                                                    
@@ -123,7 +127,7 @@ QUIT "LIST" .                                                              0016
  NCOMB      0   (NUMBER OF DEPLETING MIXTURES)
  NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
  NGRO     300   (NUMBER OF ENERGY GROUPS)
- NL         2   (NUMBER OF LEGENDRE ORDERS)
+ NL         3   (NUMBER OF LEGENDRE ORDERS)
  ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/3=WIMS-D TYPE/4=LEAKAGE CORRECTION)
  NBESP      0   (NUMBER OF ENERGY-DEPENDENT FISSION SPECTRA)
  IPROC      0   (-1=SKIP LIBRARY PROCESSING/0=DILUTION INTERPOLATION/1=USE PHYSICAL TABLES/2=BUILD A DRAGLIB/3=COMPUTE CALENDF TABLES/4=SLOWING-DOWN TABLES/5=ALL CALENDF)
@@ -146,7 +150,7 @@ QUIT "LIST" .                                                              0016
   16  CSTR  
 
  AVAILABLE CROSS-SECTION LIBRARIES:
-    1 -- _W300g_20MeV                                                    
+    1 -- _electr                                                         
 
                                                         NUMBER
  SPEC   LOCAL NAME    ISOTOPE       FROM LIBRARY  MIX   DENSITY     TEMP(K)    SIGZERO    SELF-SHIEL  THERMAL CORRECTION
@@ -454,7 +458,7 @@ QUIT "LIST" .                                                              0016
  DENISO=   3.27556673E-03
  DENISO=   3.27556673E-03
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.198 MEMORY USAGE= 3.004E+03
+-->>MODULE LIB:        : TIME SPENT=        0.081 MEMORY USAGE= 3.016E+03
 <|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0042
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
@@ -463,168 +467,31 @@ QUIT "LIST" .                                                              0016
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: STEP UP TO LEVEL 'MACROLIB    '.
--->>module EQU:        : time spent=        0.002 memory usage= 1.848E+03
+-->>module EQU:        : time spent=        0.002 memory usage= 1.584E+03
 ->@END MODULE   : EQU:        
-<|micr_xsr.txt   := MICRO ;                                               |<0043
+<|micr_ele.txt   := MICRO ;                                               |<0043
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 
- DRVEQU: A LCM OBJECT NAMED 'MICRO       ' WAS EXPORTED TO FILE 'micr_xsr.txt'.
--->>module EQU:        : time spent=        0.128 memory usage= 2.120E+02
+ DRVEQU: A LCM OBJECT NAMED 'MICRO       ' WAS EXPORTED TO FILE 'micr_ele.txt'.
+-->>module EQU:        : time spent=        0.105 memory usage= 3.200E+02
 ->@END MODULE   : EQU:        
-<|macr_xsr.txt   := MACRO ;                                               |<0044
+<|macr_ele.txt   := MACRO ;                                               |<0044
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 
- DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macr_xsr.txt'.
--->>module EQU:        : time spent=        0.060 memory usage= 0.000E+00
+ DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macr_ele.txt'.
+-->>module EQU:        : time spent=        0.058 memory usage= 4.000E+00
 ->@END MODULE   : EQU:        
-<|OLDMACRO := MACRO ;                                                     |<0046
-->@BEGIN MODULE : EQU:        
-->@DESCRIPTION  : No description available for this module                                
-->@CREDITS      : No author provided for this module                                      
-->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
-                  GNU LESSER GENERAL PUBLIC LICENSE
--->>module EQU:        : time spent=        0.002 memory usage= 1.580E+03
-->@END MODULE   : EQU:        
-<|MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;                          |<0047
-->@BEGIN MODULE : MAC:        
-->@DESCRIPTION  : Macroscopic xs processor                                                
-->@CREDITS      : G. Marleau                                                              
-->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
-                  GNU LESSER GENERAL PUBLIC LICENSE
+<|END: ;                                                                  |<0045
+. ------------------------------------------------------------------------ .
 
- OPTIONS
- -------
- IPRINT     1   (0=NO PRINT/1=SHORT/2=MORE)
- NGROUP   300   (NUMBER OF ENERGY GROUPS)
- NBMIX      2   (NUMBER OF MIXTURES IN THE MACROLIB)
- NANISO     2   (MAXIMUM SCATTERING ANISOTROPY)
- NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
- NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
- ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
- NLG        0   (NUMBER OF DELAYED PRECURSOR GROUPS)
- NALB       0   (NUMBER OF PHYSICAL ALBEDOS)
- ILEAK      0   (1=DIFF AVAILABLE; 2=DIFFX AVAILABLE)
- NSTEP      0   (NUMBER OF PERTURBATION DIRECTORIES)
- IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
- NPART0     0   (NUMBER OF COMPANION PARTICLES)
-->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.017 MEMORY USAGE= 7.920E+02
-<|OLDMACRO := DELETE: OLDMACRO ;                                          |<0048
-<|MACRO := MAC: MACRO ::                                                  |<0051
-<|READ INPUT                                                              |<0052
-<|MIX 1 FIXE                                                              |<0053
-<|<<qsour>>  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0              |<0055
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0056
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0057
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0058
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0059
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0060
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0061
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0062
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0063
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0064
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0065
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0066
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0067
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0068
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0069
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0070
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0071
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0072
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0073
-<|0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0             |<0074
-<|0.0 0.0 ;                                                               |<0075
-->@BEGIN MODULE : MAC:        
-->@DESCRIPTION  : Macroscopic xs processor                                                
-->@CREDITS      : G. Marleau                                                              
-->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
-                  GNU LESSER GENERAL PUBLIC LICENSE
- CROSS SECTION TYPE     NTOT0      NUSIGF     FIXE       CHI        SCAT (NL=  1,  2)        TRANC      DIFF       H-FACTOR   NFTOT      FLUX-INTG  FLUX-INTG-P1
- MATERIAL     1                               READ                                                                                                        
- MATERIAL     2                                                                                                                                           
-
- OPTIONS
- -------
- IPRINT     1   (0=NO PRINT/1=SHORT/2=MORE)
- NGROUP   300   (NUMBER OF ENERGY GROUPS)
- NBMIX      2   (NUMBER OF MIXTURES IN THE MACROLIB)
- NANISO     2   (MAXIMUM SCATTERING ANISOTROPY)
- NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
- NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
- ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
- NLG        0   (NUMBER OF DELAYED PRECURSOR GROUPS)
- NALB       0   (NUMBER OF PHYSICAL ALBEDOS)
- ILEAK      0   (1=DIFF AVAILABLE; 2=DIFFX AVAILABLE)
- NSTEP      0   (NUMBER OF PERTURBATION DIRECTORIES)
- IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
- NPART0     0   (NUMBER OF COMPANION PARTICLES)
-->@END MODULE   : MAC:        
--->>MODULE MAC:        : TIME SPENT=        0.003 MEMORY USAGE= 0.000E+00
-<|SYSTEM := ASM: MACRO TRACK :: EDIT 1 ARM ;                              |<0077
-->@BEGIN MODULE : ASM:        
-->@DESCRIPTION  : To built system matrices (CP and IC)                                    
-->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
-->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
-                  GNU LESSER GENERAL PUBLIC LICENSE
-
-
- COMPUTATION OF DRAGON RESPONSE MATRICES BY DOOR =   SN          
-
- OPTIONS
- -------
- IMPX         1   (0=NO PRINT/1=SHORT/2=MORE)
- ITPIJ        1   (1=WIJ/2=PIJ/3=WIJK/4=PIJK)
- LNORM        1   (0=NORMALIZE PIJ TO 1/1=DO NOT)
- LALBS        1   (0=RECOVER AND SAVE WIS/1=DO NOT)
- IPHASE       1   (1=GENERAL FLUX SOLUTION/2=PIJ APPROACH)
- ISTRM        1   (1=HOMO BN OR NO LEAKAGE/2=ECCO/3=TIBERE)
- KNORM        4   (0=NO/1=GELBARD/2=DIAGONAL/3=NON-LINEAR/4=HELIOS)
- NGRP       300   (NUMBER OF GROUPS)
- NUN        800   (NUMBER OF UNKNOWNS)
- NBMIX        2   (NUMBER OF MIXTURES)
- NANI         2   (NUMBER OF LEGENDRE ORDERS SCATTERING XS)
- IDIFF        0   (0/1: DIFFUSION COEFFICIENTS ABSENT/PRESENT)
- IBFP         2   (0/1/2: FOKKER-PLANCK SOLUTION OFF/ON/ON)
- DOOR             (SN          )
-->@END MODULE   : ASM:        
--->>MODULE ASM:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
-<|FLUX  := FLU: MACRO TRACK SYSTEM ::                                     |<0078
-<|EDIT 1 TYPE S EXTE 100 1.E-5 ;                                          |<0079
-->@BEGIN MODULE : FLU:        
-->@DESCRIPTION  : Solve the flux equations                                                
-->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
-->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
-                  GNU LESSER GENERAL PUBLIC LICENSE
-
-
-
-
- P. I. M.    SOLUTION TO TRANSPORT EQUATION
-
- CALCULATION TYPE            =    SOURCE
- FORWARD/BACKWARD OPTION     =    DIRECT
- (AN)ISOTROPY OPTION         =ANISOTROPI
- FLUX SOLUTION DOOR          =    SN    
- NB. OF GROUPS               =       300
- NB. OF REGIONS              =       100
- NB. OF UNKNOWNS PER GROUP   =       800
- MAX. OUTER ITERATIONS       =       100
- MAX. THERMAL ITERATIONS     =       600
- ACCELERATION SCHEME         =( 3 FREE, 3 ACCELERATED)
- REBALANCING OPTION          = ON 
- SELF-SCATTERING REDUCTION   = ON 
- FUNDAMENTAL MODE            = OFF
- EIGENVALUE TOLERANCE        =  1.000E-05
- UNKNOWN OUTER TOLERANCE     =  5.000E-05
- UNKNOWN INNER TOLERANCE     =  5.000E-05
-
- OUT(  0) EIG: PRC= 1.00E+00 TAR= 1.00E-05 KEFF= 1.000000E+00 BUCK= 0.00000E+00
-SNFP1P: DISCONTINUOUS GALERKIN NOT IMPLEMENTED.
+ normal end of execution for dragon 5  Version 5.0.7 ($Revision: 2060 $)               
+ check for warning in listing
+ before assuming your run was successful

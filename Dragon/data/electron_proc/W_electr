@@ -43,10 +43,16 @@ ln -s /home/ahnac/Compiler/evaluations/ENDF-B-VIII.0/electrons/e-074_W_000.endf 
 ln -s /home/ahnac/Compiler/evaluations/ENDF-B-VIII.0/atomic_relax/atom-074_W_000.endf tape39
 
 echo "--------------------------------------------------";
-echo "       2- Access STOPPING POWER data              ";
+echo "       2.1 - Access STOPPING POWER data              ";
 echo "--------------------------------------------------";
 
 ln -s /home/ahnac/Compiler/Njoy2012_EPM_cepxsr/STPOWER_TAPE9_1984.txt tape38
+
+echo "--------------------------------------------------";
+echo "      2.2 - Access temporary ebc and bcorm data   ";
+echo "--------------------------------------------------";
+
+ln -s /home/ahnac/Compiler/Njoy2012_EPM_cepxsr/TAPE9 tape40
 
 echo "--------------------------------------------------";
 echo "       3- NJOY is operating                       ";
@@ -66,8 +72,8 @@ reconr
 'tungsten'/
 0/
 electr
-30 31 38 39 0 33
-7400 1 0 2 2 1
+30 31 38 39 0 33 40
+7400 1 0 2 1 1
 $Title/
 300 / # of groups boundaries
 1.0000000547034879e+03
