@@ -4,8 +4,8 @@
  *   $$$  $$       $$  $$$$$$$   $$  $$    *  nuclear     *  vday: 01may21   *
  *   $$$$ $$       $$  $$   $$    $$$$     *  data        *  site: poly mtl  *
  *   $$ $$$$  $$   $$  $$   $$     $$      *  processing  *  mach: linux     *
- *   $$  $$$  $$$$$$$  $$$$$$$     $$      *  system      *  date: 02/20/22  *
- *   $$   $$   $$$$$    $$$$$      $$      *              *  time: 00:42:05  *
+ *   $$  $$$  $$$$$$$  $$$$$$$     $$      *  system      *  date: 02/21/22  *
+ *   $$   $$   $$$$$    $$$$$      $$      *              *  time: 16:35:47  *
  *                                         *              *                  *
  *****************************************************************************
 
@@ -385,610 +385,610 @@
  group constants                                                          4.5s
  for mf23 and mt507 estc                                                        
  stopping power(    1)=  1.11484E+04
- stopping power(    2)=  5.34120E+03
- stopping power(    3)=  1.37762E+03
- stopping power(    4)=  1.46520E+03
- stopping power(    5)=  1.54141E+03
- stopping power(    6)=  1.62490E+03
- stopping power(    7)=  1.69247E+03
- stopping power(    8)=  1.76026E+03
- stopping power(    9)=  1.82496E+03
- stopping power(   10)=  1.87487E+03
- stopping power(   11)=  1.93555E+03
- stopping power(   12)=  1.98366E+03
- stopping power(   13)=  2.02640E+03
- stopping power(   14)=  2.07272E+03
- stopping power(   15)=  2.10624E+03
- stopping power(   16)=  2.14404E+03
- stopping power(   17)=  2.17665E+03
- stopping power(   18)=  2.19943E+03
- stopping power(   19)=  2.23111E+03
- stopping power(   20)=  2.25167E+03
- stopping power(   21)=  2.27126E+03
- stopping power(   22)=  2.29162E+03
- stopping power(   23)=  2.30162E+03
- stopping power(   24)=  2.31873E+03
- stopping power(   25)=  2.32916E+03
- stopping power(   26)=  2.33440E+03
- stopping power(   27)=  2.34515E+03
- stopping power(   28)=  2.34692E+03
- stopping power(   29)=  2.35090E+03
- stopping power(   30)=  2.35350E+03
- stopping power(   31)=  2.34772E+03
- stopping power(   32)=  2.35088E+03
- stopping power(   33)=  2.34638E+03
- stopping power(   34)=  2.34015E+03
- stopping power(   35)=  2.33678E+03
- stopping power(   36)=  2.32613E+03
- stopping power(   37)=  2.31993E+03
- stopping power(   38)=  2.31077E+03
- stopping power(   39)=  2.29672E+03
- stopping power(   40)=  2.28890E+03
- stopping power(   41)=  2.27473E+03
- stopping power(   42)=  2.26136E+03
- stopping power(   43)=  2.24882E+03
- stopping power(   44)=  2.23036E+03
- stopping power(   45)=  2.21785E+03
- stopping power(   46)=  2.20126E+03
- stopping power(   47)=  2.18252E+03
- stopping power(   48)=  2.16764E+03
- stopping power(   49)=  2.14759E+03
- stopping power(   50)=  2.13013E+03
- stopping power(   51)=  2.11198E+03
- stopping power(   52)=  2.08933E+03
- stopping power(   53)=  2.07292E+03
- stopping power(   54)=  2.05200E+03
- stopping power(   55)=  2.03094E+03
- stopping power(   56)=  2.01192E+03
- stopping power(   57)=  1.98867E+03
- stopping power(   58)=  1.96925E+03
- stopping power(   59)=  1.94802E+03
- stopping power(   60)=  1.92445E+03
- stopping power(   61)=  1.90507E+03
- stopping power(   62)=  1.88200E+03
- stopping power(   63)=  1.86025E+03
- stopping power(   64)=  1.83913E+03
- stopping power(   65)=  1.81455E+03
- stopping power(   66)=  1.79461E+03
- stopping power(   67)=  1.77206E+03
- stopping power(   68)=  1.74879E+03
- stopping power(   69)=  1.72810E+03
- stopping power(   70)=  1.70439E+03
- stopping power(   71)=  1.68301E+03
- stopping power(   72)=  1.66122E+03
- stopping power(   73)=  1.63704E+03
- stopping power(   74)=  1.61635E+03
- stopping power(   75)=  1.59299E+03
- stopping power(   76)=  1.56987E+03
- stopping power(   77)=  1.54783E+03
- stopping power(   78)=  1.52326E+03
- stopping power(   79)=  1.50146E+03
- stopping power(   80)=  1.47839E+03
- stopping power(   81)=  1.45419E+03
- stopping power(   82)=  1.43261E+03
- stopping power(   83)=  1.40879E+03
- stopping power(   84)=  1.38623E+03
- stopping power(   85)=  1.36402E+03
- stopping power(   86)=  1.33969E+03
- stopping power(   87)=  1.31886E+03
- stopping power(   88)=  1.29624E+03
- stopping power(   89)=  1.27355E+03
- stopping power(   90)=  1.25258E+03
- stopping power(   91)=  1.22975E+03
- stopping power(   92)=  1.20891E+03
- stopping power(   93)=  1.18779E+03
- stopping power(   94)=  1.16543E+03
- stopping power(   95)=  1.14594E+03
- stopping power(   96)=  1.12480E+03
- stopping power(   97)=  1.10437E+03
- stopping power(   98)=  1.08490E+03
- stopping power(   99)=  1.06388E+03
- stopping power(  100)=  1.04534E+03
- stopping power(  101)=  1.02600E+03
- stopping power(  102)=  1.00628E+03
- stopping power(  103)=  9.88518E+02
- stopping power(  104)=  9.69401E+02
- stopping power(  105)=  9.51556E+02
- stopping power(  106)=  9.34022E+02
- stopping power(  107)=  9.15228E+02
- stopping power(  108)=  8.99176E+02
- stopping power(  109)=  8.81943E+02
- stopping power(  110)=  8.64969E+02
- stopping power(  111)=  8.49208E+02
- stopping power(  112)=  8.32335E+02
- stopping power(  113)=  8.17102E+02
- stopping power(  114)=  8.01685E+02
- stopping power(  115)=  7.85709E+02
- stopping power(  116)=  7.71647E+02
- stopping power(  117)=  7.56618E+02
- stopping power(  118)=  7.42297E+02
- stopping power(  119)=  7.28600E+02
- stopping power(  120)=  7.13996E+02
- stopping power(  121)=  7.01240E+02
- stopping power(  122)=  6.87941E+02
- stopping power(  123)=  6.74600E+02
- stopping power(  124)=  6.62510E+02
- stopping power(  125)=  6.49636E+02
- stopping power(  126)=  6.37760E+02
- stopping power(  127)=  6.26065E+02
- stopping power(  128)=  6.13740E+02
- stopping power(  129)=  6.03135E+02
- stopping power(  130)=  5.91853E+02
- stopping power(  131)=  5.80891E+02
- stopping power(  132)=  5.70668E+02
- stopping power(  133)=  5.59812E+02
- stopping power(  134)=  5.50125E+02
- stopping power(  135)=  5.40298E+02
- stopping power(  136)=  5.30259E+02
- stopping power(  137)=  5.21380E+02
- stopping power(  138)=  5.11956E+02
- stopping power(  139)=  5.03092E+02
- stopping power(  140)=  4.94586E+02
- stopping power(  141)=  4.85572E+02
- stopping power(  142)=  4.77801E+02
- stopping power(  143)=  4.69673E+02
- stopping power(  144)=  4.61627E+02
- stopping power(  145)=  4.54315E+02
- stopping power(  146)=  4.46569E+02
- stopping power(  147)=  4.39523E+02
- stopping power(  148)=  4.32563E+02
- stopping power(  149)=  4.25319E+02
- stopping power(  150)=  4.19081E+02
- stopping power(  151)=  4.12473E+02
- stopping power(  152)=  4.06142E+02
- stopping power(  153)=  4.00230E+02
- stopping power(  154)=  3.93975E+02
- stopping power(  155)=  3.88489E+02
- stopping power(  156)=  3.82902E+02
- stopping power(  157)=  3.77266E+02
- stopping power(  158)=  3.72291E+02
- stopping power(  159)=  3.67028E+02
- stopping power(  160)=  3.62160E+02
- stopping power(  161)=  3.57484E+02
- stopping power(  162)=  3.52542E+02
- stopping power(  163)=  3.48382E+02
- stopping power(  164)=  3.44004E+02
- stopping power(  165)=  3.39734E+02
- stopping power(  166)=  3.35873E+02
- stopping power(  167)=  3.31788E+02
- stopping power(  168)=  3.28160E+02
- stopping power(  169)=  3.24571E+02
- stopping power(  170)=  3.20877E+02
- stopping power(  171)=  3.17740E+02
- stopping power(  172)=  3.14419E+02
- stopping power(  173)=  3.11305E+02
- stopping power(  174)=  3.08417E+02
- stopping power(  175)=  3.05362E+02
- stopping power(  176)=  3.02781E+02
- stopping power(  177)=  3.00140E+02
- stopping power(  178)=  2.97519E+02
- stopping power(  179)=  2.95256E+02
- stopping power(  180)=  2.92857E+02
- stopping power(  181)=  2.90716E+02
- stopping power(  182)=  2.88678E+02
- stopping power(  183)=  2.86528E+02
- stopping power(  184)=  2.84818E+02
- stopping power(  185)=  2.83002E+02
- stopping power(  186)=  2.81283E+02
- stopping power(  187)=  2.79779E+02
- stopping power(  188)=  2.78181E+02
- stopping power(  189)=  2.76857E+02
- stopping power(  190)=  2.75556E+02
- stopping power(  191)=  2.74239E+02
- stopping power(  192)=  2.73207E+02
- stopping power(  193)=  2.72105E+02
- stopping power(  194)=  2.71140E+02
- stopping power(  195)=  2.70294E+02
- stopping power(  196)=  2.69387E+02
- stopping power(  197)=  2.68742E+02
- stopping power(  198)=  2.68076E+02
- stopping power(  199)=  2.67453E+02
- stopping power(  200)=  2.67005E+02
- stopping power(  201)=  2.66517E+02
- stopping power(  202)=  2.66176E+02
- stopping power(  203)=  2.65892E+02
- stopping power(  204)=  2.65591E+02
- stopping power(  205)=  2.65491E+02
- stopping power(  206)=  2.65368E+02
- stopping power(  207)=  2.65314E+02
- stopping power(  208)=  2.65363E+02
- stopping power(  209)=  2.65396E+02
- stopping power(  210)=  2.65564E+02
- stopping power(  211)=  2.65758E+02
- stopping power(  212)=  2.65973E+02
- stopping power(  213)=  2.66308E+02
- stopping power(  214)=  2.66642E+02
- stopping power(  215)=  2.67048E+02
- stopping power(  216)=  2.67513E+02
- stopping power(  217)=  2.67982E+02
- stopping power(  218)=  2.68557E+02
- stopping power(  219)=  2.69147E+02
- stopping power(  220)=  2.69775E+02
- stopping power(  221)=  2.70470E+02
- stopping power(  222)=  2.71181E+02
- stopping power(  223)=  2.71951E+02
- stopping power(  224)=  2.72758E+02
- stopping power(  225)=  2.73589E+02
- stopping power(  226)=  2.74478E+02
- stopping power(  227)=  2.75391E+02
- stopping power(  228)=  2.76340E+02
- stopping power(  229)=  2.77327E+02
- stopping power(  230)=  2.78344E+02
- stopping power(  231)=  2.79393E+02
- stopping power(  232)=  2.80474E+02
- stopping power(  233)=  2.81586E+02
- stopping power(  234)=  2.82722E+02
- stopping power(  235)=  2.83894E+02
- stopping power(  236)=  2.85086E+02
- stopping power(  237)=  2.86305E+02
- stopping power(  238)=  2.87564E+02
- stopping power(  239)=  2.88821E+02
- stopping power(  240)=  2.90119E+02
- stopping power(  241)=  2.91440E+02
- stopping power(  242)=  2.92769E+02
- stopping power(  243)=  2.94143E+02
- stopping power(  244)=  2.95513E+02
- stopping power(  245)=  2.96912E+02
- stopping power(  246)=  2.98349E+02
- stopping power(  247)=  2.99766E+02
- stopping power(  248)=  3.01232E+02
- stopping power(  249)=  3.02703E+02
- stopping power(  250)=  3.04181E+02
- stopping power(  251)=  3.05711E+02
- stopping power(  252)=  3.07207E+02
- stopping power(  253)=  3.08744E+02
- stopping power(  254)=  3.10306E+02
- stopping power(  255)=  3.11846E+02
- stopping power(  256)=  3.13439E+02
- stopping power(  257)=  3.15015E+02
- stopping power(  258)=  3.16606E+02
- stopping power(  259)=  3.18249E+02
- stopping power(  260)=  3.19835E+02
- stopping power(  261)=  3.21476E+02
- stopping power(  262)=  3.23124E+02
- stopping power(  263)=  3.24756E+02
- stopping power(  264)=  3.26445E+02
- stopping power(  265)=  3.28091E+02
- stopping power(  266)=  3.29768E+02
- stopping power(  267)=  3.31480E+02
- stopping power(  268)=  3.33141E+02
- stopping power(  269)=  3.34861E+02
- stopping power(  270)=  3.36565E+02
- stopping power(  271)=  3.38266E+02
- stopping power(  272)=  3.40027E+02
- stopping power(  273)=  3.41718E+02
- stopping power(  274)=  3.43458E+02
- stopping power(  275)=  3.45215E+02
- stopping power(  276)=  3.46933E+02
- stopping power(  277)=  3.48711E+02
- stopping power(  278)=  3.50450E+02
- stopping power(  279)=  3.52204E+02
- stopping power(  280)=  3.54008E+02
- stopping power(  281)=  3.55736E+02
- stopping power(  282)=  3.57525E+02
- stopping power(  283)=  3.59308E+02
- stopping power(  284)=  3.61069E+02
- stopping power(  285)=  3.62891E+02
- stopping power(  286)=  3.64650E+02
- stopping power(  287)=  3.66444E+02
- stopping power(  288)=  3.68267E+02
- stopping power(  289)=  3.70031E+02
- stopping power(  290)=  3.71856E+02
- stopping power(  291)=  3.73654E+02
- stopping power(  292)=  3.75448E+02
- stopping power(  293)=  3.77304E+02
- stopping power(  294)=  3.79073E+02
- stopping power(  295)=  3.80897E+02
- stopping power(  296)=  3.82730E+02
- stopping power(  297)=  3.84522E+02
- stopping power(  298)=  3.86375E+02
- stopping power(  299)=  3.88178E+02
- stopping power(  300)=  3.89998E+02
- stopping power(  301)=  3.91865E+02
+ stopping power(    2)=  1.09172E+04
+ stopping power(    3)=  1.07037E+04
+ stopping power(    4)=  1.04888E+04
+ stopping power(    5)=  1.02725E+04
+ stopping power(    6)=  1.00730E+04
+ stopping power(    7)=  9.86669E+03
+ stopping power(    8)=  9.66956E+03
+ stopping power(    9)=  9.47795E+03
+ stopping power(   10)=  9.27989E+03
+ stopping power(   11)=  9.10067E+03
+ stopping power(   12)=  8.91668E+03
+ stopping power(   13)=  8.73486E+03
+ stopping power(   14)=  8.56394E+03
+ stopping power(   15)=  8.38727E+03
+ stopping power(   16)=  8.22173E+03
+ stopping power(   17)=  8.05761E+03
+ stopping power(   18)=  7.89005E+03
+ stopping power(   19)=  7.73758E+03
+ stopping power(   20)=  7.57999E+03
+ stopping power(   21)=  7.42723E+03
+ stopping power(   22)=  7.28083E+03
+ stopping power(   23)=  7.12951E+03
+ stopping power(   24)=  6.99054E+03
+ stopping power(   25)=  6.84996E+03
+ stopping power(   26)=  6.70912E+03
+ stopping power(   27)=  6.57853E+03
+ stopping power(   28)=  6.44355E+03
+ stopping power(   29)=  6.31523E+03
+ stopping power(   30)=  6.18984E+03
+ stopping power(   31)=  6.06023E+03
+ stopping power(   32)=  5.94359E+03
+ stopping power(   33)=  5.82319E+03
+ stopping power(   34)=  5.70483E+03
+ stopping power(   35)=  5.59297E+03
+ stopping power(   36)=  5.47736E+03
+ stopping power(   37)=  5.36962E+03
+ stopping power(   38)=  5.26221E+03
+ stopping power(   39)=  5.15312E+03
+ stopping power(   40)=  5.05334E+03
+ stopping power(   41)=  4.95022E+03
+ stopping power(   42)=  4.85077E+03
+ stopping power(   43)=  4.75497E+03
+ stopping power(   44)=  4.65595E+03
+ stopping power(   45)=  4.56550E+03
+ stopping power(   46)=  4.47351E+03
+ stopping power(   47)=  4.38181E+03
+ stopping power(   48)=  4.29635E+03
+ stopping power(   49)=  4.20802E+03
+ stopping power(   50)=  4.12450E+03
+ stopping power(   51)=  4.04244E+03
+ stopping power(   52)=  3.95795E+03
+ stopping power(   53)=  3.88172E+03
+ stopping power(   54)=  3.80293E+03
+ stopping power(   55)=  3.72588E+03
+ stopping power(   56)=  3.65268E+03
+ stopping power(   57)=  3.57702E+03
+ stopping power(   58)=  3.50689E+03
+ stopping power(   59)=  3.43661E+03
+ stopping power(   60)=  3.36558E+03
+ stopping power(   61)=  3.30029E+03
+ stopping power(   62)=  3.23280E+03
+ stopping power(   63)=  3.16807E+03
+ stopping power(   64)=  3.10537E+03
+ stopping power(   65)=  3.04057E+03
+ stopping power(   66)=  2.98171E+03
+ stopping power(   67)=  2.92151E+03
+ stopping power(   68)=  2.86181E+03
+ stopping power(   69)=  2.80589E+03
+ stopping power(   70)=  2.74808E+03
+ stopping power(   71)=  2.69372E+03
+ stopping power(   72)=  2.64002E+03
+ stopping power(   73)=  2.58497E+03
+ stopping power(   74)=  2.53441E+03
+ stopping power(   75)=  2.48215E+03
+ stopping power(   76)=  2.43108E+03
+ stopping power(   77)=  2.38200E+03
+ stopping power(   78)=  2.33126E+03
+ stopping power(   79)=  2.28415E+03
+ stopping power(   80)=  2.23658E+03
+ stopping power(   81)=  2.18870E+03
+ stopping power(   82)=  2.14420E+03
+ stopping power(   83)=  2.09820E+03
+ stopping power(   84)=  2.05419E+03
+ stopping power(   85)=  2.01123E+03
+ stopping power(   86)=  1.96682E+03
+ stopping power(   87)=  1.92656E+03
+ stopping power(   88)=  1.88516E+03
+ stopping power(   89)=  1.84428E+03
+ stopping power(   90)=  1.80573E+03
+ stopping power(   91)=  1.76588E+03
+ stopping power(   92)=  1.72858E+03
+ stopping power(   93)=  1.69154E+03
+ stopping power(   94)=  1.65378E+03
+ stopping power(   95)=  1.61938E+03
+ stopping power(   96)=  1.58383E+03
+ stopping power(   97)=  1.54945E+03
+ stopping power(   98)=  1.51648E+03
+ stopping power(   99)=  1.48241E+03
+ stopping power(  100)=  1.45125E+03
+ stopping power(  101)=  1.41969E+03
+ stopping power(  102)=  1.38816E+03
+ stopping power(  103)=  1.35896E+03
+ stopping power(  104)=  1.32879E+03
+ stopping power(  105)=  1.30025E+03
+ stopping power(  106)=  1.27237E+03
+ stopping power(  107)=  1.24357E+03
+ stopping power(  108)=  1.21783E+03
+ stopping power(  109)=  1.19123E+03
+ stopping power(  110)=  1.16520E+03
+ stopping power(  111)=  1.14068E+03
+ stopping power(  112)=  1.11533E+03
+ stopping power(  113)=  1.09190E+03
+ stopping power(  114)=  1.06855E+03
+ stopping power(  115)=  1.04491E+03
+ stopping power(  116)=  1.02343E+03
+ stopping power(  117)=  1.00122E+03
+ stopping power(  118)=  9.79961E+02
+ stopping power(  119)=  9.59552E+02
+ stopping power(  120)=  9.38457E+02
+ stopping power(  121)=  9.19423E+02
+ stopping power(  122)=  9.00053E+02
+ stopping power(  123)=  8.80840E+02
+ stopping power(  124)=  8.63072E+02
+ stopping power(  125)=  8.44706E+02
+ stopping power(  126)=  8.27521E+02
+ stopping power(  127)=  8.10692E+02
+ stopping power(  128)=  7.93402E+02
+ stopping power(  129)=  7.77996E+02
+ stopping power(  130)=  7.62073E+02
+ stopping power(  131)=  7.46623E+02
+ stopping power(  132)=  7.32063E+02
+ stopping power(  133)=  7.17013E+02
+ stopping power(  134)=  7.03271E+02
+ stopping power(  135)=  6.89524E+02
+ stopping power(  136)=  6.75697E+02
+ stopping power(  137)=  6.63156E+02
+ stopping power(  138)=  6.50193E+02
+ stopping power(  139)=  6.37908E+02
+ stopping power(  140)=  6.26097E+02
+ stopping power(  141)=  6.13889E+02
+ stopping power(  142)=  6.03032E+02
+ stopping power(  143)=  5.91922E+02
+ stopping power(  144)=  5.80995E+02
+ stopping power(  145)=  5.70900E+02
+ stopping power(  146)=  5.60466E+02
+ stopping power(  147)=  5.50824E+02
+ stopping power(  148)=  5.41357E+02
+ stopping power(  149)=  5.31692E+02
+ stopping power(  150)=  5.23116E+02
+ stopping power(  151)=  5.14252E+02
+ stopping power(  152)=  5.05743E+02
+ stopping power(  153)=  4.97728E+02
+ stopping power(  154)=  4.89443E+02
+ stopping power(  155)=  4.82000E+02
+ stopping power(  156)=  4.74524E+02
+ stopping power(  157)=  4.67066E+02
+ stopping power(  158)=  4.60334E+02
+ stopping power(  159)=  4.53376E+02
+ stopping power(  160)=  4.46875E+02
+ stopping power(  161)=  4.40625E+02
+ stopping power(  162)=  4.34165E+02
+ stopping power(  163)=  4.28543E+02
+ stopping power(  164)=  4.22757E+02
+ stopping power(  165)=  4.17131E+02
+ stopping power(  166)=  4.11963E+02
+ stopping power(  167)=  4.06622E+02
+ stopping power(  168)=  4.01784E+02
+ stopping power(  169)=  3.97031E+02
+ stopping power(  170)=  3.92218E+02
+ stopping power(  171)=  3.88005E+02
+ stopping power(  172)=  3.83651E+02
+ stopping power(  173)=  3.79543E+02
+ stopping power(  174)=  3.75702E+02
+ stopping power(  175)=  3.71731E+02
+ stopping power(  176)=  3.68271E+02
+ stopping power(  177)=  3.64787E+02
+ stopping power(  178)=  3.61357E+02
+ stopping power(  179)=  3.58319E+02
+ stopping power(  180)=  3.55178E+02
+ stopping power(  181)=  3.52327E+02
+ stopping power(  182)=  3.49609E+02
+ stopping power(  183)=  3.46809E+02
+ stopping power(  184)=  3.44477E+02
+ stopping power(  185)=  3.42068E+02
+ stopping power(  186)=  3.39782E+02
+ stopping power(  187)=  3.37738E+02
+ stopping power(  188)=  3.35625E+02
+ stopping power(  189)=  3.33809E+02
+ stopping power(  190)=  3.32041E+02
+ stopping power(  191)=  3.30280E+02
+ stopping power(  192)=  3.28827E+02
+ stopping power(  193)=  3.27324E+02
+ stopping power(  194)=  3.25979E+02
+ stopping power(  195)=  3.24773E+02
+ stopping power(  196)=  3.23526E+02
+ stopping power(  197)=  3.22559E+02
+ stopping power(  198)=  3.21589E+02
+ stopping power(  199)=  3.20679E+02
+ stopping power(  200)=  3.19962E+02
+ stopping power(  201)=  3.19220E+02
+ stopping power(  202)=  3.18642E+02
+ stopping power(  203)=  3.18135E+02
+ stopping power(  204)=  3.17625E+02
+ stopping power(  205)=  3.17331E+02
+ stopping power(  206)=  3.17027E+02
+ stopping power(  207)=  3.16805E+02
+ stopping power(  208)=  3.16698E+02
+ stopping power(  209)=  3.16587E+02
+ stopping power(  210)=  3.16623E+02
+ stopping power(  211)=  3.16694E+02
+ stopping power(  212)=  3.16798E+02
+ stopping power(  213)=  3.17032E+02
+ stopping power(  214)=  3.17274E+02
+ stopping power(  215)=  3.17598E+02
+ stopping power(  216)=  3.17988E+02
+ stopping power(  217)=  3.18392E+02
+ stopping power(  218)=  3.18909E+02
+ stopping power(  219)=  3.19449E+02
+ stopping power(  220)=  3.20033E+02
+ stopping power(  221)=  3.20692E+02
+ stopping power(  222)=  3.21373E+02
+ stopping power(  223)=  3.22119E+02
+ stopping power(  224)=  3.22907E+02
+ stopping power(  225)=  3.23726E+02
+ stopping power(  226)=  3.24607E+02
+ stopping power(  227)=  3.25518E+02
+ stopping power(  228)=  3.26469E+02
+ stopping power(  229)=  3.27462E+02
+ stopping power(  230)=  3.28488E+02
+ stopping power(  231)=  3.29551E+02
+ stopping power(  232)=  3.30650E+02
+ stopping power(  233)=  3.31782E+02
+ stopping power(  234)=  3.32942E+02
+ stopping power(  235)=  3.34140E+02
+ stopping power(  236)=  3.35361E+02
+ stopping power(  237)=  3.36611E+02
+ stopping power(  238)=  3.37903E+02
+ stopping power(  239)=  3.39195E+02
+ stopping power(  240)=  3.40531E+02
+ stopping power(  241)=  3.41890E+02
+ stopping power(  242)=  3.43260E+02
+ stopping power(  243)=  3.44676E+02
+ stopping power(  244)=  3.46088E+02
+ stopping power(  245)=  3.47531E+02
+ stopping power(  246)=  3.49012E+02
+ stopping power(  247)=  3.50475E+02
+ stopping power(  248)=  3.51987E+02
+ stopping power(  249)=  3.53505E+02
+ stopping power(  250)=  3.55030E+02
+ stopping power(  251)=  3.56607E+02
+ stopping power(  252)=  3.58151E+02
+ stopping power(  253)=  3.59736E+02
+ stopping power(  254)=  3.61346E+02
+ stopping power(  255)=  3.62933E+02
+ stopping power(  256)=  3.64574E+02
+ stopping power(  257)=  3.66198E+02
+ stopping power(  258)=  3.67837E+02
+ stopping power(  259)=  3.69527E+02
+ stopping power(  260)=  3.71160E+02
+ stopping power(  261)=  3.72847E+02
+ stopping power(  262)=  3.74542E+02
+ stopping power(  263)=  3.76219E+02
+ stopping power(  264)=  3.77953E+02
+ stopping power(  265)=  3.79644E+02
+ stopping power(  266)=  3.81365E+02
+ stopping power(  267)=  3.83121E+02
+ stopping power(  268)=  3.84825E+02
+ stopping power(  269)=  3.86586E+02
+ stopping power(  270)=  3.88332E+02
+ stopping power(  271)=  3.90074E+02
+ stopping power(  272)=  3.91875E+02
+ stopping power(  273)=  3.93606E+02
+ stopping power(  274)=  3.95385E+02
+ stopping power(  275)=  3.97180E+02
+ stopping power(  276)=  3.98936E+02
+ stopping power(  277)=  4.00750E+02
+ stopping power(  278)=  4.02526E+02
+ stopping power(  279)=  4.04314E+02
+ stopping power(  280)=  4.06154E+02
+ stopping power(  281)=  4.07916E+02
+ stopping power(  282)=  4.09737E+02
+ stopping power(  283)=  4.11553E+02
+ stopping power(  284)=  4.13345E+02
+ stopping power(  285)=  4.15198E+02
+ stopping power(  286)=  4.16988E+02
+ stopping power(  287)=  4.18811E+02
+ stopping power(  288)=  4.20663E+02
+ stopping power(  289)=  4.22456E+02
+ stopping power(  290)=  4.24308E+02
+ stopping power(  291)=  4.26132E+02
+ stopping power(  292)=  4.27952E+02
+ stopping power(  293)=  4.29834E+02
+ stopping power(  294)=  4.31628E+02
+ stopping power(  295)=  4.33476E+02
+ stopping power(  296)=  4.35332E+02
+ stopping power(  297)=  4.37147E+02
+ stopping power(  298)=  4.39023E+02
+ stopping power(  299)=  4.40848E+02
+ stopping power(  300)=  4.42689E+02
+ stopping power(  301)=  4.44576E+02
 
  group constants                                                          4.5s
  for mf23 and mt508 estr                                                        
- stopping power(    1)=  1.20855E+01
- stopping power(    2)=  1.20833E+01
- stopping power(    3)=  1.17697E+01
- stopping power(    4)=  1.12280E+01
- stopping power(    5)=  1.07417E+01
- stopping power(    6)=  1.02974E+01
- stopping power(    7)=  9.88700E+00
- stopping power(    8)=  9.50517E+00
- stopping power(    9)=  9.14796E+00
- stopping power(   10)=  8.81234E+00
- stopping power(   11)=  8.49606E+00
- stopping power(   12)=  8.19711E+00
- stopping power(   13)=  7.91393E+00
- stopping power(   14)=  7.64524E+00
- stopping power(   15)=  7.38979E+00
- stopping power(   16)=  7.14673E+00
- stopping power(   17)=  6.91510E+00
- stopping power(   18)=  6.69408E+00
- stopping power(   19)=  6.48302E+00
- stopping power(   20)=  6.28126E+00
- stopping power(   21)=  6.08827E+00
- stopping power(   22)=  5.90356E+00
- stopping power(   23)=  5.72660E+00
- stopping power(   24)=  5.55708E+00
- stopping power(   25)=  5.39450E+00
- stopping power(   26)=  5.23854E+00
- stopping power(   27)=  5.08903E+00
- stopping power(   28)=  4.94542E+00
- stopping power(   29)=  4.80746E+00
- stopping power(   30)=  4.67486E+00
- stopping power(   31)=  4.54735E+00
- stopping power(   32)=  4.42487E+00
- stopping power(   33)=  4.30700E+00
- stopping power(   34)=  4.19364E+00
- stopping power(   35)=  4.08465E+00
- stopping power(   36)=  3.97967E+00
- stopping power(   37)=  3.87870E+00
- stopping power(   38)=  3.78146E+00
- stopping power(   39)=  3.68776E+00
- stopping power(   40)=  3.59762E+00
- stopping power(   41)=  3.51070E+00
- stopping power(   42)=  3.42699E+00
- stopping power(   43)=  3.34636E+00
- stopping power(   44)=  3.26856E+00
- stopping power(   45)=  3.19374E+00
- stopping power(   46)=  3.12156E+00
- stopping power(   47)=  3.05194E+00
- stopping power(   48)=  2.98490E+00
- stopping power(   49)=  2.92014E+00
- stopping power(   50)=  2.85778E+00
- stopping power(   51)=  2.79763E+00
- stopping power(   52)=  2.73951E+00
- stopping power(   53)=  2.68367E+00
- stopping power(   54)=  2.62968E+00
- stopping power(   55)=  2.57760E+00
- stopping power(   56)=  2.52742E+00
- stopping power(   57)=  2.47888E+00
- stopping power(   58)=  2.43220E+00
- stopping power(   59)=  2.38711E+00
- stopping power(   60)=  2.34354E+00
- stopping power(   61)=  2.30171E+00
- stopping power(   62)=  2.26122E+00
- stopping power(   63)=  2.22218E+00
- stopping power(   64)=  2.18451E+00
- stopping power(   65)=  2.14801E+00
- stopping power(   66)=  2.11303E+00
- stopping power(   67)=  2.07915E+00
- stopping power(   68)=  2.04645E+00
- stopping power(   69)=  2.01506E+00
- stopping power(   70)=  1.98461E+00
- stopping power(   71)=  1.95533E+00
- stopping power(   72)=  1.92705E+00
- stopping power(   73)=  1.89961E+00
- stopping power(   74)=  1.87342E+00
- stopping power(   75)=  1.84798E+00
- stopping power(   76)=  1.82348E+00
- stopping power(   77)=  1.79996E+00
- stopping power(   78)=  1.77709E+00
- stopping power(   79)=  1.75530E+00
- stopping power(   80)=  1.73420E+00
- stopping power(   81)=  1.71377E+00
- stopping power(   82)=  1.69436E+00
- stopping power(   83)=  1.67544E+00
- stopping power(   84)=  1.65736E+00
- stopping power(   85)=  1.63999E+00
- stopping power(   86)=  1.62302E+00
- stopping power(   87)=  1.60658E+00
- stopping power(   88)=  1.59038E+00
- stopping power(   89)=  1.57467E+00
- stopping power(   90)=  1.56103E+00
- stopping power(   91)=  1.54770E+00
- stopping power(   92)=  1.53451E+00
- stopping power(   93)=  1.52222E+00
- stopping power(   94)=  1.51012E+00
- stopping power(   95)=  1.49908E+00
- stopping power(   96)=  1.48760E+00
- stopping power(   97)=  1.47640E+00
- stopping power(   98)=  1.46588E+00
- stopping power(   99)=  1.45527E+00
- stopping power(  100)=  1.44637E+00
- stopping power(  101)=  1.43763E+00
- stopping power(  102)=  1.42903E+00
- stopping power(  103)=  1.42072E+00
- stopping power(  104)=  1.41232E+00
- stopping power(  105)=  1.40508E+00
- stopping power(  106)=  1.39778E+00
- stopping power(  107)=  1.39025E+00
- stopping power(  108)=  1.38496E+00
- stopping power(  109)=  1.37940E+00
- stopping power(  110)=  1.37434E+00
- stopping power(  111)=  1.37028E+00
- stopping power(  112)=  1.36584E+00
- stopping power(  113)=  1.36245E+00
- stopping power(  114)=  1.35930E+00
- stopping power(  115)=  1.35663E+00
- stopping power(  116)=  1.35448E+00
- stopping power(  117)=  1.34680E+00
- stopping power(  118)=  1.34580E+00
- stopping power(  119)=  1.34507E+00
- stopping power(  120)=  1.34408E+00
- stopping power(  121)=  1.34370E+00
- stopping power(  122)=  1.34310E+00
- stopping power(  123)=  1.34242E+00
- stopping power(  124)=  1.34212E+00
- stopping power(  125)=  1.34135E+00
- stopping power(  126)=  1.34125E+00
- stopping power(  127)=  1.34042E+00
- stopping power(  128)=  1.33605E+00
- stopping power(  129)=  1.34015E+00
- stopping power(  130)=  1.34353E+00
- stopping power(  131)=  1.34753E+00
- stopping power(  132)=  1.35092E+00
- stopping power(  133)=  1.35443E+00
- stopping power(  134)=  1.35829E+00
- stopping power(  135)=  1.36232E+00
- stopping power(  136)=  1.36653E+00
- stopping power(  137)=  1.37109E+00
- stopping power(  138)=  1.37577E+00
- stopping power(  139)=  1.38094E+00
- stopping power(  140)=  1.38653E+00
- stopping power(  141)=  1.39184E+00
- stopping power(  142)=  1.39862E+00
- stopping power(  143)=  1.40552E+00
- stopping power(  144)=  1.41277E+00
- stopping power(  145)=  1.42076E+00
- stopping power(  146)=  1.42875E+00
- stopping power(  147)=  1.43709E+00
- stopping power(  148)=  1.44433E+00
- stopping power(  149)=  1.45303E+00
- stopping power(  150)=  1.46300E+00
- stopping power(  151)=  1.47363E+00
- stopping power(  152)=  1.48487E+00
- stopping power(  153)=  1.49683E+00
- stopping power(  154)=  1.50887E+00
- stopping power(  155)=  1.52196E+00
- stopping power(  156)=  1.53534E+00
- stopping power(  157)=  1.54702E+00
- stopping power(  158)=  1.56014E+00
- stopping power(  159)=  1.57336E+00
- stopping power(  160)=  1.59016E+00
- stopping power(  161)=  1.60956E+00
- stopping power(  162)=  1.62719E+00
- stopping power(  163)=  1.64673E+00
- stopping power(  164)=  1.66595E+00
- stopping power(  165)=  1.68577E+00
- stopping power(  166)=  1.70704E+00
- stopping power(  167)=  1.72788E+00
- stopping power(  168)=  1.75028E+00
- stopping power(  169)=  1.77298E+00
- stopping power(  170)=  1.79563E+00
- stopping power(  171)=  1.82065E+00
- stopping power(  172)=  1.84532E+00
- stopping power(  173)=  1.87262E+00
- stopping power(  174)=  1.90277E+00
- stopping power(  175)=  1.93282E+00
- stopping power(  176)=  1.96447E+00
- stopping power(  177)=  1.99642E+00
- stopping power(  178)=  2.02837E+00
- stopping power(  179)=  2.06005E+00
- stopping power(  180)=  2.09217E+00
- stopping power(  181)=  2.12447E+00
- stopping power(  182)=  2.15737E+00
- stopping power(  183)=  2.19128E+00
- stopping power(  184)=  2.21842E+00
- stopping power(  185)=  2.24719E+00
- stopping power(  186)=  2.33533E+00
- stopping power(  187)=  2.36831E+00
- stopping power(  188)=  2.40043E+00
- stopping power(  189)=  2.43915E+00
- stopping power(  190)=  2.47973E+00
- stopping power(  191)=  2.52226E+00
- stopping power(  192)=  2.57568E+00
- stopping power(  193)=  2.63027E+00
- stopping power(  194)=  2.68608E+00
- stopping power(  195)=  2.74373E+00
- stopping power(  196)=  2.80427E+00
- stopping power(  197)=  2.91688E+00
- stopping power(  198)=  2.97233E+00
- stopping power(  199)=  3.03332E+00
- stopping power(  200)=  3.11111E+00
- stopping power(  201)=  3.18773E+00
- stopping power(  202)=  3.22484E+00
- stopping power(  203)=  3.24093E+00
- stopping power(  204)=  3.25311E+00
- stopping power(  205)=  3.24049E+00
- stopping power(  206)=  3.22492E+00
- stopping power(  207)=  3.18770E+00
- stopping power(  208)=  3.12240E+00
- stopping power(  209)=  3.05387E+00
- stopping power(  210)=  3.05193E+00
- stopping power(  211)=  3.05082E+00
- stopping power(  212)=  3.05375E+00
- stopping power(  213)=  3.08564E+00
- stopping power(  214)=  3.11580E+00
- stopping power(  215)=  3.21731E+00
- stopping power(  216)=  3.37538E+00
- stopping power(  217)=  3.53743E+00
- stopping power(  218)=  3.63957E+00
- stopping power(  219)=  3.82093E+00
- stopping power(  220)=  3.91812E+00
- stopping power(  221)=  4.02330E+00
- stopping power(  222)=  4.12536E+00
- stopping power(  223)=  4.23707E+00
- stopping power(  224)=  4.35057E+00
- stopping power(  225)=  4.46025E+00
- stopping power(  226)=  4.56754E+00
- stopping power(  227)=  4.66933E+00
- stopping power(  228)=  4.79075E+00
- stopping power(  229)=  4.95220E+00
- stopping power(  230)=  5.09133E+00
- stopping power(  231)=  5.26448E+00
- stopping power(  232)=  5.47179E+00
- stopping power(  233)=  5.67879E+00
- stopping power(  234)=  5.90942E+00
- stopping power(  235)=  6.12368E+00
- stopping power(  236)=  6.35439E+00
- stopping power(  237)=  6.58503E+00
- stopping power(  238)=  6.80729E+00
- stopping power(  239)=  7.03134E+00
- stopping power(  240)=  7.21550E+00
- stopping power(  241)=  7.37579E+00
- stopping power(  242)=  7.51249E+00
- stopping power(  243)=  7.57535E+00
- stopping power(  244)=  7.87937E+00
- stopping power(  245)=  8.23217E+00
- stopping power(  246)=  8.57744E+00
- stopping power(  247)=  8.94424E+00
- stopping power(  248)=  9.29304E+00
- stopping power(  249)=  9.64562E+00
- stopping power(  250)=  9.99772E+00
- stopping power(  251)=  1.03199E+01
- stopping power(  252)=  1.06643E+01
- stopping power(  253)=  1.09752E+01
- stopping power(  254)=  1.12522E+01
- stopping power(  255)=  1.15119E+01
- stopping power(  256)=  1.10373E+01
- stopping power(  257)=  1.13838E+01
- stopping power(  258)=  1.17390E+01
- stopping power(  259)=  1.20860E+01
- stopping power(  260)=  1.24777E+01
- stopping power(  261)=  1.29179E+01
- stopping power(  262)=  1.33232E+01
- stopping power(  263)=  1.37549E+01
- stopping power(  264)=  1.41768E+01
- stopping power(  265)=  1.47000E+01
- stopping power(  266)=  1.51728E+01
- stopping power(  267)=  1.56172E+01
- stopping power(  268)=  1.61500E+01
- stopping power(  269)=  1.66793E+01
- stopping power(  270)=  1.72463E+01
- stopping power(  271)=  1.78459E+01
- stopping power(  272)=  1.84452E+01
- stopping power(  273)=  1.91186E+01
- stopping power(  274)=  1.98009E+01
- stopping power(  275)=  2.05130E+01
- stopping power(  276)=  2.12898E+01
- stopping power(  277)=  2.20744E+01
- stopping power(  278)=  2.29327E+01
- stopping power(  279)=  2.38326E+01
- stopping power(  280)=  2.47544E+01
- stopping power(  281)=  2.58137E+01
- stopping power(  282)=  2.68926E+01
- stopping power(  283)=  2.80488E+01
- stopping power(  284)=  2.94355E+01
- stopping power(  285)=  3.07325E+01
- stopping power(  286)=  3.23665E+01
- stopping power(  287)=  3.39594E+01
- stopping power(  288)=  3.55941E+01
- stopping power(  289)=  3.72903E+01
- stopping power(  290)=  3.90251E+01
- stopping power(  291)=  4.08707E+01
- stopping power(  292)=  4.28096E+01
- stopping power(  293)=  4.47926E+01
- stopping power(  294)=  4.69445E+01
- stopping power(  295)=  4.91482E+01
- stopping power(  296)=  5.14423E+01
- stopping power(  297)=  5.38669E+01
- stopping power(  298)=  5.63379E+01
- stopping power(  299)=  5.89688E+01
- stopping power(  300)=  6.16873E+01
- stopping power(  301)=  6.44606E+01
+ stopping power(    1)=  0.00000E+00
+ stopping power(    2)=  0.00000E+00
+ stopping power(    3)=  0.00000E+00
+ stopping power(    4)=  0.00000E+00
+ stopping power(    5)=  0.00000E+00
+ stopping power(    6)=  0.00000E+00
+ stopping power(    7)=  0.00000E+00
+ stopping power(    8)=  0.00000E+00
+ stopping power(    9)=  0.00000E+00
+ stopping power(   10)=  0.00000E+00
+ stopping power(   11)=  0.00000E+00
+ stopping power(   12)=  0.00000E+00
+ stopping power(   13)=  0.00000E+00
+ stopping power(   14)=  0.00000E+00
+ stopping power(   15)=  0.00000E+00
+ stopping power(   16)=  0.00000E+00
+ stopping power(   17)=  0.00000E+00
+ stopping power(   18)=  0.00000E+00
+ stopping power(   19)=  0.00000E+00
+ stopping power(   20)=  0.00000E+00
+ stopping power(   21)=  0.00000E+00
+ stopping power(   22)=  0.00000E+00
+ stopping power(   23)=  0.00000E+00
+ stopping power(   24)=  0.00000E+00
+ stopping power(   25)=  0.00000E+00
+ stopping power(   26)=  0.00000E+00
+ stopping power(   27)=  0.00000E+00
+ stopping power(   28)=  0.00000E+00
+ stopping power(   29)=  0.00000E+00
+ stopping power(   30)=  0.00000E+00
+ stopping power(   31)=  0.00000E+00
+ stopping power(   32)=  0.00000E+00
+ stopping power(   33)=  0.00000E+00
+ stopping power(   34)=  0.00000E+00
+ stopping power(   35)=  0.00000E+00
+ stopping power(   36)=  0.00000E+00
+ stopping power(   37)=  0.00000E+00
+ stopping power(   38)=  0.00000E+00
+ stopping power(   39)=  0.00000E+00
+ stopping power(   40)=  0.00000E+00
+ stopping power(   41)=  0.00000E+00
+ stopping power(   42)=  0.00000E+00
+ stopping power(   43)=  0.00000E+00
+ stopping power(   44)=  0.00000E+00
+ stopping power(   45)=  0.00000E+00
+ stopping power(   46)=  0.00000E+00
+ stopping power(   47)=  0.00000E+00
+ stopping power(   48)=  0.00000E+00
+ stopping power(   49)=  0.00000E+00
+ stopping power(   50)=  0.00000E+00
+ stopping power(   51)=  0.00000E+00
+ stopping power(   52)=  0.00000E+00
+ stopping power(   53)=  0.00000E+00
+ stopping power(   54)=  0.00000E+00
+ stopping power(   55)=  0.00000E+00
+ stopping power(   56)=  0.00000E+00
+ stopping power(   57)=  0.00000E+00
+ stopping power(   58)=  0.00000E+00
+ stopping power(   59)=  0.00000E+00
+ stopping power(   60)=  0.00000E+00
+ stopping power(   61)=  0.00000E+00
+ stopping power(   62)=  0.00000E+00
+ stopping power(   63)=  0.00000E+00
+ stopping power(   64)=  0.00000E+00
+ stopping power(   65)=  0.00000E+00
+ stopping power(   66)=  0.00000E+00
+ stopping power(   67)=  0.00000E+00
+ stopping power(   68)=  0.00000E+00
+ stopping power(   69)=  0.00000E+00
+ stopping power(   70)=  0.00000E+00
+ stopping power(   71)=  0.00000E+00
+ stopping power(   72)=  0.00000E+00
+ stopping power(   73)=  0.00000E+00
+ stopping power(   74)=  0.00000E+00
+ stopping power(   75)=  0.00000E+00
+ stopping power(   76)=  0.00000E+00
+ stopping power(   77)=  0.00000E+00
+ stopping power(   78)=  0.00000E+00
+ stopping power(   79)=  0.00000E+00
+ stopping power(   80)=  0.00000E+00
+ stopping power(   81)=  0.00000E+00
+ stopping power(   82)=  0.00000E+00
+ stopping power(   83)=  0.00000E+00
+ stopping power(   84)=  0.00000E+00
+ stopping power(   85)=  0.00000E+00
+ stopping power(   86)=  0.00000E+00
+ stopping power(   87)=  0.00000E+00
+ stopping power(   88)=  0.00000E+00
+ stopping power(   89)=  0.00000E+00
+ stopping power(   90)=  0.00000E+00
+ stopping power(   91)=  0.00000E+00
+ stopping power(   92)=  0.00000E+00
+ stopping power(   93)=  0.00000E+00
+ stopping power(   94)=  0.00000E+00
+ stopping power(   95)=  0.00000E+00
+ stopping power(   96)=  0.00000E+00
+ stopping power(   97)=  0.00000E+00
+ stopping power(   98)=  0.00000E+00
+ stopping power(   99)=  0.00000E+00
+ stopping power(  100)=  0.00000E+00
+ stopping power(  101)=  0.00000E+00
+ stopping power(  102)=  0.00000E+00
+ stopping power(  103)=  0.00000E+00
+ stopping power(  104)=  0.00000E+00
+ stopping power(  105)=  0.00000E+00
+ stopping power(  106)=  0.00000E+00
+ stopping power(  107)=  0.00000E+00
+ stopping power(  108)=  0.00000E+00
+ stopping power(  109)=  0.00000E+00
+ stopping power(  110)=  0.00000E+00
+ stopping power(  111)=  0.00000E+00
+ stopping power(  112)=  0.00000E+00
+ stopping power(  113)=  0.00000E+00
+ stopping power(  114)=  0.00000E+00
+ stopping power(  115)=  0.00000E+00
+ stopping power(  116)=  0.00000E+00
+ stopping power(  117)=  0.00000E+00
+ stopping power(  118)=  0.00000E+00
+ stopping power(  119)=  0.00000E+00
+ stopping power(  120)=  0.00000E+00
+ stopping power(  121)=  0.00000E+00
+ stopping power(  122)=  0.00000E+00
+ stopping power(  123)=  0.00000E+00
+ stopping power(  124)=  0.00000E+00
+ stopping power(  125)=  0.00000E+00
+ stopping power(  126)=  0.00000E+00
+ stopping power(  127)=  0.00000E+00
+ stopping power(  128)=  0.00000E+00
+ stopping power(  129)=  0.00000E+00
+ stopping power(  130)=  0.00000E+00
+ stopping power(  131)=  0.00000E+00
+ stopping power(  132)=  0.00000E+00
+ stopping power(  133)=  0.00000E+00
+ stopping power(  134)=  0.00000E+00
+ stopping power(  135)=  0.00000E+00
+ stopping power(  136)=  0.00000E+00
+ stopping power(  137)=  0.00000E+00
+ stopping power(  138)=  0.00000E+00
+ stopping power(  139)=  0.00000E+00
+ stopping power(  140)=  0.00000E+00
+ stopping power(  141)=  0.00000E+00
+ stopping power(  142)=  0.00000E+00
+ stopping power(  143)=  0.00000E+00
+ stopping power(  144)=  0.00000E+00
+ stopping power(  145)=  0.00000E+00
+ stopping power(  146)=  0.00000E+00
+ stopping power(  147)=  0.00000E+00
+ stopping power(  148)=  0.00000E+00
+ stopping power(  149)=  0.00000E+00
+ stopping power(  150)=  0.00000E+00
+ stopping power(  151)=  0.00000E+00
+ stopping power(  152)=  0.00000E+00
+ stopping power(  153)=  0.00000E+00
+ stopping power(  154)=  0.00000E+00
+ stopping power(  155)=  0.00000E+00
+ stopping power(  156)=  0.00000E+00
+ stopping power(  157)=  0.00000E+00
+ stopping power(  158)=  0.00000E+00
+ stopping power(  159)=  0.00000E+00
+ stopping power(  160)=  0.00000E+00
+ stopping power(  161)=  0.00000E+00
+ stopping power(  162)=  0.00000E+00
+ stopping power(  163)=  0.00000E+00
+ stopping power(  164)=  0.00000E+00
+ stopping power(  165)=  0.00000E+00
+ stopping power(  166)=  0.00000E+00
+ stopping power(  167)=  0.00000E+00
+ stopping power(  168)=  0.00000E+00
+ stopping power(  169)=  0.00000E+00
+ stopping power(  170)=  0.00000E+00
+ stopping power(  171)=  0.00000E+00
+ stopping power(  172)=  0.00000E+00
+ stopping power(  173)=  0.00000E+00
+ stopping power(  174)=  0.00000E+00
+ stopping power(  175)=  0.00000E+00
+ stopping power(  176)=  0.00000E+00
+ stopping power(  177)=  0.00000E+00
+ stopping power(  178)=  0.00000E+00
+ stopping power(  179)=  0.00000E+00
+ stopping power(  180)=  0.00000E+00
+ stopping power(  181)=  0.00000E+00
+ stopping power(  182)=  0.00000E+00
+ stopping power(  183)=  0.00000E+00
+ stopping power(  184)=  0.00000E+00
+ stopping power(  185)=  0.00000E+00
+ stopping power(  186)=  0.00000E+00
+ stopping power(  187)=  0.00000E+00
+ stopping power(  188)=  0.00000E+00
+ stopping power(  189)=  0.00000E+00
+ stopping power(  190)=  0.00000E+00
+ stopping power(  191)=  0.00000E+00
+ stopping power(  192)=  0.00000E+00
+ stopping power(  193)=  0.00000E+00
+ stopping power(  194)=  0.00000E+00
+ stopping power(  195)=  0.00000E+00
+ stopping power(  196)=  0.00000E+00
+ stopping power(  197)=  0.00000E+00
+ stopping power(  198)=  0.00000E+00
+ stopping power(  199)=  0.00000E+00
+ stopping power(  200)=  0.00000E+00
+ stopping power(  201)=  0.00000E+00
+ stopping power(  202)=  0.00000E+00
+ stopping power(  203)=  0.00000E+00
+ stopping power(  204)=  0.00000E+00
+ stopping power(  205)=  0.00000E+00
+ stopping power(  206)=  0.00000E+00
+ stopping power(  207)=  0.00000E+00
+ stopping power(  208)=  0.00000E+00
+ stopping power(  209)=  0.00000E+00
+ stopping power(  210)=  0.00000E+00
+ stopping power(  211)=  0.00000E+00
+ stopping power(  212)=  0.00000E+00
+ stopping power(  213)=  0.00000E+00
+ stopping power(  214)=  0.00000E+00
+ stopping power(  215)=  0.00000E+00
+ stopping power(  216)=  0.00000E+00
+ stopping power(  217)=  0.00000E+00
+ stopping power(  218)=  0.00000E+00
+ stopping power(  219)=  0.00000E+00
+ stopping power(  220)=  0.00000E+00
+ stopping power(  221)=  0.00000E+00
+ stopping power(  222)=  0.00000E+00
+ stopping power(  223)=  0.00000E+00
+ stopping power(  224)=  0.00000E+00
+ stopping power(  225)=  0.00000E+00
+ stopping power(  226)=  0.00000E+00
+ stopping power(  227)=  0.00000E+00
+ stopping power(  228)=  0.00000E+00
+ stopping power(  229)=  0.00000E+00
+ stopping power(  230)=  0.00000E+00
+ stopping power(  231)=  0.00000E+00
+ stopping power(  232)=  0.00000E+00
+ stopping power(  233)=  0.00000E+00
+ stopping power(  234)=  0.00000E+00
+ stopping power(  235)=  0.00000E+00
+ stopping power(  236)=  0.00000E+00
+ stopping power(  237)=  0.00000E+00
+ stopping power(  238)=  0.00000E+00
+ stopping power(  239)=  0.00000E+00
+ stopping power(  240)=  0.00000E+00
+ stopping power(  241)=  0.00000E+00
+ stopping power(  242)=  0.00000E+00
+ stopping power(  243)=  0.00000E+00
+ stopping power(  244)=  0.00000E+00
+ stopping power(  245)=  0.00000E+00
+ stopping power(  246)=  0.00000E+00
+ stopping power(  247)=  0.00000E+00
+ stopping power(  248)=  0.00000E+00
+ stopping power(  249)=  0.00000E+00
+ stopping power(  250)=  0.00000E+00
+ stopping power(  251)=  0.00000E+00
+ stopping power(  252)=  0.00000E+00
+ stopping power(  253)=  0.00000E+00
+ stopping power(  254)=  0.00000E+00
+ stopping power(  255)=  0.00000E+00
+ stopping power(  256)=  0.00000E+00
+ stopping power(  257)=  0.00000E+00
+ stopping power(  258)=  0.00000E+00
+ stopping power(  259)=  0.00000E+00
+ stopping power(  260)=  0.00000E+00
+ stopping power(  261)=  0.00000E+00
+ stopping power(  262)=  0.00000E+00
+ stopping power(  263)=  0.00000E+00
+ stopping power(  264)=  0.00000E+00
+ stopping power(  265)=  0.00000E+00
+ stopping power(  266)=  0.00000E+00
+ stopping power(  267)=  0.00000E+00
+ stopping power(  268)=  0.00000E+00
+ stopping power(  269)=  0.00000E+00
+ stopping power(  270)=  0.00000E+00
+ stopping power(  271)=  0.00000E+00
+ stopping power(  272)=  0.00000E+00
+ stopping power(  273)=  0.00000E+00
+ stopping power(  274)=  0.00000E+00
+ stopping power(  275)=  0.00000E+00
+ stopping power(  276)=  0.00000E+00
+ stopping power(  277)=  0.00000E+00
+ stopping power(  278)=  0.00000E+00
+ stopping power(  279)=  0.00000E+00
+ stopping power(  280)=  0.00000E+00
+ stopping power(  281)=  0.00000E+00
+ stopping power(  282)=  0.00000E+00
+ stopping power(  283)=  0.00000E+00
+ stopping power(  284)=  0.00000E+00
+ stopping power(  285)=  0.00000E+00
+ stopping power(  286)=  0.00000E+00
+ stopping power(  287)=  0.00000E+00
+ stopping power(  288)=  0.00000E+00
+ stopping power(  289)=  0.00000E+00
+ stopping power(  290)=  0.00000E+00
+ stopping power(  291)=  0.00000E+00
+ stopping power(  292)=  0.00000E+00
+ stopping power(  293)=  0.00000E+00
+ stopping power(  294)=  0.00000E+00
+ stopping power(  295)=  0.00000E+00
+ stopping power(  296)=  0.00000E+00
+ stopping power(  297)=  0.00000E+00
+ stopping power(  298)=  0.00000E+00
+ stopping power(  299)=  0.00000E+00
+ stopping power(  300)=  0.00000E+00
+ stopping power(  301)=  0.00000E+00
 
  group constants                                                          4.5s
  for mf26 and mt525 elas                                                        
@@ -1896,7 +1896,7 @@
  300   xsec    6.65892+1
  300   heat    0.00000+0
 
- group constants                                                         16.8s
+ group constants                                                         16.9s
  for mf26 and mt527 brem                                                        
  
  initl  final  cross sections vs
@@ -47651,7 +47651,7 @@
  300   xsec    1.33360+2
  300   heat    8.26783+2
 
- group constants                                                         19.0s
+ group constants                                                         19.1s
  for mf26 and mt534 shk1                                                        
  
  129    129    0.00000+0  0.00000+0
@@ -48171,7 +48171,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         19.3s
+ group constants                                                         19.4s
  for mf26 and mt535 shl1                                                        
  
   76     76    0.00000+0  0.00000+0
@@ -48850,7 +48850,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         19.8s
+ group constants                                                         19.9s
  for mf26 and mt536 shl2                                                        
  
   74     74    0.00000+0  0.00000+0
@@ -49535,7 +49535,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         20.3s
+ group constants                                                         20.4s
  for mf26 and mt537 shl3                                                        
  
   71     71    0.00000+0  0.00000+0
@@ -50229,7 +50229,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         20.9s
+ group constants                                                         21.0s
  for mf26 and mt538 shm1                                                        
  
   32     32    0.00000+0  0.00000+0
@@ -51040,7 +51040,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         21.6s
+ group constants                                                         21.7s
  for mf26 and mt539 shm2                                                        
  
   29     29    0.00000+0  0.00000+0
@@ -51860,7 +51860,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         22.3s
+ group constants                                                         22.5s
  for mf26 and mt540 shm3                                                        
  
   25     25    0.00000+0  0.00000+0
@@ -52692,7 +52692,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         23.1s
+ group constants                                                         23.3s
  for mf26 and mt541 shm4                                                        
  
   19     19    0.00000+0  0.00000+0
@@ -53542,7 +53542,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         24.1s
+ group constants                                                         24.2s
  for mf26 and mt542 shm5                                                        
  
   18     18    0.00000+0  0.00000+0
@@ -54395,7 +54395,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         25.0s
+ group constants                                                         25.2s
  for mf26 and mt543 shn1                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -55299,7 +55299,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         26.0s
+ group constants                                                         26.2s
  for mf26 and mt544 shn2                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -56203,7 +56203,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         27.0s
+ group constants                                                         27.2s
  for mf26 and mt545 shn3                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -57107,7 +57107,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         28.0s
+ group constants                                                         28.2s
  for mf26 and mt546 shn4                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -58011,7 +58011,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         29.1s
+ group constants                                                         29.3s
  for mf26 and mt547 shn5                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -58915,7 +58915,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         30.2s
+ group constants                                                         30.4s
  for mf26 and mt548 shn6                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -59819,7 +59819,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         31.5s
+ group constants                                                         31.7s
  for mf26 and mt549 shn7                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -60723,7 +60723,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         32.7s
+ group constants                                                         33.0s
  for mf26 and mt550 sho1                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -61627,7 +61627,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         34.0s
+ group constants                                                         34.2s
  for mf26 and mt551 sho2                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -62531,7 +62531,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         35.4s
+ group constants                                                         35.6s
  for mf26 and mt552 sho3                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -63435,7 +63435,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         36.8s
+ group constants                                                         37.0s
  for mf26 and mt553 sho4                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -64339,7 +64339,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         38.4s
+ group constants                                                         38.6s
  for mf26 and mt554 sho5                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -65251,7 +65251,7 @@
 
  ---message from findf--- mat7400 mf23 mt558 not on tape  31
 
- group constants                                                         40.0s
+ group constants                                                         40.3s
  for mf26 and mt559 shp1                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -66181,7 +66181,7 @@
 
  ---message from findf--- mat7400 mf23 mt572 not on tape  31
 
- group constants                                                         41.7s
+ group constants                                                         41.9s
  for mf23 and mt501 totl                                                        
  
  electron sigma  
@@ -66487,7 +66487,7 @@
  299    2.01367+2
  300    1.99949+2
 
- group constants                                                         41.7s
+ group constants                                                         41.9s
  for mf23 and mt530 heat                                                        
  
  electron energy deposition
@@ -66792,15 +66792,15 @@
  299    7.83009+2
  300    8.26783+2
 
- group constants                                                         41.7s
+ group constants                                                         41.9s
  for mf23 and mt531 char                                                        
  
  electron charge deposition
  group   (ev-barns)
-                                                                         41.7s
+                                                                         41.9s
  *****************************************************************************
 
- matxsr...produce a matxs format output file                             41.7s
+ matxsr...produce a matxs format output file                             41.9s
 
  input gendf unit .....................          0
  input gamout unit ....................          0
@@ -66825,6 +66825,6 @@
  output particles .....................            1
 
 
-          doing w        for bscat    ...    41.9s
-                                                                         42.4s
+          doing w        for bscat    ...    42.1s
+                                                                         42.6s
  *****************************************************************************
