@@ -38,7 +38,6 @@ static PyObject *lifo_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 static void lifo_dealloc(lifoobject *self)
 {
    char *nomsub="lifo_dealloc";
-   clecls(&(self->stack));
    if (self->impx_lifo > 0) printf("%s: desallocate a lifo object\n",nomsub);
 }
 

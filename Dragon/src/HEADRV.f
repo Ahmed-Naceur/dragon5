@@ -1,6 +1,6 @@
 *DECK HEADRV
       SUBROUTINE HEADRV(IPDEP,NPART,IPMAC,NBMIX,NGRP,ZNORM,IMPX,ESUM,
-     1 CSUM,IBC)
+     1 CSUM,IBC,RHO)
 *
 *-----------------------------------------------------------------------
 *
@@ -38,6 +38,7 @@
 *----
       INTEGER NPART,NBMIX,NGRP,IMPX
       TYPE(C_PTR) IPDEP,IPMAC(NPART)
+      REAL RHO(NBMIX)
       DOUBLE PRECISION ZNORM,ESUM,CSUM
 *----
 *  LOCAL VARIABLES
@@ -111,9 +112,10 @@
           CALL LCMGET(KPMAC,'H-FACTOR',SGD)
           DO IBM=1,NBMIX
             EDEPO(IBM,I)=EDEPO(IBM,I)+FLIN(IBM)*SGD(IBM)*ZNORM/
-     1      VOL(IBM)
+     1      (VOL(IBM)*RHO(IBM))
             IF(IBC.EQ.1.AND.IBC2.NE.0) THEN
-              EDEPO(IBM,I)=EDEPO(IBM,I)+ECUTOFF*FLUXC(IBM)*ZNORM
+              EDEPO(IBM,I)=EDEPO(IBM,I)+ECUTOFF*FLUXC(IBM)*ZNORM/
+     1        RHO(IBM)
             ENDIF
           ENDDO
           CALL LCMLEN(KPMAC,'C-FACTOR',LENGT,ITYLCM)
@@ -122,9 +124,9 @@
             CALL LCMGET(KPMAC,'C-FACTOR',SGD)
             DO IBM=1,NBMIX
               CDEPO(IBM,I)=CDEPO(IBM,I)+FLIN(IBM)*SGD(IBM)*ZNORM/
-     1        VOL(IBM)
+     1        (VOL(IBM)*RHO(IBM))
               IF(IBC.EQ.1.AND.IBC2.NE.0) THEN
-                CDEPO(IBM,I)=CDEPO(IBM,I)+FLUXC(IBM)*ZNORM
+                CDEPO(IBM,I)=CDEPO(IBM,I)-FLUXC(IBM)*ZNORM/RHO(IBM)
               ENDIF
             ENDDO
           ENDIF

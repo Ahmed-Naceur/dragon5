@@ -29,7 +29,7 @@ accumulate deposition values gathered from successive solutions of the Boltzmann
 
 \begin{DataStructure}{Structure \dstr{HEAT\_data}}
 $[$~\moc{EDIT} \dusa{iprint}~$]$ \\
-$[~\{$ \moc{POWR} \dusa{power} $|$ \moc{SOUR} \dusa{snumb} $\}~]$ \\
+$[~\{$ \moc{POWR} \dusa{power} $|$ \moc{SOUR} \dusa{snumb} $|$ \moc{NORM} \dusa{rho}($i$), $i$=1,\dusa{nbmix} $\}~]$ \\
 $[~\{$ \moc{BC} $|$ \moc{NBC} $\}~]$ \\
 $[~\{$ \moc{PICKE}  {\tt >>} \dusa{esum} {\tt <<} $|$ \moc{PICKC}  {\tt >>} \dusa{csum} {\tt <<} $\}~]$ \\
 ;
@@ -50,15 +50,19 @@ $[~\{$ \moc{PICKE}  {\tt >>} \dusa{esum} {\tt <<} $|$ \moc{PICKC}  {\tt >>} \dus
 
 \item[\dusa{snumb}] number of source particles used to normalize the flux. By default, the flux is not normalized.
 
+\item[\moc{NORM}] keyword used to obtain the energy deposition per voxels by normalizing the flux by the total number of source particles and the voxel material density. The output units are MeV/g$\times$cm$^{N}$ per particles, where $N$ is the geometry dimension.
+
+\item[\dusa{rho}] densities in g/cm$^{3}$ of the \dusa{nbmix} material defined in calculations.
+
 \item[\moc{BC}]  keyword used to take into account the contribution of the particules falling below the cutoff energy to the charge and energy deposition calculations using method from Morel\cite{morel1996} (by default).
 
 \item[\moc{NBC}] keyword used to disable the contribution of the particules falling below the cutoff energy to the charge and energy deposition calculations.
 
-\item[\moc{PICKE}]  keyword used to recover the total energy deposition value (MeV/cc/s) in a CLE-2000 variable.
+\item[\moc{PICKE}]  keyword used to recover the total energy deposition value (MeV/cm$^{3}$/s) in a CLE-2000 variable.
 
 \item[\dusa{esum}] \texttt{character*12} CLE-2000 variable name in which the extracted total energy deposition value will be placed.
 
-\item[\moc{PICKC}]  keyword used to recover the total charge deposition value (electron/cc/s) in a CLE-2000 variable.
+\item[\moc{PICKC}]  keyword used to recover the total charge deposition value (electrons/cm$^{3}$/s) in a CLE-2000 variable.
 
 \item[\dusa{csum}] \texttt{character*12} CLE-2000 variable name in which the total charge deposition value will be placed.
 

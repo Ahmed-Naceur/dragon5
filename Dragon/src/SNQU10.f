@@ -46,8 +46,8 @@
 *----
       M2=NLF/2
       IF(NLF.EQ.2) THEN
-      	U(1)=1/SQRT(3.0)
-      	W(1)=1.0
+        U(1)=1/SQRT(3.0)
+        W(1)=1.0
       ELSE
         IF(NLF.GT.MAXNLF) CALL XABORT('SNQU10: TOO MANY GAUSS POINTS.')
         CALL ALGPT(NLF,-1.0,1.0,U2,W2)

@@ -348,6 +348,34 @@ void hdf5_info_c(hid_t *ifile, const char *namp, int_32 *rank, int_32 *type, int
   H5Dclose(dataset);
 }
 
+int_32 hdf5_group_exists_c(hid_t *ifile, const char *namp)
+/*
+ *-----------------------------------------------------------------------
+ *
+ * Test for existence of a group.
+ *
+ * input parameters:
+ *   ifile : hdf5 file identificator.
+ *    namp : character name of the group.
+ *
+ *
+ * output parameter:
+ *  hdf5_group_exists_c : =0: the group does exists; =1: does not exists.
+ *
+ *-----------------------------------------------------------------------
+ */
+{
+  hid_t loc_id=*ifile;
+  H5G_stat_t statbuf;
+H5E_BEGIN_TRY
+  iretcd = H5Gget_objinfo(loc_id, namp, 0, &statbuf);
+H5E_END_TRY
+  if (iretcd >= 0) {
+    if (statbuf.type == H5G_GROUP) return 0;
+  }
+  return 1;
+}
+
 void hdf5_read_data_int_c(hid_t *ifile, const char *namp, int_32 *idata) {
 /*
  *----------------------------------------------------------------------

@@ -2001,8 +2001,8 @@ xabort_c(hsmg);
 \section {The ANSI C {\sc hdf5} API}\label{sect:hdf5apiC}
 
 HDF5 is a hierarchical filesystem data format. HDF5 is self-describing, allowing an application to interpret the structure and contents
-of a file with no outside information. A HDF5 file created on a little endian CPU can be read on a big endian CPU, and vice versa. Similarly,
-real(4) datasets can be recovered in real(8) arrays, and vice versa. HDF5 includes two major types of object:
+of a file with no outside information. A HDF5 file created on a little endian CPU can be read on a big endian CPU, and vice versa.
+Similarly, real(4) datasets can be recovered in real(8) arrays, and vice versa. HDF5 includes two major types of object:
 \begin{itemize}
 \item Datasets, which are multidimensional arrays of a homogeneous type
 \item Groups, which are container structures which can hold datasets and other groups.
@@ -2086,8 +2086,7 @@ hdf5_close_file_c(ifile);
 
 \subsection{Interrogation of HDF5 files}
 
-The data structures in a HDF5 file are self-described. It is therefore possible to
-interrogate them in order to know their characteristics.
+The data structures in a HDF5 file are self-described. It is therefore possible to interrogate them in order to know their characteristics.
 
 \subsubsection{hdf5\_list\_c}
 
@@ -2276,6 +2275,39 @@ hdf5_info_c(ifile, namp, rank, type, nbyte, dimsr);
 {\tt dimsr} & {\it int\_32*} & integer array containing the dimension of dataset. {\tt rank} values are provided. \\
 \hline
 \end{tabular}
+
+\subsubsection{hdf5\_group\_exists\_c}
+
+Test for existence of a group.
+
+\begin{verbatim}
+
+ierr = hdf5_group_exists_c(ifile, namp);
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it hid\_t*} & HDF5 file identifier. \\
+\hline
+{\tt namp} & {\it char[1024]} & name of a group. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{11cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameter:} \\
+\hline
+{\tt ierr} & {\it int\_32*} & existence flag: =0/1 the group does/does not exist. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
 
 \subsection{Management of the array of elementary type}
 
@@ -5639,6 +5671,37 @@ call hdf5_list_groups(ifile, name, dsets)
   deallocate(list)
 \end{verbatim}
 
+\subsubsection{hdf5\_group\_exists\index{hdf5GroupExists}}
+
+Test for existence of a group.
+
+\begin{verbatim}
+
+ierr=hdf5_group_exists(ifile, name)
+\end{verbatim}
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf input parameters:} \\
+\hline
+{\tt ifile} & {\it type(c\_ptr)} & address of the HDF5 file. \\
+\hline
+{\tt name} & {\it character*1023} & name of a group. \\
+\hline
+\end{tabular}
+
+\vskip 0.8cm
+
+\noindent
+\begin{tabular}{|p{1.5cm}|p{3cm}|p{10cm}|}
+\hline
+\multicolumn{3}{|c|}{\bf output parameter:} \\
+\hline
+{\tt ierr} & {\it logical} & existence flag: =.true. if the group exists. \\
+\hline
+\end{tabular}
+
 \vskip 0.8cm
 
 \subsection{Management of the array of elementary type}
@@ -6526,6 +6589,18 @@ information blocks in integer and floating point {\sc lcm} or {\sc xsm} arrays
 are automatically transformed into {\sl numpy} arrays.
 Methods of the {\sc lcm} API have been adapted to manage the use of files.
 
+\vskip 0.2cm
+
+The compilation and link edition of the API require the definition of a UNIX environment variable {\tt FORTRANPATH} pointing towards the {\tt libgfortran.a} library
+compatible with your operating system. On a OSX operating system, this variable may be set as
+\begin{verbatim}
+export FORTRANPATH=/usr/local/lib/gcc/11/ # contains libgfortran.a
+\end{verbatim}
+\noindent On a Linux operating system, the environment variable is set as
+\begin{verbatim}
+export FORTRANPATH=/usr/lib/gcc/x86_64-redhat-linux/4.8.5/ # contains libgfortran.so
+\end{verbatim}
+
 \subsection{Structures}
 
 \begin{description}
@@ -6604,17 +6679,22 @@ a ``memory'' PyLCM object  by a persistent PyLCM object (at the cost of a certai
 increase in CPU time). A persistent PyLCM object can
 also be used as archiving medium for a ``memory'' PyLCM object.
 
-This {\tt new} constructor is also useful for retrieving a file made by a Dragon5/Donjon5 module or
-to transfer a file to a Dragon5/Donjon5 module. At the end of this call, the variable
+\vskip 0.2cm
+
+This {\tt new} constructor is used to perform the following actions:
+\begin{itemize}
+\item for creating a new empty PyLCM object;
+\item for retrieving a file made by a Dragon5/Donjon5 module or to transfer a file to a Dragon5/Donjon5 module. At the end of this call, the variable
 attribute {\tt o.\_access} is equal to $1$ or  $2$. The PyLCM object thus created does not have
 the {\tt \_directory} and {\tt \_long} attributes. It does not own the {\tt keys()},
-{\tt lib()}, {\tt rep()}, {\tt lis()} and {\tt copy()} methods,.
-
-This {\tt new} constructor allows you to create a memory or persistent PyLCM object
-from the serialized information contained in a sequential file.
+{\tt lib()}, {\tt rep()}, {\tt lis()} and {\tt copy()} methods;
+\item to create a PyLCM object containing a memory or persistent LCM object from the serialized information contained in a sequential file (import action);
+\item to serialize the content of an existing PyLCM object containing a memory or persistent LCM object into a sequential file (export action);
+\item to perform a deep copy of an existing PyLCM object containing a memory or persistent LCM object into another.
+\end{itemize}
 
 \begin{verbatim}
-o = lcm.new(type, [name], [iact], [lrda], [impx])
+o = lcm.new(type, [name], [iact], [pyobj], [lrda], [impx])
 \end{verbatim}
 
 \noindent
@@ -6627,12 +6707,13 @@ object {\sc lcm} in memory; $=$ {\tt XSM} persistent object of type {\sc xsm}; $
 binary sequential file; $=$ {\tt ASCII}; sequential file {\sc ascii};
 $=$ {\tt DA}; direct access file; $=$ {\tt HDF5}; HDF5 file; $=$ {\tt LCM\_IMP}
 object {\sc lcm} in memory built from the file "{\tt \_}"$ + $ {\tt name} containing
-a serialized PyLCM object; $=$ {\tt XSM\_INP} persistent object of type {\sc xsm} built
-from the file "{\tt \_}"$ + $ {\tt name} containing a serialized PyLCM object. \\
+a serialized PyLCM object or from a deep copy of object {\tt pyobj}; $=$ {\tt XSM\_INP} persistent object of type {\sc xsm} built
+from the file "{\tt \_}"$ + $ {\tt name} containing a serialized PyLCM object or from a deep copy of object {\tt pyobj}. \\
 {\tt name} & {\it string} & name (len=72) of the PyLCM object that will be created. By default, a name is generated automatically
-from the address of the PyLCM object. \\
-{\tt iact} & {\it int} &access mode. $=0$: closed object; $=1$: object in read/write mode
-                               $=$2: object in read-only mode. \\
+from the address of the PyLCM object or from the name of object {\tt pyobj}. \\
+{\tt iact} & {\it int} &access mode. $=0$: a new object is created (default); $=1$: existing object content open in read/write mode
+                               $=$2: existing object content open in read-only mode. \\
+{\tt pyobj} & {\it LCM} & existing PyLCM object containing a memory or persistent LCM object. \\
 {\tt lrda} & {\it int}  & number of words in a direct-access record
 (only used if {\tt type} $ = $ {\tt DA}). By default, {\tt lrda} $= 128$. \\
 {\tt impx} & {\it int}  & edition index for the object ($=0$ for minimum printouts). \\
@@ -6771,62 +6852,6 @@ from the daughter list. \\
 \multicolumn {3} {| c |} {\bf output parameter:} \\
 \hline
 {\tt o2} & {\it LCM} & daughter list. \\
-\hline
-\end{tabular}
-
-\vskip 0.4cm
-
-\subsubsection{o.copy()}
-
-This method allows you to make a deep copy of an associative table (memory or {\sc xsm} file) in another. This method is not
-not available for FILE objects.
-
-\begin{verbatim}
-o2 = o.copy([name], [medium])
-\end{verbatim}
-
-\noindent
-\begin{tabular} {| p {1.5cm} | p {1.5cm} | p {11.5cm} |}
-\hline
-\multicolumn {3} {| c |} {\bf input parameters:} \\
-\hline
-{\tt name} & {\it string} & optional string (len $=12$) corresponding to the name of the associative table created. By default, a name is generated automatically. \\
-\hline
-{\tt medium} & {\it int} & = 1 to create an object in memory (default); = 2 to create a {\sc xsm} file. \\
-\hline
-\end{tabular}
-
-\vskip 0.8cm
-
-\noindent
-\begin{tabular} {| p {1.5cm} | p {1.5cm} | p {11.5cm} |}
-\hline
-\multicolumn {3} {| c |} {\bf output parameter:} \\
-\hline
-{\tt o2} & {\it LCM} & new associative table resulting from the copy. \\
-\hline
-\end{tabular}
-
-\vskip 0.4cm
-
-\subsubsection{o.expor()}
-
-This method allows serializing a PyLCM object and creating a sequential file
-containing this information. This method is not available for FILE objects.
-
-\begin{verbatim}
-o.expor([name])
-\end{verbatim}
-
-\noindent
-\begin{tabular} {| p {1.5cm} | p {1.5cm} | p {11.5cm} |}
-\hline
-\multicolumn {3} {| c |} {\bf input parameter:} \\
-\hline
-{\tt name} & {\it string} & optional string (len $=72$) corresponding to the name of the
-sequential file that will be created. The name of this file must start
-by the character {\tt "\_"}. By default, the name is the concatenation
-character {\tt "\_"} with the name of the PyLCM object ({\tt o.\_name}). \\
 \hline
 \end{tabular}
 

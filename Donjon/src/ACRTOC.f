@@ -59,12 +59,14 @@
 *----
       IF(IMPX.GT.0) THEN
         CALL hdf5_list_groups(IPAPX, '/', LIST)
+        WRITE(*,*)
         WRITE(*,*) 'ACRTOC: GROUP TABLE OF CONTENTS'
         DO I=1,SIZE(LIST)
           WRITE(*,*) TRIM(LIST(I))
         ENDDO
         DEALLOCATE(LIST)
         CALL hdf5_list_datasets(IPAPX, '/', LIST)
+        WRITE(*,*)
         WRITE(*,*) 'ACRTOC: DATASET TABLE OF CONTENTS'
         DO I=1,SIZE(LIST)
           WRITE(*,*) TRIM(LIST(I))
@@ -76,7 +78,13 @@
 *----
       NMIL=1
       CALL hdf5_read_data(IPAPX,"NCALS",NCAL)
-      CALL hdf5_get_shape(IPAPX,"/physconst/ENRGS",DIMS_APX)
+      IF(hdf5_group_exists(IPAPX,"/physconst/")) THEN
+        CALL hdf5_get_shape(IPAPX,"/physconst/ENRGS",DIMS_APX)
+      ELSE IF(hdf5_group_exists(IPAPX,"/physco001/")) THEN
+        CALL hdf5_get_shape(IPAPX,"/physc001/ENRGS",DIMS_APX)
+      ELSE
+        CALL XABORT('ACRTOC: GROUP physconst NOT FOUND IN HDF5 FILE.')
+      ENDIF
       IF(NGRP.EQ.0) THEN
         NGRP=DIMS_APX(1)-1
       ELSE IF(NGRP.NE.DIMS_APX(1)-1) THEN
@@ -85,18 +93,36 @@
         CALL XABORT(HSMG)
       ENDIF
       DEALLOCATE(DIMS_APX)
-      CALL hdf5_get_shape(IPAPX,"/explicit/ISONAME",DIMS_APX)
-      NBISO=DIMS_APX(1)
-      DEALLOCATE(DIMS_APX)
-      CALL hdf5_get_shape(IPAPX,"/explicit/MACNAME",DIMS_APX)
-      NBMAC=DIMS_APX(1)
-      DEALLOCATE(DIMS_APX)
-      CALL hdf5_get_shape(IPAPX,"/explicit/REANAME",DIMS_APX)
-      NREA=DIMS_APX(1)
-      DEALLOCATE(DIMS_APX)
-      CALL hdf5_get_shape(IPAPX,"/physconst/DECAYC",DIMS_APX)
-      NISOTS=DIMS_APX(1)
-      NLAM=DIMS_APX(2)
+      IF(hdf5_group_exists(IPAPX,"/explicit/")) THEN
+        CALL hdf5_get_shape(IPAPX,"/explicit/ISONAME",DIMS_APX)
+        NBISO=DIMS_APX(1)
+        DEALLOCATE(DIMS_APX)
+        CALL hdf5_get_shape(IPAPX,"/explicit/MACNAME",DIMS_APX)
+        NBMAC=DIMS_APX(1)
+        DEALLOCATE(DIMS_APX)
+        CALL hdf5_get_shape(IPAPX,"/explicit/REANAME",DIMS_APX)
+        NREA=DIMS_APX(1)
+        DEALLOCATE(DIMS_APX)
+      ELSE IF(hdf5_group_exists(IPAPX,"/expli001/")) THEN
+        CALL hdf5_get_shape(IPAPX,"/expli001/ISONAME",DIMS_APX)
+        NBISO=DIMS_APX(1)
+        DEALLOCATE(DIMS_APX)
+        CALL hdf5_get_shape(IPAPX,"/expli001/MACNAME",DIMS_APX)
+        NBMAC=DIMS_APX(1)
+        DEALLOCATE(DIMS_APX)
+        CALL hdf5_get_shape(IPAPX,"/expli001/REANAME",DIMS_APX)
+        NREA=DIMS_APX(1)
+        DEALLOCATE(DIMS_APX)
+      ELSE
+        CALL XABORT('ACRTOC: GROUP explicit NOT FOUND IN HDF5 FILE.')
+      ENDIF
+      IF(hdf5_group_exists(IPAPX,"/physconst/")) THEN
+        CALL hdf5_get_shape(IPAPX,"/physconst/DECAYC",DIMS_APX)
+      ELSE IF(hdf5_group_exists(IPAPX,"/physco001/")) THEN
+        CALL hdf5_get_shape(IPAPX,"/physc001/DECAYC",DIMS_APX)
+      ENDIF
+      NLAM=DIMS_APX(1)
+      NISOTS=DIMS_APX(2)
       DEALLOCATE(DIMS_APX)
       CALL hdf5_get_shape(IPAPX,"/paramdescrip/NVALUE",DIMS_APX)
       NPAR=DIMS_APX(1)
@@ -111,15 +137,23 @@
       NISOP=0
       NISOS=0
       IF(NBISO.GT.0) THEN
-        CALL hdf5_get_shape(IPAPX,"/physconst/ISOTA",DIMS_APX)
+        IF(hdf5_group_exists(IPAPX,"/physconst/")) THEN
+          CALL hdf5_get_shape(IPAPX,"/physconst/ISOTA",DIMS_APX)
+        ELSE IF(hdf5_group_exists(IPAPX,"/physco001/")) THEN
+          CALL hdf5_get_shape(IPAPX,"/physc001/ISOTA",DIMS_APX)
+        ENDIF
         IF(DIMS_APX(1).NE.NBISO) THEN
           WRITE(HSMG,'(44H ACRTOC: INCONSISTENT number of ISOTOPES IN ,
-     1    30Hexplicit AND phyconst GROUPS (,I4,3H VS,I5,2H).)') NBISO,
+     1    31Hexplicit AND physconst GROUPS (,I4,3H VS,I5,2H).)') NBISO,
      2    DIMS_APX(1)
           CALL XABORT(HSMG)
         ENDIF
         DEALLOCATE(DIMS_APX)
-        CALL hdf5_read_data(IPAPX,"/physconst/ISOTYP",TYPISO)
+        IF(hdf5_group_exists(IPAPX,"/physconst/")) THEN
+          CALL hdf5_read_data(IPAPX,"/physconst/ISOTYP",TYPISO)
+        ELSE IF(hdf5_group_exists(IPAPX,"/physco001/")) THEN
+          CALL hdf5_read_data(IPAPX,"/physc001/ISOTYP",TYPISO)
+        ENDIF
         DO I=1,NBISO
           IF(TYPISO(I).EQ.'FISS') NISOF=NISOF+1
           IF(TYPISO(I).EQ.'F.P.') NISOP=NISOP+1
@@ -175,7 +209,7 @@
      1  NISOP
         WRITE(IOUT,'(41H   nb of particularized stable isotopes =,I4)')
      1  NISOS
-        WRITE(IOUT,'(23H   nb of calculations =,I7)') NCAL
+        WRITE(IOUT,'(23H   nb of calculations =,I9)') NCAL
         WRITE(IOUT,'(24H   nb of energy groups =,I4)') NGRP
         WRITE(IOUT,'(44H   maximum nb of isotopes in output tables =,
      1  I4)') NISOTS

@@ -25,6 +25,7 @@ void hdf5_get_num_group_c(hid_t *, const char *, int_32 *);
 void hdf5_list_datasets_c(hid_t *, const char *, int_32 *, char *idata);
 void hdf5_list_groups_c(hid_t *, const char *, int_32 *, char *idata);
 void hdf5_info_c(hid_t *, const char *, int_32 *, int_32 *, int_32 *, int_32 *);
+int_32 hdf5_group_exists_c(hid_t *, const char *);
 void hdf5_read_data_int_c(hid_t *, const char *, int_32 *);
 void hdf5_read_data_real4_c(hid_t *, const char *, float *);
 void hdf5_read_data_real8_c(hid_t *, const char *, double *);

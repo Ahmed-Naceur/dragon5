@@ -1,0 +1,105 @@
+*----
+*  TEST CASE TCM75
+*  2D test of simultaneous isotropic and boundary monodirectional
+*  sources.
+*----
+*----
+*  Define STRUCTURES and MODULES used
+*----
+MODULE GEO: FMAC: MAC: SNT: ASM: FLU: PSOUR: OUT: DELETE: END: UTL:
+       HEAT: ABORT: ;
+PROCEDURE assertS ;
+LINKED_LIST  EMACRO EMACRO2 GMACRO GMACRO2 GEOM ETRACK GTRACK SYSTEM
+       EFLUX GFLUX ESOUR GSOUR EEDITS GEDITS DEPOS ;
+REAL esum DELTA ;
+SEQ_ASCII FMAC_M :: FILE './W_6MeV_e_ph_CSD.txt' ;
+*----
+*  Set and track the geometry
+*----
+GEOM := GEO: :: CAR2D 1 1
+           X- VOID  X+ VOID
+           Y- VOID  Y+ VOID
+           MIX 1
+           MESHX 0.0 0.05
+           MESHY 0.0 0.05
+           SPLITX 10
+           SPLITY 10
+           ;
+ETRACK := SNT: GEOM ::
+      TITLE 'Isotropic and boundary monodirectional sources.'
+      EDIT 2 MAXR 1000000 SCHM 1 DIAM 0 NLIVO SN 8 SCAT 8 EPSI 1.E-5
+      MAXI 300 BFPG QUAD 10 ;
+GTRACK := ETRACK ;
+GTRACK := SNT: GTRACK GEOM :: EDIT 2 BTE ;
+*----
+*  Compute the electron flux
+*----
+EMACRO := FMAC: FMAC_M ::
+  EDIT 2
+  PARTICLE BETA
+;
+EMACRO2 := EMACRO ;
+EMACRO := MAC: EMACRO EMACRO2 ::
+     MIX 1 1 OLDL
+     ;
+EMACRO2 := DELETE: EMACRO2 ;
+ESOUR := PSOUR: EMACRO ETRACK GEOM ::
+     MONO 1
+     Y-
+     INTG 1 1.0
+     DIR 0.7 0.714 0.0
+     XLIM 0.0 0.02
+     ;
+ESOUR := PSOUR: ESOUR EMACRO ETRACK GEOM ::
+     ISO 1
+     INTG 1 5.E2
+     XLIM 0.01 0.02
+     YLIM 0.03 0.04
+     ;
+SYSTEM := ASM: EMACRO ETRACK :: EDIT 2 ARM ;
+EFLUX := FLU: EMACRO ETRACK SYSTEM ESOUR ::
+     EDIT 2 TYPE S EXTE 100
+     ;
+EEDITS := OUT: EFLUX ETRACK EMACRO GEOM ::
+     EDIT 2 COND INTG NONE
+     ;
+SYSTEM := DELETE: SYSTEM ;
+
+*----
+*  Set the photon source
+*----
+GMACRO := FMAC: FMAC_M ::
+  EDIT 2
+  PARTICLE GAMA
+;
+
+GMACRO2 := GMACRO ;
+GMACRO := MAC: GMACRO GMACRO2 ::
+     MIX 1 1 OLDL
+     ;
+GSOUR := PSOUR: GMACRO GTRACK EFLUX ::
+   EDIT 1
+   PARTICLE BETA
+   ;
+*----
+*  Compute the photon flux
+*----
+SYSTEM := ASM: GMACRO GTRACK :: EDIT 1 ARM ;
+GFLUX := FLU: GMACRO GTRACK SYSTEM GSOUR ::
+    EDIT 2 TYPE S EXTE 100
+    ;
+GEDITS := OUT: GFLUX GTRACK GMACRO GEOM ::
+    EDIT 2 COND INTG NONE
+    ;
+SYSTEM := DELETE: SYSTEM ;
+*----
+*  Compute the primary energy deposition
+*----
+DEPOS := HEAT: EEDITS GEDITS ::
+    EDIT 1 NORM 19.3
+    ;
+*
+assertS DEPOS :: 'EDEPOS_TOT' 15 2.1926E01 ; 
+assertS DEPOS :: 'EDEPOS_TOT' 64 2.1259E01 ; 
+ECHO "Test TCM75 completed" ;
+END: ;

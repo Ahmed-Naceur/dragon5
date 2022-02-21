@@ -1,6 +1,7 @@
 *DECK SNFP1P
       SUBROUTINE SNFP1P(NREG,NMAT,ISCHM,IELEM,IBFP,NLF,NSCT,U,W,PL,MAT,
-     1 VOL,TOTAL,ESTOPW,NCODE,ZCODE,DELTAE,QEXT,QEXT0,LFIXUP,FLUX,FLUX0)
+     1 VOL,TOTAL,ESTOPW,NCODE,ZCODE,DELTAE,QEXT,QEXT0,LFIXUP,FLUX,FLUX0,
+     2 ISBS,NBS,ISBSM,BS)
 *
 *-----------------------------------------------------------------------
 *
@@ -61,10 +62,12 @@
 *----
 *  SUBROUTINE ARGUMENTS
 *----
-      INTEGER NREG,NMAT,ISCHM,IELEM,IBFP,NLF,NSCT,MAT(NREG),NCODE(2)
+      INTEGER NREG,NMAT,ISCHM,IELEM,IBFP,NLF,NSCT,MAT(NREG),NCODE(2),
+     1 ISBS,NBS,ISBSM(2*ISBS,NLF*ISBS)
       REAL U(NLF),W(NLF),PL(NSCT,NLF),VOL(NREG),TOTAL(0:NMAT),
      1 ESTOPW(0:NMAT,2),ZCODE(2),DELTAE,QEXT(IELEM,NSCT,NREG),
-     2 QEXT0(IELEM,NLF,NREG),FLUX(IELEM,NSCT,NREG),FLUX0(IELEM,NLF,NREG)
+     2 QEXT0(IELEM,NLF,NREG),FLUX(IELEM,NSCT,NREG),
+     3 FLUX0(IELEM,NLF,NREG),BS(NBS*ISBS)
       LOGICAL LFIXUP
 *----
 *  LOCAL VARIABLES
@@ -118,6 +121,9 @@
 *----
 *  BACKWARD SWEEP (FROM RIGHT TO LEFT).
 *----
+         IF(ISBS.EQ.1.AND.ISBSM(2,IP).NE.0) THEN
+           AFB=AFB+BS(ISBSM(2,IP))
+         ENDIF
          DO 30 I=NREG,1,-1
             IBM=MAT(I)
             DO 25 IEL=1,IELEM
@@ -189,6 +195,9 @@
             AFB=0.0
          ELSE
             AFB=ZCODE(1)*REAL(AFB)
+         ENDIF
+         IF(ISBS.EQ.1.AND.ISBSM(1,NLF-IP+1).NE.0) THEN
+           AFB=AFB+BS(ISBSM(1,NLF-IP+1))
          ENDIF
          DO 50 I=1,NREG
             IBM=MAT(I)
@@ -264,6 +273,9 @@
          ENDIF
          AFB=1.0
          DO 70 I=NREG,1,-1
+         IF(ISBS.EQ.1.AND.ISBSM(2,IP).NE.0) THEN
+           AFB=AFB+BS(ISBSM(2,IP))
+         ENDIF
             IBM=MAT(I)
             DO 65 IEL=1,IELEM
             Q(IEL)=0.0
@@ -334,6 +346,9 @@
             AFB=1.0
          ELSE
             AFB=ZCODE(1)*AFB
+         ENDIF
+         IF(ISBS.EQ.1.AND.ISBSM(1,NLF-IP+1).NE.0) THEN
+           AFB=AFB+BS(ISBSM(1,NLF-IP+1))
          ENDIF
          DO 90 I=1,NREG
             IBM=MAT(I)
@@ -409,6 +424,9 @@
 *  BACKWARD SWEEP (FROM RIGHT TO LEFT).
 *----
       IF(NCODE(1).EQ.4) AFB=AFB1
+      IF(ISBS.EQ.1.AND.ISBSM(2,IP).NE.0) THEN
+        AFB=AFB+BS(ISBSM(2,IP))
+      ENDIF
       DO 120 I=NREG,1,-1
          IBM=MAT(I)
          DO 105 IEL=1,IELEM
@@ -483,6 +501,9 @@
 *----
       AFB=ZCODE(1)*AFB
       IF(NCODE(1).EQ.4) AFB=AFB2
+      IF(ISBS.EQ.1.AND.ISBSM(1,NLF-IP+1).NE.0) THEN
+        AFB=AFB+BS(ISBSM(1,NLF-IP+1))
+      ENDIF
       DO 150 I=1,NREG
          IBM=MAT(I)
          DO 135 IEL=1,IELEM
@@ -563,6 +584,9 @@
 *----
 *  BACKWARD SWEEP (FROM RIGHT TO LEFT).
 *----
+         IF(ISBS.EQ.1.AND.ISBSM(2,IP).NE.0) THEN
+           AFB=AFB+BS(ISBSM(2,IP))
+         ENDIF
          DO 930 I=NREG,1,-1 
              
             IBM=MAT(I)
@@ -671,6 +695,9 @@
             AFB=0.0
          ELSE
             AFB=ZCODE(1)*REAL(AFB)
+         ENDIF
+         IF(ISBS.EQ.1.AND.ISBSM(1,NLF-IP+1).NE.0) THEN
+           AFB=AFB+BS(ISBSM(1,NLF-IP+1))
          ENDIF
          DO 950 I=1,NREG
              
@@ -785,6 +812,9 @@
             AFBA=REAL(AFB)
          ENDIF
          AFB=1.0
+         IF(ISBS.EQ.1.AND.ISBSM(2,IP).NE.0) THEN
+           AFB=AFB+BS(ISBSM(2,IP))
+         ENDIF
          DO 970 I=NREG,1,-1
              
             IBM=MAT(I)
@@ -893,6 +923,9 @@
             AFB=1.0
          ELSE
             AFB=ZCODE(1)*AFB
+         ENDIF
+         IF(ISBS.EQ.1.AND.ISBSM(1,NLF-IP+1).NE.0) THEN
+           AFB=AFB+BS(ISBSM(1,NLF-IP+1))
          ENDIF
          DO 990 I=1,NREG
              
@@ -1007,6 +1040,9 @@
 *  BACKWARD SWEEP (FROM RIGHT TO LEFT).
 *----
       IF(NCODE(1).EQ.4) AFB=AFB1
+      IF(ISBS.EQ.1.AND.ISBSM(2,IP).NE.0) THEN
+        AFB=AFB+BS(ISBSM(2,IP))
+      ENDIF
       DO 1020 I=NREG,1,-1
           
          IBM=MAT(I)
@@ -1119,6 +1155,9 @@
 *----
       AFB=ZCODE(1)*AFB
       IF(NCODE(1).EQ.4) AFB=AFB2
+      IF(ISBS.EQ.1.AND.ISBSM(1,NLF-IP+1).NE.0) THEN
+        AFB=AFB+BS(ISBSM(1,NLF-IP+1))
+      ENDIF
       DO 1050 I=1,NREG
           
          IBM=MAT(I)

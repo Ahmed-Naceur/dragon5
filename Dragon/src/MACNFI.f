@@ -117,6 +117,7 @@
           WRITE(IOUT,6010) 'ADDXSNAME-P0'
           WRITE(IOUT,6011) ((NAMEDO(ITC,ILO),ITC=1,2),ILO=1,NEDO)
         ENDIF
+        NEDF=0
         DO 140 ILO=1,NEDO
           DO 120 ILN=1,NEDF
             IF( NAMEDO(1,ILO) .EQ. NAMEDN(1,ILN) .AND.

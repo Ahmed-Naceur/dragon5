@@ -82,7 +82,13 @@
 *----
 *  RECOVER INFORMATION FROM physconst GROUP.
 *----
-      CALL hdf5_read_data(IPAPX,"/physconst/ENRGS",ENER)
+      IF(hdf5_group_exists(IPAPX,"/physconst/")) THEN
+        CALL hdf5_read_data(IPAPX,"/physconst/ENRGS",ENER)
+      ELSE IF(hdf5_group_exists(IPAPX,"/physco001/")) THEN
+        CALL hdf5_read_data(IPAPX,"/physco001/ENRGS",ENER)
+      ELSE
+        CALL XABORT('ACRCAL: GROUP physconst NOT FOUND IN HDF5 FILE.')
+      ENDIF
       DO IGR=1,NGROUP+1
         ENER(IGR)=ENER(IGR)/1.0E-6
       ENDDO
@@ -95,17 +101,35 @@
       ITOTM(:)=0
       IRESM(:)=0
       IF(NREA.GT.0) THEN
-        CALL hdf5_read_data(IPAPX,"/explicit/REANAME",NOMREA)
+        IF(hdf5_group_exists(IPAPX,"/explicit/")) THEN
+          CALL hdf5_read_data(IPAPX,"/explicit/REANAME",NOMREA)
+        ELSE IF(hdf5_group_exists(IPAPX,"/expli001/")) THEN
+          CALL hdf5_read_data(IPAPX,"/expli001/REANAME",NOMREA)
+        ELSE
+          CALL XABORT('ACRCAL: GROUP explicit NOT FOUND IN HDF5 FILE.')
+        ENDIF
         IF(IMPX.GT.1) THEN
           WRITE(IOUT,'(29H ACRCAL: Available reactions:/(1X,10A13))')
      1    (NOMREA(I),I=1,NREA)
         ENDIF
       ENDIF
       IF(NBISO.GT.0) THEN
-        CALL hdf5_read_data(IPAPX,"/explicit/ISONAME",NOMISO)
+        IF(hdf5_group_exists(IPAPX,"/explicit/")) THEN
+          CALL hdf5_read_data(IPAPX,"/explicit/ISONAME",NOMISO)
+        ELSE IF(hdf5_group_exists(IPAPX,"/expli001/")) THEN
+          CALL hdf5_read_data(IPAPX,"/expli001/ISONAME",NOMISO)
+        ELSE
+          CALL XABORT('ACRCAL: GROUP explicit NOT FOUND IN HDF5 FILE.')
+        ENDIF
       ENDIF
       IF(NBMAC.GT.0) THEN
-        CALL hdf5_read_data(IPAPX,"/explicit/MACNAME",NOMMAC)
+        IF(hdf5_group_exists(IPAPX,"/explicit/")) THEN
+          CALL hdf5_read_data(IPAPX,"/explicit/MACNAME",NOMMAC)
+        ELSE IF(hdf5_group_exists(IPAPX,"/expli001/")) THEN
+          CALL hdf5_read_data(IPAPX,"/expli001/MACNAME",NOMMAC)
+        ELSE
+          CALL XABORT('ACRCAL: GROUP explicit NOT FOUND IN HDF5 FILE.')
+        ENDIF
         DO I=1,NBMAC
           IF(NOMMAC(I).EQ.'TOTAL') ITOTM(:)=I
           IF(NOMMAC(I).EQ.'RESIDUAL') IRESM(:)=I
@@ -131,54 +155,56 @@
         CALL hdf5_read_data(IPAPX,TRIM(RECNAM)//"B2",B2)
         CALL LCMPUT(IPMAC,'B2  B1HOM',1,2,B2)
       ENDIF
-      K=0
-      CALL hdf5_info(IPAPX,TRIM(RECNAM)//"ADF",RANK,TYPE,NBYTE,DIMSR)
-      IF(TYPE.NE.99) THEN
-        HHAD(K+1)='ADF'
-        K=K+1
-      ENDIF
-      CALL hdf5_info(IPAPX,TRIM(RECNAM)//"CPDF",RANK,TYPE,NBYTE,DIMSR)
-      IF(TYPE.NE.99) THEN
-        HHAD(K+1)='CPDF'
-        K=K+1
-      ENDIF
-      CALL hdf5_info(IPAPX,TRIM(RECNAM)//"INTERNAL_ADF",RANK,TYPE,NBYTE,
-     1 DIMSR)
-      IF(TYPE.NE.99) THEN
-        HHAD(K+1)='INTERNAL_ADF'
-        K=K+1
-      ENDIF
-      CALL hdf5_info(IPAPX,TRIM(RECNAM)//"INTERNAL_CPDF",RANK,TYPE,
-     1 NBYTE,DIMSR)
-      IF(TYPE.NE.99) THEN
-        HHAD(K+1)='INTERNAL_CPDF'
-        K=K+1
-      ENDIF
-      IF(4*K.NE.NSURFD) CALL XABORT('ACRCAL: INVALID ADF COUNT.')
-      CALL LCMSIX(IPMAC,'ADF',1)
-      CALL LCMPUT(IPMAC,'NTYPE',1,1,NSURFD)
-      ALLOCATE(WRK(NGROUP),HADF(NSURFD))
-      DO I=1,K
-        CALL hdf5_read_data(IPAPX,TRIM(RECNAM)//HHAD(I),ADF)
-        DO I0=1,4
-          IF(HHAD(I).EQ.'ADF') THEN
-            WRITE(TEXT8,'(3HADF,I1)') I0
-          ELSE IF(HHAD(I).EQ.'CPDF') THEN
-            WRITE(TEXT8,'(4HCPDF,I1)') I0
-          ELSE IF(HHAD(I).EQ.'INTERNAL_ADF') THEN
-            WRITE(TEXT8,'(6HIN_ADF,I1)') I0
-          ELSE IF(HHAD(I).EQ.'INTERNAL_CPDF') THEN
-            WRITE(TEXT8,'(7HIN_CPDF,I1)') I0
-          ENDIF
-          HADF((I-1)*4+I0)=TEXT8
-          WRK(:)=ADF(I0,:)
-          CALL LCMPUT(IPMAC,TEXT8,NGROUP,2,WRK)
+      IF(NSURFD.GT.0) THEN
+        K=0
+        CALL hdf5_info(IPAPX,TRIM(RECNAM)//"ADF",RANK,TYPE,NBYTE,DIMSR)
+        IF(TYPE.NE.99) THEN
+          HHAD(K+1)='ADF'
+          K=K+1
+        ENDIF
+        CALL hdf5_info(IPAPX,TRIM(RECNAM)//"CPDF",RANK,TYPE,NBYTE,DIMSR)
+        IF(TYPE.NE.99) THEN
+          HHAD(K+1)='CPDF'
+          K=K+1
+        ENDIF
+        CALL hdf5_info(IPAPX,TRIM(RECNAM)//"INTERNAL_ADF",RANK,TYPE,
+     1  NBYTE,DIMSR)
+        IF(TYPE.NE.99) THEN
+          HHAD(K+1)='INTERNAL_ADF'
+          K=K+1
+        ENDIF
+        CALL hdf5_info(IPAPX,TRIM(RECNAM)//"INTERNAL_CPDF",RANK,TYPE,
+     1  NBYTE,DIMSR)
+        IF(TYPE.NE.99) THEN
+          HHAD(K+1)='INTERNAL_CPDF'
+          K=K+1
+        ENDIF
+        IF(4*K.NE.NSURFD) CALL XABORT('ACRCAL: INVALID ADF COUNT.')
+        CALL LCMSIX(IPMAC,'ADF',1)
+        CALL LCMPUT(IPMAC,'NTYPE',1,1,NSURFD)
+        ALLOCATE(WRK(NGROUP),HADF(NSURFD))
+        DO I=1,K
+          CALL hdf5_read_data(IPAPX,TRIM(RECNAM)//HHAD(I),ADF)
+          DO I0=1,4
+            IF(HHAD(I).EQ.'ADF') THEN
+              WRITE(TEXT8,'(3HADF,I1)') I0
+            ELSE IF(HHAD(I).EQ.'CPDF') THEN
+              WRITE(TEXT8,'(4HCPDF,I1)') I0
+            ELSE IF(HHAD(I).EQ.'INTERNAL_ADF') THEN
+              WRITE(TEXT8,'(6HIN_ADF,I1)') I0
+            ELSE IF(HHAD(I).EQ.'INTERNAL_CPDF') THEN
+              WRITE(TEXT8,'(7HIN_CPDF,I1)') I0
+            ENDIF
+            HADF((I-1)*4+I0)=TEXT8
+            WRK(:)=ADF(I0,:)
+            CALL LCMPUT(IPMAC,TEXT8,NGROUP,2,WRK)
+          ENDDO
+          DEALLOCATE(ADF)
         ENDDO
-        DEALLOCATE(ADF)
-      ENDDO
-      CALL LCMPTC(IPMAC,'HADF',8,NSURFD,HADF)
-      DEALLOCATE(HADF,WRK)
-      CALL LCMSIX(IPMAC,' ',2)
+        CALL LCMPTC(IPMAC,'HADF',8,NSURFD,HADF)
+        DEALLOCATE(HADF,WRK)
+        CALL LCMSIX(IPMAC,' ',2)
+      ENDIF
 *----
 *  FIND SCATTERING ANISOTROPY.
 *----

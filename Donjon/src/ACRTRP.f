@@ -66,7 +66,7 @@
 *----
       CALL hdf5_read_data(IPAPX,"/paramtree/DEBTREE",JDEBAR)
       CALL hdf5_read_data(IPAPX,"/paramtree/TREEVAL",JARBVA)
-      CALL hdf5_read_data(IPAPX,"/paramdescript/NVALUE",NVALUE)
+      CALL hdf5_read_data(IPAPX,"/paramdescrip/NVALUE",NVALUE)
 *----
 *  COMPUTE TERP FACTORS
 *----

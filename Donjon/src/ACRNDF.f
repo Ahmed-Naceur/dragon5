@@ -57,7 +57,13 @@
       CHARACTER(LEN=4), ALLOCATABLE, DIMENSION(:) :: TYPISO
       CHARACTER(LEN=8), ALLOCATABLE, DIMENSION(:) :: HPYNAM
 *
-      CALL hdf5_read_data(IPAPX,"/physconst/ISOTYP",TYPISO)
+      IF(hdf5_group_exists(IPAPX,"/physconst/")) THEN
+        CALL hdf5_read_data(IPAPX,"/physconst/ISOTYP",TYPISO)
+      ELSE IF(hdf5_group_exists(IPAPX,"/physco001/")) THEN
+        CALL hdf5_read_data(IPAPX,"/physco001/ISOTYP",TYPISO)
+      ELSE
+        CALL XABORT('ACRNDF: GROUP physconst NOT FOUND IN HDF5 FILE.')
+      ENDIF
       NBISO=SIZE(TYPISO,1)
       IF(ISO.LE.NBISO) THEN
         IF(TYPISO(ISO).EQ.'OTHE') ISTYP=1

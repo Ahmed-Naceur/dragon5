@@ -17,6 +17,10 @@ HUTL: AFA_180 :: DIR
  DIR 'explicit/ISONAME'
  DIR 'physconst/ISOTYP'
  DIR 'physconst/LAMNAME'
+ TEST physconst
+ TEST phys001
+ TEST NCALS
+ TEST '/calc       1/xs/mac'
  INFO NCALS IMPR NCALS
  INFO ASSNAME IMPR ASSNAME
  INFO physconst/LAMNAME IMPR physconst/LAMNAME

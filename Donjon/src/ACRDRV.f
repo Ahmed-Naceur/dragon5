@@ -219,7 +219,7 @@
          CALL hdf5_info(IPAPX,RECNAM,RANK,TYPE,NBYTE,DIMSR)
          IF(TYPE.EQ.99) THEN
             WRITE(HSMG,'(25HACRDRV: GLOBAL PARAMETER ,A,9H NOT SET.)')
-     1      PARNAM(IPAR)
+     1      TRIM(PARNAM(IPAR))
             CALL XABORT(HSMG)
          ENDIF
          IF(PARFMT(IPAR).EQ.'ENTIER') THEN
@@ -232,13 +232,13 @@
             IF(VALI(IPAR).EQ.VINTE(J)) THEN
                MUPLET(IPAR)=J
                MUTYPE(IPAR)=ITYPE
-               DEALLOCATE(VINTE)
+               DEALLOCATE(NVALUE,VINTE)
                GO TO 10
             ENDIF
    70       CONTINUE
             WRITE(HSMG,'(26HACRDRV: INTEGER PARAMETER ,A,9H WITH VAL,
      1      2HUE,I5,33H NOT FOUND IN APEX FILE DATABASE.)') 
-     2      PARNAM(IPAR),VALI(IPAR)
+     2      TRIM(PARNAM(IPAR)),VALI(IPAR)
             CALL XABORT(HSMG)
          ELSE IF(PARFMT(IPAR).EQ.'FLOTTANT') THEN
             CALL REDGET(INDIC,NITMA,VALR(IPAR,1),TEXT72,DFLOTT)
@@ -256,7 +256,7 @@
                   MUPLET(IPAR)=J
                   IF(ITYPE.NE.1) MUPLET(IPAR)=-1
                   MUTYPE(IPAR)=ITYPE
-                  DEALLOCATE(VREAL)
+                  DEALLOCATE(NVALUE,VREAL)
                   GO TO 20
                ENDIF
    80          CONTINUE
@@ -264,22 +264,22 @@
             IF(VALR(IPAR,1).LT.VREAL(1)) THEN
                WRITE(HSMG,'(23HACRDRV: REAL PARAMETER ,A,10H WITH VALU,
      1         1HE,1P,E12.4,25H IS OUTSIDE THE DOMAIN (<,E12.4,1H))')
-     2         PARNAM(IPAR),VALR(IPAR,1),VREAL(1)
+     2         TRIM(PARNAM(IPAR)),VALR(IPAR,1),VREAL(1)
                CALL XABORT(HSMG)
             ELSE IF(VALR(IPAR,2).GT.VREAL(NVALUE(IPAR))) THEN
                WRITE(HSMG,'(23HACRDRV: REAL PARAMETER ,A,10H WITH VALU,
      1         1HE,1P,E12.4,25H IS OUTSIDE THE DOMAIN (>,E12.4,1H))')
-     2         PARNAM(IPAR),VALR(IPAR,1),VREAL(NVALUE(IPAR))
+     2         TRIM(PARNAM(IPAR)),VALR(IPAR,1),VREAL(NVALUE(IPAR))
                CALL XABORT(HSMG)
             ELSE IF(VALR(IPAR,1).GT.VALR(IPAR,2)) THEN
                WRITE(HSMG,'(23HACRDRV: REAL PARAMETER ,A,9H IS DEFIN,
-     1         7HED WITH,1P,E12.4,2H >,E12.4,1H.)') PARNAM(IPAR),
+     1         7HED WITH,1P,E12.4,2H >,E12.4,1H.)') TRIM(PARNAM(IPAR)),
      2         VALR(IPAR,1),VALR(IPAR,2)
                CALL XABORT(HSMG)
             ENDIF
             MUPLET(IPAR)=-1
             MUTYPE(IPAR)=ITYPE
-            DEALLOCATE(VREAL)
+            DEALLOCATE(NVALUE,VREAL)
             GO TO 20
          ELSE IF(PARFMT(IPAR).EQ.'CHAINE') THEN
             IF(ITYPE.NE.1) CALL XABORT('ACRDRV: SET MANDATORY WITH STR'
@@ -291,13 +291,13 @@
             IF(VALH(IPAR).EQ.VCHAR(J)) THEN
                MUPLET(IPAR)=J
                MUTYPE(IPAR)=ITYPE
-               DEALLOCATE(VCHAR)
+               DEALLOCATE(NVALUE,VCHAR)
                GO TO 10
             ENDIF
    90       CONTINUE
             WRITE(HSMG,'(25HACRDRV: STRING PARAMETER ,A,10H WITH VALU,
      1      2HE ,A12,33H NOT FOUND IN APEX FILE DATABASE.)')
-     2      PARNAM(IPAR), VALH(IPAR)
+     2      TRIM(PARNAM(IPAR)), VALH(IPAR)
             CALL XABORT(HSMG)
          ELSE
             CALL XABORT('ACRDRV: INVALID FORMAT='//PARFMT(IPAR))
@@ -311,10 +311,10 @@
              IF(PARFMT(IPAR).EQ.'FLOTTANT')THEN
                IF(LCUB2(IPAR)) THEN
                  WRITE(IOUT,'(26H ACRDRV: GLOBAL PARAMETER:,A,7H ->CUBI,
-     1           16HC INTERPOLATION.)') PARNAM(IPAR)
+     1           16HC INTERPOLATION.)') TRIM(PARNAM(IPAR))
                ELSE
                  WRITE(IOUT,'(26H ACRDRV: GLOBAL PARAMETER:,A,7H ->LINE,
-     1           17HAR INTERPOLATION.)') PARNAM(IPAR)
+     1           17HAR INTERPOLATION.)') TRIM(PARNAM(IPAR))
                ENDIF
              ENDIF
            ENDDO

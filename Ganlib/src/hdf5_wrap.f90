@@ -21,7 +21,7 @@ module hdf5_wrap
    integer, parameter :: MAX_NAME = 1024
    public :: hdf5_open_file,hdf5_close_file,hdf5_get_dimensions,hdf5_get_shape, &
              hdf5_list,hdf5_info,hdf5_read_data,hdf5_write_data,hdf5_list_datasets, &
-             hdf5_list_groups
+             hdf5_list_groups,hdf5_group_exists
 
    interface hdf5_read_data
      module procedure hdf5_read_data_0d_int4,  hdf5_read_data_1d_int4,  &
@@ -290,6 +290,23 @@ subroutine hdf5_list_groups(ifile, name, groups)
    call STRFIL1D(groups,pt_strim,MAX_NAME)
    deallocate(pt_strim)
 end subroutine hdf5_list_groups
+!
+function hdf5_group_exists(ifile, name) result(lexist)
+   ! test for existence of a group
+   type(c_ptr), intent(in) :: ifile
+   character(len=*), intent(in) :: name
+   logical :: lexist
+   interface
+      function hdf5_group_exists_c (ifile, namp) bind(c)
+         use, intrinsic :: iso_c_binding
+         integer(c_int) :: hdf5_group_exists_c
+         type(c_ptr) :: ifile
+         character(kind=c_char), dimension(*) :: namp
+      end function hdf5_group_exists_c
+   end interface
+   call STRCUT(name1024, name)
+   lexist = (hdf5_group_exists_c(ifile, name1024) == 0)
+end function hdf5_group_exists
 !
 subroutine hdf5_read_data_0d_int4(ifile, name, idata)
    ! read a rank 0 integer dataset

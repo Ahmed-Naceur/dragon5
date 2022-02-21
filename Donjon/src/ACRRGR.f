@@ -312,7 +312,7 @@
         CALL hdf5_info(IPAPX,RECNAM,RANK,TYPE,NBYTE,DIMSR)
         IF(TYPE.EQ.99) THEN
           WRITE(HSMG,'(25HACRRGR: GLOBAL PARAMETER ,A,12H NOT SET(1).)')
-     1    PARNAM(IPAR)
+     1    TRIM(PARNAM(IPAR))
           CALL XABORT(HSMG)
         ENDIF
         IF((IPAR.GT.NPAR).OR.
@@ -436,7 +436,7 @@
               CALL hdf5_info(IPAPX,RECNAM,RANK,TYPE,NBYTE,DIMSR)
               IF(TYPE.EQ.99) THEN
                  WRITE(HSMG,'(25HACRRGR: GLOBAL PARAMETER ,A,
-     1           12H NOT SET(2).)') PARNAM(IPAR)
+     1           12H NOT SET(2).)') TRIM(PARNAM(IPAR))
                  CALL XABORT(HSMG)
               ENDIF
               CALL hdf5_read_data(IPAPX,RECNAM,VREAL)
@@ -478,7 +478,7 @@
               CALL hdf5_info(IPAPX,RECNAM,RANK,TYPE,NBYTE,DIMSR)
               IF(TYPE.EQ.99) THEN
                  WRITE(HSMG,'(25HACRRGR: GLOBAL PARAMETER ,A,
-     1           12H NOT SET(3).)') PARNAM(IPAR)
+     1           12H NOT SET(3).)') TRIM(PARNAM(IPAR))
                  CALL XABORT(HSMG)
               ENDIF
               CALL hdf5_read_data(IPAPX,RECNAM,VREAL)
@@ -644,7 +644,7 @@
         CALL hdf5_info(IPAPX,RECNAM,RANK,TYPE,NBYTE,DIMSR)
         IF(TYPE.EQ.99) THEN
           WRITE(HSMG,'(25HACRRGR: GLOBAL PARAMETER ,A,12H NOT SET(4).)')
-     1    PARNAM(IPAR)
+     1    TRIM(PARNAM(IPAR))
           CALL XABORT(HSMG)
         ENDIF
         ITYPE=0
@@ -716,7 +716,7 @@
         CALL hdf5_info(IPAPX,RECNAM,RANK,TYPE,NBYTE,DIMSR)
         IF(TYPE.EQ.99) THEN
           WRITE(HSMG,'(25HACRRGR: GLOBAL PARAMETER ,A,12H NOT SET(5).)')
-     1    PARNAM(IPAR)
+     1    TRIM(PARNAM(IPAR))
           CALL XABORT(HSMG)
         ENDIF
         CALL hdf5_read_data(IPAPX,RECNAM,VREAL)

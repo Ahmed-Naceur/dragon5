@@ -26,3 +26,4 @@ tests :
 	./rpython test_lifo.py -quiet
 	./rpython fact.py -quiet
 	./rpython simplePOW.py -quiet
+	./rpython Exemple_jdd.py -quiet

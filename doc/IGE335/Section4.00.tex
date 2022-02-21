@@ -192,11 +192,12 @@ sub-directories to the printer.
 
 \subsection{The HUTL: module}\label{sect:HUTLData}
 
-The {\tt HUTL:} module is used to perform utility actions on a {\sc hdf5} file.\cite{hdf5}
-The calling specifications are:
+A HDF5 file is a hierarchical structure made of groups (sub-structures) and datasets (arrays). The {\tt HUTL:} module is used to perform
+utility actions on a {\sc hdf5} file.\cite{hdf5} The calling specifications are:
 
 \begin{DataStructure}{Structure \dstr{HUTL:}}
 $[[$ \moc{DIR} $[$ \dusa{BLOCK} $]~]]$ \\
+$[[$ \moc{TEST} \dusa{BLOCK} $]]$ \\
 $[[$ \moc{INFO} \dusa{BLOCK} $]]$ \\
 $[[$ \moc{IMPR} \dusa{BLOCK} $]]$ \\
 $[[$ \moc{CREA} \dusa{BLOCK} $[~[$ \dusa{ilenc1} $]$ \dusa{ilenc2} $]$ \moc{=} $\{$
@@ -208,6 +209,8 @@ $[[$ \moc{GREP} \dusa{BLOCK} $[$ \dusa{ilenc1} $]$ {\tt>>}\dusa{value}{\tt <<} $
 \begin{ListeDeDescription}{mmmmmmmm}
 
 \item[\moc{DIR}] keyword used to print a group table of content. If \dusa{BLOCK} is not set, the table of content of the root group is printed.
+
+\item[\moc{TEST}] keyword used to test existence of a group.
 
 \item[\moc{INFO}] keyword used to print information about a dataset.
 
@@ -489,7 +492,8 @@ $=2$: real; $=3$: character; $=4$: double precision; $=5$: logical; $=10$: list;
 
 \item[\moc{LENGTH}] keyword used to get the length of {\sc lcm} record \dusa{BLOCK}.
 
-\item[\dusa{ilong}] length of record.
+\item[\dusa{ilong}] length of record. If the record is made of characters (\dusa{itype} $=3$),
+then \dusa{ilong} is a character count.
 
 \item[\moc{GETVAL}] keyword used to get values from an existing record.
 The receiving CLE-2000 variables are assumed to be of the same type as the

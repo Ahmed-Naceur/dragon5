@@ -90,7 +90,7 @@ fi
 cp "$CodeDir"/data/$data ./mydata
 
 if [ -d "$CodeDir"/data/`echo $xxx`_proc ]; then
-  cp "$CodeDir"/data/`echo $xxx`_proc/*.c2m .
+  cp "$CodeDir"/data/`echo $xxx`_proc/*.c2m . 2> /dev/null
 fi
 if [ -f "$CodeDir"/data/$xxx.access ]; then
   if [ $quiet = 0 ]; then

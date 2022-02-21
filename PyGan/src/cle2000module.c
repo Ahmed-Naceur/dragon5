@@ -39,7 +39,7 @@ void xabort_c(char *msg){
 
 static PyObject *cle2000_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
    char *nomsub="cle2000_new";
-   PyObject *stacklist, *item=NULL;
+   PyObject *stacklist=NULL;
    char *procname;
    long impx = 0;
   
@@ -49,6 +49,7 @@ static PyObject *cle2000_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
                                       &procname, &stacklist, &impx)) {
      return NULL;
    }
+   Py_INCREF(stacklist);
 
    cle2000object *self = (cle2000object*)PyObject_New(cle2000object, type);
    self->impx_cle2000 = impx;
@@ -82,31 +83,30 @@ static PyObject *cle2000_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
      my_lifo = lifo_object->stack;
    } else { /* stacklist is a unique readonly PyObject */
      cleopn(&my_lifo);
-     item = stacklist;
      my_node = (lifo_node *) malloc(sizeof(lifo_node));
      strcpy(my_node->name, "inpu_val0001"); 
-     if (PyObject_IsInstance(item, (PyObject *)&PyLong_Type)) {
-       long my_int = (long)PyLong_AsLong(item);
+     if (PyObject_IsInstance(stacklist, (PyObject *)&PyLong_Type)) {
+       long my_int = (long)PyLong_AsLong(stacklist);
        if (impx > 0) printf("%s: unique item is an integer --> %ld\n", nomsub, my_int);
        my_node->type = 11; my_node->value.ival = my_int;
-     } else if (PyObject_IsInstance(item, (PyObject *)&PyFloat_Type)) {
-       double my_double = (double)PyFloat_AsDouble(item);
+     } else if (PyObject_IsInstance(stacklist, (PyObject *)&PyFloat_Type)) {
+       double my_double = (double)PyFloat_AsDouble(stacklist);
        if (impx > 0) printf("%s: unique item is a floating point number --> %e\n", nomsub, my_double);
        my_node->type = 14; my_node->value.dval = my_double;
-     } else if (PyObject_IsInstance(item, (PyObject *)&PyBool_Type)) {
+     } else if (PyObject_IsInstance(stacklist, (PyObject *)&PyBool_Type)) {
        long my_int = 1;
-       if (item == Py_False) my_int = 0;
+       if (stacklist == Py_False) my_int = 0;
        if (impx > 0) printf("%s: unique item is a boolean number --> %ld\n", nomsub, my_int);
        my_node->type = 15; my_node->value.ival = my_int;
-     } else if (PyObject_IsInstance(item, (PyObject *)&PyUnicode_Type)) {
-       int len = PyUnicode_GET_LENGTH(item);
+     } else if (PyObject_IsInstance(stacklist, (PyObject *)&PyUnicode_Type)) {
+       int len = PyUnicode_GET_LENGTH(stacklist);
        if (len > 72) {
          sprintf(AbortString,"%s: character data overflow",nomsub);
          PyErr_SetString(PyCle2000Error, AbortString);
          return NULL;
        }
-       int kind = PyUnicode_KIND(item);
-       void *data = PyUnicode_DATA(item);
+       int kind = PyUnicode_KIND(stacklist);
+       void *data = PyUnicode_DATA(stacklist);
        char* my_string;
        my_string = (char *)malloc(len+1);
        int n;
@@ -125,6 +125,7 @@ static PyObject *cle2000_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
      }
      clepush(&my_lifo, my_node);
    }
+   Py_DECREF(stacklist);
    self->stack = my_lifo;
    return (PyObject *)self;
 }

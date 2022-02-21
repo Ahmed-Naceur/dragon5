@@ -30,6 +30,7 @@ subroutine DRVUH5(nentry,hentry,ientry,jentry,kentry)
   ! List of utility actions:
   !   DIR  : print the table of content.
   !   INFO : print information about a dataset.
+  !   TEST : test if a group exists.
   !   IMPR : print a dataset.
   !   CREA : create a dataset.
   !   GREP : recover a single component in a dataset of rank 1.
@@ -85,8 +86,8 @@ subroutine DRVUH5(nentry,hentry,ientry,jentry,kentry)
     flush(OUTPUT_UNIT)
     call REDGET(indprt,nitma,flott,text72,dflott)
     if(indprt.ne.3) call XABORT('DRVUH5: dataset name expected.')
-    if((text72.eq.'INFO').or.(text72.eq.'IMPR').or.(text72.eq.'CREA').or. &
-       (text72.eq.'DIR').or.(text72.eq.';')) then
+    if((text72.eq.'INFO').or.(text72.eq.'TEST').or.(text72.eq.'IMPR').or. &
+       (text72.eq.'CREA').or.(text72.eq.'DIR').or.(text72.eq.';')) then
       text4=text72(:4)
       call hdf5_list(my_hdf5,' ')
       go to 20
@@ -95,10 +96,19 @@ subroutine DRVUH5(nentry,hentry,ientry,jentry,kentry)
   else if(text4.eq.'INFO') then
     ! print a dataset.
     call REDGET(indprt,nitma,flott,text72,dflott)
-    if(indprt.ne.3) call XABORT('DRVUH5: dataset name  expected.')
+    if(indprt.ne.3) call XABORT('DRVUH5: dataset name expected.')
     call hdf5_info(my_hdf5,text72,rank,type,nbyte,dimsr)
     write(6,'(/32h DRVUF5: information on dataset ,a,1h:)') text72
     write(6,*) 'rank=',rank,' type=',type,' nbyte=',nbyte,' dimsr=',dimsr(:rank)
+  else if(text4.eq.'TEST') then
+    ! test if a group exists.
+    call REDGET(indprt,nitma,flott,text72,dflott)
+    if(indprt.ne.3) call XABORT('DRVUH5: dataset name expected.')
+    if (hdf5_group_exists(my_hdf5,text72)) then
+      write(6,'(/15h DRVUF5: group ,a,8h exists.)') trim(text72)
+    else
+      write(6,'(/15h DRVUF5: group ,a,15h doesn''t exist.)') trim(text72)
+    endif
   else if(text4.eq.'IMPR') then
     ! print a dataset.
     call REDGET(indprt,nitma,flott,text72,dflott)

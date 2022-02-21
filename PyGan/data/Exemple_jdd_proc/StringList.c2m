@@ -1,0 +1,14 @@
+*----
+*  TEST PROCEDURE
+*  Creating a LCM LINKED_LIST with 1 character
+*----
+PARAMETER  MY_LIST ::
+  ::: LINKED_LIST MY_LIST ; ;
+MODULE UTL: DELETE: END: ;
+
+*--- Defining a list of 1 character ---*
+MY_LIST := UTL: ::
+  CREA 'TEST' 1 = 'A' ;
+
+END: ;
+QUIT "LIST" .

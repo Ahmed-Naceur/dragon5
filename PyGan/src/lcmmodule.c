@@ -56,17 +56,19 @@ static PyObject *lcm_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
      char *name = NULL;
      char s[73];
      int_32 iact = 0;
+     PyObject *pyobj = NULL;
      int_32 lrda = 128;
      int_32 impx = 0;
-  
+
      /* Parse arguments */
-     static char *kwlist[] = {"pytype", "name", "iact", "lrda", "impx", NULL};
-     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|slll", kwlist,
-                                      &pytype, &name, &iact, &lrda, &impx)) {
+     static char *kwlist[] = {"pytype", "name", "iact", "pyobj", "lrda", "impx", NULL};
+     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|slOll", kwlist,
+                                      &pytype, &name, &iact, &pyobj, &lrda, &impx)) {
          return NULL;
      }
 
      pylcmobject *self = (pylcmobject*)PyObject_New(pylcmobject, type);
+
      if (name == NULL) {
        long iii=(long)((PyObject_Hash((PyObject *)self)-1)%1000000000000 + 1);
        sprintf(s,"LCM_%12ld",iii);
@@ -79,8 +81,8 @@ static PyObject *lcm_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
        }
        strcpy(s,name);
      }	
-     if (impx > 0) {
-       printf("%s: new lcm type=%s name=%s iact=%d impx=%d\n", nomsub, pytype, s, iact, impx);
+     if (impx > 1) {
+       printf("%s: new lcm type=%s iact=%d impx=%d\n", nomsub, pytype, iact, impx);
        if (strcmp(pytype,"DA") == 0) printf("%s: lrda=%d\n", nomsub, lrda);
      }
      if (iact < 0 || iact > 2) {
@@ -88,55 +90,132 @@ static PyObject *lcm_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
        PyErr_SetString(PyLcmError, AbortString);
        return NULL;
      }
+
      self->impx_lcm = impx;
      self->iact_lcm = iact;
      strcpy(self->type_lcm, pytype);
-     if (strcmp(pytype,"LCM") == 0) {
-       int_32 medium = 1;
-       lcmop_c(&(self->iplist), s, iact, medium, impx);
-     } else if (strcmp(pytype,"XSM") == 0) {
-       int_32 medium = 2;
-       lcmop_c(&(self->iplist), s, iact, medium, impx);
-     } else if ((strcmp(pytype,"BINARY") == 0) || (strcmp(pytype,"ASCII") == 0)) {
-     } else if (strcmp(pytype,"DA")== 0) {
-       self->lrda_lcm = lrda;
-     } else if (strcmp(pytype,"HDF5")== 0) {
-     } else if (strcmp(pytype,"LCM_INP") == 0) {
-       strcpy(self->type_lcm, "LCM");
-       int_32 medium = 1; /* create a lcm file */
-       int_32 imode = 2;  /* from ascii file */
-       int_32 idir = 2;   /* to import */
-       if (iact != 0) {
-         sprintf(AbortString,"%s: invalid iact=%d (0 expected)",nomsub,iact);
+     if (pyobj == NULL) {
+       if (impx > 0) {
+         printf("%s: create PyObject of type= %s with name=%s\n", nomsub, pytype, s);
+       }
+       if (strcmp(pytype,"LCM") == 0) {
+         int_32 medium = 1;
+         lcmop_c(&(self->iplist), s, iact, medium, impx);
+       } else if (strcmp(pytype,"XSM") == 0) {
+         int_32 medium = 2;
+         lcmop_c(&(self->iplist), s, iact, medium, impx);
+       } else if ((strcmp(pytype,"BINARY") == 0) || (strcmp(pytype,"ASCII") == 0)) {
+       } else if (strcmp(pytype,"DA")== 0) {
+         self->lrda_lcm = lrda;
+       } else if (strcmp(pytype,"HDF5")== 0) {
+       } else if (strcmp(pytype,"LCM_INP") == 0) {
+         strcpy(self->type_lcm, "LCM");
+         int_32 medium = 1; /* create a lcm file */
+         int_32 imode = 2;  /* from ascii file */
+         int_32 idir = 2;   /* to import */
+         if (iact != 0) {
+           sprintf(AbortString,"%s: invalid iact=%d (0 expected)",nomsub,iact);
+           PyErr_SetString(PyLcmError, AbortString);
+           return NULL;
+         }
+         char s2[74];
+         sprintf(s2,"_%s",s);
+         FILE *fp = fopen(s2, "r");
+         lcmop_c(&(self->iplist), s, iact, medium, impx);
+         lcmexp_c(&(self->iplist), impx, fp, imode, idir);
+         fclose(fp);
+       } else if (strcmp(pytype,"XSM_INP") == 0) {
+         strcpy(self->type_lcm, "XSM");
+         int_32 medium = 2;  /* create a xsm file */
+         int_32 imode = 2;  /* from ascii file */
+         int_32 idir = 2;   /* to import */
+         if (iact != 0) {
+           sprintf(AbortString,"%s: invalid iact=%d (0 expected)",nomsub,iact);
+           PyErr_SetString(PyLcmError, AbortString);
+           return NULL;
+         }
+         char s2[74];
+         sprintf(s2,"_%s",s);
+         FILE *fp = fopen(s2, "r");
+         lcmop_c(&(self->iplist), s, iact, medium, impx);
+         lcmexp_c(&(self->iplist), impx, fp, imode, idir);
+         fclose(fp);
+       } else {
+         sprintf(AbortString,"%s: invalid type=%s",nomsub,pytype);
          PyErr_SetString(PyLcmError, AbortString);
          return NULL;
        }
-       char s2[73];
-       sprintf(s2,"_%s",s);
-       FILE *fp = fopen(s2, "r");
-       lcmop_c(&(self->iplist), s, iact, medium, impx);
-       lcmexp_c(&(self->iplist), impx, fp, imode, idir);
-       fclose(fp);
-     } else if (strcmp(pytype,"XSM_INP") == 0) {
-       strcpy(self->type_lcm, "XSM");
-       int_32 medium = 2;  /* create a xsm file */
-       int_32 imode = 2;  /* from ascii file */
-       int_32 idir = 2;   /* to import */
-       if (iact != 0) {
-         sprintf(AbortString,"%s: invalid iact=%d (0 expected)",nomsub,iact);
-         PyErr_SetString(PyLcmError, AbortString);
-         return NULL;
-       }
-       char s2[73];
-       sprintf(s2,"_%s",s);
-       FILE *fp = fopen(s2, "r");
-       lcmop_c(&(self->iplist), s, iact, medium, impx);
-       lcmexp_c(&(self->iplist), impx, fp, imode, idir);
-       fclose(fp);
      } else {
-       sprintf(AbortString,"%s: invalid type=%s",nomsub,pytype);
-       PyErr_SetString(PyLcmError, AbortString);
-       return NULL;
+       /* deep copy and export logic */
+       long medium, imode;
+       long idir = 1; /* exportation */
+       char nameobj[73], namedir[13];
+       int_32 vide, longueur, memoire, access;
+       Py_INCREF(pyobj);
+       if (!PyObject_IsInstance(pyobj, (PyObject *)&PyLcmType)) {
+         sprintf(AbortString,"%s: invalid object type as argument. PyLcmType expected",nomsub);
+         PyErr_SetString(PyLcmError, AbortString);
+         return NULL;
+       } else if (iact != 0) {
+         sprintf(AbortString,"%s: invalid iact=%d (0 expected)",nomsub,iact);
+         PyErr_SetString(PyLcmError, AbortString);
+         return NULL;
+       }
+       pylcmobject *lcm_object = (pylcmobject *)pyobj;
+       char *pytype_rhs = lcm_object->type_lcm;
+       if ((strcmp(pytype_rhs,"LCM") != 0) && (strcmp(pytype_rhs,"XSM") != 0)) {
+         sprintf(AbortString,"%s: invalid pyobj type=%s (LCM, XSM expected)",nomsub,pytype_rhs);
+         PyErr_SetString(PyLcmError, AbortString);
+         return NULL;
+       }
+       if (strcmp(pytype,"LCM_INP") == 0) {
+         medium = 1;
+         imode = 0;
+       } else if (strcmp(pytype,"XSM_INP") == 0) {
+         medium = 2;
+         imode = 0;
+       } else if (strcmp(pytype,"BINARY") == 0) {
+         medium = 0;
+         imode = 1; /* binary */
+       } else if (strcmp(pytype,"ASCII") == 0) {
+         medium = 0;
+         imode = 2; /* ascii */
+       } else {
+         sprintf(AbortString,"%s: invalid ptype=%s (LCM, XSM, BINARY, ASCII expected)",nomsub,pytype);
+         PyErr_SetString(PyLcmError, AbortString);
+         return NULL;
+       }
+       lcminf_c(&(lcm_object->iplist), nameobj, namedir, &vide, &longueur, &memoire, &access);
+       if (longueur != -1) {
+         sprintf(AbortString,"%s: associative table expected for copy or export",nomsub);
+         PyErr_SetString(PyLcmError, AbortString);
+         return NULL;
+       }
+       if (imode == 0) {
+         if (impx > 0) {
+           printf("%s: copy PyObject from type=%s to type= %s with name=%s\n", nomsub, pytype_rhs, 
+           pytype, s);
+         }
+         lcmop_c(&(self->iplist), s, iact, medium, impx);
+         lcmequ_c(&(lcm_object->iplist), &(self->iplist));
+       } else if (medium == 0) {
+         FILE *file = NULL;
+         if (name == NULL) sprintf(s, "_%s", lcm_object->name_lcm);
+         if (strncmp(s,"_",1) != 0) {
+           sprintf(AbortString,"%s: leading '_' expected in file name %s",nomsub,s);
+           PyErr_SetString(PyLcmError, AbortString);
+           return NULL;
+         }
+         if (impx > 0) {
+           printf("%s: export PyObject from type=%s to type= %s with name=%s\n", nomsub, pytype_rhs, 
+           pytype, s);
+         }
+         file = fopen(s, "w");
+         lcmexp_c(&(lcm_object->iplist), impx, file, imode, idir);
+         self->iplist = NULL;
+         fclose(file);
+       }
+       Py_DECREF(pyobj);
      }
      strcpy(self->name_lcm, s);
      return (PyObject *)self;
@@ -253,74 +332,6 @@ static PyObject *PyLCM_len(pylcmobject *self) {
    }
 }
 
-static PyObject *PyLCM_copy(pylcmobject *self, PyObject *args) {
-   if (setjmp(buf)) {
-     return NULL;
-   } else {
-     char *nomsub="PyLCM_copy";
-     pylcmobject *rv = NULL;
-     char *input_name = NULL;
-     lcm *lcm_object;
-     char s[73];
-     int_32 medium = 1;
-     char nameobj[73], namedir[13];
-     int_32 vide, longueur, memoire, access;
-  
-     /* Parse arguments */
-     if (!PyArg_ParseTuple(args, "|sl", &input_name, &medium)) {
-       return NULL;
-     }
-
-     if (input_name == NULL) {
-       long iii=(long)((PyObject_Hash((PyObject *)self)-1)%1000000000000 + 1);
-       sprintf(s,"LCM_%12ld",iii);
-     } else {
-       int len = strlen(input_name);
-       if (len > 72) {
-         sprintf(AbortString,"%s: character name overflow",nomsub);
-         PyErr_SetString(PyLcmError, AbortString);
-         return NULL;
-       }
-       strcpy(s,input_name);
-     }	
-     char *pytype = self->type_lcm;
-     if (self->impx_lcm > 0) {
-       printf("%s: new lcm type=%s name=%s impx=%d\n", nomsub, pytype, s, self->impx_lcm);
-     }
-     if ((strcmp(pytype,"BINARY") == 0) || (strcmp(pytype,"ASCII") == 0) ||
-         (strcmp(pytype,"DA") == 0) || (strcmp(pytype,"HDF5") == 0)) {
-       sprintf(AbortString,"%s: invalid type=%s",nomsub,pytype);
-       PyErr_SetString(PyLcmError, AbortString);
-       return NULL;
-     }
-     if (medium < 1 || medium > 2) {
-       sprintf(AbortString,"%s: invalid medium=%d (1, 2 expected)",nomsub,medium);
-       PyErr_SetString(PyLcmError, AbortString);
-       return NULL;
-     }
-     lcminf_c(&(self->iplist), nameobj, namedir, &vide, &longueur, &memoire, &access);
-     if (longueur != -1) {
-       sprintf(AbortString,"%s: associative table expected for copy",nomsub);
-       PyErr_SetString(PyLcmError, AbortString);
-       return NULL;
-     }
-     int_32 imp = 0;
-     lcmop_c(&lcm_object, s, imp, medium, self->impx_lcm);
-     lcmequ_c(&(self->iplist), &lcm_object);
-     rv = (pylcmobject*)PyObject_New(pylcmobject, &PyLcmType);
-     rv->iplist = lcm_object;
-     rv->impx_lcm = self->impx_lcm;
-     rv->iact_lcm = imp;
-     if (medium == 1) {
-       strcpy(rv->type_lcm, "LCM");
-     } else {
-       strcpy(rv->type_lcm, "XSM");
-     }
-     strcpy(rv->name_lcm, s);
-     return (PyObject *) rv;
-   }
-}
-
 static PyObject *PyLCM_rep(pylcmobject *self, PyObject *args) {
    if (setjmp(buf)) {
      return NULL;
@@ -419,45 +430,6 @@ static PyObject *PyLCM_lis(pylcmobject *self, PyObject *args) {
      strcpy(ret->type_lcm, self->type_lcm);
      strcpy(ret->name_lcm, namedir);
      return (PyObject *)ret;
-   }
-}
-
-static PyObject *PyLCM_expor(pylcmobject *self, PyObject *args) {
-   if (setjmp(buf)) {
-     return NULL;
-   } else {
-     char *nomsub="pylcm_expor";
-     FILE *file = NULL;
-     char * input_name = NULL;
-     char namt[74];
-  
-     if (!PyArg_ParseTuple(args, "|s", &input_name)) {
-       return NULL;
-     }
-     long imode = 2; /* ascii */
-     long idir = 1; /* exportation */
-     if ((input_name == NULL) || (strcmp(input_name, " ") == 0)) {
-       sprintf(namt,"_%s", self->name_lcm);
-     } else {
-       if (strncmp(input_name,"_",1) != 0) {
-         sprintf(AbortString,"%s: leading '_' expected in file name",nomsub);
-         PyErr_SetString(PyLcmError, AbortString);
-         return NULL;
-       }
-       int len = strlen(input_name);
-       if (len > 73) {
-         sprintf(AbortString,"%s: character name overflow",nomsub);
-         PyErr_SetString(PyLcmError, AbortString);
-         return NULL;
-       }
-       strcpy(namt, input_name);
-     }
-	
-     if (self->impx_lcm > 1) printf("%s: export %s --> %s\n", nomsub, namt, input_name);
-     file = fopen(namt, "w");
-     lcmexp_c(&(self->iplist), self->impx_lcm, file, imode, idir);
-     fclose(file);
-     return Py_None;
    }
 }
 
@@ -880,10 +852,8 @@ static PyMethodDef lcm_methods[] = {
     {"val", (PyCFunction)PyLCM_val, METH_NOARGS, "Validate a lcm object"},
     {"keys", (PyCFunction)PyLCM_keys, METH_NOARGS, "Set the keys content of an associative table"},
     {"len", (PyCFunction)PyLCM_len, METH_NOARGS, "Return the length of a lcm object"},
-    {"copy", (PyCFunction)PyLCM_copy, METH_VARARGS, "Deep copy of a pylcm object"},
     {"rep", (PyCFunction)PyLCM_rep, METH_VARARGS, "Create a daughter associative table"},
     {"lis", (PyCFunction)PyLCM_lis, METH_VARARGS, "Create a daughter heterogeneous list"},
-    {"expor", (PyCFunction)PyLCM_expor, METH_VARARGS, "Export a lcm objects towards an ascii file"},
     {NULL}  /* Sentinel */
 };
 

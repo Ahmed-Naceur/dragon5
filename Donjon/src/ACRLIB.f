@@ -182,7 +182,13 @@
 *----
 *  RECOVER INFORMATION FROM physconst GROUP.
 *----
-      CALL hdf5_read_data(IPAPX,"/physconst/ENRGS",ENER)
+      IF(hdf5_group_exists(IPAPX,"/physconst/")) THEN
+        CALL hdf5_read_data(IPAPX,"/physconst/ENRGS",ENER)
+      ELSE IF(hdf5_group_exists(IPAPX,"/physco001/")) THEN
+        CALL hdf5_read_data(IPAPX,"/physco001/ENRGS",ENER)
+      ELSE
+        CALL XABORT('ACRLIB: GROUP physconst NOT FOUND IN HDF5 FILE.')
+      ENDIF
       DO IGR=1,NGRP+1
         ENER(IGR)=ENER(IGR)/1.0E-6
       ENDDO
@@ -200,7 +206,13 @@
       IRESM(:)=0
       IREAF=0
       IF(NREA.GT.0) THEN
-        CALL hdf5_read_data(IPAPX,"/explicit/REANAME",NOMREA)
+        IF(hdf5_group_exists(IPAPX,"/explicit/")) THEN
+          CALL hdf5_read_data(IPAPX,"/explicit/REANAME",NOMREA)
+        ELSE IF(hdf5_group_exists(IPAPX,"/expli001/")) THEN
+          CALL hdf5_read_data(IPAPX,"/expli001/REANAME",NOMREA)
+        ELSE
+          CALL XABORT('ACRLIB: GROUP explicit NOT FOUND IN HDF5 FILE.')
+        ENDIF
         IF(IMPX.GT.1) THEN
           WRITE(IOUT,'(29H ACRLIB: Available reactions:/(1X,10A13))')
      1    (NOMREA(I),I=1,NREA)
@@ -213,11 +225,23 @@
         ENDDO
       ENDIF
       IF(NBISO.GT.0) THEN
-        CALL hdf5_read_data(IPAPX,"/explicit/ISONAME",NOMISO)
+        IF(hdf5_group_exists(IPAPX,"/explicit/")) THEN
+          CALL hdf5_read_data(IPAPX,"/explicit/ISONAME",NOMISO)
+        ELSE IF(hdf5_group_exists(IPAPX,"/expli001/")) THEN
+          CALL hdf5_read_data(IPAPX,"/expli001/ISONAME",NOMISO)
+        ELSE
+          CALL XABORT('ACRLIB: GROUP explicit NOT FOUND IN HDF5 FILE.')
+        ENDIF
       ENDIF
       IF(LTOTAL.AND.(NBMAC.EQ.0)) CALL XABORT('ACRLIB: NBMAC=0.')
       IF(NBMAC.GT.0) THEN
-        CALL hdf5_read_data(IPAPX,"/explicit/MACNAME",NOMMAC)
+        IF(hdf5_group_exists(IPAPX,"/explicit/")) THEN
+          CALL hdf5_read_data(IPAPX,"/explicit/MACNAME",NOMMAC)
+        ELSE IF(hdf5_group_exists(IPAPX,"/expli001/")) THEN
+          CALL hdf5_read_data(IPAPX,"/expli001/MACNAME",NOMMAC)
+        ELSE
+          CALL XABORT('ACRLIB: GROUP explicit NOT FOUND IN HDF5 FILE.')
+        ENDIF
         DO I=1,NBMAC
           IF(NOMMAC(I).EQ.'TOTAL') ITOTM(:)=I
           IF(NOMMAC(I).EQ.'RESIDUAL') IRESM(:)=I
@@ -465,7 +489,13 @@
 *  COMPUTE DEPLETION CHAIN DATA
 *----
       IF(NISOF*NISOP.GT.0) THEN
-        CALL hdf5_read_data(IPAPX,"/physconst/FYIELDS",YLDS2)
+        IF(hdf5_group_exists(IPAPX,"/physconst/")) THEN
+          CALL hdf5_read_data(IPAPX,"/physconst/FYIELDS",YLDS2)
+        ELSE IF(hdf5_group_exists(IPAPX,"/physco001/")) THEN
+          CALL hdf5_read_data(IPAPX,"/physco001/FYIELDS",YLDS2)
+        ELSE
+          CALL XABORT('ACRLIB: GROUP physconst NOT FOUND IN HDF5 FILE.')
+        ENDIF
         DO IY2=1,NISOP
           DO IY1=1,NISOF
             YLDSM(IY1,IY2)=YLDSM(IY1,IY2)+WEIGHT*YLDS2(IY1,IY2,1)
@@ -476,7 +506,13 @@
         DEALLOCATE(YLDS2)
       ENDIF
       IF((MD1*MD2.GT.0).AND.(NBISO.GT.0)) THEN
-        CALL hdf5_read_data(IPAPX,"/physconst/DECAYC",DECAY2)
+        IF(hdf5_group_exists(IPAPX,"/physconst/")) THEN
+          CALL hdf5_read_data(IPAPX,"/physconst/DECAYC",DECAY2)
+        ELSE IF(hdf5_group_exists(IPAPX,"/physco001/")) THEN
+          CALL hdf5_read_data(IPAPX,"/physco001/DECAYC",DECAY2)
+        ELSE
+          CALL XABORT('ACRLIB: GROUP physconst NOT FOUND IN HDF5 FILE.')
+        ENDIF
         DO ISO=1,NBISO
           DO ID1=1,NLAM
             DECAYC(ID1,ISO)=DECAYC(ID1,ISO)+WEIGHT*DECAY2(ID1,ISO)*

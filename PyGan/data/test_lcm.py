@@ -12,7 +12,7 @@ sign=my_lcm['SIGNATURE']
 print('object signature=', sign)
 daughter=my_lcm['REFL']
 daughter.lib()
-o2=daughter.copy('new_branch_of_dictionary')
+o2=lcm.new('LCM_INP','new_branch_of_dictionary',pyobj=daughter)
 state=o2['STATE-VECTOR']
 print('state vector=', state)
 o3=daughter['MIXTURES']
@@ -35,6 +35,7 @@ o5.lib()
 print('ISOTOPESUSED=',o5['ISOTOPESUSED'])
 print('ISOTOPESTEMP=',o5['ISOTOPESTEMP'])
 print('ISOTOPESMIX=',o5['ISOTOPESMIX'])
+lcm.new('ASCII',pyobj=daughter)
 assertS(o5,'ISOTOPESTEMP',0,5.23150024E+02)
 del o5
 print("test test_lcm completed")

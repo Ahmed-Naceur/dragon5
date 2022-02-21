@@ -17,32 +17,32 @@ DIRNAME = $(shell uname -sm | sed 's/[ ]/_/')
 OS = $(shell uname -s | cut -d"_" -f1)
 lib = ../lib/$(DIRNAME)
 libGan = ../../Ganlib/lib/$(DIRNAME)
-pylib = lib
+pylib = $(shell python3 ../../script/find_pylib.py)
 
 all:
 	$(MAKE) donjon
-ganlib: sub-make-ganlib pygan-ganlib
+ganlib: clean sub-make-ganlib pygan-ganlib
 ifdef openmp
 	@echo 'pygan_ganlib: openmp is defined'
 endif
 ifdef hdf5
 	@echo 'pygan_ganlib: hdf5 is defined'
 endif
-trivac: sub-make-trivac pygan-trivac
+trivac: clean sub-make-trivac pygan-trivac
 ifdef openmp
 	@echo 'pygan_trivac: openmp is defined'
 endif
 ifdef hdf5
 	@echo 'pygan_trivac: hdf5 is defined'
 endif
-dragon: sub-make-dragon pygan-dragon
+dragon: clean sub-make-dragon pygan-dragon
 ifdef openmp
 	@echo 'pygan_dragon: openmp is defined'
 endif
 ifdef hdf5
 	@echo 'pygan_dragon: hdf5 is defined'
 endif
-donjon: sub-make-donjon pygan-donjon
+donjon: clean sub-make-donjon pygan-donjon
 ifdef openmp
 	@echo 'pygan_donjon: openmp is defined'
 endif
