@@ -89,7 +89,7 @@ QUIT "LIST" .                                                              0019
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : SNT:        
--->>MODULE SNT:        : TIME SPENT=        0.000 MEMORY USAGE= 2.520E+02
+-->>MODULE SNT:        : TIME SPENT=        0.001 MEMORY USAGE= 2.520E+02
 <|MICRO  := LIB: ::                                                       |<0033
 <|EDIT 2                                                                  |<0034
 <|NMIX 1                                                                  |<0035
@@ -458,7 +458,7 @@ QUIT "LIST" .                                                              0019
  DENISO=   3.27556673E-03
  DENISO=   3.27556673E-03
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.081 MEMORY USAGE= 3.016E+03
+-->>MODULE LIB:        : TIME SPENT=        0.078 MEMORY USAGE= 3.020E+03
 <|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0042
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
@@ -477,7 +477,7 @@ QUIT "LIST" .                                                              0019
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MICRO       ' WAS EXPORTED TO FILE 'micr_ele.txt'.
--->>module EQU:        : time spent=        0.105 memory usage= 3.200E+02
+-->>module EQU:        : time spent=        0.108 memory usage= 3.200E+02
 ->@END MODULE   : EQU:        
 <|macr_ele.txt   := MACRO ;                                               |<0044
 ->@BEGIN MODULE : EQU:        
@@ -487,7 +487,7 @@ QUIT "LIST" .                                                              0019
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macr_ele.txt'.
--->>module EQU:        : time spent=        0.058 memory usage= 4.000E+00
+-->>module EQU:        : time spent=        0.060 memory usage= 4.000E+00
 ->@END MODULE   : EQU:        
 <|END: ;                                                                  |<0045
 . ------------------------------------------------------------------------ .

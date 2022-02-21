@@ -4,8 +4,8 @@
  *   $$$  $$       $$  $$$$$$$   $$  $$    *  nuclear     *  vday: 01may21   *
  *   $$$$ $$       $$  $$   $$    $$$$     *  data        *  site: poly mtl  *
  *   $$ $$$$  $$   $$  $$   $$     $$      *  processing  *  mach: linux     *
- *   $$  $$$  $$$$$$$  $$$$$$$     $$      *  system      *  date: 02/20/22  *
- *   $$   $$   $$$$$    $$$$$      $$      *              *  time: 00:42:05  *
+ *   $$  $$$  $$$$$$$  $$$$$$$     $$      *  system      *  date: 02/21/22  *
+ *   $$   $$   $$$$$    $$$$$      $$      *              *  time: 17:48:35  *
  *                                         *              *                  *
  *****************************************************************************
 
@@ -382,7 +382,7 @@
  ------------------------------------------------------------------
  -----ELECTRO-ATOMIC DATA                                            
 
- group constants                                                          4.5s
+ group constants                                                          4.4s
  for mf23 and mt507 estc                                                        
  stopping power(    1)=  1.11484E+04
  stopping power(    2)=  5.34120E+03
@@ -47651,7 +47651,7 @@
  300   xsec    1.33360+2
  300   heat    8.26783+2
 
- group constants                                                         19.0s
+ group constants                                                         18.9s
  for mf26 and mt534 shk1                                                        
  
  129    129    0.00000+0  0.00000+0
@@ -48171,7 +48171,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         19.3s
+ group constants                                                         19.2s
  for mf26 and mt535 shl1                                                        
  
   76     76    0.00000+0  0.00000+0
@@ -48850,7 +48850,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         19.8s
+ group constants                                                         19.7s
  for mf26 and mt536 shl2                                                        
  
   74     74    0.00000+0  0.00000+0
@@ -49535,7 +49535,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         20.3s
+ group constants                                                         20.2s
  for mf26 and mt537 shl3                                                        
  
   71     71    0.00000+0  0.00000+0
@@ -50229,7 +50229,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         20.9s
+ group constants                                                         20.8s
  for mf26 and mt538 shm1                                                        
  
   32     32    0.00000+0  0.00000+0
@@ -51040,7 +51040,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         21.6s
+ group constants                                                         21.5s
  for mf26 and mt539 shm2                                                        
  
   29     29    0.00000+0  0.00000+0
@@ -51860,7 +51860,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         22.3s
+ group constants                                                         22.2s
  for mf26 and mt540 shm3                                                        
  
   25     25    0.00000+0  0.00000+0
@@ -52692,7 +52692,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         23.1s
+ group constants                                                         23.0s
  for mf26 and mt541 shm4                                                        
  
   19     19    0.00000+0  0.00000+0
@@ -53542,7 +53542,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         24.1s
+ group constants                                                         23.9s
  for mf26 and mt542 shm5                                                        
  
   18     18    0.00000+0  0.00000+0
@@ -54395,7 +54395,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         25.0s
+ group constants                                                         24.9s
  for mf26 and mt543 shn1                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -55299,7 +55299,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         26.0s
+ group constants                                                         25.8s
  for mf26 and mt544 shn2                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -56203,7 +56203,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         27.0s
+ group constants                                                         26.8s
  for mf26 and mt545 shn3                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -57107,7 +57107,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         28.0s
+ group constants                                                         27.8s
  for mf26 and mt546 shn4                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -58011,7 +58011,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         29.1s
+ group constants                                                         28.8s
  for mf26 and mt547 shn5                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -58915,7 +58915,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         30.2s
+ group constants                                                         30.0s
  for mf26 and mt548 shn6                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -59819,7 +59819,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         31.5s
+ group constants                                                         31.2s
  for mf26 and mt549 shn7                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -60723,7 +60723,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         32.7s
+ group constants                                                         32.5s
  for mf26 and mt550 sho1                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -61627,7 +61627,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         34.0s
+ group constants                                                         33.8s
  for mf26 and mt551 sho2                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -62531,7 +62531,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         35.4s
+ group constants                                                         35.1s
  for mf26 and mt552 sho3                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -63435,7 +63435,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         36.8s
+ group constants                                                         36.5s
  for mf26 and mt553 sho4                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -64339,7 +64339,7 @@
  300   xsec    0.00000+0
  300   heat    0.00000+0
 
- group constants                                                         38.4s
+ group constants                                                         38.1s
  for mf26 and mt554 sho5                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -65251,7 +65251,7 @@
 
  ---message from findf--- mat7400 mf23 mt558 not on tape  31
 
- group constants                                                         40.0s
+ group constants                                                         39.7s
  for mf26 and mt559 shp1                                                        
  
    1      1    0.00000+0  0.00000+0
@@ -66181,7 +66181,7 @@
 
  ---message from findf--- mat7400 mf23 mt572 not on tape  31
 
- group constants                                                         41.7s
+ group constants                                                         41.4s
  for mf23 and mt501 totl                                                        
  
  electron sigma  
@@ -66487,7 +66487,7 @@
  299    2.01367+2
  300    1.99949+2
 
- group constants                                                         41.7s
+ group constants                                                         41.4s
  for mf23 and mt530 heat                                                        
  
  electron energy deposition
@@ -66792,15 +66792,15 @@
  299    7.83009+2
  300    8.26783+2
 
- group constants                                                         41.7s
+ group constants                                                         41.4s
  for mf23 and mt531 char                                                        
  
  electron charge deposition
  group   (ev-barns)
-                                                                         41.7s
+                                                                         41.4s
  *****************************************************************************
 
- matxsr...produce a matxs format output file                             41.7s
+ matxsr...produce a matxs format output file                             41.4s
 
  input gendf unit .....................          0
  input gamout unit ....................          0
@@ -66825,6 +66825,6 @@
  output particles .....................            1
 
 
-          doing w        for bscat    ...    41.9s
-                                                                         42.4s
+          doing w        for bscat    ...    41.5s
+                                                                         42.0s
  *****************************************************************************
