@@ -1,0 +1,130 @@
+*--------------------------------------------------------------------- 
+*  A 20MeV electron source irradiating a 1D W Slab.
+*  CEPXSR library
+*  Author: Ahmed Naceur
+*---------------------------------------------------------------------
+
+
+* --- Define STRUCTURES and MODULES used
+
+MODULE       GEO: LIB: MAC: SNT: ASM: FLU: HEAT: OUT: DELETE: 
+             UTL: END: EDI: STAT: ;
+PROCEDURE    assertS ;
+LINKED_LIST   MACRO DEPOS MICRO OLDMACRO GEOM TRACK SYSTEM FLUX 
+              EEDIT EDITION EEDITcopy DIFFRES ;
+
+          
+SEQ_ASCII    edep_ele.txt   :: FILE 'edep_ele.txt' ;
+SEQ_ASCII    edit_ele.txt   :: FILE 'edit_ele.txt' ;
+SEQ_ASCII    micr_ele.txt   :: FILE 'micr_ele.txt' ;
+SEQ_ASCII    macr_ele.txt   :: FILE 'macr_ele.txt' ;
+SEQ_ASCII    flux_ele.txt   :: FILE 'flux_ele.txt' ;
+SEQ_ASCII    syst_ele.txt   :: FILE 'syst_ele.txt' ;
+SEQ_ASCII    geom_ele.txt   :: FILE 'geom_ele.txt' ;
+SEQ_ASCII    trac_ele.txt   :: FILE 'trac_ele.txt' ;
+
+* --- Geometry 
+
+GEOM := GEO: :: CAR1D 2
+           X- VOID  X+ VOID
+           MIX  1 2
+           MESHX 0.0 0.01 2.0
+           SPLITX 30 70
+           ;
+
+* --- Tracking       
+
+TRACK := SNT: GEOM ::
+             TITLE 'Water-Slab:Cepxsr-Dragon'
+             EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2
+             EPSI 1.E-5 QUAD 1 MAXI 300 BFPL ;
+
+* --- Library access
+
+MICRO  := LIB: :: 
+          EDIT 2
+          NMIX 1 
+          ANIS 3
+          MIXS LIB: MATXS2 FIL: _electr
+          MIX  1  300.0  1.0 NOGAS
+          Wnat = w 1.0 
+;
+
+* --- Library structuring 
+
+MACRO := MICRO :: STEP UP MACROLIB ;
+
+micr_ele.txt   := MICRO ;
+macr_ele.txt   := MACRO ;
+
+END: ; QUIT "LIST" .
+
+
+
+OLDMACRO := MACRO ;
+MACRO := MAC: MACRO OLDMACRO :: MIX 2 1 OLDL ;
+OLDMACRO := DELETE: OLDMACRO ;
+
+
+* --- Specify fixed particle source density   
+
+REAL qsour :=  1.E10 2.0 / $Pi_R / ; ! [cm-3 s-1]
+MACRO := MAC: MACRO ::
+      READ INPUT
+      MIX 1 FIXE
+! -- 300 groups
+     <<qsour>>  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+    0.0 0.0 ;
+
+
+* ---- Electron flux
+
+SYSTEM := ASM: MACRO TRACK :: EDIT 1 ARM ;
+FLUX  := FLU: MACRO TRACK SYSTEM :: 
+              EDIT 1 TYPE S EXTE 100 1.E-5 ;
+
+* --- Recover flux and reaction rates
+
+* add MICRO to access density,
+EEDIT := OUT: FLUX TRACK MACRO GEOM  :: EDIT 1 COND INTG NONE ;
+
+
+* ---- Energy deposition
+
+EEDITcopy := EEDIT ;
+DEPOS := HEAT: EEDIT EEDITcopy :: EDIT 99 ;
+
+edep_ele.txt   := DEPOS ;
+edit_ele.txt   := EEDIT ;  
+trac_ele.txt   := TRACK ;
+geom_ele.txt   := GEOM ; 
+syst_ele.txt   := SYSTEM ;
+flux_ele.txt   := FLUX  ;
+
+*edep.txt := EEDIT ; 
+
+EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM := DELETE: 
+  EEDIT FLUX SYSTEM MACRO MICRO TRACK GEOM ; 
+
+END: ; QUIT "LIST" .
+
+

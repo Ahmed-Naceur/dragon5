@@ -1,0 +1,50 @@
+1*****************************************************************************
+ *                                         *              *                  *
+ *   $$   $$       $$   $$$$$   $$    $$   *              *  vers: 2012.138  *
+ *   $$$  $$       $$  $$$$$$$   $$  $$    *  nuclear     *  vday: 01may21   *
+ *   $$$$ $$       $$  $$   $$    $$$$     *  data        *  site: poly mtl  *
+ *   $$ $$$$  $$   $$  $$   $$     $$      *  processing  *  mach: linux     *
+ *   $$  $$$  $$$$$$$  $$$$$$$     $$      *  system      *  date: 11/25/21  *
+ *   $$   $$   $$$$$    $$$$$      $$      *              *  time: 18:45:52  *
+ *                                         *              *                  *
+ *****************************************************************************
+
+ cepxsr...produce electron interaction cross sections                       0.0s
+
+ unit for endf tape ...................         30
+ unit for input nbet tape .............          0
+ unit for output nbet tape ............         33
+ unit for cepxs stopping powers .......         40
+ mat to be processed ..................        100
+ electron group option ................          1
+ photon group option ..................          0
+ weight function option ...............          2
+ legendre order .......................          5
+ print option (0 min, 1 max) ..........          1
+
+ run title
+ --------------------------------------
+      water-electron-library-P1-12Ne-12Ng                               
+ 
+
+ electron group structure......read in
+     1  -1.00000E+00  -  0.00000E+00
+     2   0.00000E+00  -  0.00000E+00
+     3   0.00000E+00  -  0.00000E+00
+     4   0.00000E+00  -  0.00000E+00
+     5   0.00000E+00  -  0.00000E+00
+     6   0.00000E+00  -  0.00000E+00
+     7   0.00000E+00  -  0.00000E+00
+     8   0.00000E+00  -  0.00000E+00
+     9   0.00000E+00  -  0.00000E+00
+    10   0.00000E+00  -  0.00000E+00
+    11   0.00000E+00  -  0.00000E+00
+    12   0.00000E+00  -  0.00000E+00
+
+ weight function......constant for all l
+
+ using endf-6 format
+
+ processing mat  100
+ ------------------------------------------------------------------
+   1-H -  0 NDS,IAEA   Eval-Dec17 D.E.Cullen                         

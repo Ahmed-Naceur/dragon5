@@ -427,7 +427,7 @@ WHILE IndexCB 2 <= DO
     !  Reflector equivalence procedure
     !----------------------------------------------------------
     GeomRefl MacrRefl := BREF: GEOM OUT_1 OUT_2  ::
-       EDIT 2 MIX 1 3 GAP 2 4 HYPE 2 MODEL ERM-NEM NGET 1.0 1.0 ;
+       EDIT 2 MIX 1 3 GAP 2 4 HYPE 2 MODEL ERM-NEM NGET 1.1 1.2 ;
 
     !----------------------------------------------------------
     !  Verification calculations
@@ -456,13 +456,13 @@ WHILE IndexCB 2 <= DO
       ;
       ECHO "...CASE=" CASE "IndexCB=" IndexCB ;
       IF CASE 1 = IndexCB 1 = * THEN
-         assertS FLUX_REF :: K-EFFECTIVE 1 1.178872 ;
+         assertS FLUX_REF :: K-EFFECTIVE 1 1.178871 ;
          _VAL_CA1_CB1 := OVAL ;
       ELSEIF CASE 2 = IndexCB 1 = * THEN
          assertS FLUX_REF :: K-EFFECTIVE 1 1.289348 ;
          _VAL_CA2_CB1 := OVAL ;
       ELSEIF CASE 1 = IndexCB 2 = * THEN
-         assertS FLUX_REF :: K-EFFECTIVE 1 1.177055 ;
+         assertS FLUX_REF :: K-EFFECTIVE 1 1.177047 ;
          _VAL_CA1_CB2 := OVAL ;
       ELSEIF CASE 2 = IndexCB 2 = * THEN
          assertS FLUX_REF :: K-EFFECTIVE 1 1.288118 ;
@@ -477,7 +477,7 @@ WHILE IndexCB 2 <= DO
     !----------------------------------------------------------
     !  Multicompo creation
     !----------------------------------------------------------
-    Edition := EDI: MacrRefl :: EDIT 3 ADFM SAVE ;
+    Edition := EDI: MacrRefl :: EDIT 1 ADFM SAVE ;
     GeomRefl MacrRefl := DELETE: GeomRefl MacrRefl ;
 
     MlticompTous := COMPO: MlticompTous Edition :: EDIT 1
