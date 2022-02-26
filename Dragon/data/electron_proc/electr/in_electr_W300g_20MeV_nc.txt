@@ -7,7 +7,7 @@ reconr
 0/
 electr
 30 31 38 39 0 33 40
-7400 1 0 2 1 1
+7400 1 0 2 2 1
 W-electr:non-coupled/
 300 / # of groups boundaries
 1.0000000547034879e+03

@@ -1,7 +1,8 @@
 *DECK LIBINP
       SUBROUTINE LIBINP (MAXMIX,MAXED,MAXISO,IPLIB,INDREC,IMPX,NBISO,
      1 NGRO,NGT,NL,ITRANC,IPROB,ITIME,NLIB,NGF,IGRMAX,NDEPL,NCOMB,
-     2 NEDMAC,NBMIX,NRES,IPROC,IMAC,NDEL,ISOADD,MAXISM,HVECT,IPRECI)
+     2 NEDMAC,NBMIX,NRES,IPROC,IMAC,NDEL,ISOADD,MAXISM,HVECT,IPRECI,
+     3 STERN)
 *
 *-----------------------------------------------------------------------
 *
@@ -66,6 +67,11 @@
 * MAXISM  maximum number of isotopes per mixture.
 * HVECT   matxs names of the extra vector edits.
 * IPRECI  accuracy index for probability tables in CALENDF.
+* STERN   Sternheimer correction:
+*         =0: do not apply Sternheimer correction for both H-FACTOR
+*             and ESTPOW (stopping power) ; 
+*         =1: apply Sternheimer correction for both H-FACTOR and 
+*             ESTOPW (stopping power) ;
 *
 *-----------------------------------------------------------------------
 *
@@ -76,7 +82,7 @@
       TYPE(C_PTR) IPLIB
       INTEGER MAXMIX,MAXED,MAXISO,INDREC,IMPX,NBISO,NGRO,NGT,NL,ITRANC,
      > IPROB,ITIME,NLIB,NGF,IGRMAX,NDEPL,NCOMB,NEDMAC,NBMIX,NRES,IPROC,
-     > IMAC,NDEL,ISOADD,MAXISM,IPRECI
+     > IMAC,NDEL,ISOADD,MAXISM,IPRECI, STERN 
       CHARACTER*(*) HVECT(MAXED)
 *----
 *  LOCAL PARAMETERS
@@ -500,6 +506,18 @@
             NIR(NEWISO)=1
             GIR(NEWISO)=-1000.0
          ENDIF
+      ! -- STERNHEIMER CORRECTION APPLICATION    
+      ELSE IF((TEXT12.EQ.'STERN')) THEN
+         CALL REDGET(INDIC,NITMA,FLOTT,TEXT12,DBLINP)
+              IF(INDIC.EQ.1) THEN
+                  IF (NITMA.NE.0 .AND. NITMA.NE.1) THEN 
+                     CALL XABORT('LIBINP: STERN 1 OR STERN 0 EXPECTED.')
+                  ELSE    
+                     STERN=NITMA
+                  ENDIF
+              ENDIF
+          IF (STERN.EQ.1) PRINT *,"STERNHEIMER CORRECTION ACTIVATED" 
+          IF (STERN.EQ.0) PRINT *,"STERNHEIMER CORRECTION DESACTIVATED"     
       ELSE IF(TEXT12.EQ.'INF') THEN
          SNISO(NEWISO)=1.0E10
          SBISO(NEWISO)=1.0E10
@@ -574,7 +592,7 @@
       ELSE IF(TEXT12.EQ.'EVOL') THEN
          IEVOL(NEWISO)=2
       ELSE IF(TEXT12.EQ.'SAT') THEN
-         IEVOL(NEWISO)=3
+         IEVOL(NEWISO)=3  
       ELSE
          IF(INDIC.NE.3) CALL XABORT('LIBINP: CHARACTER DATA EXPECTED'//
      >   '(12).')
@@ -874,7 +892,7 @@
          TMPDAY(2)=0.0
          TMPDAY(3)=0.0
          CALL LIBMIX(IPLIB,NBMIX,NGRO,NBISO,ISONAM,ISOMIX,DENISO,MASK,
-     >   MASKL,ITSTMP,TMPDAY)
+     >   MASKL,ITSTMP,TMPDAY,STERN)
          DEALLOCATE(MASKL)
       ENDIF
 *----

@@ -6,21 +6,19 @@ if [ $# = 0 ]
 fi
 
 #--- CEPXSR-NJOY
-ln -s $1/data/cepxs-dragon/ .
-ln -s $1/data/cepxs-dragon/ .
-ln -s $1/data/cepxs-dragon/ .
-ln -s /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/Linux_x86_64/macr_xsr_save.txt _macmodif
 ln -s /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_test.txt _test
 ln -s /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_20MeV_nc.txt _W300g_20MeV
+ln -s /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_W300g_10MeV_nc.txt _W300g_10MeV
 ln -s /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/electr/matxs_electr_W300g_20MeV_nc.txt _electr
+
+ln -s /home/ahnac/Compiler/dragon5_ev2148_2/Dragon/data/electron_proc/njoy/test/matxs_water_300g_10MeV_nc.txt _wat300g_10MeV
 
 #--- CEPXS-BFP
 ln -s $1/data/cepxs-dragon/FMAC_e_W_lobatto_20.00MeV_0g_300e_P1_NC.txt .
-ln -s $1/data/cepxs-dragon/FMAC_e_W_lobatto_15.00MeV_0g_3e_P1_NC.txt .
-
-ln -s $1/data/cepxs-dragon/FMAC_e_W_lobatto_20.00MeV_0g_300e_P1_NC.txt .
 ln -s $1/data/cepxs-dragon/FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt .
 
+ln -s $1/data/cepxs-dragon/FMAC_e_water_lobatto_10.00MeV_0g_300e_P9_NC.txt .
+ln -s $1/data/cepxs-dragon/FMAC_e_water_lobatto_10.00MeV_300g_300e_P9_FC.txt .
 
 ls -l
 

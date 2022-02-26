@@ -13,8 +13,8 @@ W_xs W_xsr  ;                                                              0007
 *watxs3OOG ;                                                               0012
 *watxsr3OOG ;                                                              0013
 W_ele_300G ;                                                               0014
-*W_xsr_300G ;                                                              0015
-*W_xs_300G ;                                                               0016
+W_xsr_300G ;                                                               0015
+W_xs_300G ;                                                                0016
 *W_xs ;                                                                    0017
 *W_xsr ;                                                                   0018
 QUIT "LIST" .                                                              0019
@@ -78,7 +78,7 @@ QUIT "LIST" .                                                              0019
 
  CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE CARTESIAN 1-D   .
 ->@END MODULE   : GEO:        
--->>MODULE GEO:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+-->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
 <|TRACK := SNT: GEOM ::                                                   |<0028
 <|TITLE 'Water-Slab:Cepxsr-Dragon'                                        |<0029
 <|EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2                              |<0030
@@ -89,7 +89,7 @@ QUIT "LIST" .                                                              0019
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
 ->@END MODULE   : SNT:        
--->>MODULE SNT:        : TIME SPENT=        0.000 MEMORY USAGE= 2.520E+02
+-->>MODULE SNT:        : TIME SPENT=        0.000 MEMORY USAGE= 2.560E+02
 <|MICRO  := LIB: ::                                                       |<0033
 <|EDIT 2                                                                  |<0034
 <|NMIX 1                                                                  |<0035
@@ -97,12 +97,14 @@ QUIT "LIST" .                                                              0019
 <|MIXS LIB: MATXS2 FIL: _electr                                           |<0037
 <|MIX  1  300.0  1.0 NOGAS                                                |<0038
 <|Wnat = w 1.0                                                            |<0039
-<|;                                                                       |<0040
+<|STERN 0                                                                 |<0040
+<|;                                                                       |<0041
 ->@BEGIN MODULE : LIB:        
 ->@DESCRIPTION  : Microscopic xs-library processing                                       
 ->@CREDITS      : A. Hebert, G. Marleau                                                   
 ->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
                   GNU LESSER GENERAL PUBLIC LICENSE
+ STERNHEIMER CORRECTION DESACTIVATED
 
  SPEC   LOCAL NAME    ISOTOPE       FROM LIBRARY  MIX   DENSITY     WEIGHT%     TEMP(K)    SIGZERO   SELF-SHIEL  THERMAL CORRECTION
  -----  ------------  ------------  ------------  ----  ----------  ----------  ---------  --------  ----------  ------------------
@@ -156,9 +158,11 @@ QUIT "LIST" .                                                              0019
  SPEC   LOCAL NAME    ISOTOPE       FROM LIBRARY  MIX   DENSITY     TEMP(K)    SIGZERO    SELF-SHIEL  THERMAL CORRECTION
  -----  ------------  ------------  ------------  ----  ----------  ---------  ---------  ----------  ------------------
      1  Wnat    0001  w             MATXS2     1     1  3.2756E-03  3.000E+02  1.000E+10   0             0                         
+ STERNHEIMER CORRECTION NOT APPLYED TO THE H-FACTOR
+ STERNHEIMER CORRECTION NOT APPLYED TO ESTOPW
 ->@END MODULE   : LIB:        
--->>MODULE LIB:        : TIME SPENT=        0.075 MEMORY USAGE= 3.004E+03
-<|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0042
+-->>MODULE LIB:        : TIME SPENT=        0.345 MEMORY USAGE= 3.460E+03
+<|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0043
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -166,9 +170,9 @@ QUIT "LIST" .                                                              0019
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: STEP UP TO LEVEL 'MACROLIB    '.
--->>module EQU:        : time spent=        0.002 memory usage= 1.584E+03
+-->>module EQU:        : time spent=        0.001 memory usage= 1.848E+03
 ->@END MODULE   : EQU:        
-<|micr_ele.txt   := MICRO ;                                               |<0043
+<|micr_ele.txt   := MICRO ;                                               |<0044
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -176,9 +180,9 @@ QUIT "LIST" .                                                              0019
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MICRO       ' WAS EXPORTED TO FILE 'micr_ele.txt'.
--->>module EQU:        : time spent=        0.105 memory usage= 3.280E+02
+-->>module EQU:        : time spent=        0.084 memory usage= 4.080E+02
 ->@END MODULE   : EQU:        
-<|macr_ele.txt   := MACRO ;                                               |<0044
+<|macr_ele.txt   := MACRO ;                                               |<0045
 ->@BEGIN MODULE : EQU:        
 ->@DESCRIPTION  : No description available for this module                                
 ->@CREDITS      : No author provided for this module                                      
@@ -186,9 +190,373 @@ QUIT "LIST" .                                                              0019
                   GNU LESSER GENERAL PUBLIC LICENSE
 
  DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macr_ele.txt'.
--->>module EQU:        : time spent=        0.058 memory usage= 0.000E+00
+-->>module EQU:        : time spent=        0.044 memory usage= 0.000E+00
 ->@END MODULE   : EQU:        
-<|END: ;                                                                  |<0045
+<|END: ;                                                                  |<0046
+<|W_xsr_300G ;                                                            |<0015
+<|MODULE       GEO: LIB: MAC: SNT: ASM: FLU: HEAT: OUT: DELETE:           |<0007
+<|UTL: END: EDI: STAT: ;                                                  |<0008
+<|PROCEDURE    assertS ;                                                  |<0009
+<|LINKED_LIST   MACRO DEPOS MICRO OLDMACRO GEOM TRACK SYSTEM FLUX         |<0010
+<|EEDIT EDITION EEDITcopy DIFFRES ;                                       |<0011
+<|SEQ_ASCII    edep_xsr.txt   :: FILE 'edep_xsr.txt' ;                    |<0012
+<|SEQ_ASCII    edit_xsr.txt   :: FILE 'edit_xsr.txt' ;                    |<0013
+<|SEQ_ASCII    micr_xsr.txt   :: FILE 'micr_xsr.txt' ;                    |<0014
+<|SEQ_ASCII    macr_xsr.txt   :: FILE 'macr_xsr.txt' ;                    |<0015
+<|SEQ_ASCII    flux_xsr.txt   :: FILE 'flux_xsr.txt' ;                    |<0016
+<|SEQ_ASCII    syst_xsr.txt   :: FILE 'syst_xsr.txt' ;                    |<0017
+<|SEQ_ASCII    geom_xsr.txt   :: FILE 'geom_xsr.txt' ;                    |<0018
+<|SEQ_ASCII    trac_xsr.txt   :: FILE 'trac_xsr.txt' ;                    |<0019
+<|GEOM := GEO: :: CAR1D 2                                                 |<0021
+<|X- VOID  X+ VOID                                                        |<0022
+<|MIX  1 2                                                                |<0023
+<|MESHX 0.0 0.3 2.0                                                       |<0024
+<|SPLITX 30 70                                                            |<0025
+<|;                                                                       |<0026
+->@BEGIN MODULE : GEO:        
+->@DESCRIPTION  : Geometry definition                                                     
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE CARTESIAN 1-D   .
+->@END MODULE   : GEO:        
+-->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+<|TRACK := SNT: GEOM ::                                                   |<0028
+<|TITLE 'Water-Slab:Cepxsr-Dragon'                                        |<0029
+<|EDIT 0 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2                              |<0030
+<|EPSI 1.E-5 QUAD 1 MAXI 300 BFPL ;                                       |<0031
+->@BEGIN MODULE : SNT:        
+->@DESCRIPTION  : Discrete ordinates tracking                                             
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+->@END MODULE   : SNT:        
+-->>MODULE SNT:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+<|MICRO  := LIB: ::                                                       |<0033
+<|EDIT 2                                                                  |<0034
+<|NMIX 1                                                                  |<0035
+<|ANIS 3                                                                  |<0036
+<|MIXS LIB: MATXS2 FIL: _W300g_20MeV                                      |<0037
+<|MIX  1  300.0  1.0 NOGAS                                                |<0038
+<|Wnat = w 1.0                                                            |<0039
+<|STERN 0                                                                 |<0040
+<|;                                                                       |<0041
+->@BEGIN MODULE : LIB:        
+->@DESCRIPTION  : Microscopic xs-library processing                                       
+->@CREDITS      : A. Hebert, G. Marleau                                                   
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ STERNHEIMER CORRECTION DESACTIVATED
+
+ SPEC   LOCAL NAME    ISOTOPE       FROM LIBRARY  MIX   DENSITY     WEIGHT%     TEMP(K)    SIGZERO   SELF-SHIEL  THERMAL CORRECTION
+ -----  ------------  ------------  ------------  ----  ----------  ----------  ---------  --------  ----------  ------------------
+     1  Wnat    0001  w             MATXS2     1     1  1.0000E+00  1.0000E+00  3.000E+02  1.00E+10   0             0                         
+
+ PROCESSING MATXS2 LIBRARY NAMED _W300g_2.
+
+ MATXS2 FILE ID:   matxs W-20MeV-300Group VERS  1
+ test                                                                    
+
+ OPTIONS
+ -------
+ IMPX       2   (0=NO PRINT/1=SHORT/2=MORE)
+ IPROB      0   (0=DIRECT/1=ADJOINT)
+ ITIME      1   (1=STEADY-STATE/2=PROMPT)
+ NLIB       1   (NUMBER OF SETS OF LIBRARIES)
+ NGF      301   (NUMBER OF FAST GROUP WITHOUT SELF-SHIELDING)
+ IGRMAX     0   (LAST GROUP INDEX WITH SELF-SHIELDING)
+ NBISO      1   (NUMBER OF ISOTOPES OR MATERIALS)
+ NBMIX      1   (NUMBER OF MIXTURES)
+ NRES       0   (NUMBER OF SETS OF RESONANT MIXTURES)
+ NCOMB      0   (NUMBER OF DEPLETING MIXTURES)
+ NEDMAC    16   (NUMBER OF CROSS SECTION EDITS)
+ NGRO     300   (NUMBER OF ENERGY GROUPS)
+ NL         3   (NUMBER OF LEGENDRE ORDERS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/3=WIMS-D TYPE/4=LEAKAGE CORRECTION)
+ NBESP      0   (NUMBER OF ENERGY-DEPENDENT FISSION SPECTRA)
+ IPROC      0   (-1=SKIP LIBRARY PROCESSING/0=DILUTION INTERPOLATION/1=USE PHYSICAL TABLES/2=BUILD A DRAGLIB/3=COMPUTE CALENDF TABLES/4=SLOWING-DOWN TABLES/5=ALL CALENDF)
+ IMAC       1   (0=DO NOT/1=DO BUILD AN EMBEDDED MACROLIB)
+ NDEL       0   (NUMBER OF PRECURSOR GROUPS)
+ NDEPL      0   (NUMBER OF DEPLETING ISOTOPES)
+ NFISS      0   (NUMBER OF FISSILE ISOTOPES WITH PYIELD DATA)
+ NPART      0   (NUMBER OF COMPANION PARTICLES)
+ ISOADD     0   (0=COMPLETE BURNUP CHAIN/1=DO NOT)
+ MAXISM   300   (MAX. NUMBER OF ISOTOPES PER MIXTURE)
+ IPRECI     4   (CALENDF ACCURACY FLAG:1/2/3/4)
+
+ CROSS SECTION EDIT NAME (LCM DIRECTORY NAME)
+ --------------------------------------------
+   1  NFTOT        2  NG           3  N2N   
+   4  N3N          5  N4N          6  NA    
+   7  NP           8  N2A          9  NNP   
+  10  ND          11  NT          12  TRANC 
+  13  BSTC        14  BSTR        15  CSTC  
+  16  CSTR  
+
+ AVAILABLE CROSS-SECTION LIBRARIES:
+    1 -- _W300g_20MeV                                                    
+
+                                                        NUMBER
+ SPEC   LOCAL NAME    ISOTOPE       FROM LIBRARY  MIX   DENSITY     TEMP(K)    SIGZERO    SELF-SHIEL  THERMAL CORRECTION
+ -----  ------------  ------------  ------------  ----  ----------  ---------  ---------  ----------  ------------------
+     1  Wnat    0001  w             MATXS2     1     1  3.2756E-03  3.000E+02  1.000E+10   0             0                         
+ STERNHEIMER CORRECTION NOT APPLYED TO THE H-FACTOR
+ STERNHEIMER CORRECTION NOT APPLYED TO ESTOPW
+->@END MODULE   : LIB:        
+-->>MODULE LIB:        : TIME SPENT=        0.052 MEMORY USAGE= 0.000E+00
+<|MACRO := MICRO :: STEP UP MACROLIB ;                                    |<0043
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: STEP UP TO LEVEL 'MACROLIB    '.
+-->>module EQU:        : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|micr_xsr.txt   := MICRO ;                                               |<0044
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'MICRO       ' WAS EXPORTED TO FILE 'micr_xsr.txt'.
+-->>module EQU:        : time spent=        0.076 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|macr_xsr.txt   := MACRO ;                                               |<0045
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macr_xsr.txt'.
+-->>module EQU:        : time spent=        0.040 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|END: ;                                                                  |<0046
+<|W_xs_300G ;                                                             |<0016
+<|MODULE       GEO: FMAC: MAC: SNT: ASM: FLU: OUT: HEAT: DELETE: UTL:     |<0007
+<|END: ;                                                                  |<0008
+<|PROCEDURE    assertS ;                                                  |<0009
+<|LINKED_LIST  MACRO OLDMACRO GEOM TRACK SYSTEM FLUX DEPOS EEDIT GWT0     |<0010
+<|GEDIT ;                                                                 |<0011
+<|SEQ_ASCII    FMAC_M :: FILE                                             |<0012
+<|'./FMAC_e_W_lobatto_20.00MeV_0g_300e_P2_NC.txt' ;                       |<0021
+<|SEQ_ASCII    edep_xs.txt     :: FILE 'edep_xs.txt' ;                    |<0023
+<|SEQ_ASCII    edit_xs.txt     :: FILE 'edit_xs.txt' ;                    |<0024
+<|SEQ_ASCII    macro_xs.txt    :: FILE 'macro_xs.txt' ;                   |<0025
+<|SEQ_ASCII    flux_xs.txt     :: FILE 'flux_xs.txt' ;                    |<0026
+<|SEQ_ASCII    syst_xs.txt     :: FILE 'syst_xs.txt' ;                    |<0027
+<|SEQ_ASCII    geom_xs.txt     :: FILE 'geom_xs.txt' ;                    |<0028
+<|SEQ_ASCII    track_xs.txt    :: FILE 'track_xs.txt' ;                   |<0029
+<|GEOM := GEO: :: CAR1D 2                                                 |<0031
+<|X- VOID  X+ VOID                                                        |<0032
+<|MIX  1 2                                                                |<0033
+<|MESHX 0.0 0.3 2.0                                                       |<0034
+<|SPLITX 30 70                                                            |<0035
+<|;                                                                       |<0036
+->@BEGIN MODULE : GEO:        
+->@DESCRIPTION  : Geometry definition                                                     
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE CARTESIAN 1-D   .
+->@END MODULE   : GEO:        
+-->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+<|TRACK := SNT: GEOM ::                                                   |<0038
+<|TITLE 'TUNGSTEN-Slab: CEPXS-BFP-DRAGON'                                 |<0039
+<|EDIT 2 MAXR 1000 DIAM 1 NLIVO SN 64 SCAT 2                              |<0041
+<|EPSI 1.E-5                                                              |<0042
+<|QUAD 1 MAXI 300 BFPL ;                                                  |<0043
+->@BEGIN MODULE : SNT:        
+->@DESCRIPTION  : Discrete ordinates tracking                                             
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+1 SSSSS  NN      NN ***********************************************************************************************
+ SSSSSSS NNN     NN ********************************************************* MULTIGROUP VERSION.  A. HEBERT (2005)
+ SS   SS NNNN    NN
+  SS     NN NN   NN
+    SS   NN  NN  NN
+ SS   SS NN   NN NN
+ SSSSSSS NN    NNNN
+  SSSSS  NN     NNN
+
+ TUNGSTEN-Slab: CEPXS-BFP-DRAGON                                         
+
+
+
+ 1-D SLAB GEOMETRY.
++                          BASED ON GEOMETRY GEOM        .
+
+
+ NUMBER OF MESH INTERVALS ALONG THE X AXIS =  100     AVAILABLE STORAGE MAXX =   1000
+                          ALONG THE Y AXIS =    1     AVAILABLE STORAGE MAXY =   1000
+                          ALONG THE Z AXIS =    1     AVAILABLE STORAGE MAXZ =   1000
+ NUMBER OF DISTINCT MIXTURES =      2
+
+
+
+ THE QUADRATURE COSINES FOLLOW
+
+  -0.999305E+00 -0.996340E+00 -0.991013E+00 -0.983336E+00 -0.973327E+00
+  -0.961009E+00 -0.946411E+00 -0.929569E+00 -0.910522E+00 -0.889315E+00
+  -0.865999E+00 -0.840629E+00 -0.813265E+00 -0.783972E+00 -0.752820E+00
+  -0.719882E+00 -0.685236E+00 -0.648965E+00 -0.611155E+00 -0.571896E+00
+  -0.531279E+00 -0.489403E+00 -0.446366E+00 -0.402270E+00 -0.357220E+00
+  -0.311323E+00 -0.264687E+00 -0.217424E+00 -0.169644E+00 -0.121463E+00
+  -0.729931E-01 -0.243503E-01  0.243503E-01  0.729931E-01  0.121463E+00
+   0.169644E+00  0.217424E+00  0.264687E+00  0.311323E+00  0.357220E+00
+   0.402270E+00  0.446366E+00  0.489403E+00  0.531279E+00  0.571896E+00
+   0.611155E+00  0.648965E+00  0.685236E+00  0.719882E+00  0.752820E+00
+   0.783972E+00  0.813265E+00  0.840629E+00  0.865999E+00  0.889315E+00
+   0.910522E+00  0.929569E+00  0.946411E+00  0.961009E+00  0.973327E+00
+   0.983336E+00  0.991013E+00  0.996340E+00  0.999305E+00
+
+
+ THE CORRESPONDING QUADRATURE WEIGHTS FOLLOW
+
+   0.178328E-02  0.414703E-02  0.650446E-02  0.884676E-02  0.111681E-01
+   0.134630E-01  0.157260E-01  0.179517E-01  0.201348E-01  0.222702E-01
+   0.243527E-01  0.263775E-01  0.283397E-01  0.302347E-01  0.320579E-01
+   0.338052E-01  0.354722E-01  0.370551E-01  0.385502E-01  0.399537E-01
+   0.412626E-01  0.424735E-01  0.435837E-01  0.445906E-01  0.454916E-01
+   0.462848E-01  0.469682E-01  0.475402E-01  0.479994E-01  0.483448E-01
+   0.485755E-01  0.486910E-01  0.486910E-01  0.485755E-01  0.483448E-01
+   0.479994E-01  0.475402E-01  0.469682E-01  0.462848E-01  0.454916E-01
+   0.445906E-01  0.435837E-01  0.424735E-01  0.412626E-01  0.399537E-01
+   0.385502E-01  0.370551E-01  0.354722E-01  0.338052E-01  0.320579E-01
+   0.302347E-01  0.283397E-01  0.263775E-01  0.243527E-01  0.222702E-01
+   0.201348E-01  0.179517E-01  0.157260E-01  0.134630E-01  0.111681E-01
+   0.884676E-02  0.650446E-02  0.414703E-02  0.178328E-02
+
+ SNTRK: ORDER OF LINEAR SYSTEMS =    400
+        NUMBER OF UNKNOWNS PER ENERGY GROUP =  13200
+
+ STATE VECTOR:
+ NREG       100   (NUMBER OF REGIONS)
+ NUN      13200   (NUMBER OF UNKNOWNS)
+ ILK          0   (0=LEAKAGE PRESENT/1=LEAKAGE ABSENT)
+ NBMIX        2   (MAXIMUM NUMBER OF MIXTURES USED)
+ NSURF        1   (NUMBER OF OUTER SURFACES)
+ ITYPE        2   (TYPE OF GEOMETRY)
+ NFUNL        2   (NUMBER OF SPHERICAL HARMONICS COMPONENTS)
+ IELEM        2   (ORDER OF POLYNOMIAL USED IN SPATIAL APPROX./1=DIAMOND SCHEME/2=LINEAR/3=PARABOLIC/3=CUBIC)
+ NDIM         1   (NUMBER OF GEOMETRIC DIMENSIONS)
+ ISCHM        1   (METHOD OF SPATIAL DISCRETISATION/1=HODD/2=DG)
+ LL4        400   (ORDER OF THE MATRICES PER GROUP)
+ LX         100   (NUMBER OF MESHES ALONG THE X AXIS)
+ LY           1   (NUMBER OF MESHES ALONG THE Y AXIS)
+ LZ           1   (NUMBER OF MESHES ALONG THE Z AXIS)
+ NLF         64   (SN ORDER)
+ ISCAT        2   (1=ISOTROPIC SOURCE/2=LINEARLY ANISOTROPIC SOURCE)
+ IQUAD        1   (<4=LEVEL-SYMMETRIC OF TYPE IQUAD/4=LEGENDRE-CHEBYSHEV/5=SYMMETRIC LEGENDRE-CHEBYSHEV/6=QR/>9=PRODUCT)
+ IFIX         0   (0/1: NEGATIVE FLUX FIXUP)
+ IDSA         0   (0/1: SYNTHETIC ACCELERATION)
+ NSTART       0   (NUMBER OF RESTARTS IN GMRES)
+ NSDSA       10   (NUMBER OF ITERATIONS BEFORE ENABLING DSA)
+ MAXIT      300   (MAXIMUM NUMBER OF INNER ITERATIONS)
+ LIVO         0   (0/1: LIVOLANT ACCELERATION OFF/ON)
+ ICL1         3   (NUMBER OF FREE ITERATIONS IN LIVO.)
+ ICL2         3   (NUMBER OF ACCELERATED ITERATIONS IN LIVO.)
+ ISPLH        0   (DEGREE OF LOZENGE SPLITTING FOR HEXAGONAL GEOMETRY)
+ INSB         0   (0/1: GROUP VECTORIZATION OFF/ON)
+ IOMP         0   (0/1: DOMINO MULTITHREADING OFF/ON)
+ IGAV         0   (CONDITION AT AXIAL AXIS FOR CYL./SPH. 1D)
+ LSHOOT       1   (0/1: SHOOTING METHOD IN 1D OFF/ON)
+ IBFP         2   (0/1/2: BFP SOLUTION OFF/GALERKIN/LIGOU)
+ IBIHET       0   (0/1: DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
+ EPSI      0.1E-04  (CONVERGENCE CRITERION ON INNER ITERATIONS)
+->@END MODULE   : SNT:        
+-->>MODULE SNT:        : TIME SPENT=        0.001 MEMORY USAGE= 0.000E+00
+<|MACRO    := FMAC: FMAC_M :: EDIT 99 PARTICLE B ;                        |<0045
+->@BEGIN MODULE : FMAC:       
+->@DESCRIPTION  : Recover information from a FMAC-M interface file                        
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ FMAC-M            
+ FMAC:  Format FMAC-M version = 5
+ NG    =300   number of energy groups;
+ NPART =  1   number of particle types;
+ NGXI  =  0   number of groups with non-zero fission spectrum;
+ NGXIF =  0   number of the first group with non-zero fission spectrum;
+ NGRET =  0   number of delayed neutron groups;
+ NGXIR =  0   number of groups with non-zero fission spectrum for delayed neutrons;
+ NGXIFR=  0   number of the first group with non-zero fission spectrum for delayed neutrons;
+ NEDIT =  0   number of additional edit cross-sections;
+ MAXGS =  0   not used;
+ KLEIN =  0   not used;
+ NGHIGH=  0   total number of groups of cascade region;
+ IADJ  =  0   0/1 - regular/adjoint cross-section file;
+ NUCL  =  0   number of nuclides;
+ NUCLF =  0   number of fission nuclides;
+ MIX   =  1   number of materials (compositions);
+ NUFIS =  0   number of fission materials;
+ MAS   = 38   length of integer control array LL(MAS);
+ KIN= 40261   total number of scattering transitions (not used);
+ MX    =  3   maximal length of transition array (not used);
+ MNW   =  3   order of PL approximation used +1;
+ MPOINT=  0   order of discrete approximation of scattering indicatrix (number of angular scattering cosine points used);
+ NUMD(I)=  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 not used
+
+ FMAC01: 20.00MeV monoenergetic electron-source on TUNGSTEN Slab                 
+
+ FMAC01:                         
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'MACRO       ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'SIGNATURE   '         3    CHARACTER       ='L_MACROLIB  '
+        2  'PARTICLE    '         1    CHARACTER       
+        3  'PARTICLE-NGR'         1    INTEGER         
+        4  'PARTICLE-NAM'         1    CHARACTER       
+        5  'PARTICLE-MC2'         1    REAL            
+        6  'GROUP       '       300    LIST            
+        7  'ENERGY      '       301    REAL            
+        8  'STATE-VECTOR'        40    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =       348
+
+
+ OPTIONS
+ -------
+ IMPX      99   (0=NO PRINT/1=SHORT/2=MORE)
+ NGROUP   300   (NUMBER OF ENERGY GROUPS)
+ NBMIX      1   (NUMBER OF MIXTURES IN THE MACROLIB)
+ NANISO     3   (MAXIMUM SCATTERING ANISOTROPY)
+ NIFISS     0   (MAXIMUM NUMBER OF FISSILE ISOTOPES IN A MIXTURE)
+ NEDMAC     0   (NUMBER OF CROSS SECTION EDITS)
+ ITRANC     0   (0=NO TRANSPORT CORRECTION/1=APOLLO TYPE/2=RECOVER FROM LIBRARY/4=LEAKAGE CORRECTION)
+ NLG        0   (NUMBER OF DELAYED PRECURSOR GROUPS)
+ ILEAK      0   (1=DIFF AVAILABLE; 2=DIFFX AVAILABLE)
+ NSTEP      0   (NUMBER OF PERTURBATION DIRECTORIES)
+ IDF        0   (=0/2 BOUNDARY FLUXES FOR ADF ABSENT/PRESENT)
+ IADJ       0   (=0/1 DIRECT/ADJOINT MACROLIB)
+ NPART0     0   (NUMBER OF COMPANION PARTICLES)
+ HPART      B   (MACROLIB PARTICLE)
+
+       PARTICLE NAMES:       B
+ NB. OF ENERGY GROUPS:     300
+->@END MODULE   : FMAC:       
+-->>MODULE FMAC:       : TIME SPENT=        0.311 MEMORY USAGE= 0.000E+00
+<|macro_xs.txt  := MACRO ;                                                |<0046
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'MACRO       ' WAS EXPORTED TO FILE 'macro_xs.txt'.
+-->>module EQU:        : time spent=        0.039 memory usage= 0.000E+00
+->@END MODULE   : EQU:        
+<|END: ;                                                                  |<0047
 . ------------------------------------------------------------------------ .
 
  normal end of execution for dragon 5  Version 5.0.7 ($Revision: 2060 $)               

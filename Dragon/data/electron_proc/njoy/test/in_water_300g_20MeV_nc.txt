@@ -1,6 +1,6 @@
 cepxsr
 30 0 33 40 
-100 1 0 2 2 1
+100 1 0 2 9 1
 test:non-coupled/
 300 / # of groups boundaries
 1.0000000547034879e+03
@@ -311,7 +311,7 @@ test:non-coupled/
 matxsr
 0  0 35  0  0  0  0  0  0 33/ 
 1 'test'/                     
-1 1 1 1 1 /                   
+1 1 1 2 1 /                   
 'test'/
 'b'/
 300/

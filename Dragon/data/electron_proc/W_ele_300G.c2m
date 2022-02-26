@@ -47,7 +47,8 @@ MICRO  := LIB: ::
           ANIS 3
           MIXS LIB: MATXS2 FIL: _electr
           MIX  1  300.0  1.0 NOGAS
-          Wnat = w 1.0 
+          Wnat = w 1.0
+          STERN 0
 ;
 
 * --- Library structuring 

@@ -63,7 +63,8 @@
      >             NBISO,NGRO,NGT,NGF,NGFR,NL,ITRANC,ITIME,NLIB,NIDEPL,
      >             NCOMB,NEDMAC,NBMIX,NRES,MAXISM,IEN,ILCMLN,ILCMTY,
      >             IED,JED,KED,IDP,IBSTEP,MAXISO,NDEPL,NEDMA0,ITPROC,
-     >             ISOADD,NADDXS,IPROB,IPROC,IMAC,NDEL,NFISS,IPRECI
+     >             ISOADD,NADDXS,IPROB,IPROC,IMAC,NDEL,NFISS,IPRECI,
+     >             STERN 
       REAL         TMPDAY(3),DELT,TIMBRN 
       INTEGER      IKSTEP
       LOGICAL      LEXIST
@@ -117,6 +118,7 @@
         ISOADD=0
         MAXISM=MAXISD
         IPRECI=4
+        STERN=1
 *----
 *  TRY TO FIND A READ-ONLY MICROLIB OR MACROLIB TO COPY IN THE LIBRARY
 *----
@@ -178,7 +180,7 @@
 *----
 *  WRITE ENERGY AND DELTAU ON MACROLIB
 *----
-              IF(NGT .GT. 0) THEN
+            IF(NGT .GT. 0) THEN
                 CALL LCMPUT(IPLIB,'ENERGY',NGT+1,2,ENER)
                 CALL LCMPUT(IPLIB,'DELTAU',NGT,2,ENER(NGT+2))
               ENDIF
@@ -511,7 +513,7 @@
      >              NBISO ,NGRO  ,NGT   ,NL    ,ITRANC,IPROB ,
      >              ITIME ,NLIB  ,NGF   ,NGFR  ,NIDEPL,NCOMB ,
      >              NEDMAC,NBMIX ,NRES  ,IPROC ,IMAC  ,NDEL  ,
-     >              ISOADD,MAXISM,HVECT ,IPRECI)
+     >              ISOADD,MAXISM,HVECT ,IPRECI,STERN)
       ELSE IF(ITPROC .GE. 2) THEN
 *----
 *  ALLOCATE
